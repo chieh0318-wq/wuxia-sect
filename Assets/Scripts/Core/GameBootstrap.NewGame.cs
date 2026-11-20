@@ -349,7 +349,8 @@ namespace Wuxia
             ui.ShowCreation("立足之地", new[] { FormatStory(story.locationPrompt) }, null, SkipStory);
             ui.CreationGrid(2, (options.Length + 1) / 2, 164);
             foreach (var option in options)
-                ui.CreationChoice(option.name, $"{option.region}　{option.resources}\n{option.desc}\n{option.bonusText}", option.image, () =>
+                // Text-only cards: the sites share one illustration, and the full width keeps bonus text from clipping.
+                ui.CreationChoice($"{option.name}　{option.region}", $"{option.resources}\n{option.desc}\n{option.bonusText}", null, () =>
                 {
                     SetLocation(option);
                     Play(story.closingBeats, Finish, Finish);

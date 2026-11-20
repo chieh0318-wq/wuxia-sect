@@ -15,16 +15,9 @@ namespace Wuxia.EditorTools
                 texture.mipmapEnabled = false;
                 texture.npotScale = TextureImporterNPOTScale.None;
                 texture.textureCompression = TextureImporterCompression.CompressedHQ;
-                return;
             }
-            if (!assetPath.StartsWith("Assets/Resources/Portraits/") &&
-                !assetPath.StartsWith("Assets/Resources/Story/")) return;
-            texture.textureType = TextureImporterType.Sprite;
-            texture.spriteImportMode = SpriteImportMode.Single;
-            texture.mipmapEnabled = false;
-            texture.maxTextureSize = 2048;
-            texture.sRGBTexture = true;
-            texture.textureCompression = TextureImporterCompression.CompressedHQ;
+            // Portraits and story CG are configured by StoryArtImporter (2D texture, no mipmaps) only,
+            // so the two postprocessors cannot fight over the texture type.
         }
     }
 

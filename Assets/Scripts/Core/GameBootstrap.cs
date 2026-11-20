@@ -52,6 +52,18 @@ namespace Wuxia
             int capture = Array.IndexOf(args, "-wuxiaCapture");
             if (capture >= 0 && capture + 1 < args.Length)
                 StartCoroutine(Capture(args[capture + 1]));
+            // Smoke tests: "-wuxiaQuitAfter 20" exits cleanly after N seconds so no process has to be killed.
+            int quit = Array.IndexOf(args, "-wuxiaQuitAfter");
+            if (quit >= 0 && quit + 1 < args.Length && float.TryParse(args[quit + 1],
+                    System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out float seconds))
+                StartCoroutine(QuitAfter(seconds));
+        }
+
+        private static System.Collections.IEnumerator QuitAfter(float seconds)
+        {
+            yield return new WaitForSecondsRealtime(Mathf.Max(1, seconds));
+            Debug.Log($"[Smoke] Quitting after {seconds:0} s.");
+            Application.Quit(0);
         }
 
         private void ShowTitle()

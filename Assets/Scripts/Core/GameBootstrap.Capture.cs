@@ -49,6 +49,14 @@ namespace Wuxia
                     ("01_title.png", () => { }),
                     ("18_gender.png", () => { ui.CloseTitle(); creation.Begin(); }),
                     ("02_appearance.png", () => { ui.CloseTitle(); creation.CaptureAppearance(); }),
+                    ("24_creation_preview.png", () =>
+                    {
+                        var preview = new GameState(data);
+                        preview.Protagonist.gender = "女";
+                        preview.Protagonist.title = "大師姐";
+                        preview.Protagonist.name = "顧清霜";
+                        new NewGameFlow(ui, preview, _ => { }).CaptureAppearance();
+                    }),
                     ("03_talents.png", creation.CaptureTalents),
                     ("13_skills.png", creation.CaptureSkills),
                     ("14_attributes.png", creation.CaptureAttributes),

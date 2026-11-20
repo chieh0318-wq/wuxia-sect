@@ -11,19 +11,24 @@ namespace Wuxia
         private Vector3 destination;
 
         private Transform body;
-        private CharacterMotion motion; // M2-B pose hook
+        private CharacterMotion motion;
+        private HumanoidMotion humanoid;
+        private const float WalkSpeed = 2.15f;
         public void Initialize(List<Vector3> waypoints, Transform figure)
         {
             entrances = waypoints;
             body = figure;
             motion = figure.GetComponent<CharacterMotion>();
+            humanoid = figure.GetComponent<HumanoidMotion>();
             destination = transform.position;
             pause = UnityEngine.Random.Range(0.5f, 2.5f);
         }
 
         private void Update()
         {
-            if (motion != null) motion.Walking = pause <= 0 && (destination - transform.position).sqrMagnitude >= .0025f;
+            bool moving = pause <= 0 && (destination - transform.position).sqrMagnitude >= .0025f;
+            if (motion != null) motion.Walking = moving;
+            if (humanoid != null) humanoid.WalkingSpeed = moving ? WalkSpeed / body.lossyScale.y : 0;
             if (pause > 0)
             {
                 pause -= Time.deltaTime;
@@ -43,9 +48,17 @@ namespace Wuxia
                 return;
             }
 
-            body.localPosition = Vector3.up * (Mathf.Sin(Time.time * 13) * .025f);
+            if (motion != null) body.localPosition = Vector3.up * (Mathf.Sin(Time.time * 13) * .025f);
             transform.rotation = Quaternion.LookRotation(difference);
-            transform.position = Vector3.MoveTowards(transform.position, destination, 2.15f * Time.deltaTime);
+            transform.position = Vector3.MoveTowards(transform.position, destination, WalkSpeed * Time.deltaTime);
+        }
+
+        internal void WalkForCapture(Vector3 position, Vector3 target)
+        {
+            transform.position = position;
+            destination = target;
+            pause = 0;
+            route.Clear();
         }
 
         private void ChooseRoute()

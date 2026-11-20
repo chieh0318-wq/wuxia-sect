@@ -44,32 +44,47 @@ namespace Wuxia
             controls.enabled = false;
             cameraData.renderPostProcessing = post;
 
-            // Close-up: protagonist (look from creation), a recruit-style random look and a story character.
-            Vector3[] points = { new(-1.4f,0,-8.7f),new(0,0,-8.3f),new(1.4f,0,-8.7f) };
             var walkers = FindObjectsByType<DiscipleWalker>();
             foreach (var walker in walkers) walker.gameObject.SetActive(false);
             var looks = new[]
             {
-                state.Disciples.Count > 0 ? CharacterFactory.ForDisciple(state.Disciples[0],0) : CharacterFactory.ForRecruit("女","入門弟子"),
-                ProtagonistFigure().look,
-                CharacterFactory.ForStory("master")
+                CharacterFactory.ForStory("master"),
+                new CharacterLook { gender = "男", robeColor = "#536775", sashColor = "#754339", hairStyle = "topknot" },
+                new CharacterLook { gender = "女", hairStyle = "twinbuns",
+                    model = new CharacterModelSpec { style = "ruqun", robe = "#8D817B", robe2 = "#61766D", sash = "#725458" } },
+                CharacterFactory.ForStory("warlord")
             };
-            for (int i=0;i<looks.Length;i++)
+            var figures = new GameObject[looks.Length];
+            for (int i = 0; i < looks.Length; i++)
             {
-                var figure = CharacterFactory.Build(looks[i]);
-                figure.transform.SetPositionAndRotation(points[i],Quaternion.Euler(0,(i-1)*17,0));
-                figure.transform.localScale *= 1.42f;
+                figures[i] = CharacterFactory.Build(looks[i]);
+                figures[i].transform.SetPositionAndRotation(new Vector3((i - 1.5f) * 1.03f, 0, -8.65f),
+                    Quaternion.Euler(0, (1.5f - i) * 18, 0));
             }
-            view.transform.position = new Vector3(.05f,2.25f,-4.4f);
-            view.transform.LookAt(new Vector3(0,1.28f,-8.6f));
-            view.fieldOfView = 41;
+            view.transform.position = new Vector3(0, 1.57f, -5.61f);
+            view.transform.LookAt(new Vector3(0, .94f, -8.65f));
+            view.fieldOfView = 42;
             var bounce = new GameObject("Capture fill").AddComponent<Light>();
             bounce.type = LightType.Directional;
-            bounce.color = new Color(1f,.93f,.84f);
-            bounce.intensity = .50f;
-            bounce.transform.rotation = Quaternion.Euler(23,156,0);
+            bounce.color = new Color(1f, .96f, .90f);
+            bounce.intensity = .85f;
+            bounce.transform.rotation = Quaternion.Euler(21, 158, 0);
             yield return null;
             capture("23_characters_closeup.png");
+            foreach (var figure in figures) Destroy(figure);
+            for (int i = 0; i < walkers.Length; i++)
+            {
+                var walker = walkers[i];
+                walker.gameObject.SetActive(true);
+                Vector3 start = new Vector3((i % 4 - 1.5f) * 1.55f, 0, -9.5f - i / 4 * 3.4f);
+                walker.WalkForCapture(start, start + new Vector3(1.8f, 0, 6f));
+            }
+            view.transform.position = new Vector3(-.2f, 2.22f, -3.2f);
+            view.transform.LookAt(new Vector3(.42f, 1.22f, -9.2f));
+            view.fieldOfView = 45;
+            yield return new WaitForSecondsRealtime(.52f);
+            capture("25_courtyard_people.png");
+            Destroy(bounce.gameObject);
             ui.Canvas.enabled = true;
         }
     }

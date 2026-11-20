@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Wuxia
@@ -17,9 +18,26 @@ namespace Wuxia
         };
         private static readonly MaterialPropertyBlock paint = new();
 
-        public static CharacterLook ForStory(string id) => id switch
+        private static CharacterCatalog storyLooks;
+
+        public static CharacterLook ForStory(string id)
         {
-            "master" => Look("男", "#777971", "#4B4840", "bun", "#D3C8B9", .43f, "師父"),
+            storyLooks ??= M2Data.Load<CharacterCatalog>("characters");
+            var entry = storyLooks.storyCharacters?.FirstOrDefault(person => person.id == id);
+            var look = StoryPalette(id);
+            look.id = id;
+            if (entry == null) return look;
+            look.age = entry.age;
+            look.origin = entry.faction;
+            look.model = entry.model;
+            look.gender = entry.gender ?? look.gender;
+            if (!StoryIds.Contains(id)) look.role = entry.role ?? look.role;
+            return look;
+        }
+
+        private static CharacterLook StoryPalette(string id) => id switch
+        {
+            "master" => Look("男", "#777971", "#4B4840", "taoistbun", "#D3C8B9", .43f, "師父"),
             "friend_m" => Look("男", "#4D6C70", "#A68055", "crown", "#26272A", .37f, "客卿"),
             "friend_f" => Look("女", "#738579", "#794E52", "halfup", "#27252C", .34f, "客卿"),
             "elder_villain" => Look("男", "#7A4747", "#B58C55", "crown", "#4A4141", .65f, "掌門"),
@@ -64,22 +82,33 @@ namespace Wuxia
 
         internal static CharacterLook ForDisciple(DiscipleData data, int order)
         {
-            if (data.look != null && !string.IsNullOrEmpty(data.look.hairStyle))
+            if (data.look != null && (data.look.model?.HasOverrides == true || !string.IsNullOrEmpty(data.look.hairStyle)))
+            {
+                data.look.age = data.age;
+                data.look.origin = data.origin ?? data.trait;
+                if (string.IsNullOrEmpty(data.look.gender)) data.look.gender = data.gender;
+                if (string.IsNullOrEmpty(data.look.role)) data.look.role = data.title;
+                if (string.IsNullOrEmpty(data.look.id)) data.look.id = data.id;
+                if (string.IsNullOrEmpty(data.look.robeColor)) data.look.robeColor = data.robeColor;
                 return data.look;
-            if (StoryIds.Contains(data.id))
+            }
+            storyLooks ??= M2Data.Load<CharacterCatalog>("characters");
+            if (StoryIds.Contains(data.id) || storyLooks.storyCharacters?.Any(person => person.id == data.id) == true)
                 return ForStory(data.id);
             string[] styles = data.gender == "女"
                 ? new[] { "halfup", "twinbuns", "ponytail", "bun" }
                 : new[] { "topknot", "bun", "crown", "halfup" };
             return new CharacterLook
             {
-                gender = data.gender, robeColor = data.robeColor, role = data.title,
+                gender = data.gender, robeColor = data.robeColor, role = data.title, age = data.age, origin = data.origin ?? data.trait, id = data.id,
                 hairStyle = styles[order % styles.Length], skinTone = .24f + order % 5 * .13f,
                 build = .28f + order % 4 * .14f
             };
         }
 
-        public static GameObject Build(CharacterLook look)
+        public static GameObject Build(CharacterLook look) => CharacterModelFactory.Build(look);
+
+        internal static GameObject BuildFallback(CharacterLook look)
         {
             look ??= new CharacterLook();
             if (solid == null) solid = Resources.Load<Material>("Materials/Solid");

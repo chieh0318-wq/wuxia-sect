@@ -47,10 +47,15 @@ namespace Wuxia
                 var steps = new (string filename, System.Action show)[]
                 {
                     ("01_title.png", () => { }),
+                    ("18_gender.png", () => { ui.CloseTitle(); creation.Begin(); }),
                     ("02_appearance.png", () => { ui.CloseTitle(); creation.CaptureAppearance(); }),
                     ("03_talents.png", creation.CaptureTalents),
+                    ("13_skills.png", creation.CaptureSkills),
+                    ("14_attributes.png", creation.CaptureAttributes),
+                    ("15_background.png", creation.CaptureBackground),
                     ("04_prologue_beat.png", creation.CapturePrologue),
                     ("05_disaster_choice.png", creation.CaptureDisaster),
+                    ("16_response_choice.png", creation.CaptureResponse),
                     ("06_location_choice.png", creation.CaptureLocation),
                     ("07_courtyard_hud_ap.png", () =>
                     {
@@ -84,7 +89,17 @@ namespace Wuxia
                         if (state.Disciples.Count > 0)
                             Speak(state.Disciples[0]);
                     }),
-                    ("10_recruit.png", () => { ui.CloseDialogue(); CaptureRecruitment(); }),
+                    ("17_recruit_methods.png", () =>
+                    {
+                        ui.CloseDialogue();
+                        OpenRecruitment(data.Actions.First(action => action.type == "recruit"));
+                    }),
+                    ("10_recruit.png", CaptureRecruitment),
+                    ("19_special_recruit.png", () =>
+                    {
+                        var special = Recruitment.specials?.FirstOrDefault(candidate => candidate.story != null);
+                        if (special != null) ReviewCandidate(special);
+                    }),
                     ("11_options_audio.png", ui.ShowAudioOptions),
                     ("12_protagonist_panel.png", ShowProtagonist)
                 };
@@ -170,8 +185,11 @@ namespace Wuxia
                 int before = state.Disciples.Count;
                 if (candidates == null || candidates.Length == 0)
                     throw new System.InvalidOperationException("The tutorial could not open recruitment with zero AP.");
-                AcceptCandidate(candidates[0]);
-                if (state.Disciples.Count != before + 1)
+                var acceptedCandidate = candidates[0];
+                AcceptCandidate(acceptedCandidate);
+                AcceptCandidate(acceptedCandidate);
+                if (state.Disciples.Count != before + 1 || !candidates.Contains(acceptedCandidate) ||
+                    !RecruitRestriction(acceptedCandidate).Contains("✓"))
                     throw new System.InvalidOperationException("The tutorial could not accept a recruit.");
                 ui.CloseModal(force: true);
                 state.EndMonth();

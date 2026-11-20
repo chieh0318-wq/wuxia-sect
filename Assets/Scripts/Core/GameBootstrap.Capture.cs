@@ -189,7 +189,7 @@ namespace Wuxia
                 AcceptCandidate(acceptedCandidate);
                 AcceptCandidate(acceptedCandidate);
                 if (state.Disciples.Count != before + 1 || !candidates.Contains(acceptedCandidate) ||
-                    !RecruitRestriction(acceptedCandidate).Contains("✓"))
+                    RecruitRestriction(acceptedCandidate) != Recruited)
                     throw new System.InvalidOperationException("The tutorial could not accept a recruit.");
                 ui.CloseModal(force: true);
                 state.EndMonth();

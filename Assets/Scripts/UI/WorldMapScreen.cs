@@ -28,7 +28,7 @@ namespace Wuxia
         private string selected;
         private Sprite halo;
         private Texture2D haloTexture;
-        private bool changingScreen;
+        private bool changingScreen, dragFromMap;
         private RectTransform focusMarker;
         private HashSet<string> seats;
         public bool IsOpen => canvas != null && canvas.gameObject.activeSelf;
@@ -229,7 +229,8 @@ namespace Wuxia
         {
             if (!IsOpen || intel.IsOpen) return;
             Vector2 mouse = Input.mousePosition;
-            bool overMap = RectTransformUtility.RectangleContainsScreenPoint(viewport,mouse,canvas.worldCamera);
+            // The node/faction card floats over the viewport: wheel and drags that start on it must not move the map.
+            bool overMap = RectTransformUtility.RectangleContainsScreenPoint(viewport,mouse,canvas.worldCamera) && !OverCard(mouse);
             float wheel = Input.mouseScrollDelta.y;
             if (overMap && Mathf.Abs(wheel) > .01f)
             {
@@ -240,7 +241,9 @@ namespace Wuxia
                 zoom = next;
                 changingScreen = true;
             }
-            if (overMap && Input.GetMouseButton(1) && !Input.GetMouseButtonDown(1))
+            bool pressed = Input.GetMouseButtonDown(1) || Input.GetMouseButtonDown(2);
+            if (pressed) dragFromMap = overMap;
+            if (!pressed && dragFromMap && (Input.GetMouseButton(1) || Input.GetMouseButton(2)) && mouse != lastMouse)
             {
                 pan += (mouse-lastMouse)/canvas.scaleFactor;
                 changingScreen = true;
@@ -254,6 +257,17 @@ namespace Wuxia
                 changingScreen = true;
             }
             if (changingScreen) ApplyView();
+        }
+
+        private bool OverCard(Vector2 mouse)
+        {
+            for (int i=0;i<card.childCount;i++)
+            {
+                var child = (RectTransform)card.GetChild(i);
+                if (child.gameObject.activeSelf && RectTransformUtility.RectangleContainsScreenPoint(child,mouse,canvas.worldCamera))
+                    return true;
+            }
+            return false;
         }
 
         private void ApplyView()
@@ -372,9 +386,11 @@ namespace Wuxia
             if (traveling) return;
             var panel = Card(faction.Label,$"{faction.TypeName}　{(faction.Court ? "朝廷／官府　" : "")}{data.NodeLabel(faction.seat)}");
             bool known = host.IsFactionKnown(faction.id);
-            var stance = faction.stance == "friendly" ? new Color(.20f,.39f,.28f) :
-                faction.stance == "hostile" ? MapUi.Red : MapUi.Ink;
-            MapUi.Text(panel,"關係　"+faction.Relation,20,105,384,32,21,stance);
+            int shift = host.RelationShift(faction.id);
+            string current = faction.StanceWith(shift);
+            var stance = current == "friendly" ? new Color(.20f,.39f,.28f) :
+                current == "hostile" ? MapUi.Red : MapUi.Ink;
+            MapUi.Text(panel,"關係　"+faction.RelationWith(shift),20,105,384,32,21,stance);
             if (!known)
             {
                 MapUi.Text(panel,"情報不足　　最強者 ???",20,166,386,48,23,MapUi.Ink);

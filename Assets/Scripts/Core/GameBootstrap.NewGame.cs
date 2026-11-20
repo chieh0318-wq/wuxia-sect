@@ -94,10 +94,15 @@ namespace Wuxia
 
         private void ChooseGender(string gender)
         {
+            // Coming back with the same gender keeps the chosen look and typed name.
+            bool changed = look == null || state.Protagonist.gender != gender;
             state.Protagonist.gender = gender;
             state.Protagonist.title = gender == "女" ? "大師姐" : "大師兄";
-            look = null;
-            state.Protagonist.name = SuggestedName();
+            if (changed)
+            {
+                look = null;
+                state.Protagonist.name = SuggestedName();
+            }
             ChooseAppearance();
         }
 
@@ -122,7 +127,7 @@ namespace Wuxia
             hero.lookId = look.id;
             hero.look = look;
             hero.portrait = string.IsNullOrEmpty(look.portrait) ? look.id : look.portrait;
-            ui.ShowCreation("形貌與姓名", new[] { hero.title }, null, ChooseBackground, ChooseBackground);
+            ui.ShowCreation("形貌與姓名", new[] { hero.title }, Back(Begin), ChooseBackground, ChooseBackground);
             ui.CreationName(hero.name, value => hero.name = string.IsNullOrWhiteSpace(value) ? SuggestedName() : value.Trim(), SuggestedName);
             ui.CreationPortraits(looks, look, candidate =>
             {
@@ -135,7 +140,7 @@ namespace Wuxia
         {
             var options = characters.backgrounds ?? Array.Empty<CreationOption>();
             background ??= options.FirstOrDefault();
-            ui.ShowCreation("出身", Array.Empty<string>(), null, StartTalents, StartTalents);
+            ui.ShowCreation("出身", Array.Empty<string>(), Back(ChooseAppearance), StartTalents, StartTalents);
             if (options.Length > 0)
                 ui.CreationGrid(2, (options.Length + 1) / 2, 208);
             foreach (var option in options)
@@ -149,11 +154,24 @@ namespace Wuxia
             }
         }
 
-        private void StartTalents()
+        /// <summary>Back button for the pre-story creation steps (effects are only applied in StartStory, so going back is safe).</summary>
+        private static (string, Action)[] Back(Action previous) => new[] { ("上一步", previous) };
+
+        private string[] SelectedIds => selected.Select(option => option.id).ToArray();
+
+        private void Restore(IEnumerable<CreationOption> pool, string[] ids)
         {
             selected.Clear();
+            selected.AddRange((pool ?? Array.Empty<CreationOption>()).Where(option => option != null && ids.Contains(option.id)));
+        }
+
+        private void StartTalents()
+        {
+            // Keep the current draw and picks when returning here, so going back is not a free reroll.
+            if (offered == null)
+                RollTalents();
+            Restore(offered, state.Protagonist.talents);
             talentFilter = "";
-            RollTalents();
             ShowTalents();
         }
 
@@ -179,6 +197,11 @@ namespace Wuxia
         {
             var actions = new List<(string, Action)>
             {
+                ("上一步", () =>
+                {
+                    state.Protagonist.talents = SelectedIds;
+                    ChooseBackground();
+                }),
                 ("隨機推薦", () =>
                 {
                     selected.Clear();
@@ -287,9 +310,9 @@ namespace Wuxia
 
         private void CompleteTalents()
         {
-            state.Protagonist.talents = selected.Select(option => option.id).ToArray();
+            state.Protagonist.talents = SelectedIds;
             talentEffects = selected.SelectMany(option => option.effects ?? Array.Empty<GameEffect>()).ToArray();
-            selected.Clear();
+            Restore(skills.skills, state.Protagonist.skills);
             ShowSkills();
         }
 
@@ -298,8 +321,11 @@ namespace Wuxia
 
         private void ShowSkills(Vector2 scrollPosition)
         {
-            ui.ShowCreation("戰鬥技能與生產技能", new[] { $"餘點 {skills.budget - Spent}" }, null,
-                CompleteSkills, CompleteSkills);
+            ui.ShowCreation("戰鬥技能與生產技能", new[] { $"餘點 {skills.budget - Spent}" }, Back(() =>
+                {
+                    state.Protagonist.skills = SelectedIds;
+                    StartTalents();
+                }), CompleteSkills, CompleteSkills);
             var preview = PreviewLines((talents.talents ?? Array.Empty<CreationOption>())
                 .Where(option => state.Protagonist.talents.Contains(option.id)));
             foreach (var art in selected)
@@ -315,14 +341,18 @@ namespace Wuxia
 
         private void CompleteSkills()
         {
-            state.Protagonist.skills = selected.Select(option => option.id).ToArray();
+            state.Protagonist.skills = SelectedIds;
             skillEffects = selected.SelectMany(option => option.effects ?? Array.Empty<GameEffect>()).ToArray();
             ShowAttributes();
         }
 
         private void ShowAttributes()
         {
-            ui.ShowCreation("屬性", new[] { $"餘點 {freeAttributes}　{state.Protagonist.name}" }, null, StartStory, StartStory);
+            ui.ShowCreation("屬性", new[] { $"餘點 {freeAttributes}　{state.Protagonist.name}" }, Back(() =>
+                {
+                    Restore(skills.skills, state.Protagonist.skills);
+                    ShowSkills();
+                }), StartStory, StartStory);
             for (int index = 0; index < AttributeNames.Length; index++)
             {
                 int slot = index;
@@ -346,7 +376,8 @@ namespace Wuxia
             state.Protagonist.backgroundId = background?.id;
             state.ApplyEffects(background?.effects);
             state.ApplyEffects(talentEffects);
-            foreach (var art in selected)
+            foreach (var art in (skills.skills ?? Array.Empty<CreationOption>())
+                         .Where(option => option != null && state.Protagonist.skills.Contains(option.id)))
                 RankSystem.Learn(state.Protagonist.lines, art);
             state.ApplyEffects(skillEffects);
             Play(story.openingBeats, ChooseDisaster, SkipStory);

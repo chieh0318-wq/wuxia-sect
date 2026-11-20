@@ -70,10 +70,22 @@ namespace Wuxia
                 };
                 if (snapshot.protagonist != null)
                 {
-                    snapshot.protagonist.lines ??= state.Protagonist.lines;
-                    state.Protagonist = snapshot.protagonist;
+                    // Tolerate saves with missing/partial fields: JsonUtility leaves absent arrays empty.
+                    var hero = snapshot.protagonist;
+                    hero.lines = hero.lines == null || hero.lines.Length == 0 ? state.Protagonist.lines
+                        : RankSystem.Seed(hero.lines, null, null, "B");
+                    var attrs = hero.attrs ?? Array.Empty<int>();
+                    hero.attrs = Enumerable.Range(0, 5).Select(index => index < attrs.Length ? attrs[index] : 3).ToArray();
+                    hero.talents ??= Array.Empty<string>();
+                    hero.skills ??= Array.Empty<string>();
+                    hero.breakthroughs ??= Array.Empty<string>();
+                    state.Protagonist = hero;
                 }
                 state.Story = snapshot.story ?? new StoryProgress();
+                state.Story.knownFactions ??= Array.Empty<string>();
+                state.Story.buildingLevels ??= Array.Empty<StoryValue>();
+                state.Story.relations ??= Array.Empty<StoryValue>();
+                state.Story.flags ??= Array.Empty<StoryValue>();
                 for (int index = 0; index < state.Buildings.Length; index++)
                 {
                     string id = index < snapshot.buildings.Length ? snapshot.buildings[index] : "";

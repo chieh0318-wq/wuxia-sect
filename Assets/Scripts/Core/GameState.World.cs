@@ -53,6 +53,9 @@ namespace Wuxia
             (Story.knownFactions ?? Array.Empty<string>()).Contains(id) ||
             (WorldMapData.Load().Factions.FirstOrDefault(faction => faction.id == id)?.known ?? false);
 
+        public int RelationShift(string id) =>
+            (Story.relations ?? Array.Empty<StoryValue>()).FirstOrDefault(entry => entry.id == id)?.value ?? 0;
+
         public void SetFactionKnown(string id)
         {
             if (string.IsNullOrEmpty(id) || IsFactionKnown(id))

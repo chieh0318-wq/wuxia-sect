@@ -397,7 +397,8 @@ namespace Wuxia
                 return;
             var current = storyPages[storyPage];
             int count = Mathf.Min(current.Length, (int)((Time.unscaledTime - storyStart) * CharactersPerSecond));
-            storyText.text = current.Substring(0, count);
+            if (count != storyText.text.Length)
+                storyText.text = current.Substring(0, count);
             float elapsed = Time.unscaledTime - artStart;
             storyArt.color = new Color(1, 1, 1, Mathf.Clamp01(elapsed / .28f));
             float travel = Mathf.Min(elapsed, 16);

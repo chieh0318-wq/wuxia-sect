@@ -16,6 +16,8 @@ namespace Wuxia
         string StartNode { get; }
         bool IsFactionKnown(string id);
         void SetFactionKnown(string id);
+        /// <summary>Saved relation delta (prologue/story `relation` effects, -100..100) for a faction.</summary>
+        int RelationShift(string id);
     }
 
     // GameState (Core/GameState.World.cs) is the save-backed IWorldMapHost.
@@ -65,7 +67,15 @@ namespace Wuxia
         public int reputation, disciples, money;
         public bool special, known = true;
         public string Label => string.IsNullOrWhiteSpace(name) ? id : name;
-        public string Relation => stance == "friendly" ? "友好" : stance == "hostile" ? "敵對" : "中立";
+        public string Relation => RelationLabel(stance);
+        /// <summary>Authored stance shifted by the saved relation delta: base friendly +50 / neutral 0 / hostile -50, then ±25 thresholds.</summary>
+        public string StanceWith(int shift)
+        {
+            int score = (stance == "friendly" ? 50 : stance == "hostile" ? -50 : 0) + shift;
+            return score >= 25 ? "friendly" : score <= -25 ? "hostile" : "neutral";
+        }
+        public string RelationWith(int shift) => RelationLabel(StanceWith(shift));
+        private static string RelationLabel(string value) => value == "friendly" ? "友好" : value == "hostile" ? "敵對" : "中立";
         public bool Court => special || type == "court" || type == "military";
         public string TypeName => type switch
         {

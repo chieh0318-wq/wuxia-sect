@@ -167,10 +167,12 @@ namespace Wuxia
         private int RecruitPrice(Candidate candidate) => Mathf.Max(0,
             Mathf.RoundToInt(candidate.silverCost * (1 + state.Story.recruitCostPct / 100f)));
 
+        private const string Recruited = "已收為弟子 ✓";
+
         private string RecruitRestriction(Candidate candidate)
         {
             if (state.Disciples.Contains(candidate))
-                return "已收為弟子 ✓";
+                return Recruited;
             if (accepted >= Recruitment.maxAcceptPerVisit)
                 return "本次招收名額已滿";
             int beds = state.Buildings.Count(building => building != null && building.actions.Contains("lodge")) * 4;

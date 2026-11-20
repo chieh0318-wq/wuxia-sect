@@ -117,8 +117,10 @@ namespace Wuxia
         {
             0 => faction.Label, 1 => faction.TypeName, 2 => data.NodeLabel(faction.seat),
             3 => RankSystem.Order(faction.leaderRank), 4 => faction.reputation, 5 => faction.disciples,
-            6 => faction.Arts, 7 => faction.money, _ => faction.Relation
+            6 => faction.Arts, 7 => faction.money, _ => RelationOf(faction)
         };
+
+        private string RelationOf(MapFaction faction) => faction.RelationWith(host.RelationShift(faction.id));
 
         private void Render()
         {
@@ -129,7 +131,7 @@ namespace Wuxia
                 MapUi.Select(relationButtons[i],i == relation);
             for (int i=0;i<heading.Length;i++)
                 arrows[i].text = i == column ? descending ? "▼" : "▲" : "";
-            var matching = data.Factions.Where(f => InType(f) && (relation == 0 || f.Relation == Relations[relation]));
+            var matching = data.Factions.Where(f => InType(f) && (relation == 0 || RelationOf(f) == Relations[relation]));
             var grouped = matching.OrderBy(IsPrivate);
             var sorted = (descending ? grouped.ThenByDescending(Key) : grouped.ThenBy(Key)).ThenBy(f=>f.Label).ToArray();
             count.text = $"{sorted.Length} 股勢力";
@@ -150,8 +152,9 @@ namespace Wuxia
                 known ? RankSystem.FormatKnown(faction.leaderRank,faction.leaderCap) : "???",
                 known ? faction.reputation.ToString() : "—",known ? faction.disciples.ToString() : "—",
                 known ? (string.IsNullOrWhiteSpace(faction.Arts) ? "—" : faction.Arts) : "情報不足",
-                known ? faction.money.ToString() : "—",faction.Relation
+                known ? faction.money.ToString() : "—",RelationOf(faction)
             };
+            string stance = faction.StanceWith(host.RelationShift(faction.id));
             var rect = MapUi.Panel(rows,faction.Label,0,row*48,1475,46,
                 row%2 == 0 ? new Color(.97f,.92f,.80f,.55f) : new Color(.80f,.70f,.54f,.30f));
             MapUi.Panel(rect,"Ruled line",0,45,1475,1,new Color(.36f,.27f,.18f,.35f)).GetComponent<Image>().raycastTarget = false;
@@ -167,8 +170,8 @@ namespace Wuxia
                         .GetComponent<Image>().raycastTarget = false;
                 Color color = MapUi.Ink;
                 if (i == 3 && known) color=Color.Lerp(RankSystem.Color(faction.leaderRank),MapUi.Ink,.30f);
-                if (i == 8 && faction.stance == "hostile") color=MapUi.Red;
-                if (i == 8 && faction.stance == "friendly") color=new Color(.20f,.39f,.28f);
+                if (i == 8 && stance == "hostile") color=MapUi.Red;
+                if (i == 8 && stance == "friendly") color=new Color(.20f,.39f,.28f);
                 MapUi.Text(rect,values[i],x+8,0,Widths[i]-18,46,20,color);
                 x+=Widths[i];
             }

@@ -35,6 +35,7 @@ namespace Wuxia
         private int rerolls;
         private CreationOption background;
         private CharacterLook look;
+        private int appearancePage;
         private string currentCg;
         private int freeAttributes;
         private int[] allocated = new int[5];
@@ -51,7 +52,8 @@ namespace Wuxia
             state.Protagonist.attrs = Enumerable.Repeat(characters.attrBase, 5).ToArray();
         }
 
-        internal void CaptureAppearance() => ChooseAppearance();
+        internal void CaptureAppearance() => ChooseGender("男");
+        internal void CaptureFemaleAppearance() => ChooseGender("女");
         /// <summary>Capture: six offered talents with two picked, plus both skill families underneath.</summary>
         internal void CaptureTalents()
         {
@@ -101,6 +103,7 @@ namespace Wuxia
             if (changed)
             {
                 look = null;
+                appearancePage = 0;
                 state.Protagonist.name = SuggestedName();
             }
             ChooseAppearance();
@@ -116,20 +119,25 @@ namespace Wuxia
         private void ChooseAppearance()
         {
             var hero = state.Protagonist;
-            var looks = characters.protagonistLooks?.Where(candidate => candidate.gender == hero.gender).ToArray();
-            if (looks?.Length != 3)
-                looks = Enumerable.Range(1, 3).Select(index => new CharacterLook
-                {
-                    id = $"hero_{(hero.gender == "女" ? "f" : "m")}{index}", gender = hero.gender,
-                    label = new[] { "沉著", "英氣", "清雅" }[index - 1]
-                }).ToArray();
-            look ??= looks[0];
+            var looks = (characters.protagonistLooks ?? Array.Empty<CharacterLook>())
+                .Where(candidate => candidate != null && candidate.gender == hero.gender &&
+                    !string.IsNullOrEmpty(candidate.id)).ToArray();
+            if (looks.Length == 0)
+                looks = new[] { new CharacterLook { id = hero.gender == "女" ? "hero_f1" : "hero_m1",
+                    gender = hero.gender, label = "沉著" } };
+            look = looks.FirstOrDefault(candidate => candidate.id == look?.id) ?? looks[0];
             hero.lookId = look.id;
             hero.look = look;
             hero.portrait = string.IsNullOrEmpty(look.portrait) ? look.id : look.portrait;
             ui.ShowCreation("形貌與姓名", new[] { hero.title }, Back(Begin), ChooseBackground, ChooseBackground);
             ui.CreationName(hero.name, value => hero.name = string.IsNullOrWhiteSpace(value) ? SuggestedName() : value.Trim(), SuggestedName);
-            ui.CreationPortraits(looks, look, candidate =>
+            ui.CreationTabs(new[] { "男", "女" }.Select(gender =>
+                (gender, gender == hero.gender, (Action)(() => ChooseGender(gender)))));
+            ui.CreationPortraits(looks, look, appearancePage, page =>
+            {
+                appearancePage = page;
+                ChooseAppearance();
+            }, candidate =>
             {
                 look = candidate;
                 ChooseAppearance();
@@ -167,7 +175,7 @@ namespace Wuxia
 
         private void StartTalents()
         {
-            // Keep the current draw and picks when returning here, so going back is not a free reroll.
+            // Keep the current draw and picks when returning from another step.
             if (offered == null)
                 RollTalents();
             Restore(offered, state.Protagonist.talents);
@@ -177,9 +185,9 @@ namespace Wuxia
 
         private void RollTalents()
         {
-            var pool = (talents.talents ?? Array.Empty<CreationOption>()).Where(x => x != null).ToList();
-            var draw = new List<CreationOption>();
-            for (int index = 0; index < 12 && pool.Count > 0; index++)
+            var pool = (talents.talents ?? Array.Empty<CreationOption>()).Where(x => x != null && !selected.Contains(x)).ToList();
+            var draw = new List<CreationOption>(selected);
+            while (draw.Count < 12 && pool.Count > 0)
             {
                 int ticket = UnityEngine.Random.Range(0, pool.Sum(option => Math.Max(1, option.weight)));
                 int picked = 0;
@@ -211,8 +219,13 @@ namespace Wuxia
                     ShowTalents();
                 })
             };
-            if (rerolls > 0)
-                actions.Add(($"重抽 {rerolls}", () => { rerolls--; selected.Clear(); RollTalents(); ShowTalents(); }));
+            if (talents.rerollFree <= 0 || rerolls > 0)
+                actions.Add(("免費重抽", () =>
+                {
+                    if (rerolls > 0) rerolls--;
+                    RollTalents();
+                    ShowTalents();
+                }));
             ui.ShowCreation("天賦", Array.Empty<string>(), actions, CompleteTalents, CompleteTalents);
             var summary = new List<string>
             {

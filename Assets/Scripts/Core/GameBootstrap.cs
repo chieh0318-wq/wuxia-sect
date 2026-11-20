@@ -224,6 +224,7 @@ namespace Wuxia
             if (!courtyardReady && ui != null)
             {
                 ui.UpdateStoryBeat();
+                ui.UpdateAppearance();
                 if (Input.GetKeyDown(KeyCode.Escape) && ui.ModalOpen)
                     ui.CloseModal();
                 return;

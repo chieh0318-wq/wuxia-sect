@@ -60,6 +60,7 @@ namespace Wuxia
 
         private void ResetCreationLayout()
         {
+            appearanceInput = null;
             foreach (var decoration in new[] { creationBackdrop, creationPlaque, creationSummary })
             {
                 if (decoration == null) continue;
@@ -259,30 +260,84 @@ namespace Wuxia
             Anchor(random, Vector2.right, Vector2.one, new(-160, 4), new(-8, -4));
         }
 
-        internal void CreationPortraits(CharacterLook[] looks, CharacterLook selected, Action<CharacterLook> choose)
+        private Action appearanceInput;
+
+        internal void UpdateAppearance() => appearanceInput?.Invoke();
+
+        internal void CreationPortraits(CharacterLook[] looks, CharacterLook selected, int page,
+            Action<int> changePage, Action<CharacterLook> choose)
         {
-            var row = CreationRow("形貌", 495);
-            for (int index = 0; index < looks.Length; index++)
+            const int pageSize = 10;
+            int pages = (looks.Length + pageSize - 1) / pageSize;
+            page = Mathf.Clamp(page, 0, pages - 1);
+            var row = CreationRow("形貌", 500);
+            var grid = Rect("肖像選擇", row);
+            Anchor(grid, Vector2.zero, new(.55f, 1), Vector2.zero, new(-10, 0));
+            var visible = looks.Skip(page * pageSize).Take(pageSize).ToArray();
+            for (int index = 0; index < visible.Length; index++)
             {
-                var look = looks[index];
-                var card = Button(row, look.label, () => choose(look));
-                Anchor(card, new(index * .22f, 0), new((index + 1) * .22f, 1), new(8, 8), new(-8, -8));
+                var look = visible[index];
+                int column = index % 5, line = index / 5;
+                var card = Button(grid, look.label, () => choose(look));
+                Anchor(card, new(column / 5f, 0), new((column + 1) / 5f, 1),
+                    new(4, 241 - line * 218), new(-4, -45 - line * 218));
                 UiKit.Skin(card.GetComponent<Image>(), look == selected ? "Selected" : "Wood");
                 var caption = card.GetComponentInChildren<Text>();
-                Anchor(caption.rectTransform, Vector2.zero, Vector2.right, new(8, 4), new(-8, 44));
+                Anchor(caption.rectTransform, Vector2.zero, Vector2.right, new(3, 3), new(-3, 38));
                 var art = Rect("Portrait", card);
-                Anchor(art, Vector2.zero, Vector2.one, new(16, 52), new(-16, -16));
-                var portrait = AddImage(art, PortraitService.Resolve(string.IsNullOrEmpty(look.portrait) ? look.id : look.portrait, look.gender));
-                portrait.uvRect = new Rect(.05f, 0, .90f, 1);
-                if (look == selected) Stamp(card, "選", 43);
+                Anchor(art, new(.5f, 0), new(.5f, 1), new(-59, 43), new(59, -9));
+                AddImage(art, LookPortrait(look));
+                if (look == selected) Stamp(card, "選", 32);
             }
-            var preview = Rect("形貌預覽", row);
-            Anchor(preview, new(.66f, 0), Vector2.one, new(12, 8), new(-8, -8));
-            var output = AddImage(preview, null);
-            preview.gameObject.AddComponent<CharacterPreview>().Initialize(selected, output);
-            if (!string.IsNullOrEmpty(selected.desc))
-                AddLine(modalList, selected.desc, 23);
+            var indicator = Label(grid, $"第 {page + 1}／{pages} 頁", 22, TextAnchor.MiddleCenter);
+            Anchor(indicator.rectTransform, new(.33f, 1), new(.67f, 1), new(0, -39), Vector2.zero);
+            PageButton("‹", -1, .06f);
+            PageButton("›", 1, .76f);
+
+            var sheet = Panel("形貌預覽", row, new(.55f, 0), Vector2.one,
+                new(8, 22), new(-5, 0));
+            var portrait = Rect("選定肖像", sheet);
+            Anchor(portrait, Vector2.zero, Vector2.up, new(18, 88), new(273, -50));
+            AddImage(portrait, LookPortrait(selected));
+            var preview = Rect("立體預覽", sheet);
+            Anchor(preview, new(.48f, 0), Vector2.one, new(12, 74), new(-8, -38));
+            preview.gameObject.AddComponent<CharacterPreview>().Initialize(selected, AddImage(preview, null));
+            var title = Label(sheet, selected.label, 27, TextAnchor.MiddleCenter);
+            Anchor(title.rectTransform, Vector2.up, new(.48f, 1), new(12, -48), new(-8, -5));
+            var detail = Label(sheet, selected.desc ?? "", 21, TextAnchor.MiddleLeft);
+            Anchor(detail.rectTransform, Vector2.zero, Vector2.right, new(18, 8), new(-18, 77));
+
+            appearanceInput = () =>
+            {
+                var focus = UnityEngine.EventSystems.EventSystem.current?.currentSelectedGameObject;
+                if (focus != null && focus.GetComponent<InputField>()?.isFocused == true) return;
+                float wheel = RectTransformUtility.RectangleContainsScreenPoint(grid, Input.mousePosition,
+                    Canvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : Canvas.worldCamera)
+                    ? Input.mouseScrollDelta.y : 0;
+                int pageDelta = Input.GetKeyDown(KeyCode.PageUp) || wheel > 0 ? -1 :
+                    Input.GetKeyDown(KeyCode.PageDown) || wheel < 0 ? 1 : 0;
+                if (pageDelta != 0 && page + pageDelta >= 0 && page + pageDelta < pages)
+                {
+                    changePage(page + pageDelta);
+                    return;
+                }
+                int move = Input.GetKeyDown(KeyCode.LeftArrow) ? -1 : Input.GetKeyDown(KeyCode.RightArrow) ? 1 :
+                    Input.GetKeyDown(KeyCode.UpArrow) ? -5 : Input.GetKeyDown(KeyCode.DownArrow) ? 5 : 0;
+                if (move != 0 && visible.Length > 0)
+                    choose(visible[Mathf.Clamp(Array.IndexOf(visible, selected) + move, 0, visible.Length - 1)]);
+            };
+
+            void PageButton(string label, int delta, float left)
+            {
+                bool enabled = page + delta >= 0 && page + delta < pages;
+                var button = Button(grid, label, enabled ? () => changePage(page + delta) : null);
+                Anchor(button, new(left, 1), new(left + .18f, 1), new(0, -39), Vector2.zero);
+                button.GetComponent<Button>().interactable = enabled;
+            }
         }
+
+        private static Texture2D LookPortrait(CharacterLook look) =>
+            PortraitService.Resolve(string.IsNullOrEmpty(look.portrait) ? look.id : look.portrait, look.gender);
 
         internal void CreationAttribute(string name, int current, int maximum, Action less, Action more)
         {

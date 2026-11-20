@@ -1,7 +1,7 @@
 {
   "budget": 10,
   "maxPicks": 4,
-  "rerollFree": 3,
+  "rerollFree": 0,
   "talents": [
     { "id": "tongpi", "name": "銅皮鐵骨", "rarity": "common", "cost": 1, "desc": "自小挨打挨慣了，筋骨比旁人結實三分。", "effects": [ { "key": "con", "value": 1, "ref": "" } ], "weight": 12, "negative": false },
     { "id": "lili", "name": "膂力過人", "rarity": "common", "cost": 1, "desc": "單手提得起兩斗米，石鎖在你手裡像個核桃。", "effects": [ { "key": "str", "value": 1, "ref": "" } ], "weight": 12, "negative": false },

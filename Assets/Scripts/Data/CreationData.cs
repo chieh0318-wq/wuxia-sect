@@ -32,7 +32,7 @@ namespace Wuxia
 
     [Serializable] internal sealed class TalentCatalog
     {
-        public int budget = 10, maxPicks = 4, rerollFree = 3;
+        public int budget = 10, maxPicks = 4, rerollFree;
         public CreationOption[] talents;
     }
 

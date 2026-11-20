@@ -43,11 +43,10 @@ for name, root, pulse, notes in [
     write("Music", name, signal)
 
 for name, length, notes, noise in [
-    ("click", .12, [83], .1), ("hover", .085, [91], .03),
     ("place", .48, [40, 37], .4), ("complete", .78, [69, 76, 81], 0),
-    ("page", .3, [], .28), ("month", 1.6, [37, 49], 0),
+    ("month", 1.6, [37, 49], 0),
     ("recruit", .56, [64, 71, 76], 0), ("departure", .5, [52, 59], .07),
-    ("arrival", .8, [55, 62, 67], 0), ("coin", .25, [90, 95], 0),
+    ("arrival", .8, [55, 62, 67], 0),
 ]:
     count = int(length * RATE)
     signal = [rng.uniform(-1,1) * noise * math.sin(math.pi * i / count) * math.exp(-5*i/count)

@@ -45,6 +45,7 @@ namespace Wuxia
                 data.steps == null || data.steps.Any(step => step == null || string.IsNullOrWhiteSpace(step.trigger)) ||
                 data.reward == null)
                 throw new InvalidDataException("Tutorial data is incomplete.");
+            AudioManager.Music("prologue"); // M2-B opening music
             ShowIntro();
         }
 
@@ -67,6 +68,7 @@ namespace Wuxia
         private void Choose(string option)
         {
             title = option;
+            AudioManager.Music("courtyard"); // M2-B return to courtyard music
             ui.CloseModal(force: true);
             Advance();
         }

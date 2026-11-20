@@ -302,7 +302,8 @@ namespace Wuxia
             colors.highlightedColor = new Color(1, .86f, .75f);
             colors.pressedColor = new Color(.72f, .63f, .56f);
             button.colors = colors;
-            button.onClick.AddListener(() => action());
+            rect.gameObject.AddComponent<M2ButtonAudio>(); // M2-B audio facade
+            button.onClick.AddListener(() => { AudioManager.Play("click"); action(); });
             rect.gameObject.AddComponent<LayoutElement>().preferredHeight = 53;
             var label = Label(rect, text, 22, TextAnchor.MiddleCenter);
             label.color = new Color(.98f, .92f, .81f);

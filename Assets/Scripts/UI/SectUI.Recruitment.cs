@@ -27,7 +27,7 @@ namespace Wuxia
             AddImage(portrait, PortraitService.Resolve(candidate.portrait, candidate.gender));
             string best = RankSystem.Martial(candidate.lines);
             CardText($"{candidate.name}　{candidate.gender} {candidate.age}歲", 26, 186, 18, 18, 40);
-            CardText(candidate.origin ?? "", 20, 186, 18, 58, 31);
+            CardText(candidate.origin ?? "", 18, 186, 18, 56, 26); // ends above the 武學 badge (top 83)
             var badge = Panel("武學", card, Vector2.up, Vector2.up, new(186, -118), new(326, -83));
             UiKit.Skin(badge.GetComponent<Image>(), "Wood");
             var rank = Label(badge, $"武學 {RankSystem.Format(best, RankSystem.Martial(candidate.lines, true))}",

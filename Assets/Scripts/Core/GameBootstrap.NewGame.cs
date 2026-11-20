@@ -284,7 +284,7 @@ namespace Wuxia
                 {
                     "silver" => "銀兩", "food" => "糧食", "reputation" => "聲望", "apMax" => "行動力上限",
                     "recruitPoolSize" => "招徒人選", "recruitCostPct" => "招徒費用", "buildCostPct" => "建造費用",
-                    "trainBonusPct" => "修習進度", "insightChance" => "頓悟機率", "str" => "武力", "agi" => "身法",
+                    "trainBonusPct" => "修習進度", "insightChance" => "感悟機率", "str" => "武力", "agi" => "身法",
                     "con" => "根骨", "wit" => "悟性", "cha" => "魅力", "loyaltyAll" => "弟子忠誠",
                     "relation" => "勢力關係", "followers" => "追隨弟子", "cap" => "技能上限",
                     "rank" or "lineRank" => "技能階位", _ => ""
@@ -426,10 +426,10 @@ namespace Wuxia
             var options = story.locations ?? Array.Empty<StoryLocation>();
             if (options.Length == 0) { Play(story.closingBeats, Finish, Finish); return; }
             ui.ShowCreation("立足之地", new[] { FormatStory(story.locationPrompt) }, null, SkipStory);
-            ui.CreationGrid(2, (options.Length + 1) / 2, 192);
+            ui.CreationGrid(2, (options.Length + 1) / 2, 216);
             foreach (var option in options)
-                // Text-only cards: the sites share one illustration, and the full width keeps bonus text from clipping.
-                ui.CreationChoice($"{option.name}　{option.region}", $"{option.resources}\n{option.desc}\n{option.bonusText}", null, () =>
+                // Text-only cards; the gameplay bonus goes before the flavour text so it can never be the clipped line.
+                ui.CreationChoice($"{option.name}　{option.region}", $"{option.resources}\n{option.bonusText}\n{option.desc}", null, () =>
                 {
                     SetLocation(option);
                     Play(story.closingBeats, Finish, Finish);

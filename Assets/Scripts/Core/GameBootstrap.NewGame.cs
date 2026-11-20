@@ -38,7 +38,7 @@ namespace Wuxia
         private int appearancePage;
         private string currentCg;
         private int freeAttributes;
-        private int[] allocated = new int[5];
+        private readonly int[] allocated = new int[5];
         private GameEffect[] talentEffects = Array.Empty<GameEffect>(), skillEffects = Array.Empty<GameEffect>();
         private static readonly string[] AttributeNames = { "武力", "身法", "根骨", "悟性", "魅力" };
 
@@ -362,11 +362,17 @@ namespace Wuxia
 
         private void ShowAttributes()
         {
-            ui.ShowCreation("屬性", new[] { $"餘點 {freeAttributes}　{state.Protagonist.name}" }, Back(() =>
+            var actions = new (string, Action)[]
+            {
+                ("上一步", () =>
                 {
                     Restore(skills.skills, state.Protagonist.skills);
                     ShowSkills();
-                }), StartStory, StartStory);
+                }),
+                ("免費重抽", RollAttributes)
+            };
+            ui.ShowCreation("屬性", new[] { $"餘點 {freeAttributes}　{state.Protagonist.name}" },
+                actions, StartStory, StartStory);
             for (int index = 0; index < AttributeNames.Length; index++)
             {
                 int slot = index;
@@ -375,6 +381,30 @@ namespace Wuxia
                     freeAttributes > 0 && state.Protagonist.attrs[slot] < characters.attrMax
                         ? () => ChangeAttribute(slot, 1) : null);
             }
+        }
+
+        private void RollAttributes()
+        {
+            var values = state.Protagonist.attrs;
+            for (int slot = 0; slot < allocated.Length; slot++)
+            {
+                values[slot] -= allocated[slot];
+                freeAttributes += allocated[slot];
+                allocated[slot] = 0;
+            }
+
+            var available = Enumerable.Range(0, allocated.Length)
+                .Where(slot => values[slot] < characters.attrMax).ToList();
+            while (freeAttributes > 0 && available.Count > 0)
+            {
+                int index = UnityEngine.Random.Range(0, available.Count);
+                int slot = available[index];
+                allocated[slot]++;
+                freeAttributes--;
+                if (++values[slot] == characters.attrMax)
+                    available.RemoveAt(index);
+            }
+            ShowAttributes();
         }
 
         private void ChangeAttribute(int index, int delta)

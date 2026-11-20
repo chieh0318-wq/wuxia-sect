@@ -63,14 +63,17 @@ namespace Wuxia
 
         private static string RoleTag(string description, string gender)
         {
-            if (description.Contains("寺") || description.Contains("佛")) return gender == "女" ? "nun" : "monk";
-            if (description.Contains("道觀") || description.Contains("道門")) return "taoist";
+            if (description.Contains("道觀") || description.Contains("道門") ||
+                (gender == "女" && description.Contains("僧道"))) return "taoist";
+            if (description.Contains("寺") || description.Contains("佛") || description.Contains("僧"))
+                return gender == "女" ? "nun" : "monk";
             if (description.Contains("西域") || description.Contains("胡") || description.Contains("粟特")) return "hu";
             if (description.Contains("草原") || description.Contains("突厥") || description.Contains("回紇")) return "steppe";
             if (description.Contains("商")) return "merchant";
             if (description.Contains("書") || description.Contains("儒")) return "scholar";
             if (description.Contains("官")) return "official";
-            if (description.Contains("武")) return "martial";
+            if (description.Contains("武") || description.Contains("府兵") || description.Contains("鏢局"))
+                return "martial";
             return "commoner";
         }
     }

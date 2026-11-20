@@ -61,6 +61,8 @@ namespace Wuxia
         private void ResetCreationLayout()
         {
             appearanceInput = null;
+            var modalScroll = modalList.parent.GetComponent<ScrollRect>();
+            modalScroll.verticalScrollbar = null;
             foreach (var decoration in new[] { creationBackdrop, creationPlaque, creationSummary, characterDecoration })
             {
                 if (decoration == null) continue;

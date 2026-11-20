@@ -126,6 +126,12 @@ namespace Wuxia
                     yield return new WaitForSecondsRealtime(step.filename == "04_prologue_beat.png" ? 2.8f : .15f);
                     if (!SaveShot(step.filename))
                         yield break;
+                    if (step.filename == "27_character_detail.png" && !ui.VerifyCharacterProfileScroll())
+                    {
+                        Debug.LogError("[Capture] Character profile wheel did not reach the bottom.");
+                        Application.Quit(1);
+                        yield break;
+                    }
                 }
                 if (CaptureQuestline())
                 {

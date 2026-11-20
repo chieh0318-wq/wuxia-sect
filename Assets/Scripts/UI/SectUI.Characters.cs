@@ -52,7 +52,9 @@ namespace Wuxia
         {
             ShowCreation("人物小傳", Array.Empty<string>(), new[] { ("返回", back),
                 ("關閉", (Action)(() => CloseModal(force: true))) }, null);
-            var portraitCard = characterDecoration = Panel("人物肖像", modalCard, Vector2.zero, Vector2.up,
+            characterDecoration = Rect("人物小傳裝飾", modalCard);
+            Fill(characterDecoration);
+            var portraitCard = Panel("人物肖像", characterDecoration, Vector2.zero, Vector2.up,
                 new(36, 89), new(410, -112));
             var art = Rect("人物肖像", portraitCard);
             Anchor(art, Vector2.up, Vector2.one, new(21, -463), new(-21, -21));
@@ -62,15 +64,33 @@ namespace Wuxia
             rank.color = RankTextColor(person.rank, dark: false);
             Anchor(rank.rectTransform, Vector2.up, Vector2.one, new(12, -530), new(-12, -475));
 
-            Anchor((RectTransform)modalList.parent, Vector2.zero, Vector2.one, new(440, 88), new(-42, -112));
+            var viewport = (RectTransform)modalList.parent;
+            Anchor(viewport, Vector2.zero, Vector2.one, new(440, 88), new(-62, -112));
+            var scroll = viewport.GetComponent<ScrollRect>();
+            scroll.StopMovement();
+            var track = Rect("人物小傳捲軸", characterDecoration);
+            Anchor(track, Vector2.right, Vector2.one, new(-55, 88), new(-41, -112));
+            track.gameObject.AddComponent<Image>().color = new Color(.36f, .27f, .18f, .24f);
+            var slide = Rect("捲軸範圍", track);
+            Fill(slide);
+            var thumb = Rect("捲軸滑塊", slide);
+            Fill(thumb);
+            var grip = thumb.gameObject.AddComponent<Image>();
+            grip.color = new Color(.56f, .26f, .19f);
+            var bar = track.gameObject.AddComponent<Scrollbar>();
+            bar.direction = Scrollbar.Direction.BottomToTop;
+            bar.targetGraphic = grip;
+            bar.handleRect = thumb;
+            scroll.verticalScrollbar = bar;
+            scroll.verticalScrollbarVisibility = ScrollRect.ScrollbarVisibility.AutoHide;
             AddLine(modalList, string.IsNullOrEmpty(person.courtesy) ? person.name :
                 $"{person.name}　字 {person.courtesy}", 36);
             Info(string.Join("　", new[] { person.title ?? person.role, faction, person.gender,
                 person.age > 0 ? $"{person.age} 歲" : "" }.Where(value => !string.IsNullOrWhiteSpace(value))));
             Field("性情", person.personality);
             Field("身世", person.background ?? person.desc);
-            if (!string.IsNullOrWhiteSpace(person.relation) || relation != 0)
-                Field("與主角的關係", $"{person.relation}　{relation:+0;-0;0}".Trim());
+            Field("與主角的關係", person.relation);
+            Field("好感", $"{relation:+0;-0;0}");
             if (person.signatureSkills?.Length > 0)
                 Field("拿手絕藝", string.Join("、", person.signatureSkills));
             foreach (var quest in quests)
@@ -99,6 +119,23 @@ namespace Wuxia
             {
                 if (!string.IsNullOrWhiteSpace(text)) Info($"{heading}　{text}");
             }
+        }
+
+        internal bool VerifyCharacterProfileScroll()
+        {
+            var scroll = modalList.parent.GetComponent<ScrollRect>();
+            Canvas.ForceUpdateCanvases();
+            if (scroll.verticalScrollbar == null || !scroll.verticalScrollbar.gameObject.activeInHierarchy ||
+                scroll.verticalNormalizedPosition < .99f)
+                return false;
+            scroll.OnScroll(new UnityEngine.EventSystems.PointerEventData(UnityEngine.EventSystems.EventSystem.current)
+            {
+                scrollDelta = Vector2.down * 100
+            });
+            bool reachedBottom = scroll.verticalNormalizedPosition <= .01f;
+            scroll.verticalNormalizedPosition = 1;
+            if (reachedBottom) Debug.Log("[Capture] Character profile wheel reached the bottom.");
+            return reachedBottom;
         }
 
         private static Color RankTextColor(string rank, bool dark) =>

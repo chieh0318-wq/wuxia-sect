@@ -18,7 +18,8 @@ namespace Wuxia
                 yield break;
             }
             Directory.CreateDirectory(directory);
-            const int width = 1920, height = 1080;
+            var resolution = CaptureResolution(); // M2-B capture hooks
+            int width = resolution.x, height = resolution.y;
             var target = new RenderTexture(width, height, 24);
             var pixels = new Texture2D(width, height, TextureFormat.RGB24, false);
             var canvas = ui.Canvas;
@@ -52,8 +53,9 @@ namespace Wuxia
                 Speak(state.Disciples[0]);
                 ShowBuilding(hall);
                 yield return null;
-                if (SaveShot("04_building_panel.png"))
-                    Application.Quit();
+                if (!SaveShot("04_building_panel.png")) yield break;
+                yield return CaptureM2(file => SaveShot(file));
+                Application.Quit();
             }
             finally
             {

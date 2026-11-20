@@ -34,6 +34,7 @@ namespace Wuxia
         private void Awake()
         {
             BootStep("scene", ConfigureScene);
+            AudioManager.Initialize(); // M2-B audio
             BootStep("HUD", () => ui = new SectUI(EndMonth));
             BootStep("data", () => state = new GameState(GameData.Load()));
             if (ui == null || state == null)
@@ -157,6 +158,7 @@ namespace Wuxia
         {
             if (ui == null || view == null || !courtyardReady)
                 return;
+            if (HandleWorldMapInput()) return; // M2-B map input
             ui.PositionLabels(view);
             ui.PositionHighlight(tutorial?.Highlight, view, world);
             if (Input.GetKeyDown(KeyCode.Escape))
@@ -234,6 +236,7 @@ namespace Wuxia
                     commands.Add((ActionLabel(action), () => RunAction(action)));
             }
             commands.Add(("查看門派", ShowSect));
+            commands.Add(("江湖地圖", ToggleWorldMap)); // M2-B map entry
             ui.ShowCommands("指令", commands);
         }
 
@@ -282,10 +285,12 @@ namespace Wuxia
 
             state.Pay(action.cost, extraSilver);
             state.Apply(action.effect);
+            if (action.effect.silver > 0) AudioManager.Play("coin"); // M2-B earned silver
             if (recruit != null)
             {
                 state.Disciples.Add(recruit);
                 world?.SpawnDisciple(recruit);
+                AudioManager.Play("recruit"); // M2-B audio
             }
             ui.Refresh(state);
             string message = $"{action.name}完成。{Changes(action.effect)}";
@@ -358,6 +363,7 @@ namespace Wuxia
             state.Apply(buildAction.effect);
             state.Buildings[index] = buildChoice;
             world.PlaceBuilding(index, buildChoice);
+            PlayBuildAudio(); // M2-B placement and immediate M1 completion
             string result = $"{buildChoice.name}已落成。{Changes(buildAction.effect)}";
             CancelBuild();
             ui.Refresh(state);
@@ -409,6 +415,8 @@ namespace Wuxia
             if (choosingBuilding)
                 CancelBuild();
             var report = state.EndMonth();
+            AudioManager.Play("month"); // M2-B audio
+            (mapHost as LocalWorldMapHost)?.ResetAp(); // M2-B temporary monthly AP refresh
             ui.Refresh(state);
             tutorial?.Record("end_month");
             ui.ShowModal("門派月報", report.Lines, closed: () => tutorial?.Record("read_report"));

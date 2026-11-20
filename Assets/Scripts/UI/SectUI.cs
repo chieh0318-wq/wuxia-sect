@@ -122,7 +122,7 @@ namespace Wuxia
         public void ShowCommands(string title, IEnumerable<(string label, Action run)> commands)
         {
             Clear(commandList);
-            SetCommandsPanelHeight(title == "建造" ? 480 : 255);
+            SetCommandsPanelHeight(title == "建造" ? 480 : 324); // M2-B: room for the map command
             AddLine(commandList, title, 28);
             targets.Remove("cmd_build");
             targets.Remove("cmd_recruit");

@@ -1,20 +1,25 @@
 {
   "intro": [
-    { "speaker": "旁白", "text": "開元年間，{sect}立於崤山。師父日前下山雲遊，至今未歸。" },
-    { "speaker": "值日弟子", "text": "師父臨行有囑，門中一應事務暫由首徒主持。今日便有幾件事請您定奪。" }
+    { "speaker": "旁白", "text": "開元年間，長安、洛陽繁華鼎盛，胡商駝隊絡繹於途。" },
+    { "speaker": "旁白", "text": "然而邊關烽火未熄，府兵逃籍日眾，盛世底下暗流湧動。" },
+    { "speaker": "旁白", "text": "{sect}坐落崤山，扼守兩京古道。師父下山雲遊，至今未歸。" },
+    { "speaker": "二師兄　林照", "text": "師父臨行交代過：門中大小事務，暫由首徒主持。" },
+    { "speaker": "三師姐　許雁", "text": "師父走前那夜，有位洛陽來客上山，與他在殿中談到天明。" },
+    { "speaker": "小師弟　羅小滿", "text": "我送茶時聽見一句：「十年之約，不能再拖了。」" },
+    { "speaker": "二師兄　林照", "text": "山下府兵近來盤查得緊。師父回來之前，就看你的了。" }
   ],
-  "choosePrompt": "你是師父座下首徒。門中弟子該如何稱呼你？",
+  "choosePrompt": "你是師父座下首徒。師弟師妹們該如何稱呼你？",
   "titles": ["大師兄", "大師姐"],
   "steps": [
-    { "id": "camera", "title": "巡視山門", "objective": "{title}，先移動視角，看看院中各處。", "hint": "按 WASD、方向鍵，或按住右鍵拖曳。", "trigger": "camera_move", "target": "", "highlight": "" },
-    { "id": "zoom", "title": "拉近視角", "objective": "調整遠近，看看院中的建築。", "hint": "將游標移入庭院，再轉動滾輪。", "trigger": "camera_zoom", "target": "", "highlight": "" },
-    { "id": "hall", "title": "拜謁祖師", "objective": "選取北側的祖師殿，查看可用指令。", "hint": "左鍵點選朱印下方的祖師殿。", "trigger": "click_building", "target": "hall", "highlight": "building:hall" },
-    { "id": "disciple", "title": "問候弟子", "objective": "和院中一位弟子交談。", "hint": "左鍵點選走動中的弟子。", "trigger": "talk_disciple", "target": "", "highlight": "" },
-    { "id": "build", "title": "擴建院落", "objective": "在院中空地建造一棟建築。", "hint": "選左側「興建屋舍」，再選建築與綠色空地。", "trigger": "build_any", "target": "", "highlight": "ui:cmd_build" },
-    { "id": "recruit", "title": "開門收徒", "objective": "為{sect}招收一位新弟子。", "hint": "選左側指令中的招收弟子。", "trigger": "recruit", "target": "", "highlight": "ui:cmd_recruit" },
-    { "id": "month", "title": "月底結算", "objective": "結束本月，結算門中收支。", "hint": "選右上方「結束本月」。", "trigger": "end_month", "target": "", "highlight": "ui:end_month" },
-    { "id": "report", "title": "查閱月報", "objective": "查看本月收支與門中結餘。", "hint": "讀完後，選「確定」關閉月報。", "trigger": "read_report", "target": "", "highlight": "" }
+    { "id": "camera", "title": "巡視山門", "objective": "{title}，先四處看看院中光景。", "hint": "按 WASD 或方向鍵移動視角，也可按住右鍵拖曳。", "trigger": "camera_move", "target": "", "highlight": "" },
+    { "id": "zoom", "title": "遠近端詳", "objective": "拉近視角，細看殿宇屋簷。", "hint": "游標移到庭院上，轉動滾輪拉近或拉遠。", "trigger": "camera_zoom", "target": "", "highlight": "" },
+    { "id": "hall", "title": "拜謁祖師", "objective": "點選北側祖師殿，查看殿中指令。", "hint": "左鍵點選紅色菱形標記下方的祖師殿。", "trigger": "click_building", "target": "hall", "highlight": "building:hall" },
+    { "id": "disciple", "title": "問候同門", "objective": "找一位同門說說話。", "hint": "左鍵點選院中走動的弟子，聽聽近況。", "trigger": "talk_disciple", "target": "", "highlight": "" },
+    { "id": "build", "title": "擴建院落", "objective": "在南側空地興建一座新屋舍。", "hint": "點「興建屋舍」選圖樣，再點綠色空地。", "trigger": "build_any", "target": "", "highlight": "ui:cmd_build" },
+    { "id": "recruit", "title": "開門收徒", "objective": "為{sect}招收一名新弟子。", "hint": "點選左側「招收弟子」，需備茶飯與束脩。", "trigger": "recruit", "target": "", "highlight": "ui:cmd_recruit" },
+    { "id": "month", "title": "月底結算", "objective": "本月事務已畢，結束本月。", "hint": "點選右上角「結束本月」，結算本月收支。", "trigger": "end_month", "target": "", "highlight": "ui:end_month" },
+    { "id": "report", "title": "查閱月報", "objective": "看看本月收支與門中結餘。", "hint": "讀完點「確定」或按 Esc 關閉月報。", "trigger": "read_report", "target": "", "highlight": "" }
   ],
-  "completeText": "{title}已完成交接。",
-  "reward": { "silver": 20, "food": 0, "reputation": 2 }
+  "completeText": "{title}主持有方，同門上下皆服。",
+  "reward": { "silver": 30, "food": 0, "reputation": 2 }
 }

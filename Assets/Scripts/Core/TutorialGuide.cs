@@ -61,7 +61,7 @@ namespace Wuxia
                 return;
             }
             var choices = Array.ConvertAll(data.titles, option => (option, (Action)(() => Choose(option))));
-            ui.ShowModal("首徒名號", new[] { Format(data.choosePrompt) }, choices, dismissible: false);
+            ui.ShowModal("首徒稱謂",new[] { Format(data.choosePrompt) }, choices, dismissible: false);
         }
 
         private void Choose(string option)
@@ -102,7 +102,7 @@ namespace Wuxia
 
         private void ConfirmSkip()
         {
-            ui.ShowModal("略過引導", new[] { "確定結束新手引導？仍可繼續經營門派。" },
+            ui.ShowModal("略過引導", new[] { "確定略過新手引導？略過後仍可照常經營門派。" },
                 new[] { ("繼續引導", (Action)(() => ui.CloseModal())),
                     ("略過引導", (Action)(() => { ui.CloseModal(); Finish(); })) });
         }
@@ -125,7 +125,7 @@ namespace Wuxia
             if (grant.silver == 0 && grant.food == 0)
                 return "";
             state.Apply(grant);
-            return $"門中備金補足開支（{GameBootstrap.Changes(grant)}）。";
+            return $"動用師門積蓄（{GameBootstrap.Changes(grant)}）。";
         }
     }
 }

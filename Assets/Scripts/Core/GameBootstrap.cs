@@ -43,7 +43,7 @@ namespace Wuxia
             courtyardReady = BootStep("courtyard", BuildCourtyard);
             if (!courtyardReady)
             {
-                ui.Message("庭院載入失敗，請查閱遊戲記錄。");
+                ui.Message("庭院載入失敗，請查看遊戲記錄檔。");
                 return;
             }
             BootStep("tutorial", () => tutorial = new TutorialGuide(ui, state));

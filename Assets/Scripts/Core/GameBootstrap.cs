@@ -136,14 +136,14 @@ namespace Wuxia
         private DiscipleData ProtagonistFigure()
         {
             var hero = state.Protagonist;
-            var look = hero.look != null && !string.IsNullOrEmpty(hero.look.hairStyle) ? hero.look :
+            var look = hero.look != null && (hero.look.model?.HasOverrides == true || !string.IsNullOrEmpty(hero.look.hairStyle)) ? hero.look :
                 M2Data.Load<CharacterCatalog>("characters").protagonistLooks?.FirstOrDefault(entry => entry.id == hero.lookId);
             look ??= CharacterFactory.ForRecruit(hero.gender, hero.title);
             look.role = hero.title;
             return new DiscipleData
             {
                 id = ProtagonistFigureId, name = hero.name, gender = hero.gender, title = hero.title,
-                portrait = hero.portrait ?? hero.lookId, look = look
+                portrait = hero.portrait ?? hero.lookId, look = look, age = hero.age
             };
         }
 

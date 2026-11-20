@@ -17,10 +17,27 @@ namespace Wuxia
     {
         public string id, gender, label, desc, portrait, robeColor, sashColor, hairColor, hairStyle, role;
         public float skinTone = .5f, build = .5f;
+        public int age;
+        public string origin;
+        public CharacterModelSpec model;
+    }
+
+    [Serializable] public sealed class CharacterModelSpec
+    {
+        public string @base, hair, beard, robe, robe2, sash, style;
+        internal bool HasOverrides => !string.IsNullOrEmpty(@base) || !string.IsNullOrEmpty(hair) ||
+            !string.IsNullOrEmpty(beard) || !string.IsNullOrEmpty(robe) || !string.IsNullOrEmpty(robe2) ||
+            !string.IsNullOrEmpty(sash) || !string.IsNullOrEmpty(style);
     }
 
     [Serializable] internal sealed class NameSuggestions { public string gender; public string[] names; }
-    [Serializable] internal sealed class StoryCharacter { public string id, name, gender, portrait, rank, cap; public SkillLine[] lines; }
+    [Serializable] internal sealed class StoryCharacter
+    {
+        public string id, name, gender, portrait, rank, cap, role, faction;
+        public int age;
+        public CharacterModelSpec model;
+        public SkillLine[] lines;
+    }
     [Serializable] internal sealed class CharacterCatalog
     {
         public int attrBase = 3, attrMax = 10, attrPoints = 8;

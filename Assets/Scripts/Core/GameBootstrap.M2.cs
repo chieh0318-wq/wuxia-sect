@@ -30,6 +30,7 @@ namespace Wuxia
             {
                 map = gameObject.AddComponent<WorldMapScreen>();
                 map.Closed += OnWorldMapClosed;
+                map.LeaderSelected += OpenMapLeader;
             }
             map.Open(state);
             controls.enabled = false;
@@ -41,6 +42,7 @@ namespace Wuxia
             if (state == null) return;
             ui.Refresh(state);
             ShowCommands();
+            if (!capturing) state.EvaluateQuestlines();
             var reports = state.PendingReports.ToList();
             state.PendingReports.Clear();
             if (reports.Count == 0)
@@ -54,7 +56,7 @@ namespace Wuxia
             var lines = reports.SelectMany(report => report.Lines).ToList();
             if (!capturing && !state.Save())
                 lines.Add("自動存檔失敗。");
-            ui.ShowModal("旅途中的門派月報", lines);
+            ui.ShowModal("旅途中的門派月報", lines, closed: ShowRequestedLeader);
         }
 
         private bool HandleWorldMapInput()

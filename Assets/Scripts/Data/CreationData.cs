@@ -20,7 +20,14 @@ namespace Wuxia
     }
 
     [Serializable] internal sealed class NameSuggestions { public string gender; public string[] names; }
-    [Serializable] internal sealed class StoryCharacter { public string id, name, gender, portrait, rank, cap; public SkillLine[] lines; }
+    [Serializable] internal sealed class StoryCharacter
+    {
+        public string id, name, courtesy, title, role, gender, faction, portrait, rank, cap;
+        public string personality, background, relation, questline, desc;
+        public int age;
+        public string[] expressions, signatureSkills;
+        public SkillLine[] lines;
+    }
     [Serializable] internal sealed class CharacterCatalog
     {
         public int attrBase = 3, attrMax = 10, attrPoints = 8;
@@ -76,6 +83,10 @@ namespace Wuxia
         public StoryValue[] buildingLevels = Array.Empty<StoryValue>();
         public int apBonus, loyaltyBonus, recruitPoolSize, recruitCostPct, buildCostPct, trainBonusPct;
         public float insightChance;
+        public StoryValue[] characterRelations = Array.Empty<StoryValue>();
+        public QuestProgress[] questProgress = Array.Empty<QuestProgress>();
+        public QueuedQuest[] queuedQuests = Array.Empty<QueuedQuest>();
+        public int questMonth;
         public StoryValue[] usedPortraits = Array.Empty<StoryValue>();
         public StoryValue[] relations = Array.Empty<StoryValue>(), flags = Array.Empty<StoryValue>();
     }

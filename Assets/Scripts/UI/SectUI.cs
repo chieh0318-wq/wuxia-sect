@@ -202,11 +202,11 @@ namespace Wuxia
         private RectTransform mapButtons;
 
         /// <summary>Bottom-right wood plaque with the world map (M) and intel overview shortcuts.</summary>
-        internal void ShowMapButtons(Action openMap, Action openIntel)
+        internal void ShowMapButtons(Action openMap, Action openIntel, Action openCharacters)
         {
             if (mapButtons != null)
                 return;
-            mapButtons = Panel("江湖", canvas, Vector2.right, Vector2.right, new(-470, 18), new(-18, 92));
+            mapButtons = Panel("江湖", canvas, Vector2.right, Vector2.right, new(-640, 18), new(-18, 92));
             UiKit.Skin(mapButtons.GetComponent<Image>(), "Wood");
             var row = mapButtons.gameObject.AddComponent<HorizontalLayoutGroup>();
             row.padding = new RectOffset(12, 12, 10, 10);
@@ -215,6 +215,7 @@ namespace Wuxia
             row.childForceExpandWidth = row.childForceExpandHeight = true;
             var mapButton = Button(mapButtons, "江湖地圖　M", openMap);
             var intelButton = Button(mapButtons, "情報總覽", openIntel);
+            Button(mapButtons, "江湖人物　C", openCharacters);
             targets["map"] = mapButton;
             targets["intel"] = intelButton;
         }
@@ -405,6 +406,14 @@ namespace Wuxia
             ink.color = new Color(.17f, .105f, .065f);
             Fill(ink.rectTransform, 3);
             worldLabels.Add((target, offset, tag));
+        }
+
+        internal void RemoveWorldLabel(Transform target)
+        {
+            int index = worldLabels.FindIndex(entry => entry.target == target);
+            if (index < 0) return;
+            UnityEngine.Object.Destroy(worldLabels[index].tag.gameObject);
+            worldLabels.RemoveAt(index);
         }
 
         public void PositionLabels(Camera camera)

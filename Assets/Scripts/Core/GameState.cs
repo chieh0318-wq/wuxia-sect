@@ -185,6 +185,7 @@ namespace Wuxia
             string breakthrough = CheckMartialPath(true);
             if (!string.IsNullOrEmpty(breakthrough))
                 report.Lines.Add(breakthrough);
+            EvaluateQuestlines();
             RecoverInjuries();
             ActionPoints = ApMax;
             report.Lines.Add($"行動力已恢復 {ActionPoints}／{ApMax}。");

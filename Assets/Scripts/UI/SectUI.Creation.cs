@@ -9,7 +9,7 @@ namespace Wuxia
     public sealed partial class SectUI
     {
         private RectTransform storyScreen, creationGrid;
-        private RectTransform creationBackdrop, creationPlaque, creationSummary;
+        private RectTransform creationBackdrop, creationPlaque, creationSummary, characterDecoration;
         private readonly ScrollRect[] artScrolls = new ScrollRect[2];
         private float creationListWidth;
         private Text storyText;
@@ -61,7 +61,7 @@ namespace Wuxia
         private void ResetCreationLayout()
         {
             appearanceInput = null;
-            foreach (var decoration in new[] { creationBackdrop, creationPlaque, creationSummary })
+            foreach (var decoration in new[] { creationBackdrop, creationPlaque, creationSummary, characterDecoration })
             {
                 if (decoration == null) continue;
                 decoration.gameObject.SetActive(false);
@@ -367,8 +367,10 @@ namespace Wuxia
             return row;
         }
 
+        internal bool StoryOpen => storyScreen != null;
+
         internal void ShowStoryBeat(string speaker, string text, string image, string portrait, bool required,
-            Action next, Action skip)
+            Action next, Action skip, string skipLabel = "略過")
         {
             CloseModal(force: true);
             var previousImage = storyScreen != null ? storyArt.texture as Texture2D : null;
@@ -406,7 +408,7 @@ namespace Wuxia
             Anchor(storyText.rectTransform, Vector2.zero, Vector2.one, new(left, 52), new(-32, -74));
             var hint = Label(dock, "點擊或按空白鍵繼續", 20, TextAnchor.MiddleRight);
             Anchor(hint.rectTransform, Vector2.zero, Vector2.right, new(left, 12), new(-32, 42));
-            var skipButton = Button(storyScreen, "略過", skip);
+            var skipButton = Button(storyScreen, skipLabel, skip);
             Anchor(skipButton, Vector2.one, Vector2.one, new(-174, -74), new(-24, -24));
             storyPages = Paginate(text, 33, 3);
             storyNext = next;

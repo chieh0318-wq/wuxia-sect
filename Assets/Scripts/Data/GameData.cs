@@ -51,7 +51,8 @@ namespace Wuxia
         public string rank, cap, weapon;
         public int[] attrs;
         public string[] talents;
-        public string origin, blurb, personality;
+        public string origin, blurb, personality, background, relation, questline;
+        public string[] signatureSkills;
         public Aptitude aptitude;
         public CharacterLook look;
     }

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Wuxia
@@ -164,6 +165,16 @@ namespace Wuxia
             discipleTargets.Add(hit, data);
             person.gameObject.AddComponent<DiscipleWalker>().Initialize(entrances, body);
             ui.AddWorldLabel(person, Vector3.up * (1.82f * figureScale), data.name, false);
+        }
+
+        internal void RemoveDisciple(DiscipleData disciple)
+        {
+            var hit = discipleTargets.FirstOrDefault(entry => entry.Value == disciple).Key;
+            if (hit == null) return;
+            discipleTargets.Remove(hit);
+            ui.RemoveWorldLabel(hit.transform);
+            hit.gameObject.SetActive(false);
+            UnityEngine.Object.Destroy(hit.gameObject);
         }
 
         private void Path(float x, float z, float w, float d, bool raised = false)

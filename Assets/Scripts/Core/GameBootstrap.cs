@@ -98,7 +98,7 @@ namespace Wuxia
             if (controls != null)
                 controls.enabled = true;
             AudioManager.Music("courtyard");
-            ui.ShowMapButtons(ToggleWorldMap, () => ToggleWorldMap(true));
+            ui.ShowMapButtons(ToggleWorldMap, () => ToggleWorldMap(true), ShowCharacterDirectory);
             if (startTutorial)
                 BootStep("tutorial", () => tutorial = new TutorialGuide(ui, state));
         }
@@ -231,7 +231,27 @@ namespace Wuxia
             }
             if (ui == null || view == null || !courtyardReady)
                 return;
+            if (ui.StoryOpen)
+            {
+                ui.UpdateStoryBeat();
+                return;
+            }
             if (HandleWorldMapInput()) return; // M2-B map input
+            if (!capturing && !ui.ModalOpen && !ui.DialogueOpen && !choosingBuilding)
+            {
+                if (Input.GetKeyDown(KeyCode.C))
+                {
+                    ShowCharacterDirectory();
+                    return;
+                }
+                state.EvaluateQuestlines();
+                var quest = state.PendingQuest();
+                if (quest.beat != null)
+                {
+                    PlayQuest(quest.line, quest.beat);
+                    return;
+                }
+            }
             ui.PositionLabels(view);
             ui.PositionHighlight(tutorial?.Highlight, view, world);
             if (Input.GetKeyDown(KeyCode.Escape))

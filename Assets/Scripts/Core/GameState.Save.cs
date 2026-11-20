@@ -86,6 +86,9 @@ namespace Wuxia
                 state.Story.buildingLevels ??= Array.Empty<StoryValue>();
                 state.Story.relations ??= Array.Empty<StoryValue>();
                 state.Story.flags ??= Array.Empty<StoryValue>();
+                state.Story.characterRelations ??= Array.Empty<StoryValue>();
+                state.Story.questProgress ??= Array.Empty<QuestProgress>();
+                state.Story.queuedQuests ??= Array.Empty<QueuedQuest>();
                 for (int index = 0; index < state.Buildings.Length; index++)
                 {
                     string id = index < snapshot.buildings.Length ? snapshot.buildings[index] : "";

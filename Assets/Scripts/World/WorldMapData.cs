@@ -60,7 +60,7 @@ namespace Wuxia
     }
     [Serializable] internal sealed class MapFaction
     {
-        public string id, name, type, color, seat, stance, leader, desc, leaderRank, leaderCap, leaderWeapon;
+        public string id, name, type, color, seat, stance, leader, leaderId, desc, leaderRank, leaderCap, leaderWeapon;
         public string[] martialArts, territory;
         public FactionNotable[] notables;
         public MapSkillLine[] leaderLines;

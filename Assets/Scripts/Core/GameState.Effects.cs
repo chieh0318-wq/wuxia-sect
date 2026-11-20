@@ -39,6 +39,7 @@ namespace Wuxia
                     case "wit": Protagonist.attrs[3] += value; break;
                     case "cha": Protagonist.attrs[4] += value; break;
                     case "flag": SetValue(ref Story.flags, effect.@ref, value, false); break;
+                    case "charRelation": SetValue(ref Story.characterRelations, CharacterId(effect.@ref), value, true); break;
                     case "relation": SetValue(ref Story.relations, effect.@ref, value, true); break;
                     case "rank":
                     case "lineRank":

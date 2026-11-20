@@ -381,6 +381,8 @@ namespace Wuxia
             cardActions.Add(confirm);
         }
 
+        internal event Action<MapFaction> LeaderSelected;
+
         internal void ShowFaction(MapFaction faction)
         {
             if (traveling) return;
@@ -405,7 +407,8 @@ namespace Wuxia
                 scout.interactable = host.ActionPoints >= 1;
                 return;
             }
-            MapUi.Text(panel,$"首領　{faction.leader ?? "—"}",20,149,386,32,22,MapUi.Ink);
+            MapUi.Text(panel,$"首領　{faction.leader ?? "—"}",20,149,274,32,22,MapUi.Ink);
+            MapUi.Button(panel,"掌門",303,149,103,34,() => LeaderSelected?.Invoke(faction),MapUi.Red);
             MapUi.Text(panel,RankSystem.FormatKnown(faction.leaderRank,faction.leaderCap),20,183,386,30,24,RankSystem.Color(faction.leaderRank));
             if (!string.IsNullOrEmpty(faction.leaderWeapon))
                 MapUi.Text(panel,"神兵　"+faction.WeaponLabel,155,183,249,30,19,MapUi.Red);

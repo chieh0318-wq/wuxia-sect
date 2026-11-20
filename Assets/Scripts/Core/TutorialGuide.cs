@@ -75,9 +75,9 @@ namespace Wuxia
 
         internal void Record(string trigger, string target = "")
         {
-            if (finished)
+            // Camera events arrive every frame while moving; only re-evaluate on a new action.
+            if (finished || !actions.Add((trigger, target ?? "")))
                 return;
-            actions.Add((trigger, target));
             if (Active)
                 Advance();
         }

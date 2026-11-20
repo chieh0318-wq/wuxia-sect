@@ -1,6 +1,11 @@
 {
   "buildings": [
     {
+      "id":"council", "name":"議事堂", "description":"召集同門，分掌門務。可擴建至三級，每級提高行動力上限。",
+      "color":"#8B654E", "size":[5,2.6,4], "unique":true, "startBuilt":false,
+      "cost":{"silver":20,"food":0},"upkeep":1,"income":{"silver":0,"food":0,"reputation":0},"actions":["council"]
+    },
+    {
       "id": "hall",
       "name": "祖師殿",
       "description": "供奉開山祖師的牌位，門中大事都在香案前議定。偶有山民上香，添些香火錢。",

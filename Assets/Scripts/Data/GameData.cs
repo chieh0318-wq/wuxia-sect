@@ -42,10 +42,17 @@ namespace Wuxia
 
     [Serializable] public class DiscipleData
     {
-        public string id, name, gender, title, trait, robeColor;
-        public int age;
+        public string id, name, gender, title, trait, robeColor, portrait;
+        public int age, injury;
+        public int loyalty = 50;
         public bool startInSect;
-        public string[] lines;
+        public string[] dialogue;
+        public SkillLine[] lines;
+        public string rank, cap, weapon;
+        public int[] attrs;
+        public string[] talents;
+        public string origin, blurb, personality;
+        public Aptitude aptitude;
     }
 
     [Serializable] public class SlotData

@@ -14,3 +14,11 @@
 - `tutorial.json` 包含 `intro`（含 `speaker`、`text` 的對話陣列）、`choosePrompt`、`titles`、`steps`、`completeText`、`reward`。每個步驟有 `id`、`title`、`objective`、`hint`、`trigger`、`target`、`highlight`。可在文字中使用 `{title}` 與 `{sect}`。
 - 引導事件為 `camera_move`、`camera_zoom`、`click_building`（以 `target` 指定建築 ID）、`talk_disciple`、`build_any`、`recruit`、`end_month`、`read_report`。提示可留空，或以 `building:<id>` 或 `ui:<key>` 指定。支援的介面鍵為 `cmd_build`、`cmd_recruit`、`end_month`。
 `actions.json` 的每個指令可設非負整數 `apCost`（預設 0），成功執行時才扣除。建造在選定空地後結算。`ap.json` 的 `baseMax` 是每月補滿的行動力基礎上限，預設 4。
+`disciples.json` 可選填 `portrait` 指定肖像資源 ID，省略時使用弟子 ID。
+
+## M2
+
+- `ap.json` contains `baseMax` and `sources`. Each source has `id`, `type`, `ref`, `threshold`, `value`, and `desc`. Source types are `building` (level), `age`, `delegation`, `tech` (story flag), `talent`, and `attr`. Matching thresholds are cumulative. Council building levels and the acting head are stored in the save.
+- In `disciples.json`, `dialogue` stores individual dialogue strings. `lines` now stores skill ranks as objects with `id`, `rank`, and `cap`. Optional `rank` and `cap` seed the sword line when that line is absent. Optional `weapon`, `attrs`, `talents`, `loyalty`, and `injury` carry character details.
+- Rank order is C, B, A, A+, S, S+, SS. Martial rank is the highest combat line and gains one tier if the second-highest is at least A and within one tier. Apply the same calculation to line caps. A weapon adds its effective rank delta to the result without raising the cap. Production uses the best eligible character’s line multiplier.
+- Month-end saves `save_slot1.json` under Unity’s persistent data path. Version 1 holds protagonist, choices, world start node, relations, flags, council levels, acting head, disciples, building slot IDs, AP, date, and resources.

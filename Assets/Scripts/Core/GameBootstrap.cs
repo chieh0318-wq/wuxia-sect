@@ -21,6 +21,7 @@ namespace Wuxia
     public sealed partial class GameBootstrap : MonoBehaviour
     {
         private GameState state;
+        private GameData data;
         private SectUI ui;
         private Courtyard world;
         private Camera view;
@@ -36,9 +37,43 @@ namespace Wuxia
         {
             BootStep("scene", ConfigureScene);
             BootStep("HUD", () => ui = new SectUI(EndMonth));
-            BootStep("data", () => state = new GameState(GameData.Load()));
-            if (ui == null || state == null)
+            BootStep("data", () => data = GameData.Load());
+            if (ui == null || data == null)
                 return;
+            if (controls != null)
+            {
+                controls.Changed += trigger => tutorial?.Record(trigger);
+                controls.enabled = false;
+            }
+            ui.ApInspected += () => tutorial?.Record("inspect_ap");
+            ShowTitle();
+            string[] args = Environment.GetCommandLineArgs();
+            int capture = Array.IndexOf(args, "-wuxiaCapture");
+            if (capture >= 0 && capture + 1 < args.Length)
+                StartCoroutine(Capture(args[capture + 1]));
+        }
+
+        private void ShowTitle()
+        {
+            ui.ShowTitle(data.Start.sectName, StartNewGame,
+                GameState.HasSave ? ContinueGame : null);
+        }
+
+        private void ContinueGame()
+        {
+            GameState saved = GameState.LoadSave(data);
+            if (saved == null)
+            {
+                ui.ShowModal("讀取存檔", new[] { "存檔無法讀取。" }, closed: ShowTitle);
+                return;
+            }
+            EnterCourtyard(saved, false);
+        }
+
+        private void EnterCourtyard(GameState next, bool startTutorial)
+        {
+            state = next;
+            ui.CloseTitle();
             ShowCommands();
             ui.Refresh(state);
             courtyardReady = BootStep("courtyard", BuildCourtyard);
@@ -47,13 +82,10 @@ namespace Wuxia
                 ui.Message("庭院載入失敗，請查看遊戲記錄檔。");
                 return;
             }
-            BootStep("tutorial", () => tutorial = new TutorialGuide(ui, state));
             if (controls != null)
-                controls.Changed += trigger => tutorial?.Record(trigger);
-            string[] args = Environment.GetCommandLineArgs();
-            int capture = Array.IndexOf(args, "-wuxiaCapture");
-            if (capture >= 0 && capture + 1 < args.Length)
-                StartCoroutine(Capture(args[capture + 1]));
+                controls.enabled = true;
+            if (startTutorial)
+                BootStep("tutorial", () => tutorial = new TutorialGuide(ui, state));
         }
 
         private static bool BootStep(string name, Action action)
@@ -156,6 +188,13 @@ namespace Wuxia
 
         private void LateUpdate()
         {
+            if (!courtyardReady && ui != null)
+            {
+                ui.UpdateStoryBeat();
+                if (Input.GetKeyDown(KeyCode.Escape) && ui.ModalOpen)
+                    ui.CloseModal();
+                return;
+            }
             if (ui == null || view == null || !courtyardReady)
                 return;
             ui.PositionLabels(view);
@@ -170,6 +209,7 @@ namespace Wuxia
                 {
                     ui.CloseDialogue();
                     ui.CloseBuilding();
+                    ui.ShowAudioOptions();
                 }
                 return;
             }
@@ -235,6 +275,10 @@ namespace Wuxia
                     commands.Add((ActionLabel(action), CanUseAp(action) ? () => RunAction(action) : null));
             }
             commands.Add(("查看門派", ShowSect));
+            commands.Add(("主角", ShowProtagonist));
+            var exploration = state.Data.Actions.FirstOrDefault(entry => entry.id == "explore");
+            if (exploration != null)
+                commands.Add((ActionLabel(exploration), CanUseAp(exploration) ? () => RunAction(exploration) : null));
             ui.ShowCommands("指令", commands);
         }
 
@@ -248,7 +292,20 @@ namespace Wuxia
                 if (action != null)
                     actions.Add((ActionLabel(action), CanUseAp(action) ? () => RunAction(action) : null));
             }
-            ui.ShowBuilding(building, actions);
+            int level = state.BuildingLevel(building.id);
+            if (building.id == "council" && level < 3)
+            {
+                int silver = state.BuildSilver(18 * level);
+                bool mayUpgrade = state.ActionPoints >= 1 && state.Silver >= silver;
+                actions.Add(($"擴建　行動力 1／銀 {silver}", mayUpgrade ? () =>
+                {
+                    state.UpgradeCouncil();
+                    ui.Refresh(state);
+                    ShowCommands();
+                    ShowBuilding(building);
+                } : null));
+            }
+            ui.ShowBuilding(building, actions, level);
         }
 
         private void RunAction(ActionData action)
@@ -262,23 +319,13 @@ namespace Wuxia
                 return;
             }
 
-            int extraSilver = action.type == "recruit" ? state.Data.Start.recruitCost : 0;
-            string grant = "";
-
-            DiscipleData recruit = null;
             if (action.type == "recruit")
             {
-                recruit = state.Data.Disciples.FirstOrDefault(d => !state.Disciples.Contains(d));
-                if (recruit == null)
-                {
-                    ui.Message("目前沒有尚未入門的弟子。");
-                    return;
-                }
+                OpenRecruitment(action);
+                return;
             }
 
-            if (recruit != null)
-                grant = tutorial?.Fund("recruit", action.cost, extraSilver) ?? "";
-            if (!state.CanPay(action.cost, extraSilver))
+            if (!state.CanPay(action.cost))
             {
                 ui.Message("銀兩或糧食不足。");
                 return;
@@ -286,25 +333,26 @@ namespace Wuxia
 
             if (!SpendActionAp(action))
                 return;
-            state.Pay(action.cost, extraSilver);
-            state.Apply(action.effect);
-            if (recruit != null)
+            state.Pay(action.cost);
+            string breakthrough = action.id switch
             {
-                state.Disciples.Add(recruit);
-                world?.SpawnDisciple(recruit);
-            }
+                "train" => state.TrainMartial(),
+                "explore" => state.TryBreakthrough("qiyu_cliff_cave", state.Story.insightChance),
+                _ => ""
+            };
+            state.Apply(action.effect);
+            if (action.id == "medicine")
+                state.RecoverInjuries();
+            if (action.id == "council" && state.BuildingLevel("council") >= 2)
+                state.ApplyEffects(new[] { new GameEffect { key = "flag", @ref = "sect_records", value = 1 } });
             ui.Refresh(state);
             ShowCommands();
             if (openBuilding != null && ui.BuildingOpen)
                 ShowBuilding(openBuilding);
             string message = $"{action.name}完成。{Changes(action.effect)}";
-            if (recruit != null)
-                message = $"{recruit.name}已加入{state.Data.Start.sectName}。{Changes(action.effect)}";
             if (action.id == "lodge")
                 message = $"已安頓弟子。{HousingInfo()}　{Changes(action.effect)}".TrimEnd();
-            ui.Message(grant + message);
-            if (recruit != null)
-                tutorial?.Record("recruit");
+            ui.Message(string.IsNullOrEmpty(breakthrough) ? message : breakthrough);
         }
 
         private void BeginBuild(ActionData action)
@@ -326,7 +374,7 @@ namespace Wuxia
             var options = new List<(string, System.Action)> { ("返回指令", CancelBuild) };
             foreach (var building in state.Data.Buildings.Where(state.IsAvailable))
             {
-                string cost = CostText(building.cost.silver + action.cost.silver,
+                string cost = CostText(state.BuildSilver(building.cost.silver + action.cost.silver),
                     building.cost.food + action.cost.food);
                 options.Add(($"{building.name}　{cost}", () =>
                 {
@@ -353,7 +401,7 @@ namespace Wuxia
 
             var total = new Cost
             {
-                silver = buildChoice.cost.silver + buildAction.cost.silver,
+                silver = state.BuildSilver(buildChoice.cost.silver + buildAction.cost.silver),
                 food = buildChoice.cost.food + buildAction.cost.food
             };
             string grant = tutorial?.Fund("build_any", total) ?? "";
@@ -388,13 +436,47 @@ namespace Wuxia
 
         private void Speak(DiscipleData disciple)
         {
+            var action = state.Data.Actions.FirstOrDefault(entry => entry.id == "talk");
+            if (action != null && !state.TrySpendAp(action.apCost, action.id))
+            {
+                ui.Message("行動力不足。");
+                return;
+            }
+            if (action?.apCost > 0)
+            {
+                ShowCommands();
+                ui.Refresh(state);
+            }
             ui.CloseBuilding();
-            var lines = (disciple.lines ?? System.Array.Empty<string>())
+            var lines = (disciple.dialogue ?? System.Array.Empty<string>())
                 .Concat(state.Data.GeneralLines).Where(line => !string.IsNullOrWhiteSpace(line)).ToArray();
             string text = lines.Length == 0 ? "請吩咐。" :
                 lines[UnityEngine.Random.Range(0, lines.Length)];
-            ui.ShowDialogue(disciple, text);
+            if (state.Story.delegateId == disciple.id)
+                text = "正在代行掌門門務。";
+            ui.ShowDialogue(disciple, text, () => ShowDisciple(disciple));
             tutorial?.Record("talk_disciple");
+        }
+
+        private void ShowDisciple(DiscipleData disciple)
+        {
+            bool delegateRole = state.Story.delegateId == disciple.id;
+            bool senior = disciple.age >= 20 && disciple.startInSect;
+            ui.ShowCharacter(disciple.name, delegateRole ? "代掌門" : disciple.title, disciple.gender,
+                disciple.portrait ?? disciple.id, disciple.attrs, disciple.lines, state.WeaponRankDelta(disciple.weapon),
+                senior ? (delegateRole ? "解除代掌門" : "委任代掌門", () =>
+                {
+                    state.ToggleDelegate(disciple);
+                    ui.Refresh(state);
+                    ShowDisciple(disciple);
+                }) : null);
+        }
+
+        private void ShowProtagonist()
+        {
+            var hero = state.Protagonist;
+            ui.ShowCharacter(hero.name, hero.title, hero.gender, hero.portrait ?? hero.lookId, hero.attrs, hero.lines,
+                state.WeaponRankDelta(hero.weapon));
         }
 
         private void ShowSect()
@@ -419,13 +501,22 @@ namespace Wuxia
                 return;
             if (choosingBuilding)
                 CancelBuild();
+            candidates = null;
             var report = state.EndMonth();
             ShowCommands();
             if (openBuilding != null && ui.BuildingOpen)
                 ShowBuilding(openBuilding);
             ui.Refresh(state);
             tutorial?.Record("end_month");
-            ui.ShowModal("門派月報", report.Lines, closed: () => tutorial?.Record("read_report"));
+            if (!state.Save())
+                report.Lines.Add("自動存檔失敗。");
+            void ReadReport()
+            {
+                tutorial?.Record("read_report");
+                if (!state.Save())
+                    ui.Message("自動存檔失敗。");
+            }
+            ui.ShowModal("門派月報", report.Lines, closed: ReadReport);
         }
 
         private bool TutorialApGrant(ActionData action)
@@ -434,7 +525,8 @@ namespace Wuxia
             return tutorial?.CanFund(trigger) == true && (trigger == "build_any" || trigger == "recruit");
         }
 
-        private bool CanUseAp(ActionData action) => state.ActionPoints >= action.apCost || TutorialApGrant(action);
+        private bool CanUseAp(ActionData action) => state.ActionPoints >= action.apCost ||
+            (action.type == "recruit" && candidates != null) || TutorialApGrant(action);
 
         private bool SpendActionAp(ActionData action)
         {
@@ -445,7 +537,9 @@ namespace Wuxia
 
         private string ActionLabel(ActionData action)
         {
-            int silver = action.cost.silver + (action.type == "recruit" ? state.Data.Start.recruitCost : 0);
+            if (action.type == "recruit")
+                return CanUseAp(action) ? $"{action.name}　行動力 {action.apCost} 起" : $"{action.name}　行動力不足";
+            int silver = action.cost.silver;
             string resources = silver == 0 && action.cost.food == 0 ? "" : $"　{CostText(silver, action.cost.food)}";
             string reason = CanUseAp(action) ? "" : "（行動力不足）";
             return $"{action.name}　行動力 {action.apCost}{resources}{reason}";

@@ -21,7 +21,12 @@ namespace Wuxia
         private readonly Text dialogueText;
         private readonly Text speakerName;
         private readonly Text date;
-        private readonly Text resources;
+        private readonly Text[] resourceLabels = new Text[4];
+        private RectTransform titleScreen;
+        private readonly Text apDisplay;
+        private readonly ApHud apHud;
+        private readonly RawImage dialoguePortrait;
+        private Action inspectDisciple;
         private readonly Text toast;
         private readonly Font font;
         private readonly List<(Transform target, Vector3 offset, RectTransform tag)> worldLabels = new();
@@ -52,11 +57,39 @@ namespace Wuxia
             Fill(labels);
             var top = Panel("Top bar", canvas, new Vector2(0, 1), Vector2.one,
                 new Vector2(18, -94), new Vector2(-18, -18));
+            UiKit.Skin(top.GetComponent<Image>(), "Teal");
             date = Label(top, "", 28, TextAnchor.MiddleLeft);
-            Anchor(date.rectTransform, Vector2.zero, Vector2.up, new Vector2(22, 0), new Vector2(360, 0));
-            resources = Label(top, "", 24, TextAnchor.MiddleCenter);
-            Anchor(resources.rectTransform, new Vector2(0.36f, 0), new Vector2(0.64f, 1),
-                new Vector2(-120, 0), new Vector2(120, 0));
+            var lightInk = new Color(.92f, .86f, .73f);
+            date.color = lightInk;
+            Anchor(date.rectTransform, Vector2.zero, Vector2.up, new(56, 0), new(360, 0));
+            HudIcon(top, "Month", 16);
+            var counters = Rect("門派資源", top);
+            Anchor(counters, new(.31f, 0), new(.68f, 1), Vector2.zero, Vector2.zero);
+            string[] icons = { "Silver", "Food", "Reputation", "Disciples" };
+            for (int index = 0; index < icons.Length; index++)
+            {
+                var cell = Rect(icons[index], counters);
+                Anchor(cell, new(index * .25f, 0), new((index + 1) * .25f, 1), Vector2.zero, Vector2.zero);
+                HudIcon(cell, icons[index], 0);
+                var value = Label(cell, "", 24, TextAnchor.MiddleLeft);
+                value.color = lightInk;
+                value.font = UiKit.Font("Numbers", font);
+                Anchor(value.rectTransform, Vector2.zero, Vector2.one, new(36, 0), new(-6, 0));
+                resourceLabels[index] = value;
+            }
+            var ap = Panel("行動力", top, new(.70f, 0), new(.70f, 1), new(16, 8), new(288, -8));
+            UiKit.Skin(ap.GetComponent<Image>(), "Wood");
+            apDisplay = Label(ap, "", 24, TextAnchor.MiddleCenter);
+            apDisplay.color = lightInk;
+            Fill(apDisplay.rectTransform, 8);
+            apHud = ap.gameObject.AddComponent<ApHud>();
+            var apSources = Panel("行動力來源", ap, Vector2.zero, Vector2.right, new(-38, -134), new(38, -4), false);
+            UiKit.Skin(apSources.GetComponent<Image>(), "Wood");
+            var sourceList = Label(apSources, "", 20, TextAnchor.MiddleLeft);
+            sourceList.color = lightInk;
+            Fill(sourceList.rectTransform, 14);
+            apHud.Initialize(apDisplay, sourceList);
+            targets["ap"] = ap;
             var end = Button(top, "結束本月", endMonth);
             targets["end_month"] = end;
             Anchor(end, Vector2.right, Vector2.one, new Vector2(-188, 12), new Vector2(-12, -12));
@@ -74,7 +107,7 @@ namespace Wuxia
             CloseBuilding();
 
             var help = Panel("Controls", canvas, Vector2.zero, Vector2.zero,
-                new Vector2(18, 18), new Vector2(520, 98), false);
+                new Vector2(18, 18), new Vector2(570, 106), false);
             Fill(Label(help, "WASD／方向鍵移動　右鍵／中鍵拖曳\n滾輪縮放　左鍵選取　Esc／右鍵取消建造",
                 22, TextAnchor.MiddleLeft).rectTransform, 12);
 
@@ -86,12 +119,19 @@ namespace Wuxia
 
             dialogue = Panel("Dialogue", canvas, new Vector2(0.5f, 0), new Vector2(0.5f, 0),
                 new Vector2(-440, 102), new Vector2(440, 246));
+            var portrait = Rect("Portrait", dialogue);
+            Anchor(portrait, Vector2.zero, Vector2.up, new(16, 12), new(110, -12));
+            dialoguePortrait = portrait.gameObject.AddComponent<RawImage>();
+            dialoguePortrait.raycastTarget = false;
             speakerName = Label(dialogue, "", 25);
-            speakerName.fontStyle = FontStyle.Bold;
-            Anchor(speakerName.rectTransform, Vector2.zero, Vector2.one, new(23, 80), new(-120, -15));
+            speakerName.font = UiKit.Font("Names", font);
+            Anchor(speakerName.rectTransform, Vector2.zero, Vector2.one, new(126, 80), new(-120, -15));
             dialogueText = Label(dialogue, "", 24);
+            dialogueText.font = UiKit.Font("Dialogue", font);
             Anchor(dialogueText.rectTransform, Vector2.zero, Vector2.one,
-                new Vector2(23, 14), new Vector2(-120, -62));
+                new Vector2(126, 14), new Vector2(-120, -62));
+            var inspect = Button(dialogue, "弟子", () => inspectDisciple?.Invoke());
+            Anchor(inspect, Vector2.one, Vector2.one, new(-112, -124), new(-14, -73));
             var closeDialogue = Button(dialogue, "關閉", CloseDialogue);
             Anchor(closeDialogue, Vector2.one, Vector2.one, new Vector2(-112, -65), new Vector2(-14, -14));
             CloseDialogue();
@@ -109,22 +149,42 @@ namespace Wuxia
             actions.spacing = 16;
             actions.childControlWidth = actions.childControlHeight = true;
             actions.childForceExpandWidth = actions.childForceExpandHeight = true;
-            CloseModal();
+            CloseModal(force: true);
             CreateObjective();
+        }
+
+        internal event Action ApInspected
+        {
+            add => apHud.Inspected += value;
+            remove => apHud.Inspected -= value;
         }
 
         public bool BuildingOpen => details.gameObject.activeSelf;
 
+        private static void HudIcon(RectTransform parent, string icon, int offset)
+        {
+            var rect = Rect(icon + " icon", parent);
+            Anchor(rect, new(0, .5f), new(0, .5f), new(offset, -18), new(offset + 36, 18));
+            var image = rect.gameObject.AddComponent<Image>();
+            image.sprite = UiKit.Sprite(icon);
+            image.enabled = image.sprite != null;
+            image.raycastTarget = false;
+        }
+
         public void Refresh(GameState state)
         {
             date.text = state.Date;
-            resources.text = $"銀兩 {state.Silver}　糧食 {state.Food}　聲望 {state.Reputation}　弟子 {state.Disciples.Count}　行動力 {state.ActionPoints}／{state.ApMax}";
+            apHud.Set(state.ActionPoints, state.ApMax, state.ApDescription);
+            resourceLabels[0].text = $"銀兩 {state.Silver}";
+            resourceLabels[1].text = $"糧食 {state.Food}";
+            resourceLabels[2].text = $"聲望 {state.Reputation}";
+            resourceLabels[3].text = $"弟子 {state.Disciples.Count}";
         }
 
         public void ShowCommands(string title, IEnumerable<(string label, Action run)> commands)
         {
             Clear(commandList);
-            SetCommandsPanelHeight(title == "建造" ? 480 : 255);
+            SetCommandsPanelHeight(title == "建造" ? 480 : 381);
             AddLine(commandList, title, 28);
             targets.Remove("cmd_build");
             targets.Remove("cmd_recruit");
@@ -141,11 +201,11 @@ namespace Wuxia
 
         private void SetCommandsPanelHeight(float height) => commands.offsetMin = new Vector2(18, -110 - height);
 
-        public void ShowBuilding(BuildingData building, IEnumerable<(string label, Action run)> actions)
+        public void ShowBuilding(BuildingData building, IEnumerable<(string label, Action run)> actions, int level = 1)
         {
             Clear(detailsList);
             AddLine(detailsList, building.name, 28);
-            AddLine(detailsList, "等級 1");
+            AddLine(detailsList, $"等級 {level}");
             AddLine(detailsList, building.description);
             foreach (var action in actions)
                 Button(detailsList, action.label, action.run).GetComponent<Button>().interactable = action.run != null;
@@ -176,12 +236,110 @@ namespace Wuxia
             modalClosed = closed;
             foreach (var action in buttons ?? new[] { ("確定", (Action)(() => CloseModal())) })
                 Button(modalButtons, action.Item1, action.Item2);
+            if (modalCard.GetComponent<InkPanelMotion>() == null)
+                modalCard.gameObject.AddComponent<InkPanelMotion>();
             modal.transform.SetAsLastSibling();
             modal.gameObject.SetActive(true);
         }
 
-        public void ShowDialogue(DiscipleData disciple, string line)
+        public void ShowTitle(string title, Action start, Action resume)
         {
+            CloseTitle();
+            titleScreen = Panel("Title", canvas, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero);
+            var background = titleScreen.GetComponent<Image>();
+            background.sprite = null;
+            background.type = Image.Type.Simple;
+            background.color = new Color(.08f, .15f, .16f);
+            var image = Rect("Title art", titleScreen);
+            Fill(image);
+            AddImage(image, PortraitService.Story("title_bg") ?? UiKit.Backdrop());
+            var plaque = Panel("Title plaque", titleScreen, new(.30f, .5f), new(.30f, .5f),
+                new(-256, -208), new(256, 240));
+            UiKit.Skin(plaque.GetComponent<Image>(), "Plaque");
+            var heading = Label(plaque, title, 62, TextAnchor.MiddleCenter);
+            heading.color = new Color(.94f, .88f, .76f);
+            Anchor(heading.rectTransform, Vector2.up, Vector2.one, new(24, -128), new(-24, -16));
+            var divider = Rect("Divider", plaque);
+            Anchor(divider, Vector2.up, Vector2.one, new(48, -131), new(-48, -123));
+            var dividerImage = divider.gameObject.AddComponent<Image>();
+            dividerImage.sprite = UiKit.Sprite("Divider");
+            dividerImage.raycastTarget = false;
+            AddTitleButton("新遊戲", start, 192);
+            AddTitleButton("繼續", resume, 264);
+            AddTitleButton("設定", ShowAudioOptions, 336);
+            AddTitleButton("離開", Application.Quit, 408);
+
+            void AddTitleButton(string text, Action run, float bottom)
+            {
+                var item = Button(plaque, text, run);
+                Anchor(item, Vector2.up, Vector2.one, new(72, -bottom), new(-72, -bottom + 56));
+                item.GetComponent<Button>().interactable = run != null;
+            }
+        }
+
+        public void CloseTitle()
+        {
+            if (titleScreen == null)
+                return;
+            titleScreen.gameObject.SetActive(false);
+            UnityEngine.Object.Destroy(titleScreen.gameObject);
+            titleScreen = null;
+        }
+
+        public void ShowAudioOptions()
+        {
+            ShowModal("設定", Array.Empty<string>());
+            Anchor(modalCard, Vector2.one * .5f, Vector2.one * .5f, new(-352, -224), new(352, 224));
+            Anchor((RectTransform)modalList.parent, Vector2.zero, Vector2.one, new(26, 82), new(-26, -22));
+            AddVolume("主音量", GameAudioPrefs.MasterVolume, value => GameAudioPrefs.Master = value);
+            AddVolume("音樂", GameAudioPrefs.Music, value => GameAudioPrefs.Music = value);
+            AddVolume("音效", GameAudioPrefs.Sfx, value => GameAudioPrefs.Sfx = value);
+            ToggleMute();
+
+            void ToggleMute()
+            {
+                Button(modalList, GameAudioPrefs.Muted ? "取消靜音" : "靜音", () =>
+                {
+                    GameAudioPrefs.Muted = !GameAudioPrefs.Muted;
+                    ShowAudioOptions();
+                });
+            }
+
+            void AddVolume(string caption, float value, Action<float> changed)
+            {
+                var row = Rect(caption, modalList);
+                row.gameObject.AddComponent<LayoutElement>().preferredHeight = 42;
+                var label = Label(row, "", 22, TextAnchor.MiddleLeft);
+                Anchor(label.rectTransform, Vector2.zero, Vector2.up, Vector2.zero, new(170, 0));
+                var sliderRect = Rect("音量", row);
+                Anchor(sliderRect, Vector2.zero, Vector2.one, new(180, 0), Vector2.zero);
+                var track = Rect("Track", sliderRect);
+                Anchor(track, new(0, .5f), new(1, .5f), new(0, -3), new(0, 3));
+                track.gameObject.AddComponent<Image>().color = new Color(.34f, .25f, .17f);
+                var range = Rect("Handle range", sliderRect);
+                Fill(range, 15);
+                var handle = Rect("Handle", range);
+                handle.sizeDelta = new Vector2(22, 24);
+                var ink = handle.gameObject.AddComponent<Image>();
+                ink.color = ButtonColor;
+                var slider = sliderRect.gameObject.AddComponent<Slider>();
+                slider.handleRect = handle;
+                slider.targetGraphic = ink;
+                slider.value = value;
+                SetCaption(value);
+                slider.onValueChanged.AddListener(next =>
+                {
+                    SetCaption(next);
+                    changed(next);
+                });
+                void SetCaption(float current) => label.text = $"{caption} {current:P0}";
+            }
+        }
+
+        public void ShowDialogue(DiscipleData disciple, string line, Action inspect = null)
+        {
+            inspectDisciple = inspect;
+            dialoguePortrait.texture = PortraitService.Resolve(string.IsNullOrEmpty(disciple.portrait) ? disciple.id : disciple.portrait, disciple.gender);
             speakerName.text = $"{disciple.name}　{disciple.title}／{disciple.trait}";
             dialogueText.text = line;
             dialogue.gameObject.SetActive(true);
@@ -289,6 +447,7 @@ namespace Wuxia
             var line = Label(parent, text, size);
             line.gameObject.AddComponent<LayoutElement>().minHeight = size + 8;
             line.horizontalOverflow = HorizontalWrapMode.Wrap;
+            line.resizeTextForBestFit = false;
             line.verticalOverflow = VerticalWrapMode.Overflow;
         }
 
@@ -299,16 +458,25 @@ namespace Wuxia
             image.sprite = null;
             image.type = Image.Type.Simple;
             image.color = ButtonColor;
+            UiKit.Skin(image, "Vermilion");
             var button = rect.gameObject.AddComponent<Button>();
             button.targetGraphic = image;
             var colors = button.colors;
             colors.highlightedColor = new Color(1, .86f, .75f);
             colors.pressedColor = new Color(.72f, .63f, .56f);
             button.colors = colors;
-            button.onClick.AddListener(() => action?.Invoke());
+            rect.gameObject.AddComponent<UiHoverSound>();
+            button.onClick.AddListener(() =>
+            {
+                UiSfx.Play("click");
+                action?.Invoke();
+            });
             rect.gameObject.AddComponent<LayoutElement>().preferredHeight = 53;
             var label = Label(rect, text, 22, TextAnchor.MiddleCenter);
             label.color = new Color(.98f, .92f, .81f);
+            label.resizeTextForBestFit = true;
+            label.resizeTextMinSize = 14;
+            label.resizeTextMaxSize = 22;
             Fill(label.rectTransform, 4);
             return rect;
         }
@@ -316,11 +484,14 @@ namespace Wuxia
         private Text Label(RectTransform parent, string content, int size, TextAnchor alignment = TextAnchor.UpperLeft)
         {
             var text = Rect("Text", parent).gameObject.AddComponent<Text>();
-            text.font = font;
+            text.font = UiKit.Font(size >= 28 ? "Titles" : "Interface", font, content);
             text.fontSize = size;
             text.alignment = alignment;
             text.color = Ink;
             text.raycastTarget = false;
+            text.resizeTextForBestFit = true;
+            text.resizeTextMinSize = Mathf.Min(14, size);
+            text.resizeTextMaxSize = size;
             text.text = content;
             return text;
         }
@@ -341,7 +512,7 @@ namespace Wuxia
             var rect = Rect(name, parent);
             Anchor(rect, a, b, min, max);
             var image = rect.gameObject.AddComponent<Image>();
-            image.sprite = Paper();
+            image.sprite = UiKit.Sprite("Paper") ?? Paper();
             image.type = Image.Type.Sliced;
             image.color = Color.white;
             image.raycastTarget = blocksClicks;

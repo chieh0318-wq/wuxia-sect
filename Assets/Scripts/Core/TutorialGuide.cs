@@ -29,9 +29,9 @@ namespace Wuxia
         private int step;
         private int intro;
         private string title;
-        private bool finished;
+        private bool finished, introComplete;
 
-        internal bool Active => !finished && title != null;
+        internal bool Active => !finished && introComplete;
         internal string Highlight => Active ? data.steps[step].highlight : null;
 
         internal TutorialGuide(SectUI ui, GameState state)
@@ -45,7 +45,25 @@ namespace Wuxia
                 data.steps == null || data.steps.Any(step => step == null || string.IsNullOrWhiteSpace(step.trigger)) ||
                 data.reward == null)
                 throw new InvalidDataException("Tutorial data is incomplete.");
+            AddApStep();
+            title = state.Protagonist.title;
             ShowIntro();
+        }
+
+        private void AddApStep()
+        {
+            int buildStep = Array.FindIndex(data.steps, entry => entry.trigger == "build_any");
+            if (buildStep < 0 || data.steps.Any(entry => entry.trigger == "inspect_ap"))
+                return;
+            var steps = data.steps.ToList();
+            steps.Insert(buildStep + 1, new TutorialStep
+            {
+                id = "action_points", title = "清點行動力",
+                objective = "查看本月還能辦多少事。",
+                hint = "將游標移到上方行動力，查看上限來源。",
+                trigger = "inspect_ap", target = "", highlight = "ui:ap"
+            });
+            data.steps = steps.ToArray();
         }
 
         private string Format(string text) => (text ?? "").Replace("{title}", title ?? "首徒")
@@ -56,17 +74,20 @@ namespace Wuxia
             if (intro < data.intro.Length)
             {
                 var line = data.intro[intro++];
+                var speaker = state.Data.Disciples.FirstOrDefault(member => !string.IsNullOrEmpty(member.name) && (line.speaker ?? "").EndsWith(member.name, StringComparison.Ordinal));
                 ui.ShowModal(Format(line.speaker), new[] { Format(line.text) },
-                    new[] { ("繼續", (Action)ShowIntro) }, dismissible: false);
+                    new[] { ("繼續", (Action)ShowIntro), ("略過", (Action)(() => Choose(title))) }, dismissible: false);
+                if (speaker != null)
+                    ui.ModalPortrait(speaker.portrait ?? speaker.id, speaker.gender);
                 return;
             }
-            var choices = Array.ConvertAll(data.titles, option => (option, (Action)(() => Choose(option))));
-            ui.ShowModal("首徒稱謂",new[] { Format(data.choosePrompt) }, choices, dismissible: false);
+            Choose(title);
         }
 
         private void Choose(string option)
         {
             title = option;
+            introComplete = true;
             ui.CloseModal(force: true);
             Advance();
         }
@@ -76,6 +97,8 @@ namespace Wuxia
         internal void Record(string trigger, string target = "")
         {
             // Camera events arrive every frame while moving; only re-evaluate on a new action.
+            if (trigger == "recruit" || trigger == "end_month")
+                actions.Add(("inspect_ap", ""));
             if (finished || !actions.Add((trigger, target ?? "")))
                 return;
             if (Active)

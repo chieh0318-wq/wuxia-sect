@@ -8,7 +8,7 @@ namespace Wuxia
         public readonly List<string> Lines = new List<string>();
     }
 
-    public sealed class GameState
+    public sealed partial class GameState
     {
         private static readonly string[] Months =
         {
@@ -24,7 +24,59 @@ namespace Wuxia
         public int Food { get; private set; }
         public int Reputation { get; private set; }
         public int ActionPoints { get; private set; }
-        public int ApMax => Data.Ap.baseMax;
+        public int ApMax => System.Math.Max(1, Data.Ap.baseMax + Story.apBonus + ApSources.Sum(entry => entry.amount));
+        public string ApDescription => $"基礎 {Data.Ap.baseMax}" + (Story.apBonus != 0 ? $"　際遇 {Story.apBonus:+0;-0}" : "") +
+            string.Concat(ApSources.Select(source => $"\n{source.name} {source.amount:+0;-0}"));
+
+        private IEnumerable<(string name, int amount)> ApSources
+        {
+            get
+            {
+                foreach (var source in Data.Ap.sources ?? System.Array.Empty<ApSource>())
+                {
+                    int actual = source.type switch
+                    {
+                        "building" => BuildingLevel(source.@ref),
+                        "age" => Protagonist.age,
+                        "delegation" => Disciples.Any(d => d.id == Story.delegateId) ? 1 : 0,
+                        "tech" => Story.flags.FirstOrDefault(entry => entry.id == source.@ref)?.value ?? 0,
+                        "talent" => Protagonist.talents.Contains(source.@ref) ? 1 : 0,
+                        "attr" => AttributeValue(source.@ref),
+                        _ => -1
+                    };
+                    if (actual >= source.threshold)
+                        yield return (source.desc, source.value);
+                }
+            }
+        }
+
+        private int AttributeValue(string id)
+        {
+            int index = System.Array.IndexOf(new[] { "str", "agi", "con", "wit", "cha" }, id);
+            return index < 0 ? 0 : Protagonist.attrs[index];
+        }
+
+        internal int BuildingLevel(string id) => Buildings != null && Buildings.Any(building => building?.id == id)
+            ? (Story.buildingLevels.FirstOrDefault(entry => entry.id == id)?.value ?? 1) : 0;
+
+        internal void UpgradeCouncil()
+        {
+            int level = BuildingLevel("council");
+            if (level is <= 0 or >= 3)
+                return;
+            int silver = BuildSilver(18 * level);
+            var cost = new Cost { silver = silver };
+            if (!CanPay(cost) || !TrySpendAp(1, "council_upgrade"))
+                return;
+            Pay(cost);
+            SetValue(ref Story.buildingLevels, "council", level + 1, false);
+        }
+
+        internal void ToggleDelegate(DiscipleData disciple)
+        {
+            Story.delegateId = Story.delegateId == disciple.id ? null : disciple.id;
+            ActionPoints = System.Math.Min(ActionPoints, ApMax);
+        }
 
         public bool TrySpendAp(int cost, string reason)
         {
@@ -45,8 +97,9 @@ namespace Wuxia
             Silver = data.Start.silver;
             Food = data.Start.food;
             Reputation = data.Start.reputation;
-            ActionPoints = ApMax;
-            Disciples = data.Disciples.Where(d => d.startInSect).ToList();
+            Protagonist.lines = RankSystem.Seed(null, RankSystem.Catalog.protagonistPath?.defaultRank ?? "A",
+                RankSystem.Catalog.protagonistPath?.defaultCap ?? "S", "B");
+            Disciples = data.Disciples.Where(d => d.startInSect).Select(CloneDisciple).ToList();
             Buildings = new BuildingData[data.Start.slots.Length];
             for (int index = 0; index < Buildings.Length; index++)
             {
@@ -63,6 +116,7 @@ namespace Wuxia
                     break;
                 Buildings[index] = building;
             }
+            ActionPoints = ApMax;
         }
 
         public bool IsAvailable(BuildingData building) => !building.unique || !Buildings.Contains(building);
@@ -97,6 +151,8 @@ namespace Wuxia
                 upkeep += building.upkeep;
             }
 
+            silver = UnityEngine.Mathf.RoundToInt(silver * ProductionMultiplier("commerce"));
+            food = UnityEngine.Mathf.RoundToInt(food * ProductionMultiplier("farming"));
             int consumed = Disciples.Count * Data.Start.foodPerDisciple;
             Silver += silver - upkeep;
             Food += food - consumed;
@@ -121,7 +177,12 @@ namespace Wuxia
             {
                 Month = 1;
                 Year++;
+                Protagonist.age++;
             }
+            string breakthrough = CheckMartialPath(true);
+            if (!string.IsNullOrEmpty(breakthrough))
+                report.Lines.Add(breakthrough);
+            RecoverInjuries();
             ActionPoints = ApMax;
             report.Lines.Add($"行動力已恢復 {ActionPoints}／{ApMax}。");
             report.Lines.Add($"本月結餘　銀兩 {Silver}、糧食 {Food}、聲望 {Reputation}");

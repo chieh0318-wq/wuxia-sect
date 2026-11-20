@@ -1,1 +1,11 @@
-{"baseMax":4,"sources":[]}
+{
+  "baseMax": 4,
+  "sources": [
+    {"id":"council1","type":"building","ref":"council","threshold":1,"value":1,"desc":"議事堂"},
+    {"id":"council2","type":"building","ref":"council","threshold":2,"value":1,"desc":"議事堂二級"},
+    {"id":"council3","type":"building","ref":"council","threshold":3,"value":1,"desc":"議事堂三級"},
+    {"id":"age25","type":"age","threshold":25,"value":1,"desc":"年滿廿五"},
+    {"id":"deputy","type":"delegation","threshold":1,"value":1,"desc":"代掌門"},
+    {"id":"records","type":"tech","ref":"sect_records","threshold":1,"value":1,"desc":"門務簿冊"}
+  ]
+}

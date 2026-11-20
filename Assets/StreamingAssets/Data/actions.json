@@ -1,6 +1,14 @@
 {
   "actions": [
     {
+      "id":"explore","name":"山道巡訪","description":"沿山道巡查，留意鄉里與山門外的動靜。",
+      "type":"generic","apCost":1,"cost":{"silver":0,"food":0},"effect":{"silver":0,"food":0,"reputation":0}
+    },
+    {
+      "id":"talk","name":"門中問候","description":"聽弟子說說近況。",
+      "type":"generic","apCost":0,"cost":{"silver":0,"food":0},"effect":{"silver":0,"food":0,"reputation":0}
+    },
+    {
       "id": "build",
       "name": "興建屋舍",
       "description": "挑選屋舍圖樣，再於院中擇一塊空地動工。",

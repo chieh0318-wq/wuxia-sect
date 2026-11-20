@@ -42,7 +42,8 @@ namespace Wuxia
         private void LateUpdate()
         {
             if (figure == null) return;
-            figure.transform.localEulerAngles = new Vector3(0, 168 + (Time.unscaledTime - started) * 27, 0);
+            // The refined figure faces +Z (towards the preview camera); start three-quarter front and turn slowly.
+            figure.transform.localEulerAngles = new Vector3(0, -24 + (Time.unscaledTime - started) * 27, 0);
             Render();
         }
 

@@ -11,6 +11,8 @@ namespace Wuxia
     {
         private const float ViewWidth = 1552, ViewHeight = 720;
         private const float MapWidth = 1190, MapHeight = 720;
+        // Fill the viewport width at the widest zoom so no empty bars show beside the parchment.
+        private const float MinZoom = ViewWidth/MapWidth;
         private WorldMapData data;
         private IWorldMapHost host;
         private Canvas canvas;
@@ -21,7 +23,7 @@ namespace Wuxia
         private readonly List<(RectTransform flag, Vector2 point)> flags = new();
         private readonly List<Button> cardActions = new();
         private Vector2 pan, lastMouse;
-        private float zoom = 1;
+        private float zoom = MinZoom;
         private bool traveling;
         private string selected;
         private Sprite halo;
@@ -51,6 +53,9 @@ namespace Wuxia
                 host.PartyNode = data.Nodes.ContainsKey(host.StartNode ?? "") ? host.StartNode : data.DefaultNode;
             SyncParty();
             UpdateAp();
+            CenterOn(host.PartyNode);
+            if (!traveling) status.text = $"隊伍駐於{data.NodeLabel(host.PartyNode)}。點選地名查看路程，點選旗幟查看勢力。";
+            ApplyView();
             AudioManager.Music("map");
         }
 
@@ -95,7 +100,7 @@ namespace Wuxia
             MapUi.Text(top,"江湖大地圖",26,4,330,56,34,MapUi.Paper);
             ap = MapUi.Text(top,"",470,8,560,48,22,MapUi.Paper,TextAnchor.MiddleRight,"Numbers");
             MapUi.Button(top,"情報總覽",1060,10,150,44,OpenIntel,MapUi.Red);
-            MapUi.Button(top,"全圖",1220,10,96,44,() => { zoom = 1; pan = Vector2.zero; ApplyView(); });
+            MapUi.Button(top,"全圖",1220,10,96,44,() => { zoom = MinZoom; pan = Vector2.zero; ApplyView(); });
             MapUi.Button(top,"返回宗門　M",1326,10,232,44,Close,MapUi.Red);
             MapUi.Kit(frame,"Map border",14,71,ViewWidth+20,ViewHeight+12,"Wood",false);
             viewport = MapUi.Panel(frame,"Map viewport",24,77,ViewWidth,ViewHeight,new Color(.34f,.39f,.36f));
@@ -223,7 +228,7 @@ namespace Wuxia
             {
                 RectTransformUtility.ScreenPointToLocalPointInRectangle(viewport,mouse,canvas.worldCamera,out Vector2 point);
                 Vector2 relative = point - new Vector2(ViewWidth/2,-ViewHeight/2);
-                float next = Mathf.Clamp(zoom*Mathf.Pow(1.15f,wheel),1,3.25f);
+                float next = Mathf.Clamp(zoom*Mathf.Pow(1.15f,wheel),MinZoom,3.25f);
                 pan = relative + (pan-relative)*(next/zoom);
                 zoom = next;
                 changingScreen = true;
@@ -268,7 +273,9 @@ namespace Wuxia
                 flag.anchoredPosition = new Vector2(point.x,-point.y-9*(1-1/zoom));
                 occupied.Add(new Rect(point*zoom + offset - new Vector2(9,-9*(zoom-1)),new Vector2(18,19)));
             }
-            foreach (var (node,label,point) in labels.OrderBy(entry => LabelPriority(entry.node)))
+            if (party.gameObject.activeSelf && data.Nodes.TryGetValue(host?.PartyNode ?? "",out var partyNode))
+                occupied.Add(new Rect(Position(partyNode)*zoom + offset + new Vector2(-30.5f,3.5f),new Vector2(23,23)));
+            foreach (var (node,label,point) in labels.OrderBy(entry => entry.node.id == host?.PartyNode ? -1 : LabelPriority(entry.node)))
             {
                 var rect = label.rectTransform;
                 rect.localScale = Vector3.one/zoom;
@@ -279,7 +286,7 @@ namespace Wuxia
                     new(9,-11),new(-width-9,-11),new(-width/2,5),new(-width/2,-34)
                 };
                 bool shown = false;
-                if (LabelPriority(node) < 3 || seats.Contains(node.id) || zoom >= 1.42f)
+                if (LabelPriority(node) < 3 || seats.Contains(node.id) || zoom >= 1.42f || node.id == host?.PartyNode)
                     foreach (var position in candidates)
                     {
                         var bounds = new Rect(marker+position,new Vector2(width,22));
@@ -372,10 +379,15 @@ namespace Wuxia
                 MapUi.Text(panel,"神兵　"+faction.WeaponLabel,155,183,249,30,19,MapUi.Red);
             MapUi.Text(panel,$"聲望 {faction.reputation}　弟子 {faction.disciples}　銀兩 {faction.money}",20,229,386,39,19,MapUi.Ink);
             MapUi.Text(panel,"絕學　"+faction.Arts,20,276,386,54,19,MapUi.Ink,TextAnchor.UpperLeft);
-            MapUi.Text(panel,faction.desc ?? "",20,337,386,104,19,MapUi.Ink,TextAnchor.UpperLeft);
-            MapUi.Panel(panel,"Skill divider",20,444,386,1,new Color(.65f,.51f,.34f));
-            DrawFamily(panel,faction,"戰鬥技能",MapSkillLine.Combat,20);
-            DrawFamily(panel,faction,"生產技能",MapSkillLine.Production,222);
+            bool hasLines = faction.leaderLines?.Any(line => line != null) == true;
+            MapUi.Text(panel,faction.desc ?? "",20,337,386,hasLines ? 104 : 212,20,MapUi.Ink,TextAnchor.UpperLeft,"Narration");
+            if (hasLines)
+            {
+                MapUi.Panel(panel,"Skill divider",20,444,386,1,new Color(.65f,.51f,.34f));
+                DrawFamily(panel,faction,"戰鬥技能",MapSkillLine.Combat,20);
+                DrawFamily(panel,faction,"生產技能",MapSkillLine.Production,222);
+            }
+            MapUi.Panel(panel,"Notables divider",20,553,386,1,new Color(.65f,.51f,.34f));
             int row = 0;
             foreach (var notable in (faction.notables ?? Array.Empty<FactionNotable>()).Where(n => n != null).Take(2))
             {
@@ -436,6 +448,14 @@ namespace Wuxia
                 focusMarker.anchoredPosition = new Vector2(p.x-18/zoom,-p.y+18/zoom);
                 focusMarker.gameObject.SetActive(true);
             }
+        }
+
+        private void CenterOn(string id)
+        {
+            if (!data.Nodes.TryGetValue(id ?? "",out var node)) return;
+            zoom = Mathf.Max(zoom,MinZoom);
+            Vector2 p = Position(node);
+            pan = new Vector2((MapWidth/2-p.x)*zoom,(p.y-MapHeight/2)*zoom);
         }
 
         private void UpdateAp() => ap.text = $"{host.DateText}　　行動力 {host.ActionPoints}";

@@ -63,7 +63,8 @@ namespace Wuxia
             text.raycastTarget = false;
             text.horizontalOverflow = HorizontalWrapMode.Wrap;
             text.verticalOverflow = VerticalWrapMode.Truncate;
-            text.resizeTextForBestFit = true;
+            // Paragraphs (upper-left) keep their size and wrap; single-line labels shrink to fit their slot.
+            text.resizeTextForBestFit = alignment != TextAnchor.UpperLeft;
             text.resizeTextMinSize = Mathf.Min(13,size);
             text.resizeTextMaxSize = size;
             return text;

@@ -13,9 +13,9 @@ namespace Wuxia
         {
             if (recruitGrid == null || !recruitGrid.gameObject.activeSelf)
             {
-                recruitGrid = CreationRow("候選弟子", 580);
+                recruitGrid = CreationRow("候選弟子", 604);
                 var grid = recruitGrid.gameObject.AddComponent<GridLayoutGroup>();
-                grid.cellSize = new Vector2(328, 284);
+                grid.cellSize = new Vector2(328, 296);
                 grid.spacing = new Vector2(12, 12);
                 grid.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
                 grid.constraintCount = 3;
@@ -33,9 +33,9 @@ namespace Wuxia
             string talentNames = string.Join("、", (candidate.talents ?? Array.Empty<string>()).Select(id =>
                 catalog.FirstOrDefault(talent => talent.id == id)?.name ?? id));
             var body = Label(card, $"{Attributes(candidate.attrs)}\n根骨 {candidate.aptitude?.bone}／悟性 {candidate.aptitude?.insight}　忠誠 {candidate.loyalty}　{candidate.personality}\n戰鬥　{combat}\n生產　{production}\n{(talentNames.Length > 0 ? talentNames : candidate.blurb)}", 15);
-            Anchor(body.rectTransform, Vector2.zero, Vector2.one, new(12, 56), new(-12, -120));
+            Anchor(body.rectTransform, Vector2.zero, Vector2.one, new(12, 52), new(-12, -120));
             var acceptButton = Button(card, accept == null ? reason : $"收為弟子　銀 {silver}", accept);
-            Anchor(acceptButton, Vector2.zero, Vector2.right, new(10, 8), new(-10, 49));
+            Anchor(acceptButton, Vector2.zero, Vector2.right, new(10, 6), new(-10, 46));
             acceptButton.GetComponent<Button>().interactable = accept != null;
 
             string TopLines(bool martial) => string.Join("・", candidate.lines.Where(line => RankSystem.IsCombat(line.id) == martial)

@@ -1,0 +1,82 @@
+{
+  "budget": 6,
+  "families": [
+    { "id": "combat", "name": "戰鬥技能" },
+    { "id": "production", "name": "生產技能" }
+  ],
+  "categories": [
+    { "id": "fist", "name": "拳掌", "family": "combat", "desc": "赤手空拳的功夫，講究馬步與發勁。", "drives": "martial" },
+    { "id": "blade", "name": "刀", "family": "combat", "desc": "橫刀、陌刀、障刀，軍中與江湖最常見的兵器。", "drives": "martial" },
+    { "id": "sword", "name": "劍", "family": "combat", "desc": "百兵之君。崤山劍門立派之本。", "drives": "martial" },
+    { "id": "hidden", "name": "暗器", "family": "combat", "desc": "鏢、針、飛石、袖箭，一寸短一寸險。", "drives": "martial" },
+    { "id": "qinggong", "name": "輕功", "family": "combat", "desc": "提縱騰挪、登高越脊，進退全仗於此。", "drives": "martial" },
+    { "id": "neigong", "name": "內功", "family": "combat", "desc": "吐納調息、運氣行功，是一切武學的根柢。", "drives": "martial" },
+    { "id": "polearm", "name": "槍棍", "family": "combat", "desc": "槍、槊、棍、棒，長兵一寸強一寸。", "drives": "martial" },
+    { "id": "medicine", "name": "醫術", "family": "production", "desc": "金創跌打、診脈施針。治傷快慢與義診名聲都看醫術。", "drives": "healing" },
+    { "id": "alchemy", "name": "煉丹製藥", "family": "production", "desc": "丸散膏丹的配製。產出藥品，療傷、解毒、補氣。", "drives": "pills" },
+    { "id": "forging", "name": "鍛造", "family": "production", "desc": "打鐵淬火、製刀鑄劍。關乎兵器坊收入與門中裝備。", "drives": "equipment" },
+    { "id": "commerce", "name": "經商", "family": "production", "desc": "買賤賣貴、經營鋪面。影響每月銀兩收入。", "drives": "income" },
+    { "id": "farming", "name": "耕作", "family": "production", "desc": "墾田、種菜、養雞鴨。影響每月糧食產出。", "drives": "food" },
+    { "id": "construction", "name": "建築", "family": "production", "desc": "土木營造。降低興建費用、加快工期。", "drives": "buildCost" },
+    { "id": "teaching", "name": "教導", "family": "production", "desc": "傳道授業的本事。影響弟子修習進度。", "drives": "trainSpeed" }
+  ],
+  "skills": [
+    { "id": "kaibei_shou", "name": "開碑手", "category": "fist", "cost": 1, "desc": "崤山入門掌法，一掌下去，青石板上留個淺印。", "effects": [ { "key": "str", "value": 1, "ref": "" } ], "grantsRank": "B", "capBonus": 0 },
+    { "id": "jiaodi", "name": "角抵摔法", "category": "fist", "cost": 1, "desc": "長安百戲裡的角抵，近身纏鬥，專拿關節。", "effects": [ { "key": "con", "value": 1, "ref": "" } ], "grantsRank": "B", "capBonus": 0 },
+    { "id": "luohan_quan", "name": "伏虎羅漢拳", "category": "fist", "cost": 2, "desc": "少林外家拳，剛猛樸實，一拳一式都練到骨頭裡。", "effects": [], "grantsRank": "B", "capBonus": 1 },
+    { "id": "jingang_zhang", "name": "金剛般若掌", "category": "fist", "cost": 3, "desc": "掌力沉厚，以靜制動。據說要先讀通一部經，才打得出第一掌。", "effects": [ { "key": "con", "value": 1, "ref": "" } ], "grantsRank": "A", "capBonus": 1 },
+
+    { "id": "hengdao", "name": "橫刀十二路", "category": "blade", "cost": 1, "desc": "唐軍制式橫刀的用法，劈、砍、格、撩，乾淨利落。", "effects": [], "grantsRank": "B", "capBonus": 0 },
+    { "id": "modao", "name": "陌刀斬馬式", "category": "blade", "cost": 2, "desc": "陌刀如牆而進，人馬俱碎。只有兩膀過人的人才使得動。", "effects": [ { "key": "str", "value": 1, "ref": "" } ], "grantsRank": "A", "capBonus": 0 },
+    { "id": "huxuan_dao", "name": "胡旋刀", "category": "blade", "cost": 3, "desc": "化自康國胡旋舞，旋身出刀，左右旋轉不知疲。", "effects": [ { "key": "agi", "value": 1, "ref": "" } ], "grantsRank": "A", "capBonus": 1 },
+
+    { "id": "qingping", "name": "青萍劍訣", "category": "sword", "cost": 1, "desc": "劍起於青萍之末。入門劍訣，重在步法與分寸。", "effects": [], "grantsRank": "B", "capBonus": 0 },
+    { "id": "xiaoshan13", "name": "崤山十三劍", "category": "sword", "cost": 2, "desc": "崤山劍門鎮派劍法，以崤函古道十三處險隘為名，一式險過一式。", "effects": [ { "key": "loyaltyAll", "value": 3, "ref": "" } ], "grantsRank": "B", "capBonus": 1 },
+    { "id": "jianqi_huntuo", "name": "劍器渾脫", "category": "sword", "cost": 2, "desc": "教坊劍器舞中藏著的殺招，觀者如山色沮喪。", "effects": [ { "key": "cha", "value": 1, "ref": "" } ], "grantsRank": "A", "capBonus": 0 },
+    { "id": "hangu_ziqi", "name": "函谷紫氣劍", "category": "sword", "cost": 3, "desc": "相傳得自函谷關令舊宅的殘譜，劍意綿長，以氣御劍。", "effects": [ { "key": "wit", "value": 1, "ref": "" } ], "grantsRank": "A", "capBonus": 1 },
+
+    { "id": "jinqian_biao", "name": "袖裡金錢鏢", "category": "hidden", "cost": 1, "desc": "開元通寶磨薄了邊，袖中一抖，三枚齊出。", "effects": [], "grantsRank": "B", "capBonus": 0 },
+    { "id": "feihuang_shi", "name": "飛蝗石", "category": "hidden", "cost": 1, "desc": "隨手拾石，百步取人。獵戶的手藝，用在江湖上一樣管用。", "effects": [ { "key": "agi", "value": 1, "ref": "" } ], "grantsRank": "B", "capBonus": 0 },
+    { "id": "meihua_zhen", "name": "梅花透骨針", "category": "hidden", "cost": 3, "desc": "五針一簇，形如梅花。專打穴道，中者半身酸麻。", "effects": [], "grantsRank": "A", "capBonus": 1 },
+
+    { "id": "zousuo_bu", "name": "走索步", "category": "qinggong", "cost": 1, "desc": "百戲走索的步子，一根繩上也能翻筋斗。", "effects": [ { "key": "agi", "value": 1, "ref": "" } ], "grantsRank": "B", "capBonus": 0 },
+    { "id": "taxue", "name": "踏雪無痕", "category": "qinggong", "cost": 2, "desc": "提氣輕身，雪上行十步不留印。", "effects": [], "grantsRank": "B", "capBonus": 1 },
+    { "id": "babu_ganchan", "name": "八步趕蟬", "category": "qinggong", "cost": 3, "desc": "八步之內追上飛蟬，身法之快，旁人只見影子。", "effects": [ { "key": "agi", "value": 1, "ref": "" } ], "grantsRank": "A", "capBonus": 1 },
+
+    { "id": "xiaoshan_tuna", "name": "崤山吐納法", "category": "neigong", "cost": 1, "desc": "崤山劍門入門吐納，晨昏各一炷香，貴在不斷。", "effects": [ { "key": "con", "value": 1, "ref": "" } ], "grantsRank": "B", "capBonus": 0 },
+    { "id": "guixi", "name": "龜息功", "category": "neigong", "cost": 2, "desc": "息若游絲，心如止水。靜坐之中，偶得靈光。", "effects": [ { "key": "insightChance", "value": 0.02, "ref": "" } ], "grantsRank": "B", "capBonus": 1 },
+    { "id": "zifu_xuanyuan", "name": "紫府玄元功", "category": "neigong", "cost": 3, "desc": "樓觀道院流出的上乘內功，氣走周天，綿綿不絕。", "effects": [ { "key": "insightChance", "value": 0.03, "ref": "" } ], "grantsRank": "A", "capBonus": 1 },
+
+    { "id": "fubing_qiang", "name": "府兵槍術", "category": "polearm", "cost": 1, "desc": "折衝府衛士操練的槍法，十人成列，進退如一。", "effects": [], "grantsRank": "B", "capBonus": 0 },
+    { "id": "qimei_gun", "name": "齊眉棍", "category": "polearm", "cost": 1, "desc": "棍與眉齊，寺僧護院的看家本事，傷人而不殺人。", "effects": [ { "key": "con", "value": 1, "ref": "" } ], "grantsRank": "B", "capBonus": 0 },
+    { "id": "mashuo_pozhen", "name": "馬槊破陣法", "category": "polearm", "cost": 3, "desc": "貞觀名將馬上破陣之術，丈八馬槊，一往無前。", "effects": [ { "key": "str", "value": 1, "ref": "" } ], "grantsRank": "A", "capBonus": 1 },
+
+    { "id": "jinchuang", "name": "金創接骨術", "category": "medicine", "cost": 1, "desc": "止血、正骨、上夾板。行走江湖，先學會救自己。", "effects": [], "grantsRank": "B", "capBonus": 0 },
+    { "id": "qianjin", "name": "千金方摘要", "category": "medicine", "cost": 2, "desc": "孫真人《千金方》的手抄節本，「人命至重，有貴千金」。", "effects": [ { "key": "reputation", "value": 3, "ref": "" } ], "grantsRank": "A", "capBonus": 0 },
+    { "id": "zhenjiu", "name": "明堂針灸", "category": "medicine", "cost": 3, "desc": "依太醫署明堂圖取穴施針，起沉疴、通經脈。", "effects": [], "grantsRank": "A", "capBonus": 1 },
+
+    { "id": "bigu_wan", "name": "行軍乾糧丸", "category": "alchemy", "cost": 1, "desc": "炒麥、棗泥、松子和蜜搓成丸，一丸頂半日飢。", "effects": [ { "key": "food", "value": 10, "ref": "" } ], "grantsRank": "B", "capBonus": 0 },
+    { "id": "jiedu_san", "name": "解毒散", "category": "alchemy", "cost": 2, "desc": "南方瘴癘、蛇蟲之毒，一劑可緩三分。", "effects": [], "grantsRank": "B", "capBonus": 1 },
+    { "id": "huanhun_dan", "name": "續命還元丹", "category": "alchemy", "cost": 3, "desc": "以人參、黃耆為君，九蒸九曬。重傷之人服下，能吊住一口氣。", "effects": [], "grantsRank": "A", "capBonus": 1 },
+
+    { "id": "guangang", "name": "灌鋼法", "category": "forging", "cost": 1, "desc": "生鐵灌熟鐵，數宿成鋼。打農具、修兵器都靠它。", "effects": [ { "key": "silver", "value": 10, "ref": "" } ], "grantsRank": "B", "capBonus": 0 },
+    { "id": "bailian", "name": "百煉鋼", "category": "forging", "cost": 2, "desc": "一鍛一稱，百鍛而斤兩不減，方為百煉。", "effects": [], "grantsRank": "A", "capBonus": 0 },
+    { "id": "longquan_cuihuo", "name": "龍泉淬火", "category": "forging", "cost": 3, "desc": "取龍泉之水淬刃，劍身生出流雲般的紋路。", "effects": [ { "key": "reputation", "value": 3, "ref": "" } ], "grantsRank": "A", "capBonus": 1 },
+
+    { "id": "husuan", "name": "胡商算學", "category": "commerce", "cost": 1, "desc": "粟特人的記帳法，一本帳記得清三國的錢。", "effects": [ { "key": "silver", "value": 20, "ref": "" } ], "grantsRank": "B", "capBonus": 0 },
+    { "id": "guifang", "name": "櫃坊生息", "category": "commerce", "cost": 2, "desc": "把銀錢存進西市櫃坊，憑帖支取，坐收利息。", "effects": [ { "key": "silver", "value": 40, "ref": "" } ], "grantsRank": "A", "capBonus": 0 },
+    { "id": "silu", "name": "絲路行商", "category": "commerce", "cost": 3, "desc": "絹帛西去、香料東來，一趟駝隊的利，抵得上十年田租。", "effects": [ { "key": "silver", "value": 60, "ref": "" } ], "grantsRank": "A", "capBonus": 1 },
+
+    { "id": "qutian", "name": "區田法", "category": "farming", "cost": 1, "desc": "掘坑深耕、集中施肥，薄田也能多收兩成。", "effects": [ { "key": "food", "value": 20, "ref": "" } ], "grantsRank": "B", "capBonus": 0 },
+    { "id": "quyuanli", "name": "代田輪作", "category": "farming", "cost": 2, "desc": "壟溝歲歲互換，地力不竭。老農口傳的法子，比官府勸農文管用。", "effects": [ { "key": "food", "value": 40, "ref": "" } ], "grantsRank": "A", "capBonus": 0 },
+    { "id": "sangma", "name": "桑麻兼營", "category": "farming", "cost": 2, "desc": "田埂種桑，坡地種麻。糧食之外，還有絹帛可賣。", "effects": [ { "key": "food", "value": 15, "ref": "" }, { "key": "silver", "value": 10, "ref": "" } ], "grantsRank": "B", "capBonus": 1 },
+
+    { "id": "sunmao", "name": "榫卯營造", "category": "construction", "cost": 1, "desc": "不用一根鐵釘，梁柱咬合，百年不散。", "effects": [ { "key": "buildCostPct", "value": -5, "ref": "" } ], "grantsRank": "B", "capBonus": 0 },
+    { "id": "luban_chi", "name": "魯班尺法", "category": "construction", "cost": 2, "desc": "量材定尺，吉凶分寸。一根木料也不白費。", "effects": [ { "key": "buildCostPct", "value": -10, "ref": "" } ], "grantsRank": "A", "capBonus": 0 },
+    { "id": "hangtu", "name": "版築夯土", "category": "construction", "cost": 3, "desc": "長安城牆的築法，夾板層層夯實，刀砍不入。", "effects": [ { "key": "buildCostPct", "value": -15, "ref": "" } ], "grantsRank": "A", "capBonus": 1 },
+
+    { "id": "yincai", "name": "因材施教", "category": "teaching", "cost": 1, "desc": "同一招，對笨的說三遍，對聰明的只說半句。", "effects": [ { "key": "trainBonusPct", "value": 5, "ref": "" } ], "grantsRank": "B", "capBonus": 0 },
+    { "id": "chuandeng", "name": "師徒傳燈", "category": "teaching", "cost": 2, "desc": "一燈傳一燈。教出來的弟子，心也向著你。", "effects": [ { "key": "trainBonusPct", "value": 10, "ref": "" }, { "key": "loyaltyAll", "value": 3, "ref": "" } ], "grantsRank": "A", "capBonus": 0 },
+    { "id": "jiangwu", "name": "講武堂規", "category": "teaching", "cost": 3, "desc": "仿軍中講武之制，分班輪訓、考校賞罰，一年抵三年。", "effects": [ { "key": "trainBonusPct", "value": 15, "ref": "" } ], "grantsRank": "A", "capBonus": 1 }
+  ]
+}

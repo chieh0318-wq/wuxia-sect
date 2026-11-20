@@ -1,0 +1,140 @@
+{
+  "baseApCost": 1,
+  "refreshSilver": 5,
+  "maxAcceptPerVisit": 2,
+  "methods": [
+    {
+      "id": "public", "name": "公開招徒",
+      "desc": "在山門外與縣城市集張貼告示，來者不拒。人多，良莠不齊。",
+      "apCost": 1, "silverCost": 0, "poolSize": 4, "quality": 0, "rareChance": 0.05,
+      "rankWeights": [70, 25, 5, 0, 0, 0, 0],
+      "capWeights": [30, 45, 20, 4, 1, 0, 0],
+      "productionBias": 0.4
+    },
+    {
+      "id": "seek", "name": "江湖尋訪",
+      "desc": "派人走訪鏢局、武館與茶寮，打聽身手不凡的人物。費時費錢，來的多半是練過的。",
+      "apCost": 2, "silverCost": 10, "poolSize": 3, "quality": 1, "rareChance": 0.15,
+      "rankWeights": [35, 40, 20, 4, 1, 0, 0],
+      "capWeights": [10, 30, 35, 15, 8, 2, 0],
+      "productionBias": 0.2
+    },
+    {
+      "id": "orphan", "name": "收養孤兒",
+      "desc": "到善堂、寺院與戰亂流民中收養孤兒。年紀小、底子薄，卻最忠心，也最有長進。",
+      "apCost": 1, "silverCost": 5, "poolSize": 3, "quality": -1, "rareChance": 0.08,
+      "rankWeights": [92, 8, 0, 0, 0, 0, 0],
+      "capWeights": [20, 35, 25, 12, 6, 2, 0],
+      "productionBias": 0.3
+    },
+    {
+      "id": "tournament", "name": "擂台選才",
+      "desc": "在山門前擺下擂台，三日為期，勝者入門。熱鬧，花錢，也能揚名。",
+      "apCost": 2, "silverCost": 20, "poolSize": 5, "quality": 1, "rareChance": 0.1,
+      "rankWeights": [20, 45, 28, 6, 1, 0, 0],
+      "capWeights": [10, 35, 35, 13, 6, 1, 0],
+      "productionBias": 0.05
+    }
+  ],
+  "surnames": ["王", "李", "張", "劉", "陳", "楊", "趙", "周", "吳", "孫", "胡", "朱", "高", "何", "郭", "馬", "梁", "鄭", "謝", "唐", "馮", "董", "蕭", "程", "曹", "袁", "鄧", "傅", "曾", "彭", "呂", "盧", "蔣", "賈", "丁", "薛", "閻", "潘", "戴", "鍾", "汪", "田", "任", "姜", "范", "方", "石", "姚", "安", "史", "米", "康", "獨孤", "宇文", "長孫", "尉遲", "賀蘭", "上官"],
+  "givenMale": ["守義", "元慶", "懷恩", "承業", "光遠", "敬宗", "文秀", "德林", "仁厚", "思禮", "處約", "知遠", "崇儉", "延壽", "君實", "季康", "長生", "大郎", "二郎", "三郎", "十一郎", "小乙", "虎頭", "石柱", "黑子", "泰", "恆", "驍", "嵩", "昭", "朗", "衡", "默", "謙", "阿奴", "山海"],
+  "givenFemale": ["小娘", "七娘", "十一娘", "蘭芝", "若蘭", "采薇", "月娥", "蕙", "瑤", "綺", "素", "霜", "芸", "繡娘", "春桃", "杏兒", "阿香", "妙音", "惠娘", "寶珠", "青娥", "雲娘", "翠微", "雪娘", "靜姝", "明月", "如意", "端儀", "令姜", "小鳳", "燕娘", "阿蘿"],
+  "origins": [
+    { "id": "tenant", "name": "佃戶子弟", "blurbs": ["{name}家是山下的佃戶，交完租子，剩下的糧吃不到秋天。", "{name}說，里正每年都多收一份「腳錢」。學武，是想讓里正好好說話。", "{name}的手上全是老繭，扛起石鎖來，比扛米袋輕鬆。"] },
+    { "id": "deserter", "name": "逃籍府兵", "blurbs": ["{name}原是折衝府的衛士，自備的弓刀賣了一半，剩下一半帶上了山。", "番上長安三回，田卻被豪強占了。{name}說，府兵這碗飯，吃不下去了。"] },
+    { "id": "hu_merchant", "name": "胡商後裔", "blurbs": ["{name}祖上是昭武九姓的商人，從撒馬爾罕一路走到洛陽。", "{name}會說三種胡語，算帳比說話還快。", "{name}的父親在西市開了間香料鋪，盼兒子繼承家業，兒子卻盼著練劍。"] },
+    { "id": "failed_scholar", "name": "落第書生", "blurbs": ["{name}考了兩回明經，兩回落第。考官說他「氣不足」，他便來練氣。", "{name}抄得一手好字，替人寫狀紙為生，寫得多了，便不想再替人喊冤，想替自己出頭。"] },
+    { "id": "frontier_orphan", "name": "邊關遺孤", "blurbs": ["{name}的父親死在石堡城下，撫恤錢到今天還沒發下來。", "{name}在涼州軍營裡長大，聽著號角起床，會的第一個字是「殺」。"] },
+    { "id": "troupe", "name": "江湖賣藝", "blurbs": ["{name}自小在戲班裡翻筋斗、走繩索，班主醉了就打人。", "{name}在南市耍過刀，一套花刀耍得滿場喝彩，碰上真打的卻吃了虧。", "{name}說，賣藝是給人看的，學武是給自己用的。"] },
+    { "id": "laicized", "name": "還俗僧道", "blurbs": ["{name}本在寺中修行，朝廷清查度牒，被勒令還俗。", "{name}在道觀裡打了十年掃，學會了吐納，也學會了看人。"] },
+    { "id": "fisher", "name": "漁家兒女", "blurbs": ["{name}在汴河邊打魚，水性好得像條泥鰍。", "{name}的船被漕運的官船撞翻了，沒人賠，也沒處告。"] },
+    { "id": "hunter", "name": "山中獵戶", "blurbs": ["{name}在深山裡追過狐、射過狼，走山路從不出聲。", "{name}一彈弓能打下樹梢的麻雀，換了飛石，打人也一樣準。"] },
+    { "id": "escort", "name": "鏢局出身", "blurbs": ["{name}跟著鏢局走過河西，也走過嶺南，見過的強人比見過的好人多。", "鏢局倒了，{name}的師父死在半路上。他帶著師父的刀上了山。"] },
+    { "id": "smith", "name": "鐵匠學徒", "blurbs": ["{name}在鐵匠鋪拉了五年風箱，胳膊比別人粗一圈。", "{name}打過鋤頭、打過馬蹄鐵，就是沒打過一把像樣的劍。"] },
+    { "id": "herbal", "name": "藥鋪學徒", "blurbs": ["{name}在藥鋪抓了三年藥，閉著眼聞得出當歸和白芷。", "{name}的師父是個走方郎中，臨終前把半本藥書留給了他。"] },
+    { "id": "runaway_servant", "name": "豪門逃奴", "blurbs": ["{name}是豪門的家奴，主人打死了他的兄弟，他便連夜翻牆逃了。", "{name}身上沒有過所，說話時總要先看看門外。"] }
+  ],
+  "personalities": [
+    { "id": "honest", "name": "忠厚", "desc": "話不多，事做得實。認定了一個人，就不改。", "loyalty": 15 },
+    { "id": "devoted", "name": "重情", "desc": "別人對他好一分，他記十分。", "loyalty": 10 },
+    { "id": "cautious", "name": "謹慎", "desc": "凡事想三遍才動手，很少吃虧，也很少出錯。", "loyalty": 5 },
+    { "id": "silent", "name": "沉默", "desc": "一天說不上十句話，心裡卻什麼都明白。", "loyalty": 5 },
+    { "id": "bold", "name": "豪爽", "desc": "大口喝酒、大聲說笑，朋友多，仇家也不少。", "loyalty": 5 },
+    { "id": "clever", "name": "機靈", "desc": "腦子轉得快，學東西快，偷懶也快。", "loyalty": 0 },
+    { "id": "competitive", "name": "好勝", "desc": "輸不起。練功最勤的是他，跟同門吵架最多的也是他。", "loyalty": -5 },
+    { "id": "aloof", "name": "孤僻", "desc": "不愛跟人往來，一個人練劍能練到半夜。", "loyalty": -5 },
+    { "id": "lazy", "name": "散漫", "desc": "能躺著絕不坐著，可真到要緊時，也不掉鏈子。", "loyalty": -5 },
+    { "id": "greedy", "name": "貪財", "desc": "算盤打得精，誰給的錢多，他的笑臉就朝著誰。", "loyalty": -10 },
+    { "id": "proud", "name": "傲氣", "desc": "看不上比自己弱的，也不服比自己強的。", "loyalty": -10 }
+  ],
+  "specials": [
+    {
+      "id": "spec_fugitive", "name": "蘇阿蠻", "gender": "女", "age": 14, "portrait": "spec_fugitive", "origin": "逃犯之女",
+      "blurb": "衣衫襤褸，赤著腳，懷裡死死抱著一只布包。她的父親是折衝府逃兵，被官府判了死罪，她一路從潼關逃到這裡。",
+      "attrs": [3, 6, 4, 5, 3],
+      "aptitude": { "bone": 6, "insight": 7 },
+      "talents": ["shenqing"],
+      "personality": "devoted",
+      "silverCost": 0,
+      "rank": "B", "cap": "S",
+      "lines": [ { "id": "hidden", "rank": "B", "cap": "A+" }, { "id": "qinggong", "rank": "C", "cap": "A" } ],
+      "story": {
+        "prompt": "蘇阿蠻跪在山門前，額頭磕出了血：「求您收下我。我會洗衣、劈柴、打飛石……官府的人，明天就會追到這裡。」",
+        "acceptText": "你把她拉了起來。當夜，捕快在山門外轉了三圈，被你一句「山上沒有這個人」擋了回去。她在柴房裡哭了一夜，第二天起得比誰都早。",
+        "rejectText": "你給了她一包乾糧和幾十文錢。她沒有再求，只深深一拜，消失在山路的霧裡。",
+        "acceptEffects": [
+          { "key": "relation", "value": -10, "ref": "henan_fu" },
+          { "key": "relation", "value": -5, "ref": "jinwuwei" },
+          { "key": "loyaltyAll", "value": 3, "ref": "" },
+          { "key": "flag", "value": 1, "ref": "harbor_fugitive" }
+        ],
+        "risk": "窩藏逃犯之女：官府若查實，河南府與金吾衛都會找上門。日後或有人以此要挾。"
+      }
+    },
+    {
+      "id": "spec_monk", "name": "了塵", "gender": "男", "age": 17, "portrait": "spec_monk", "origin": "還俗少年僧",
+      "blurb": "頭髮剛長出寸許，像一層青苔。他在少林外院掃了十年地，朝廷清查度牒，他沒有，便被勒令還俗。",
+      "attrs": [5, 4, 6, 4, 3],
+      "aptitude": { "bone": 8, "insight": 5 },
+      "talents": ["tongpi", "yedu"],
+      "personality": "honest",
+      "silverCost": 0,
+      "rank": "B", "cap": "A+",
+      "lines": [ { "id": "fist", "rank": "B", "cap": "A" }, { "id": "polearm", "rank": "B", "cap": "A" }, { "id": "neigong", "rank": "C", "cap": "A" }, { "id": "farming", "rank": "B", "cap": "B" } ],
+      "story": {
+        "prompt": "了塵合十行禮，又像想起自己已不是和尚，尷尬地放下手：「我只會掃地、挑水、打一套棍。寺裡的師兄說，您這裡不問出身。」",
+        "acceptText": "你把一把掃帚遞給他。他笑了，接過去，從山門一路掃到祖師殿，連台階縫裡的落葉都撿乾淨了。少林那邊，也託人捎來一句謝。",
+        "rejectText": "他點點頭，說了聲「阿彌陀佛」，又改口說「多謝」，轉身往山下去了。",
+        "acceptEffects": [
+          { "key": "relation", "value": 10, "ref": "shaolin" },
+          { "key": "food", "value": 5, "ref": "" },
+          { "key": "flag", "value": 1, "ref": "liaochen_joined" }
+        ],
+        "risk": "無度牒、無戶籍。若官府清查逃戶，他是第一個要被點名的人。"
+      }
+    },
+    {
+      "id": "spec_noble", "name": "韋青蘿", "gender": "女", "age": 18, "portrait": "spec_noble", "origin": "離家出走的世家子弟",
+      "blurb": "錦衣沾滿泥點，髮簪換成了木釵。京兆韋氏的女兒，家裡要送她入宮應選，她在出城的前一夜跑了。",
+      "attrs": [3, 4, 3, 6, 6],
+      "aptitude": { "bone": 4, "insight": 8 },
+      "talents": ["bowen", "mingmen"],
+      "personality": "proud",
+      "silverCost": 0,
+      "rank": "C", "cap": "A",
+      "lines": [ { "id": "sword", "rank": "C", "cap": "A" }, { "id": "teaching", "rank": "B", "cap": "A" }, { "id": "commerce", "rank": "B", "cap": "B" } ],
+      "story": {
+        "prompt": "韋青蘿把一只鑲金的鐲子放在案上：「這是束脩。我讀過書，會算帳，也會寫奏章——如果你們需要的話。只有一條：別讓我回長安。」",
+        "acceptText": "你收下了她，也收下了那只鐲子。她第一天就把門中三年的爛帳理得清清楚楚。只是長安那邊，遲早會有人來問。",
+        "rejectText": "她拿回鐲子，笑了一下：「也好。天下之大，總有地方不怕韋家。」",
+        "acceptEffects": [
+          { "key": "silver", "value": 40, "ref": "" },
+          { "key": "reputation", "value": 5, "ref": "" },
+          { "key": "relation", "value": -15, "ref": "neishisheng" },
+          { "key": "flag", "value": 1, "ref": "wei_qingluo_joined" }
+        ],
+        "risk": "她是內侍省點了名的應選女子。宮裡若追查下來，收留她的門派便是抗旨窩藏。"
+      }
+    }
+  ]
+}

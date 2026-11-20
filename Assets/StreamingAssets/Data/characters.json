@@ -1,0 +1,95 @@
+{
+  "attributes": [
+    { "id": "str", "name": "武力", "desc": "膂力與出手的勁道，關乎拳掌刀槍的威力。" },
+    { "id": "agi", "name": "身法", "desc": "出手快慢與閃轉騰挪，輕功、暗器皆倚重於此。" },
+    { "id": "con", "name": "根骨", "desc": "筋骨體魄與內息根基，決定氣血多寡與傷後復原。" },
+    { "id": "wit", "name": "悟性", "desc": "領會武學、讀書識字的天分，關乎感悟與修習快慢。" },
+    { "id": "cha", "name": "魅力", "desc": "談吐氣度與人望，關乎招徒、結交與同門的忠心。" }
+  ],
+  "attrBase": 3,
+  "attrMax": 10,
+  "attrPoints": 8,
+  "protagonistLooks": [
+    { "id": "hero_m1", "gender": "男", "label": "端正劍客", "desc": "束髮挽髻，青灰長袍，眉目端正，站著便像一柄出鞘的劍。", "portrait": "hero_m1", "robeColor": "#46525E", "sashColor": "#8E3B2E", "hairStyle": "topknot", "skinTone": 0.5, "build": 0.5 },
+    { "id": "hero_m2", "gender": "男", "label": "粗獷武人", "desc": "膚色黝黑，下巴帶著胡茬，褐袍抹額，一身力氣都寫在肩膀上。", "portrait": "hero_m2", "robeColor": "#6B5038", "sashColor": "#3F3A33", "hairStyle": "topknot", "skinTone": 0.78, "build": 0.82 },
+    { "id": "hero_m3", "gender": "男", "label": "清秀書生", "desc": "面白如玉，戴小冠，青白襴袍，看著像赴考的舉子，袖裡卻藏著劍穗。", "portrait": "hero_m3", "robeColor": "#C9D6CC", "sashColor": "#5E7F78", "hairStyle": "crown", "skinTone": 0.28, "build": 0.35 },
+    { "id": "hero_f1", "gender": "女", "label": "英氣女俠", "desc": "高束馬尾，絳紅勁裝，眉梢帶著三分銳氣，說話從不拐彎。", "portrait": "hero_f1", "robeColor": "#7E2A26", "sashColor": "#C6A66F", "hairStyle": "ponytail", "skinTone": 0.45, "build": 0.55 },
+    { "id": "hero_f2", "gender": "女", "label": "溫婉俠女", "desc": "低髻簪花，淡青襦裙，笑起來眉眼彎彎，出劍時卻一分也不手軟。", "portrait": "hero_f2", "robeColor": "#A7BFA0", "sashColor": "#E2D2B0", "hairStyle": "bun", "skinTone": 0.35, "build": 0.4 },
+    { "id": "hero_f3", "gender": "女", "label": "冷峻劍客", "desc": "長髮半束，玄青長袍，寡言少笑，目光冷得像冬夜的井水。", "portrait": "hero_f3", "robeColor": "#26304A", "sashColor": "#1C1C24", "hairStyle": "halfup", "skinTone": 0.4, "build": 0.5 }
+  ],
+  "nameSuggestions": [
+    { "gender": "男", "names": ["蕭寒舟", "陸長庚", "薛懷遠", "鄭季白", "顧雲遲", "李承嗣", "柳行舟", "韋觀瀾", "獨孤策", "王守一", "賀蘭朔", "魏孤城"] },
+    { "gender": "女", "names": ["蘇晚晴", "韋清嘉", "盧凝雪", "蕭疏影", "賀蘭璃", "鄭蘊之", "薛素衣", "上官微", "柳含煙", "楊鶯時", "顧長歌", "獨孤嵐"] }
+  ],
+  "backgrounds": [
+    {
+      "id": "fubing_orphan", "name": "府兵遺孤",
+      "desc": "父親是折衝府衛士，番上戍邊，死在隴右。你在軍戶裡長大，認得弓刀，也認得撫恤錢總是遲到。",
+      "effects": [ { "key": "str", "value": 1, "ref": "" }, { "key": "con", "value": 1, "ref": "" }, { "key": "lineRank", "value": 1, "ref": "polearm" }, { "key": "flag", "value": 1, "ref": "bg_fubing" } ]
+    },
+    {
+      "id": "scholar_family", "name": "書香門第",
+      "desc": "祖上出過明經，家中藏書三櫃。你背得《論語》，也背得《孫子》，只是家道中落，書比米多。",
+      "effects": [ { "key": "wit", "value": 2, "ref": "" }, { "key": "reputation", "value": 3, "ref": "" }, { "key": "lineRank", "value": 1, "ref": "teaching" }, { "key": "silver", "value": -10, "ref": "" } ]
+    },
+    {
+      "id": "caravan_child", "name": "商隊之子",
+      "desc": "自小跟著駝隊在河西走廊來回，算盤比刀先上手。胡語你會三種，價錢你從不聽錯。",
+      "effects": [ { "key": "cha", "value": 1, "ref": "" }, { "key": "silver", "value": 40, "ref": "" }, { "key": "lineRank", "value": 1, "ref": "commerce" }, { "key": "relation", "value": 10, "ref": "sute" } ]
+    },
+    {
+      "id": "mountain_hunter", "name": "山野獵戶",
+      "desc": "在崤山深處跟著父親追鹿射狐。你走山路不出聲，聞得出三里外的雨。",
+      "effects": [ { "key": "agi", "value": 2, "ref": "" }, { "key": "food", "value": 20, "ref": "" }, { "key": "lineRank", "value": 1, "ref": "hidden" } ]
+    },
+    {
+      "id": "temple_foundling", "name": "寺院棄嬰",
+      "desc": "襁褓裡被放在少室山下的寺門口，跟著老僧掃地挑水長到八歲，才被師父領上崤山。",
+      "effects": [ { "key": "con", "value": 1, "ref": "" }, { "key": "wit", "value": 1, "ref": "" }, { "key": "insightChance", "value": 0.03, "ref": "" }, { "key": "relation", "value": 15, "ref": "shaolin" } ]
+    }
+  ],
+  "storyCharacters": [
+    {
+      "id": "master", "name": "褚寒山", "role": "師父・崤山劍門掌門", "gender": "男", "age": 61,
+      "desc": "崤山劍門第三代掌門，白鬚灰袍，劍法沉雄，一生不肯入仕。早年曾在李衛公舊部門下效力，藏著一段不肯對人說的往事。",
+      "portrait": "master", "rank": "S+", "cap": "SS",
+      "lines": [ { "id": "sword", "rank": "S", "cap": "SS" }, { "id": "neigong", "rank": "S", "cap": "S+" }, { "id": "qinggong", "rank": "A+", "cap": "S" }, { "id": "teaching", "rank": "A", "cap": "S" }, { "id": "medicine", "rank": "B", "cap": "A" } ]
+    },
+    {
+      "id": "friend_m", "name": "謝瑾", "role": "青梅竹馬・軍師", "gender": "男", "age": 21,
+      "desc": "洛陽謝家子，與主角同巷長大。風姿俊雅，善琴，精讀兵書；撫琴時眉目溫和，論起兵事來滿座噤聲。對主角，從無二心。",
+      "portrait": "friend_m", "rank": "A+", "cap": "S+",
+      "lines": [ { "id": "sword", "rank": "A", "cap": "S" }, { "id": "qinggong", "rank": "A", "cap": "A+" }, { "id": "neigong", "rank": "B", "cap": "A" }, { "id": "teaching", "rank": "A", "cap": "S" }, { "id": "commerce", "rank": "B", "cap": "A" } ]
+    },
+    {
+      "id": "friend_f", "name": "謝蘊", "role": "青梅竹馬・軍師", "gender": "女", "age": 20,
+      "desc": "洛陽謝家女，與主角同巷長大。琴藝冠絕兩京，胸中自有千軍；看人極準，說話極輕，一句話往往定下大局。對主角，從無二心。",
+      "portrait": "friend_f", "rank": "A+", "cap": "S+",
+      "lines": [ { "id": "hidden", "rank": "A", "cap": "S" }, { "id": "qinggong", "rank": "A", "cap": "S" }, { "id": "sword", "rank": "B", "cap": "A" }, { "id": "medicine", "rank": "A", "cap": "A+" }, { "id": "teaching", "rank": "A", "cap": "S" } ]
+    },
+    {
+      "id": "elder_villain", "name": "封伯陽", "role": "華嶽派掌門", "gender": "男", "age": 55,
+      "desc": "華嶽派掌門，錦袍玉帶，笑眼常彎。與褚寒山論交三十年，人人稱他「封善人」；他借出去的每一分情，都記在帳上。",
+      "portrait": "elder_villain", "rank": "S+", "cap": "SS",
+      "lines": [ { "id": "sword", "rank": "S", "cap": "S" }, { "id": "neigong", "rank": "S", "cap": "S+" }, { "id": "fist", "rank": "A+", "cap": "S" }, { "id": "commerce", "rank": "A", "cap": "S" } ]
+    },
+    {
+      "id": "warlord", "name": "屈突烈", "role": "黑山鐵騎統領", "gender": "男", "age": 45,
+      "desc": "胡漢雜血的邊將，披狼裘、使陌刀，手下兩千騎吃的是官糧、幹的是私事。他要《衛公兵法》，為的不是江湖名聲。",
+      "portrait": "warlord", "rank": "S+", "cap": "S+",
+      "lines": [ { "id": "blade", "rank": "S", "cap": "S" }, { "id": "polearm", "rank": "A+", "cap": "S" }, { "id": "fist", "rank": "A", "cap": "A" } ]
+    },
+    {
+      "id": "official", "name": "范希仁", "role": "殿中侍御史", "gender": "男", "age": 50,
+      "desc": "武舉出身轉任御史，緋袍幞頭，袖中藏著一手透骨釘。御史臺裡人稱「羅織手」，替宮中大璫辦過不少見不得光的案子。",
+      "portrait": "official", "rank": "A+", "cap": "S+",
+      "lines": [ { "id": "hidden", "rank": "A", "cap": "S" }, { "id": "fist", "rank": "A", "cap": "A+" }, { "id": "neigong", "rank": "B", "cap": "A" } ]
+    },
+    {
+      "id": "rival_head", "name": "秦無咎", "role": "伏牛劍派掌門", "gender": "男", "age": 48,
+      "desc": "伏牛劍派掌門，面頰瘦削，劍快如鳴鏑。當年與褚寒山在洛水邊歃血為盟，如今盯上的，是崤函道上每年過往的胡商。",
+      "portrait": "rival_head", "rank": "S", "cap": "S+",
+      "lines": [ { "id": "sword", "rank": "S", "cap": "S" }, { "id": "qinggong", "rank": "A", "cap": "A+" }, { "id": "hidden", "rank": "A", "cap": "A" } ]
+    }
+  ]
+}

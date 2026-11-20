@@ -170,6 +170,7 @@ namespace Wuxia
         }
 
         private static Color Tint(string hex) =>
-            ColorUtility.TryParseHtmlString(hex, out var color) ? color : new Color(0.55f, 0.52f, 0.44f);
+            !string.IsNullOrEmpty(hex) && ColorUtility.TryParseHtmlString(hex, out var color) ? color :
+                new Color(0.55f, 0.52f, 0.44f);
     }
 }

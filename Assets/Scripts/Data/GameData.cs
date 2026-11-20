@@ -94,14 +94,14 @@ namespace Wuxia
                 new DiscipleData { id = "lin", name = "林照", title = "入門弟子", trait = "勤勉", startInSect = true },
                 new DiscipleData { id = "shen", name = "沈青", title = "入門弟子", trait = "沉著" }
             };
-            GeneralLines = disciples?.generalLines ?? new[] { "掌門，今日院中一切如常。" };
+            GeneralLines = disciples?.generalLines ?? new[] { "今日院中一切如常。" };
             Start = Read<StartData>("start.json", file => HasText(file.sectName) && file.year >= 1 &&
                 file.month >= 1 && file.month <= 12 && file.silver >= 0 && file.food >= 0 &&
                 file.recruitCost >= 0 && file.foodPerDisciple >= 1 && file.slots != null &&
                 file.slots.Length > 0 && file.slots.All(slot => slot != null &&
                     Math.Abs(slot.x) <= 19f && Math.Abs(slot.z) <= 19f) &&
                 file.slots.Select(slot => (slot.x, slot.z)).Distinct().Count() == file.slots.Length)
-                ?? new StartData { sectName = "青嵐派", year = 1, month = 1, silver = 60, food = 24,
+                ?? new StartData { sectName = "崤山劍門", year = 1, month = 1, silver = 60, food = 24,
                     recruitCost = 12, foodPerDisciple = 1, slots = new[]
                     {
                         new SlotData { x = -8, buildingId = "hall" },

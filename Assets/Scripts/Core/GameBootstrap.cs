@@ -295,7 +295,7 @@ namespace Wuxia
             ui.CloseBuilding();
             var lines = (disciple.lines ?? System.Array.Empty<string>())
                 .Concat(state.Data.GeneralLines).Where(line => !string.IsNullOrWhiteSpace(line)).ToArray();
-            string text = lines.Length == 0 ? "掌門，請吩咐。" :
+            string text = lines.Length == 0 ? "請吩咐。" :
                 lines[UnityEngine.Random.Range(0, lines.Length)];
             ui.ShowDialogue(disciple, text);
         }

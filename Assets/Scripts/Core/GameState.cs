@@ -97,6 +97,12 @@ namespace Wuxia
                 Reputation--;
                 report.Lines.Add("糧食短缺，聲望下降 1。");
             }
+            if (Silver < 0)
+            {
+                Silver = 0;
+                Reputation--;
+                report.Lines.Add("銀兩不敷，拖欠工錢，聲望下降 1。");
+            }
 
             if (++Month > 12)
             {

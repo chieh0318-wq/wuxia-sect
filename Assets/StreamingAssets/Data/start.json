@@ -1,0 +1,53 @@
+{
+  "sectName": "青嵐派",
+  "year": 1,
+  "month": 1,
+  "silver": 80,
+  "food": 28,
+  "reputation": 4,
+  "recruitCost": 14,
+  "foodPerDisciple": 1,
+  "slots": [
+    {
+      "x": -10,
+      "z": 10,
+      "buildingId": "library"
+    },
+    {
+      "x": 0,
+      "z": 10,
+      "buildingId": "hall"
+    },
+    {
+      "x": 10,
+      "z": 10,
+      "buildingId": "infirmary"
+    },
+    {
+      "x": -10,
+      "z": 0,
+      "buildingId": "quarters"
+    },
+    {
+      "x": 0,
+      "z": 0,
+      "buildingId": "yard"
+    },
+    {
+      "x": 10,
+      "z": 0
+    },
+    {
+      "x": -10,
+      "z": -10
+    },
+    {
+      "x": 0,
+      "z": -10
+    },
+    {
+      "x": 10,
+      "z": -10
+    }
+  ]
+}

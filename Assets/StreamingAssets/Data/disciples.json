@@ -1,0 +1,86 @@
+{
+  "disciples": [
+    {
+      "id": "lin",
+      "name": "林照",
+      "gender": "男",
+      "age": 21,
+      "title": "入門弟子",
+      "trait": "勤勉",
+      "robeColor": "#536D8F",
+      "startInSect": true,
+      "lines": [
+        "掌門，晨課已畢，我再練一趟步法。"
+      ]
+    },
+    {
+      "id": "xu",
+      "name": "許雁",
+      "gender": "女",
+      "age": 24,
+      "title": "入門弟子",
+      "trait": "細心",
+      "robeColor": "#986257",
+      "startInSect": true,
+      "lines": [
+        "閣裡幾卷舊書受潮，我趁天晴搬出來晾了。"
+      ]
+    },
+    {
+      "id": "luo",
+      "name": "羅小滿",
+      "gender": "男",
+      "age": 18,
+      "title": "入門弟子",
+      "trait": "爽直",
+      "robeColor": "#8C874D",
+      "startInSect": true,
+      "lines": [
+        "今日下山買糧，市集上倒是熱鬧。"
+      ]
+    },
+    {
+      "id": "shen",
+      "name": "沈青",
+      "gender": "女",
+      "age": 23,
+      "title": "入門弟子",
+      "trait": "沉著",
+      "robeColor": "#4D7C70",
+      "startInSect": false,
+      "lines": [
+        "路過山門時，聽見院裡有人練劍。"
+      ]
+    },
+    {
+      "id": "pei",
+      "name": "裴秉",
+      "gender": "男",
+      "age": 25,
+      "title": "入門弟子",
+      "trait": "寡言",
+      "robeColor": "#776488",
+      "startInSect": false,
+      "lines": [
+        "掌門若信得過我，巡院的差事便交給我。"
+      ]
+    },
+    {
+      "id": "song",
+      "name": "宋秋娘",
+      "gender": "女",
+      "age": 19,
+      "title": "入門弟子",
+      "trait": "好學",
+      "robeColor": "#967255",
+      "startInSect": false,
+      "lines": [
+        "我想先從扎馬步學起。"
+      ]
+    }
+  ],
+  "generalLines": [
+    "掌門，今日院中一切如常。",
+    "山路晨間有霧，出門須留神。"
+  ]
+}

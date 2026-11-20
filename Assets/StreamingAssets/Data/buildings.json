@@ -1,0 +1,183 @@
+{
+  "buildings": [
+    {
+      "id": "hall",
+      "name": "大殿",
+      "description": "供奉祖師、商議門務的大殿。",
+      "color": "#AC6650",
+      "size": [
+        6,
+        2.7,
+        5
+      ],
+      "cost": {
+        "silver": 45,
+        "food": 0
+      },
+      "upkeep": 2,
+      "income": {
+        "silver": 8,
+        "food": 0,
+        "reputation": 1
+      },
+      "unique": true,
+      "startBuilt": true,
+      "actions": [
+        "council",
+        "recruit"
+      ]
+    },
+    {
+      "id": "yard",
+      "name": "練武場",
+      "description": "晨昏列隊操練的校場。",
+      "color": "#AF9060",
+      "size": [
+        5,
+        0.65,
+        4
+      ],
+      "cost": {
+        "silver": 28,
+        "food": 0
+      },
+      "upkeep": 1,
+      "income": {
+        "silver": 0,
+        "food": 0,
+        "reputation": 0
+      },
+      "unique": true,
+      "startBuilt": true,
+      "actions": [
+        "train"
+      ]
+    },
+    {
+      "id": "library",
+      "name": "藏經閣",
+      "description": "收藏拳譜、劍訣與前輩手記。",
+      "color": "#6B7F80",
+      "size": [
+        4,
+        2.5,
+        4
+      ],
+      "cost": {
+        "silver": 34,
+        "food": 0
+      },
+      "upkeep": 1,
+      "income": {
+        "silver": 0,
+        "food": 0,
+        "reputation": 0
+      },
+      "unique": true,
+      "startBuilt": true,
+      "actions": [
+        "study"
+      ]
+    },
+    {
+      "id": "quarters",
+      "name": "廂房",
+      "description": "供弟子夜宿與歇息。",
+      "color": "#83725D",
+      "size": [
+        5,
+        1.8,
+        3.5
+      ],
+      "cost": {
+        "silver": 22,
+        "food": 0
+      },
+      "upkeep": 1,
+      "income": {
+        "silver": 0,
+        "food": 0,
+        "reputation": 0
+      },
+      "unique": false,
+      "startBuilt": true,
+      "actions": [
+        "lodge"
+      ]
+    },
+    {
+      "id": "infirmary",
+      "name": "藥房",
+      "description": "備有傷藥，也收購附近山民採來的藥草。",
+      "color": "#66846D",
+      "size": [
+        4,
+        1.8,
+        3.5
+      ],
+      "cost": {
+        "silver": 26,
+        "food": 0
+      },
+      "upkeep": 1,
+      "income": {
+        "silver": 0,
+        "food": 0,
+        "reputation": 0
+      },
+      "unique": true,
+      "startBuilt": true,
+      "actions": [
+        "medicine"
+      ]
+    },
+    {
+      "id": "kitchen",
+      "name": "伙房",
+      "description": "架灶備飯，每月增加糧食。",
+      "color": "#B58047",
+      "size": [
+        4,
+        1.8,
+        3.5
+      ],
+      "cost": {
+        "silver": 24,
+        "food": 0
+      },
+      "upkeep": 1,
+      "income": {
+        "silver": 0,
+        "food": 6,
+        "reputation": 0
+      },
+      "unique": false,
+      "startBuilt": false,
+      "actions": []
+    },
+    {
+      "id": "smithy",
+      "name": "兵器坊",
+      "description": "替鄉里打製器具，每月賺取銀兩。",
+      "color": "#796D7E",
+      "size": [
+        4.5,
+        2,
+        3.5
+      ],
+      "cost": {
+        "silver": 32,
+        "food": 0
+      },
+      "upkeep": 2,
+      "income": {
+        "silver": 9,
+        "food": 0,
+        "reputation": 0
+      },
+      "unique": false,
+      "startBuilt": false,
+      "actions": []
+    }
+  ]
+}

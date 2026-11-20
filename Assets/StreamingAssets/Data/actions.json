@@ -1,0 +1,109 @@
+{
+  "actions": [
+    {
+      "id": "build",
+      "name": "建造",
+      "description": "選擇圖樣，再於院中選一塊空地。",
+      "type": "build",
+      "cost": {
+        "silver": 0,
+        "food": 0
+      },
+      "effect": {
+        "silver": 0,
+        "food": 0,
+        "reputation": 0
+      }
+    },
+    {
+      "id": "recruit",
+      "name": "招收弟子",
+      "description": "延請一位尚未入門的弟子。",
+      "type": "recruit",
+      "cost": {
+        "silver": 0,
+        "food": 0
+      },
+      "effect": {
+        "silver": 0,
+        "food": 0,
+        "reputation": 0
+      }
+    },
+    {
+      "id": "council",
+      "name": "召開月會",
+      "description": "用茶飯款待弟子，商議本月門務。",
+      "type": "generic",
+      "cost": {
+        "silver": 0,
+        "food": 1
+      },
+      "effect": {
+        "silver": 0,
+        "food": 0,
+        "reputation": 1
+      }
+    },
+    {
+      "id": "train",
+      "name": "操練弟子",
+      "description": "添備伙食，讓弟子操練刀劍與步法。",
+      "type": "generic",
+      "cost": {
+        "silver": 0,
+        "food": 2
+      },
+      "effect": {
+        "silver": 0,
+        "food": 0,
+        "reputation": 2
+      }
+    },
+    {
+      "id": "study",
+      "name": "研讀秘籍",
+      "description": "備置燈油與紙墨，抄錄拳譜。",
+      "type": "generic",
+      "cost": {
+        "silver": 2,
+        "food": 0
+      },
+      "effect": {
+        "silver": 0,
+        "food": 0,
+        "reputation": 1
+      }
+    },
+    {
+      "id": "lodge",
+      "name": "安頓弟子",
+      "description": "整備床鋪，為弟子安排住處。",
+      "type": "generic",
+      "cost": {
+        "silver": 0,
+        "food": 0
+      },
+      "effect": {
+        "silver": 0,
+        "food": 0,
+        "reputation": 0
+      }
+    },
+    {
+      "id": "medicine",
+      "name": "煉製藥材",
+      "description": "購入藥草，為弟子及附近鄉民備藥。",
+      "type": "generic",
+      "cost": {
+        "silver": 4,
+        "food": 0
+      },
+      "effect": {
+        "silver": 0,
+        "food": 0,
+        "reputation": 2
+      }
+    }
+  ]
+}

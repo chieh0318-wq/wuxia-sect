@@ -1,0 +1,10 @@
+# Asset credits
+
+Textures from Poly Haven, licensed under CC0.
+
+- Grey Roof Tiles by Rob Tuytel, CC0. https://polyhaven.com/a/grey_roof_tiles
+- Cobblestone Floor 04 by Rob Tuytel, CC0. https://polyhaven.com/a/cobblestone_floor_04
+- Forest Floor by eye-candy.xyz, CC0. https://polyhaven.com/a/forest_floor
+- White Rough Plaster by Rob Tuytel, CC0. https://polyhaven.com/a/white_rough_plaster
+- Wood Planks Grey by Rob Tuytel, CC0. https://polyhaven.com/a/wood_planks_grey
+- Grass Ground by Charlotte Baglioni, CC0. https://polyhaven.com/a/grass_ground

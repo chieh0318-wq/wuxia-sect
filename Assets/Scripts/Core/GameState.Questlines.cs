@@ -78,7 +78,8 @@ namespace Wuxia
             if (Story.questMonth >= month) return;
 
             // Early personal stories get first claim on a month when several beats unlock together.
-            foreach (var line in Questlines.OrderBy(line => QuestPriority(CharacterId(line.character))))
+            foreach (var line in Questlines.OrderBy(line => QuestStatus(line.id) != null)
+                .ThenBy(line => QuestPriority(CharacterId(line.character))))
             {
                 if (line.character is "friend_m" or "friend_f" && line.character != FriendId) continue;
                 if (Array.Exists(Story.queuedQuests, entry => entry?.quest == line.id)) continue;

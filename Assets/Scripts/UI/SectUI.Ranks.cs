@@ -26,15 +26,17 @@ namespace Wuxia
             SkillColumns(lines);
         }
 
-        internal void SkillColumns(SkillLine[] lines)
+        internal void SkillColumns(SkillLine[] lines, bool knownOnly = false)
         {
             var families = new[] { (key: "combat", label: "戰鬥技能"), (key: "production", label: "生產技能") };
             var groups = families.Select(family => RankSystem.Categories.Where(category => category.family == family.key)
-                .Select(category => (category, line: Array.Find(lines, entry => entry.id == category.id))).ToArray()).ToArray();
+                .Select(category => (category, line: Array.Find(lines, entry => entry?.id == category.id)))
+                .Where(pair => !knownOnly || pair.line != null).ToArray()).ToArray();
             const int rowHeight = 39;
             var row = CreationRow("技能", 44 + rowHeight * groups.Max(group => group.Length));
             for (int column = 0; column < families.Length; column++)
             {
+                if (knownOnly && groups[column].Length == 0) continue;
                 var panel = Rect(families[column].label, row);
                 Anchor(panel, new(column * .5f, 0), new((column + 1) * .5f, 1), new(10, 0), new(-10, 0));
                 var heading = Label(panel, families[column].label, 27);
@@ -44,6 +46,8 @@ namespace Wuxia
                 {
                     var line = pair.line;
                     var label = Label(panel, $"{pair.category.name}　{RankSystem.Format(line?.rank, line?.cap)}", 20);
+                    if (knownOnly)
+                        label.color = Color.Lerp(RankSystem.Color(line.rank), Ink, .35f);
                     Anchor(label.rectTransform, Vector2.up, Vector2.one, new(0, y - 30), new(0, y));
                     for (int tier = 0; tier <= RankSystem.Index(line?.cap); tier++)
                     {

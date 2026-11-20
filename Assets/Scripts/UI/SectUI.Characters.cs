@@ -73,8 +73,6 @@ namespace Wuxia
                 Field("與主角的關係", $"{person.relation}　{relation:+0;-0;0}".Trim());
             if (person.signatureSkills?.Length > 0)
                 Field("拿手絕藝", string.Join("、", person.signatureSkills));
-            if (person.lines?.Any(line => line != null) == true)
-                SkillColumns(person.lines.Where(line => line != null).ToArray());
             foreach (var quest in quests)
             {
                 AddLine(modalList, quest.title ?? "人物逸事", 28);
@@ -89,6 +87,9 @@ namespace Wuxia
                     Info(beat.HasScene ? beat.summary : beat.outline ?? beat.summary);
                 }
             }
+
+            if (person.lines?.Any(line => line != null) == true)
+                SkillColumns(person.lines, knownOnly: true);
 
             void Info(string text)
             {

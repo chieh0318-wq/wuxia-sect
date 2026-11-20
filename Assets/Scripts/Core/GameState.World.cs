@@ -32,7 +32,12 @@ namespace Wuxia
         public string PartyNode
         {
             get => string.IsNullOrEmpty(Story.partyNode) ? StartNode : Story.partyNode;
-            set => Story.partyNode = value;
+            set
+            {
+                if (Story.partyNode == value) return;
+                Story.partyNode = value;
+                EvaluateQuestlines();
+            }
         }
 
         public void AdvanceDays(int days)

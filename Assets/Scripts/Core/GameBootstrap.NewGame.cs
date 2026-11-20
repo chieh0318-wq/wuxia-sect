@@ -52,7 +52,17 @@ namespace Wuxia
         }
 
         internal void CaptureAppearance() => ChooseAppearance();
-        internal void CaptureTalents() => StartTalents();
+        /// <summary>Capture: six offered talents with two picked, plus both skill families underneath.</summary>
+        internal void CaptureTalents()
+        {
+            selected.Clear();
+            RollTalents();
+            offered = offered.Take(6).ToArray();
+            foreach (var option in offered.Where(option => option.cost > 0).OrderByDescending(option => option.rarity == "rare").Take(2))
+                if (CanPick(option, talents.budget, talents.maxPicks))
+                    selected.Add(option);
+            ShowTalents();
+        }
         internal void CapturePrologue()
         {
             var opening = story.openingBeats ?? Array.Empty<StoryBeat>();
@@ -171,6 +181,22 @@ namespace Wuxia
                 ui.CreationGrid(3, (offered.Length + 2) / 3, 136);
             foreach (var option in offered.OrderBy(x => x.rarity == "legendary" ? 0 : x.rarity == "rare" ? 1 : 2))
                 ShowPick(option, RarityLabel(option.rarity), talents.budget, talents.maxPicks, ShowTalents);
+            // Both skill families, reflecting rank/cap effects of the talents picked so far.
+            ui.SkillColumns(PreviewLines(selected));
+        }
+
+        private SkillLine[] PreviewLines(IEnumerable<CreationOption> picks)
+        {
+            var preview = RankSystem.Seed(state.Protagonist.lines, null, null, "B");
+            foreach (var effect in picks.SelectMany(option => option.effects ?? Array.Empty<GameEffect>()))
+            {
+                if (effect == null || effect.key is not ("rank" or "lineRank" or "cap"))
+                    continue;
+                var line = effect.@ref == "martial" ? RankSystem.BestCombat(preview)
+                    : Array.Find(preview, entry => entry.id == effect.@ref);
+                RankSystem.Shift(line, Mathf.RoundToInt(effect.value), effect.key == "cap");
+            }
+            return preview;
         }
 
         private int Spent => selected.Sum(option => option.cost);

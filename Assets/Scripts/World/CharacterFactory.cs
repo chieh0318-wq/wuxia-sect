@@ -16,6 +16,11 @@ namespace Wuxia
         private static readonly Dictionary<string, Mesh> meshes = new();
         private static Material solid;
         private static Mesh sphere, cube;
+        private static readonly (float y,float x,float z)[] JacketProfile =
+        {
+            (.82f,.159f,.111f),(1.0f,.143f,.105f),(1.21f,.194f,.123f),
+            (1.34f,.202f,.103f),(1.39f,.075f,.067f)
+        };
         private static readonly MaterialPropertyBlock paint = new();
 
         public static CharacterLook ForStory(string id) => id switch
@@ -65,13 +70,14 @@ namespace Wuxia
             Color lining = Color.Lerp(robe, new Color(.79f, .68f, .53f), .64f);
             Color sash = Tint(look.sashColor, robe * .64f);
             Color skin = Color.Lerp(new Color(.84f,.66f,.51f), new Color(.54f,.32f,.20f), look.skinTone);
-            var torso = Revolve("Cross-collar jacket", root, robe, 0,
-                (.82f,.159f,.111f),(1.0f,.143f,.105f),(1.21f,.194f,.123f),(1.34f,.202f,.103f),(1.39f,.075f,.067f));
+            var torso = Revolve("Cross-collar jacket",root,robe,0,JacketProfile);
             var skirt = Revolve("Pleated ankle-length robe", root, robe, .075f,
                 (.15f,.245f,.174f),(.32f,.219f,.154f),(.65f,.181f,.132f),(1.00f,.149f,.104f));
-            Revolve("Woven sash", root, sash, 0, (.93f,.158f,.117f),(.99f,.152f,.112f),(1.015f,.147f,.105f));
-            Strip("Overlapping collar", torso, lining, new(-.084f,1.379f,.073f), new(.097f,1.07f,.108f), .043f);
-            Strip("Inner collar", torso, lining, new(.081f,1.377f,.073f), new(-.006f,1.237f,.126f), .037f);
+            Revolve("Woven sash", root, sash, 0, (.925f,.169f,.126f),(.99f,.164f,.122f),(1.015f,.161f,.118f));
+            Ribbon("Crossed collar",torso,lining,.031f,
+                new(.064f,1.385f),new(.044f,1.319f),new(-.013f,1.231f),new(-.082f,1.133f));
+            Ribbon("Inner collar",torso,Color.Lerp(lining,robe,.2f),.029f,
+                new(-.065f,1.385f),new(-.049f,1.317f),new(-.009f,1.234f));
             Strip("Hanging sash", root, sash, new(.11f,.98f,.102f), new(.14f,.67f,.130f), .047f);
             Strip("Sash tail", root, sash, new(.095f,.977f,.118f), new(.076f,.75f,.129f), .028f);
             Orb("Neck", torso, skin, new(0,1.405f,.006f), new(.104f,.144f,.104f));
@@ -93,16 +99,16 @@ namespace Wuxia
             limbs.SetBody(torso, skirt);
             for (int side = -1; side <= 1; side += 2)
             {
-                var arm = Joint(root, new(side*.18f,1.31f,0));
+                var arm = Joint(root, new(side*.165f,1.321f,0));
                 arm.localRotation = Quaternion.Euler(0,0,side*13);
                 Revolve("Wide sleeve", arm, robe, .025f,
-                    (-.415f,.10f,.082f),(-.33f,.107f,.092f),(-.17f,.084f,.076f),(0,.071f,.065f));
+                    (-.415f,.10f,.082f),(-.33f,.107f,.092f),(-.17f,.084f,.076f),(-.035f,.074f,.063f),(.040f,.032f,.034f));
                 Revolve("Sleeve facing", arm, lining, 0,
-                    (-.424f,.099f,.080f),(-.396f,.102f,.084f));
+                    (-.427f,.107f,.088f),(-.397f,.112f,.093f));
                 Orb("Hand", arm, skin, new(0,-.443f,.022f), new(.072f,.102f,.055f));
                 var leg = Joint(root, new(side*.096f,.73f,0));
                 Orb("Trousers", leg, sash, new(0,-.35f,0), new(.13f,.67f,.13f));
-                Orb("Cloth boot", leg, ink, new(0,-.652f,.045f), new(.126f,.150f,.244f));
+                Orb("Cloth boot", leg, ink, new(0,-.660f,.047f), new(.126f,.140f,.244f));
                 limbs.SetLimb(side < 0 ? 0 : 1, arm, leg);
             }
             return body;
@@ -170,6 +176,45 @@ namespace Wuxia
             part.localPosition = (a+b)*.5f + Vector3.forward*.014f;
             part.localRotation = Quaternion.FromToRotation(Vector3.up,b-a);
             part.localScale = new Vector3(width,Vector3.Distance(a,b),.022f);
+        }
+
+        private static void Ribbon(string name,Transform parent,Color color,float width,params Vector2[] line)
+        {
+            if (!meshes.TryGetValue(name,out var mesh))
+            {
+                const int subdivisions = 12;
+                int samples = (line.Length-1)*subdivisions+1;
+                var vertices = new Vector3[samples*2];
+                var indices = new int[(samples-1)*6];
+                for (int i=0;i<samples;i++)
+                {
+                    int segment = Mathf.Min(i/subdivisions,line.Length-2);
+                    Vector2 p = Vector2.Lerp(line[segment],line[segment+1],(i-segment*subdivisions)/(float)subdivisions);
+                    vertices[i*2] = CollarPoint(p.x-width*.5f,p.y);
+                    vertices[i*2+1] = CollarPoint(p.x+width*.5f,p.y);
+                    if (i == samples-1) continue;
+                    int v=i*2, t=i*6;
+                    indices[t]=v; indices[t+1]=v+2; indices[t+2]=v+1;
+                    indices[t+3]=v+1; indices[t+4]=v+2; indices[t+5]=v+3;
+                }
+                mesh = new Mesh { name = name, vertices = vertices, triangles = indices };
+                mesh.RecalculateNormals();
+                meshes.Add(name,mesh);
+            }
+            Piece(name,parent,mesh,color);
+        }
+
+        private static Vector3 CollarPoint(float x,float y)
+        {
+            int upper = 1;
+            while (upper < JacketProfile.Length-1 && JacketProfile[upper].y < y) upper++;
+            var a = JacketProfile[upper-1];
+            var b = JacketProfile[upper];
+            float t = Mathf.InverseLerp(a.y,b.y,y);
+            float rx = Mathf.Lerp(a.x,b.x,t);
+            float rz = Mathf.Lerp(a.z,b.z,t);
+            float z = rz*Mathf.Sqrt(Mathf.Max(0,1-(x/rx)*(x/rx)));
+            return new Vector3(x,y,z+.005f);
         }
 
         private static Transform Revolve(string name, Transform parent, Color color, float folds,

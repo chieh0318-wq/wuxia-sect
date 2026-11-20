@@ -4,7 +4,7 @@
       "id": "jinwuwei", "name": "金吾衛", "type": "court", "special": true, "color": "#8E3B2E",
       "seat": "changan", "territory": ["changan", "tongguan"],
       "reputation": 70, "disciples": 3000, "martialArts": ["橫刀十二路", "金吾陌刀陣"], "money": 8000,
-      "stance": "neutral", "known": true, "leader": "左金吾衛大將軍　獨孤鎮",
+      "stance": "neutral", "known": true, "leader": "左金吾衛大將軍　獨孤鎮", "leaderId": "leader_jinwuwei",
       "desc": "掌京城晝夜巡警、街鼓夜禁。官府要拿江湖人，十有八九派的是金吾衛的甲士。",
       "leaderRank": "A+", "leaderCap": "S",
       "notables": [ { "name": "顏九", "title": "左街使", "rank": "A", "cap": "A+", "desc": "長安一百零八坊，哪條巷子幾更有人走動，他都記得。" } ]
@@ -13,7 +13,7 @@
       "id": "yushitai", "name": "御史臺", "type": "court", "special": true, "color": "#5A2E3A",
       "seat": "changan", "territory": ["changan", "luoyang"],
       "reputation": 60, "disciples": 300, "martialArts": ["臺獄鎖拿手"], "money": 5000,
-      "stance": "neutral", "known": true, "leader": "御史大夫　宇文嶠",
+      "stance": "neutral", "known": true, "leader": "御史大夫　宇文嶠", "leaderId": "leader_yushitai",
       "desc": "糾察百官、推鞫刑獄。一紙彈章能讓刺史丟官，一座臺獄能讓好漢開口。",
       "leaderRank": "B", "leaderCap": "B",
       "notables": [ { "name": "范希仁", "title": "殿中侍御史", "rank": "A+", "cap": "S+", "desc": "武舉出身的「羅織手」，袖藏透骨釘，替宮中大璫辦過不少案子。" } ]
@@ -22,7 +22,7 @@
       "id": "neishisheng", "name": "內侍省", "type": "court", "special": true, "color": "#6B4A7A",
       "seat": "changan", "territory": ["changan", "luoyang"],
       "reputation": 40, "disciples": 800, "martialArts": ["陰柔綿掌", "宮門擒拿"], "money": 20000,
-      "stance": "neutral", "known": false, "leader": "內常侍　霍元昌",
+      "stance": "neutral", "known": false, "leader": "內常侍　霍元昌", "leaderId": "leader_neishisheng",
       "desc": "宮中宦官之署。近年大璫權勢日盛，莊園、別業、寺產遍布兩京近畿，誰的山好，便看上誰的山。",
       "leaderRank": "S", "leaderCap": "S",
       "notables": [ { "name": "馮順", "title": "內給事（綠袍內侍）", "rank": "A", "cap": "A+", "desc": "笑臉迎人，茶一口不喝。替大璫跑腿收地，所到之處，總有人家破門亡。" } ]
@@ -31,7 +31,7 @@
       "id": "henan_fu", "name": "河南府", "type": "court", "special": true, "color": "#7A6A4A",
       "seat": "luoyang", "territory": ["luoyang", "shanzhou", "hangu"],
       "reputation": 55, "disciples": 1500, "martialArts": ["不良人緝捕術"], "money": 12000,
-      "stance": "neutral", "known": true, "leader": "河南尹　韋元溥",
+      "stance": "neutral", "known": true, "leader": "河南尹　韋元溥", "leaderId": "leader_henan_fu",
       "desc": "東都所在的京畿府衙，管著洛陽與周邊十數縣。府裡的不良人，比江湖人更懂江湖。",
       "leaderRank": "B", "leaderCap": "B",
       "notables": [ { "name": "賈三", "title": "不良帥", "rank": "A", "cap": "A+", "desc": "早年是洛陽南市的游俠兒，如今專抓游俠兒。" } ]
@@ -40,7 +40,7 @@
       "id": "hexi_jds", "name": "河西節度使府", "type": "military", "special": true, "color": "#9C3E2B",
       "seat": "liangzhou", "territory": ["liangzhou", "ganzhou", "jiuquan", "shazhou", "yumen"],
       "reputation": 75, "disciples": 5000, "martialArts": ["河西馬槊", "赤水軍弓陣"], "money": 25000,
-      "stance": "neutral", "known": true, "leader": "河西節度使　渾元朗",
+      "stance": "neutral", "known": true, "leader": "河西節度使　渾元朗", "leaderId": "leader_hexi_jds",
       "desc": "斷隔吐蕃與突厥，河西七州的兵馬盡歸節度。招募健兒的餉比府兵高，山東子弟紛紛西投。",
       "leaderRank": "S", "leaderCap": "S", "leaderWeapon": "weapon_pozhen_shuo",
       "notables": [ { "name": "慕容遷", "title": "赤水軍使", "rank": "A", "cap": "S", "desc": "吐谷渾王族後裔，騎射冠絕河西。" } ]
@@ -49,7 +49,7 @@
       "id": "anxi_dhf", "name": "安西都護府", "type": "military", "special": true, "color": "#A0733C",
       "seat": "qiuci", "territory": ["qiuci", "shule", "yutian", "gaochang"],
       "reputation": 70, "disciples": 4000, "martialArts": ["安西橫刀", "大漠陌刀陣"], "money": 15000,
-      "stance": "neutral", "known": true, "leader": "安西副大都護　裴行遠",
+      "stance": "neutral", "known": true, "leader": "安西副大都護　裴行遠", "leaderId": "leader_anxi_dhf",
       "desc": "鎮撫西域諸國，四鎮孤懸萬里之外。戍卒十年不得歸，家書要走大半年。",
       "leaderRank": "S", "leaderCap": "S+",
       "notables": [ { "name": "白延壽", "title": "龜茲鎮將", "rank": "A", "cap": "S", "desc": "龜茲王族白氏子弟，琵琶與橫刀都使得好。" } ]
@@ -58,7 +58,7 @@
       "id": "fanyang_jds", "name": "范陽節度使府", "type": "military", "special": true, "color": "#4A3A2E",
       "seat": "youzhou", "territory": ["youzhou", "yingzhou", "linyu", "dingzhou"],
       "reputation": 65, "disciples": 5000, "martialArts": ["幽燕騎射", "曳落河短刀"], "money": 30000,
-      "stance": "neutral", "known": true, "leader": "范陽節度使　張懷遠",
+      "stance": "neutral", "known": true, "leader": "范陽節度使　張懷遠", "leaderId": "leader_fanyang_jds",
       "desc": "鎮河北、制奚與契丹，胡漢健兒雜編成軍。朝中有人私下說：這支兵，只認節度使。",
       "leaderRank": "S", "leaderCap": "S",
       "notables": [
@@ -70,7 +70,7 @@
       "id": "shaolin", "name": "少林寺", "type": "sect", "special": false, "color": "#C6A66F",
       "seat": "songshan", "territory": ["songshan"],
       "reputation": 92, "disciples": 600, "martialArts": ["少林棍法", "伏虎羅漢拳", "達摩禪定功"], "money": 9000,
-      "stance": "friendly", "known": true, "leader": "方丈　了空大師",
+      "stance": "friendly", "known": true, "leader": "方丈　了空大師", "leaderId": "leader_shaolin",
       "desc": "寺僧助太宗擒王世充，御賜田地，敕書至今供在寺中。官府不輕易登門，江湖人也不敢放肆。",
       "leaderRank": "S+", "leaderCap": "S+", "leaderWeapon": "weapon_monk_staff",
       "notables": [
@@ -82,7 +82,7 @@
       "id": "huayue", "name": "華嶽派", "type": "sect", "special": false, "color": "#3F6A8A",
       "seat": "huashan", "territory": ["huashan", "puzhou"],
       "reputation": 82, "disciples": 900, "martialArts": ["太華十九式", "蓮花峰掌", "紫府玄元功"], "money": 15000,
-      "stance": "friendly", "known": true, "leader": "掌門　封伯陽",
+      "stance": "friendly", "known": true, "leader": "掌門　封伯陽", "leaderId": "elder_villain",
       "desc": "關中第一大派，殿宇連綿、別院遍布，與長安權貴往來密切。掌門封伯陽人稱「封善人」，借出去的每一分情都記在帳上。",
       "leaderRank": "S+", "leaderCap": "SS",
       "notables": [
@@ -94,7 +94,7 @@
       "id": "funiu", "name": "伏牛劍派", "type": "sect", "special": false, "color": "#5E6B3A",
       "seat": "funiu", "territory": ["funiu"],
       "reputation": 50, "disciples": 260, "martialArts": ["伏牛七絕劍", "鳴鏑飛石"], "money": 3000,
-      "stance": "friendly", "known": true, "leader": "掌門　秦無咎",
+      "stance": "friendly", "known": true, "leader": "掌門　秦無咎", "leaderId": "rival_head",
       "desc": "豫西的老牌劍派，與崤山劍門同盟二十年。近年山中用度日緊，掌門秦無咎常望著崤函道出神。",
       "leaderRank": "S", "leaderCap": "S+",
       "notables": [ { "name": "秦小樓", "title": "首徒", "rank": "B", "cap": "A", "desc": "秦無咎的侄兒，劍快，心更急。" } ]
@@ -103,7 +103,7 @@
       "id": "louguan", "name": "樓觀派", "type": "sect", "special": false, "color": "#5E7F78",
       "seat": "zhongnan", "territory": ["zhongnan"],
       "reputation": 72, "disciples": 300, "martialArts": ["紫氣東來掌", "說經台吐納"], "money": 7000,
-      "stance": "neutral", "known": true, "leader": "觀主　尹太初",
+      "stance": "neutral", "known": true, "leader": "觀主　尹太初", "leaderId": "leader_louguan",
       "desc": "終南山樓觀道院，皇家尊崇的道門。道士們不問江湖事，卻個個內功深厚。",
       "leaderRank": "S", "leaderCap": "S",
       "notables": [ { "name": "紀青虛", "title": "監院", "rank": "A", "cap": "S", "desc": "替觀主打理俗務，也替觀主擋下所有不想見的人。" } ]
@@ -112,7 +112,7 @@
       "id": "wulong", "name": "五龍觀", "type": "sect", "special": false, "color": "#4F6F5A",
       "seat": "wudang", "territory": ["wudang"],
       "reputation": 58, "disciples": 200, "martialArts": ["玄武劍", "龜蛇導引術"], "money": 2500,
-      "stance": "neutral", "known": true, "leader": "觀主　呂元貞",
+      "stance": "neutral", "known": true, "leader": "觀主　呂元貞", "leaderId": "leader_wulong",
       "desc": "武當山五龍祠的道人，練一種以柔克剛、後發先至的拳劍。人少，名聲卻在江湖上慢慢傳開。",
       "leaderRank": "A+", "leaderCap": "S+",
       "notables": [ { "name": "張守沖", "title": "首座弟子", "rank": "B", "cap": "S", "desc": "十九歲，打坐時能一動不動坐上一整天。" } ]
@@ -121,7 +121,7 @@
       "id": "emei", "name": "峨眉劍宗", "type": "sect", "special": false, "color": "#8A6A9C",
       "seat": "emei", "territory": ["emei", "chengdu"],
       "reputation": 65, "disciples": 400, "martialArts": ["金頂佛光掌", "峨眉刺法"], "money": 6000,
-      "stance": "neutral", "known": true, "leader": "掌門　靜玄師太",
+      "stance": "neutral", "known": true, "leader": "掌門　靜玄師太", "leaderId": "leader_emei",
       "desc": "峨眉山上的俗家劍宗，與山上佛寺比鄰。門下多女弟子，劍走輕靈。",
       "leaderRank": "A+", "leaderCap": "S",
       "notables": [ { "name": "蘇雪衣", "title": "首徒", "rank": "A", "cap": "S", "desc": "一年下山三回，三回都帶著仇家的劍回來。" } ]
@@ -130,7 +130,7 @@
       "id": "chicheng", "name": "赤城劍閣", "type": "sect", "special": false, "color": "#B5655A",
       "seat": "tiantai", "territory": ["tiantai", "yuezhou"],
       "reputation": 55, "disciples": 300, "martialArts": ["赤城霞劍", "天台止觀"], "money": 5000,
-      "stance": "neutral", "known": false, "leader": "閣主　陸孤雲",
+      "stance": "neutral", "known": false, "leader": "閣主　陸孤雲", "leaderId": "leader_chicheng",
       "desc": "天台山赤城峰上的劍閣，閣中弟子劍法如霞光散落。閣主二十年不下山，江湖上的消息卻一件也不少知道。",
       "leaderRank": "S", "leaderCap": "S"
     },
@@ -138,7 +138,7 @@
       "id": "zhurong", "name": "祝融門", "type": "sect", "special": false, "color": "#C0442F",
       "seat": "hengshan", "territory": ["hengshan", "tanzhou"],
       "reputation": 50, "disciples": 350, "martialArts": ["祝融烈掌", "回雁劍"], "money": 4000,
-      "stance": "neutral", "known": false, "leader": "門主　鍾離熾",
+      "stance": "neutral", "known": false, "leader": "門主　鍾離熾", "leaderId": "leader_zhurong",
       "desc": "南嶽衡山的掌門派，掌法剛烈如火。門主脾氣比掌法更烈。",
       "leaderRank": "A+", "leaderCap": "A+"
     },
@@ -146,7 +146,7 @@
       "id": "yeyu", "name": "夜雨樓", "type": "sect", "special": false, "color": "#2E3A4A",
       "seat": "luoyang", "territory": ["luoyang", "yangzhou"],
       "reputation": 30, "disciples": 120, "martialArts": ["霜鍔短劍", "聽雨暗器"], "money": 18000,
-      "stance": "neutral", "known": false, "leader": "樓主（姓名不詳）",
+      "stance": "neutral", "known": false, "leader": "樓主（姓名不詳）", "leaderId": "leader_yeyu",
       "desc": "兩京之間流傳的刺客樓。只收錢，不問因由。據說那位洛陽來客，與夜雨樓有些關係。",
       "leaderRank": "S+", "leaderCap": "S+", "leaderWeapon": "weapon_shuange",
       "notables": [ { "name": "雨十三", "title": "執事", "rank": "A+", "cap": "S", "desc": "見過他的人都說他長得極普通，普通到轉身就忘了。" } ]
@@ -155,7 +155,7 @@
       "id": "nongchao", "name": "錢塘弄潮幫", "type": "clan", "special": false, "color": "#3A6A7A",
       "seat": "hangzhou", "territory": ["hangzhou", "suzhou"],
       "reputation": 45, "disciples": 600, "martialArts": ["弄潮分水刺", "舟楫刀"], "money": 9000,
-      "stance": "neutral", "known": true, "leader": "幫主　錢四娘",
+      "stance": "neutral", "known": true, "leader": "幫主　錢四娘", "leaderId": "leader_nongchao",
       "desc": "錢塘江上的船家與弄潮兒結成的幫會，管著江口一半的渡船。能在船舷上走，也能在浪頭上打。",
       "leaderRank": "A", "leaderCap": "A+",
       "notables": [ { "name": "潮頭燕", "title": "弄潮頭領", "rank": "A", "cap": "A", "desc": "八月大潮，他踏浪而出，手中紅旗不濕。" } ]
@@ -164,7 +164,7 @@
       "id": "cuishi", "name": "博陵崔氏", "type": "clan", "special": false, "color": "#5B6E9C",
       "seat": "dingzhou", "territory": ["dingzhou"],
       "reputation": 85, "disciples": 150, "martialArts": ["崔氏家傳槊法"], "money": 40000,
-      "stance": "neutral", "known": true, "leader": "宗長　崔元禮",
+      "stance": "neutral", "known": true, "leader": "宗長　崔元禮", "leaderId": "leader_cuishi",
       "desc": "山東五姓七家之一，天子嫁女都嫌門第不夠。家兵不多，人脈卻遍及朝野。",
       "leaderRank": "B", "leaderCap": "B",
       "notables": [ { "name": "崔猛", "title": "家將", "rank": "A", "cap": "A+", "desc": "崔家養了二十年的家將，專門替崔家找回離家出走的子弟。" } ]
@@ -173,7 +173,7 @@
       "id": "sute", "name": "粟特商團", "type": "merchant", "special": false, "color": "#C6A66F",
       "seat": "liangzhou", "territory": ["liangzhou", "changan", "shazhou", "gaochang"],
       "reputation": 60, "disciples": 800, "martialArts": ["胡旋刀", "駝隊連弩陣"], "money": 60000,
-      "stance": "friendly", "known": true, "leader": "薩寶　安延年",
+      "stance": "friendly", "known": true, "leader": "薩寶　安延年", "leaderId": "leader_sute",
       "desc": "昭武九姓的商人，從撒馬爾罕到長安，駝隊不絕於道。他們的帳簿，比朝廷的邸報更早知道天下大事。",
       "leaderRank": "A", "leaderCap": "A+",
       "notables": [ { "name": "石盤陀", "title": "護衛首領", "rank": "A", "cap": "S", "desc": "石國人，臉上一道刀疤，從不跟人討價還價。" } ]
@@ -182,7 +182,7 @@
       "id": "yanbang", "name": "揚州鹽幫", "type": "merchant", "special": false, "color": "#D8C9A3",
       "seat": "yangzhou", "territory": ["yangzhou"],
       "reputation": 40, "disciples": 1500, "martialArts": ["鹽梟短刀", "瓜洲水戰"], "money": 50000,
-      "stance": "neutral", "known": true, "leader": "鹽總　莫三川",
+      "stance": "neutral", "known": true, "leader": "鹽總　莫三川", "leaderId": "leader_yanbang",
       "desc": "淮南鹽場的大商與私販結成的幫會。官鹽私鹽，他們都賣；誰斷他們的財路，誰就沉運河。",
       "leaderRank": "A", "leaderCap": "S",
       "notables": [ { "name": "白二娘", "title": "帳房", "rank": "B", "cap": "A", "desc": "鹽幫的帳全在她腦子裡，從來不寫在紙上。" } ]
@@ -191,7 +191,7 @@
       "id": "heishan", "name": "黑山鐵騎", "type": "military", "special": false, "color": "#2F2A26",
       "seat": "taiyuan", "territory": ["taiyuan", "yanmen"],
       "reputation": 55, "disciples": 2000, "martialArts": ["斬馬陌刀", "黑山騎射"], "money": 20000,
-      "stance": "neutral", "known": true, "leader": "統領　屈突烈",
+      "stance": "neutral", "known": true, "leader": "統領　屈突烈", "leaderId": "warlord",
       "desc": "名義上是邊鎮的捉生將，實為屈突烈的私兵。兩千騎吃的是官糧，背後是誰，沒人說得清。",
       "leaderRank": "S+", "leaderCap": "S+", "leaderWeapon": "weapon_zhanma",
       "notables": [ { "name": "阿跌思", "title": "副將", "rank": "A", "cap": "S", "desc": "鐵勒人，箭無虛發，是屈突烈最信任的刀。" } ]
@@ -200,7 +200,7 @@
       "id": "heisong", "name": "黑松寨", "type": "bandit", "special": false, "color": "#4A4A3A",
       "seat": "hangu", "territory": ["hangu"],
       "reputation": 15, "disciples": 120, "martialArts": ["開山斧"], "money": 800,
-      "stance": "hostile", "known": true, "leader": "寨主　胡大眼",
+      "stance": "hostile", "known": true, "leader": "寨主　胡大眼", "leaderId": "leader_heisong",
       "desc": "盤踞崤函道上的一夥強人，專劫落單的胡商。官府貼了三回告示，寨子還在。",
       "leaderRank": "B", "leaderCap": "A"
     },
@@ -208,7 +208,7 @@
       "id": "taihang", "name": "太行十八寨", "type": "bandit", "special": false, "color": "#5A4A3A",
       "seat": "taihang", "territory": ["taihang"],
       "reputation": 25, "disciples": 2000, "martialArts": ["太行刀", "陘道伏擊"], "money": 5000,
-      "stance": "hostile", "known": false, "leader": "總瓢把子　程鐵牛",
+      "stance": "hostile", "known": false, "leader": "總瓢把子　程鐵牛", "leaderId": "leader_taihang",
       "desc": "太行山八陘之間的十八座山寨，逃丁、逃兵、逃奴都往這裡投。官軍剿了又生，生了又剿。",
       "leaderRank": "A+", "leaderCap": "S",
       "notables": [ { "name": "穆青槍", "title": "二寨主", "rank": "A", "cap": "A+", "desc": "使一桿丈二長槍的女寨主，據說原是府兵家的女兒。" } ]
@@ -217,7 +217,7 @@
       "id": "tubo", "name": "吐蕃", "type": "foreign", "special": false, "color": "#8A3A2A",
       "seat": "luoxie", "territory": ["luoxie", "shibao"],
       "reputation": 80, "disciples": 5000, "martialArts": ["雪域摔角", "鐵甲騎陣"], "money": 30000,
-      "stance": "hostile", "known": true, "leader": "大論　噶爾·恭頓",
+      "stance": "hostile", "known": true, "leader": "大論　噶爾·恭頓", "leaderId": "leader_tubo",
       "desc": "高原上的強國，與大唐時和時戰。石堡城下，兩國的兵已經爭了好幾代人。",
       "leaderRank": "S", "leaderCap": "S+",
       "notables": [ { "name": "悉達贊", "title": "邊將", "rank": "A+", "cap": "S", "desc": "全身鐵甲只露兩眼，騎在犛牛上衝陣。" } ]
@@ -226,7 +226,7 @@
       "id": "huihe", "name": "回紇", "type": "foreign", "special": false, "color": "#6A7A4A",
       "seat": "huihe_ya", "territory": ["huihe_ya"],
       "reputation": 60, "disciples": 5000, "martialArts": ["草原騎射", "狼頭彎刀"], "money": 12000,
-      "stance": "neutral", "known": true, "leader": "俟利發　藥羅葛·烏蘇",
+      "stance": "neutral", "known": true, "leader": "俟利發　藥羅葛·烏蘇", "leaderId": "leader_huihe",
       "desc": "鐵勒諸部中最強的一支，與大唐互市絹馬。草原上的風向，正在悄悄轉變。",
       "leaderRank": "A+", "leaderCap": "S",
       "notables": [ { "name": "骨咄", "title": "葉護", "rank": "A", "cap": "S", "desc": "年輕的王族子弟，馬上能左右開弓。" } ]
@@ -235,7 +235,7 @@
       "id": "tuqishi", "name": "突騎施", "type": "foreign", "special": false, "color": "#7A5A3A",
       "seat": "suiye", "territory": ["suiye", "beiting"],
       "reputation": 65, "disciples": 4000, "martialArts": ["西突厥騎射", "碎葉彎刀"], "money": 15000,
-      "stance": "hostile", "known": false, "leader": "可汗　骨咄祿·阿悉",
+      "stance": "hostile", "known": false, "leader": "可汗　骨咄祿·阿悉", "leaderId": "leader_tuqishi",
       "desc": "西突厥十姓之一，據碎葉為牙帳，時而受唐冊封，時而劫掠安西。",
       "leaderRank": "S", "leaderCap": "S"
     },
@@ -243,7 +243,7 @@
       "id": "nanzhao", "name": "南詔", "type": "foreign", "special": false, "color": "#4A7A6A",
       "seat": "taihe", "territory": ["taihe"],
       "reputation": 45, "disciples": 3000, "martialArts": ["鐸鞘刀法", "蒼山弩"], "money": 10000,
-      "stance": "neutral", "known": false, "leader": "詔主　蒙邏閣",
+      "stance": "neutral", "known": false, "leader": "詔主　蒙邏閣", "leaderId": "leader_nanzhao",
       "desc": "洱海邊的蒙舍詔，正在吞併其餘五詔。朝廷樂見其成，邊將卻暗自擔心。",
       "leaderRank": "A+", "leaderCap": "S"
     }

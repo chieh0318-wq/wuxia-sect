@@ -1,95 +1,2369 @@
 {
   "attributes": [
-    { "id": "str", "name": "武力", "desc": "膂力與出手的勁道，關乎拳掌刀槍的威力。" },
-    { "id": "agi", "name": "身法", "desc": "出手快慢與閃轉騰挪，輕功、暗器皆倚重於此。" },
-    { "id": "con", "name": "根骨", "desc": "筋骨體魄與內息根基，決定氣血多寡與傷後復原。" },
-    { "id": "wit", "name": "悟性", "desc": "領會武學、讀書識字的天分，關乎感悟與修習快慢。" },
-    { "id": "cha", "name": "魅力", "desc": "談吐氣度與人望，關乎招徒、結交與同門的忠心。" }
+    {
+      "id": "str",
+      "name": "武力",
+      "desc": "膂力與出手的勁道，關乎拳掌刀槍的威力。"
+    },
+    {
+      "id": "agi",
+      "name": "身法",
+      "desc": "出手快慢與閃轉騰挪，輕功、暗器皆倚重於此。"
+    },
+    {
+      "id": "con",
+      "name": "根骨",
+      "desc": "筋骨體魄與內息根基，決定氣血多寡與傷後復原。"
+    },
+    {
+      "id": "wit",
+      "name": "悟性",
+      "desc": "領會武學、讀書識字的天分，關乎感悟與修習快慢。"
+    },
+    {
+      "id": "cha",
+      "name": "魅力",
+      "desc": "談吐氣度與人望，關乎招徒、結交與同門的忠心。"
+    }
   ],
   "attrBase": 3,
   "attrMax": 10,
   "attrPoints": 8,
   "protagonistLooks": [
-    { "id": "hero_m1", "gender": "男", "label": "端正劍客", "desc": "束髮挽髻，青灰長袍，眉目端正，站著便像一柄出鞘的劍。", "portrait": "hero_m1", "robeColor": "#46525E", "sashColor": "#8E3B2E", "hairStyle": "topknot", "skinTone": 0.5, "build": 0.5 },
-    { "id": "hero_m2", "gender": "男", "label": "粗獷武人", "desc": "膚色黝黑，下巴帶著胡茬，褐袍抹額，一身力氣都寫在肩膀上。", "portrait": "hero_m2", "robeColor": "#6B5038", "sashColor": "#3F3A33", "hairStyle": "topknot", "skinTone": 0.78, "build": 0.82 },
-    { "id": "hero_m3", "gender": "男", "label": "清秀書生", "desc": "面白如玉，戴小冠，青白襴袍，看著像赴考的舉子，袖裡卻藏著劍穗。", "portrait": "hero_m3", "robeColor": "#C9D6CC", "sashColor": "#5E7F78", "hairStyle": "crown", "skinTone": 0.28, "build": 0.35 },
-    { "id": "hero_f1", "gender": "女", "label": "英氣女俠", "desc": "高束馬尾，絳紅勁裝，眉梢帶著三分銳氣，說話從不拐彎。", "portrait": "hero_f1", "robeColor": "#7E2A26", "sashColor": "#C6A66F", "hairStyle": "ponytail", "skinTone": 0.45, "build": 0.55 },
-    { "id": "hero_f2", "gender": "女", "label": "溫婉俠女", "desc": "低髻簪花，淡青襦裙，笑起來眉眼彎彎，出劍時卻一分也不手軟。", "portrait": "hero_f2", "robeColor": "#A7BFA0", "sashColor": "#E2D2B0", "hairStyle": "bun", "skinTone": 0.35, "build": 0.4 },
-    { "id": "hero_f3", "gender": "女", "label": "冷峻劍客", "desc": "長髮半束，玄青長袍，寡言少笑，目光冷得像冬夜的井水。", "portrait": "hero_f3", "robeColor": "#26304A", "sashColor": "#1C1C24", "hairStyle": "halfup", "skinTone": 0.4, "build": 0.5 }
+    {
+      "id": "hero_m1",
+      "gender": "男",
+      "label": "端正劍客",
+      "desc": "束髮挽髻插一支木簪，青灰長袍繫絳紅腰帶，眉目端正，站著便像一柄出鞘的劍。",
+      "portrait": "hero_m1",
+      "robeColor": "#46525E",
+      "sashColor": "#8E3B2E",
+      "hairStyle": "topknot",
+      "skinTone": 0.5,
+      "build": 0.5,
+      "model": {
+        "base": "male",
+        "hair": "topknot",
+        "beard": "none",
+        "robe": "#46525E",
+        "robe2": "#2F3740",
+        "sash": "#8E3B2E",
+        "style": "jiaoling"
+      }
+    },
+    {
+      "id": "hero_m2",
+      "gender": "男",
+      "label": "粗獷武人",
+      "desc": "膚色黝黑，下巴帶著胡茬，褐袍抹額，一身力氣都寫在肩膀上。",
+      "portrait": "hero_m2",
+      "robeColor": "#6B5038",
+      "sashColor": "#3F3A33",
+      "hairStyle": "topknot",
+      "skinTone": 0.78,
+      "build": 0.82,
+      "model": {
+        "base": "male",
+        "hair": "topknot",
+        "beard": "stubble",
+        "robe": "#6B5038",
+        "robe2": "#4A3828",
+        "sash": "#3F3A33",
+        "style": "jiaoling"
+      }
+    },
+    {
+      "id": "hero_m3",
+      "gender": "男",
+      "label": "清秀書生",
+      "desc": "面白如玉，戴小冠，青白襴袍，看著像赴考的舉子，袖裡卻藏著劍穗。",
+      "portrait": "hero_m3",
+      "robeColor": "#C9D6CC",
+      "sashColor": "#5E7F78",
+      "hairStyle": "crown",
+      "skinTone": 0.28,
+      "build": 0.35,
+      "model": {
+        "base": "male",
+        "hair": "crown",
+        "beard": "none",
+        "robe": "#C9D6CC",
+        "robe2": "#EDEDE4",
+        "sash": "#5E7F78",
+        "style": "jiaoling"
+      }
+    },
+    {
+      "id": "hero_m4",
+      "gender": "男",
+      "label": "冷面刀客",
+      "desc": "下頜如削，左眉一道細疤，高束黑色馬尾，玄黑勁袍配皮護腕；話少，刀快。",
+      "portrait": "hero_m4",
+      "robeColor": "#26262A",
+      "sashColor": "#1C1C1E",
+      "hairStyle": "ponytail",
+      "skinTone": 0.45,
+      "build": 0.6,
+      "model": {
+        "base": "male",
+        "hair": "ponytail",
+        "beard": "none",
+        "robe": "#26262A",
+        "robe2": "#3A3530",
+        "sash": "#1C1C1E",
+        "style": "jiaoling"
+      }
+    },
+    {
+      "id": "hero_m5",
+      "gender": "男",
+      "label": "陽光少俠",
+      "desc": "長髮半束，繫一條紅髮帶，赭黃長袍，笑起來比太陽還暖，見不平事總是第一個衝上去。",
+      "portrait": "hero_m5",
+      "robeColor": "#A8834F",
+      "sashColor": "#A3322A",
+      "hairStyle": "halfup",
+      "skinTone": 0.5,
+      "build": 0.55,
+      "model": {
+        "base": "male",
+        "hair": "halfup",
+        "beard": "none",
+        "robe": "#A8834F",
+        "robe2": "#D9C39A",
+        "sash": "#A3322A",
+        "style": "jiaoling"
+      }
+    },
+    {
+      "id": "hero_m6",
+      "gender": "男",
+      "label": "世家公子",
+      "desc": "玉冠束髮，月白絲袍繡著暗紋領緣，舉止清貴，神色疏淡，像是誰也入不了他的眼。",
+      "portrait": "hero_m6",
+      "robeColor": "#E8E6DC",
+      "sashColor": "#C6A66F",
+      "hairStyle": "crown",
+      "skinTone": 0.3,
+      "build": 0.45,
+      "model": {
+        "base": "male",
+        "hair": "crown",
+        "beard": "none",
+        "robe": "#E8E6DC",
+        "robe2": "#8AA6A0",
+        "sash": "#C6A66F",
+        "style": "jiaoling"
+      }
+    },
+    {
+      "id": "hero_m7",
+      "gender": "男",
+      "label": "落拓浪子",
+      "desc": "長髮半束半散，帶著淡淡胡茬，褪色靛青袍敞著領口，腰掛酒葫蘆，嘴角總掛著一抹笑。",
+      "portrait": "hero_m7",
+      "robeColor": "#3E4A6B",
+      "sashColor": "#7A6A4A",
+      "hairStyle": "loose",
+      "skinTone": 0.5,
+      "build": 0.5,
+      "model": {
+        "base": "male",
+        "hair": "loose",
+        "beard": "stubble",
+        "robe": "#3E4A6B",
+        "robe2": "#2A3048",
+        "sash": "#7A6A4A",
+        "style": "jiaoling"
+      }
+    },
+    {
+      "id": "hero_m8",
+      "gender": "男",
+      "label": "胡漢混血",
+      "desc": "眼窩深邃，深褐捲髮束在腦後，青綠圓領袍；胡語漢話都說得道地，兩邊都不全當他自己人。",
+      "portrait": "hero_m8",
+      "robeColor": "#2E7A78",
+      "sashColor": "#8E6A3A",
+      "hairStyle": "ponytail",
+      "skinTone": 0.55,
+      "build": 0.6,
+      "model": {
+        "base": "male",
+        "hair": "ponytail",
+        "beard": "none",
+        "robe": "#2E7A78",
+        "robe2": "#1E4F4E",
+        "sash": "#8E6A3A",
+        "style": "yuanling"
+      }
+    },
+    {
+      "id": "hero_m9",
+      "gender": "男",
+      "label": "沉穩俠士",
+      "desc": "方臉濃眉，留著修剪整齊的短鬚，墨綠長袍，泰山崩於前也只是抬一抬眼。",
+      "portrait": "hero_m9",
+      "robeColor": "#2F4A36",
+      "sashColor": "#5A4A3A",
+      "hairStyle": "topknot",
+      "skinTone": 0.55,
+      "build": 0.7,
+      "model": {
+        "base": "male",
+        "hair": "topknot",
+        "beard": "short",
+        "robe": "#2F4A36",
+        "robe2": "#24352A",
+        "sash": "#5A4A3A",
+        "style": "jiaoling"
+      }
+    },
+    {
+      "id": "hero_m10",
+      "gender": "男",
+      "label": "少年道者",
+      "desc": "身形清瘦，道髻插一支木簪，灰藍道袍，神色恬淡，出劍時也像在畫一道符。",
+      "portrait": "hero_m10",
+      "robeColor": "#6E7F8E",
+      "sashColor": "#3F4A55",
+      "hairStyle": "taoistbun",
+      "skinTone": 0.35,
+      "build": 0.35,
+      "model": {
+        "base": "male",
+        "hair": "taoistbun",
+        "beard": "none",
+        "robe": "#6E7F8E",
+        "robe2": "#D8D6CC",
+        "sash": "#3F4A55",
+        "style": "taoist"
+      }
+    },
+    {
+      "id": "hero_f1",
+      "gender": "女",
+      "label": "英氣女俠",
+      "desc": "高束馬尾，絳紅勁裝，眉梢帶著三分銳氣，說話從不拐彎。",
+      "portrait": "hero_f1",
+      "robeColor": "#7E2A26",
+      "sashColor": "#C6A66F",
+      "hairStyle": "ponytail",
+      "skinTone": 0.45,
+      "build": 0.55,
+      "model": {
+        "base": "female",
+        "hair": "ponytail",
+        "beard": "none",
+        "robe": "#7E2A26",
+        "robe2": "#4A1A18",
+        "sash": "#C6A66F",
+        "style": "jiaoling"
+      }
+    },
+    {
+      "id": "hero_f2",
+      "gender": "女",
+      "label": "溫婉俠女",
+      "desc": "低髻簪花，淡青襦裙，笑起來眉眼彎彎，出劍時卻一分也不手軟。",
+      "portrait": "hero_f2",
+      "robeColor": "#A7BFA0",
+      "sashColor": "#C9A27A",
+      "hairStyle": "bun",
+      "skinTone": 0.35,
+      "build": 0.4,
+      "model": {
+        "base": "female",
+        "hair": "bun",
+        "beard": "none",
+        "robe": "#A7BFA0",
+        "robe2": "#E2D2B0",
+        "sash": "#C9A27A",
+        "style": "ruqun"
+      }
+    },
+    {
+      "id": "hero_f3",
+      "gender": "女",
+      "label": "冷峻劍客",
+      "desc": "長髮半束，玄青長袍，寡言少笑，目光冷得像冬夜的井水。",
+      "portrait": "hero_f3",
+      "robeColor": "#26304A",
+      "sashColor": "#5A6A8A",
+      "hairStyle": "halfup",
+      "skinTone": 0.4,
+      "build": 0.5,
+      "model": {
+        "base": "female",
+        "hair": "halfup",
+        "beard": "none",
+        "robe": "#26304A",
+        "robe2": "#1C1C24",
+        "sash": "#5A6A8A",
+        "style": "jiaoling"
+      }
+    },
+    {
+      "id": "hero_f4",
+      "gender": "女",
+      "label": "活潑少女",
+      "desc": "雙髻繫著綵帶，杏橙襦裙，笑起來兩個酒窩，鬼點子比誰都多。",
+      "portrait": "hero_f4",
+      "robeColor": "#E09A5A",
+      "sashColor": "#C0442F",
+      "hairStyle": "twinbuns",
+      "skinTone": 0.4,
+      "build": 0.38,
+      "model": {
+        "base": "female",
+        "hair": "twinbuns",
+        "beard": "none",
+        "robe": "#E09A5A",
+        "robe2": "#F2D7B0",
+        "sash": "#C0442F",
+        "style": "ruqun"
+      }
+    },
+    {
+      "id": "hero_f5",
+      "gender": "女",
+      "label": "胡姬女俠",
+      "desc": "粟特眉眼，髮辮綴著金幣頭飾，緋紅圓領袍，騎馬彎刀樣樣在行，笑得坦坦蕩蕩。",
+      "portrait": "hero_f5",
+      "robeColor": "#A3262A",
+      "sashColor": "#2E5A5A",
+      "hairStyle": "braids",
+      "skinTone": 0.5,
+      "build": 0.55,
+      "model": {
+        "base": "female",
+        "hair": "braids",
+        "beard": "none",
+        "robe": "#A3262A",
+        "robe2": "#C6A66F",
+        "sash": "#2E5A5A",
+        "style": "yuanling"
+      }
+    },
+    {
+      "id": "hero_f6",
+      "gender": "女",
+      "label": "書香閨秀",
+      "desc": "高髻插一支金釵，淡紫襦裙披著輕帛，舉止嫻雅，琴棋書畫之外，還藏著一手好劍。",
+      "portrait": "hero_f6",
+      "robeColor": "#B7A6C9",
+      "sashColor": "#C6A66F",
+      "hairStyle": "bun",
+      "skinTone": 0.3,
+      "build": 0.38,
+      "model": {
+        "base": "female",
+        "hair": "bun",
+        "beard": "none",
+        "robe": "#B7A6C9",
+        "robe2": "#EFE6D8",
+        "sash": "#C6A66F",
+        "style": "ruqun"
+      }
+    },
+    {
+      "id": "hero_f7",
+      "gender": "女",
+      "label": "江湖浪女",
+      "desc": "低束長髮，曬得微黑，褪色褐色行旅袍，嘴角一抹狡黠的笑，走過的路比讀過的書多。",
+      "portrait": "hero_f7",
+      "robeColor": "#7A5E44",
+      "sashColor": "#3A3028",
+      "hairStyle": "ponytail",
+      "skinTone": 0.62,
+      "build": 0.5,
+      "model": {
+        "base": "female",
+        "hair": "ponytail",
+        "beard": "none",
+        "robe": "#7A5E44",
+        "robe2": "#5A4632",
+        "sash": "#3A3028",
+        "style": "jiaoling"
+      }
+    },
+    {
+      "id": "hero_f8",
+      "gender": "女",
+      "label": "將門虎女",
+      "desc": "高髻紮得一絲不亂，紅抹額，鐵灰袍外披皮肩甲，神色凜然，一開口便是軍令的口氣。",
+      "portrait": "hero_f8",
+      "robeColor": "#5E6066",
+      "sashColor": "#A3322A",
+      "hairStyle": "bun",
+      "skinTone": 0.48,
+      "build": 0.62,
+      "model": {
+        "base": "female",
+        "hair": "bun",
+        "beard": "none",
+        "robe": "#5E6066",
+        "robe2": "#5A4030",
+        "sash": "#A3322A",
+        "style": "armor"
+      }
+    },
+    {
+      "id": "hero_f9",
+      "gender": "女",
+      "label": "道門女冠",
+      "desc": "頭戴蓮花冠，黑白道袍，神情清冷，彷彿這紅塵之事，都與她隔著一層雲。",
+      "portrait": "hero_f9",
+      "robeColor": "#EDEBE4",
+      "sashColor": "#3A3A40",
+      "hairStyle": "taoistbun",
+      "skinTone": 0.3,
+      "build": 0.42,
+      "model": {
+        "base": "female",
+        "hair": "taoistbun",
+        "beard": "none",
+        "robe": "#EDEBE4",
+        "robe2": "#1E1E22",
+        "sash": "#3A3A40",
+        "style": "taoist"
+      }
+    },
+    {
+      "id": "hero_f10",
+      "gender": "女",
+      "label": "南詔少女",
+      "desc": "髮間綴滿銀飾，一身靛藍染衣，眼睛又黑又亮，說話帶著洱海的口音，總像在打什麼主意。",
+      "portrait": "hero_f10",
+      "robeColor": "#2E3E6B",
+      "sashColor": "#B03A2E",
+      "hairStyle": "bun",
+      "skinTone": 0.55,
+      "build": 0.42,
+      "model": {
+        "base": "female",
+        "hair": "bun",
+        "beard": "none",
+        "robe": "#2E3E6B",
+        "robe2": "#E8E4DA",
+        "sash": "#B03A2E",
+        "style": "jiaoling"
+      }
+    }
   ],
   "nameSuggestions": [
-    { "gender": "男", "names": ["蕭寒舟", "陸長庚", "薛懷遠", "鄭季白", "顧雲遲", "李承嗣", "柳行舟", "韋觀瀾", "獨孤策", "王守一", "賀蘭朔", "魏孤城"] },
-    { "gender": "女", "names": ["蘇晚晴", "韋清嘉", "盧凝雪", "蕭疏影", "賀蘭璃", "鄭蘊之", "薛素衣", "上官微", "柳含煙", "楊鶯時", "顧長歌", "獨孤嵐"] }
+    {
+      "gender": "男",
+      "names": [
+        "蕭寒舟",
+        "陸長庚",
+        "薛懷遠",
+        "鄭季白",
+        "顧雲遲",
+        "李承嗣",
+        "柳行舟",
+        "韋觀瀾",
+        "獨孤策",
+        "王守一",
+        "賀蘭朔",
+        "魏孤城"
+      ]
+    },
+    {
+      "gender": "女",
+      "names": [
+        "蘇晚晴",
+        "韋清嘉",
+        "盧凝雪",
+        "蕭疏影",
+        "賀蘭璃",
+        "鄭蘊之",
+        "薛素衣",
+        "上官微",
+        "柳含煙",
+        "楊鶯時",
+        "顧長歌",
+        "獨孤嵐"
+      ]
+    }
   ],
   "backgrounds": [
     {
-      "id": "fubing_orphan", "name": "府兵遺孤",
+      "id": "fubing_orphan",
+      "name": "府兵遺孤",
       "desc": "父親是折衝府衛士，番上戍邊，死在隴右。你在軍戶裡長大，認得弓刀，也認得撫恤錢總是遲到。",
-      "effects": [ { "key": "str", "value": 1, "ref": "" }, { "key": "con", "value": 1, "ref": "" }, { "key": "lineRank", "value": 1, "ref": "polearm" }, { "key": "flag", "value": 1, "ref": "bg_fubing" } ]
+      "effects": [
+        {
+          "key": "str",
+          "value": 1,
+          "ref": ""
+        },
+        {
+          "key": "con",
+          "value": 1,
+          "ref": ""
+        },
+        {
+          "key": "lineRank",
+          "value": 1,
+          "ref": "polearm"
+        },
+        {
+          "key": "flag",
+          "value": 1,
+          "ref": "bg_fubing"
+        }
+      ]
     },
     {
-      "id": "scholar_family", "name": "書香門第",
+      "id": "scholar_family",
+      "name": "書香門第",
       "desc": "祖上出過明經，家中藏書三櫃。你背得《論語》，也背得《孫子》，只是家道中落，書比米多。",
-      "effects": [ { "key": "wit", "value": 2, "ref": "" }, { "key": "reputation", "value": 3, "ref": "" }, { "key": "lineRank", "value": 1, "ref": "teaching" }, { "key": "silver", "value": -10, "ref": "" } ]
+      "effects": [
+        {
+          "key": "wit",
+          "value": 2,
+          "ref": ""
+        },
+        {
+          "key": "reputation",
+          "value": 3,
+          "ref": ""
+        },
+        {
+          "key": "lineRank",
+          "value": 1,
+          "ref": "teaching"
+        },
+        {
+          "key": "silver",
+          "value": -10,
+          "ref": ""
+        }
+      ]
     },
     {
-      "id": "caravan_child", "name": "商隊之子",
+      "id": "caravan_child",
+      "name": "商隊之子",
       "desc": "自小跟著駝隊在河西走廊來回，算盤比刀先上手。胡語你會三種，價錢你從不聽錯。",
-      "effects": [ { "key": "cha", "value": 1, "ref": "" }, { "key": "silver", "value": 40, "ref": "" }, { "key": "lineRank", "value": 1, "ref": "commerce" }, { "key": "relation", "value": 10, "ref": "sute" } ]
+      "effects": [
+        {
+          "key": "cha",
+          "value": 1,
+          "ref": ""
+        },
+        {
+          "key": "silver",
+          "value": 40,
+          "ref": ""
+        },
+        {
+          "key": "lineRank",
+          "value": 1,
+          "ref": "commerce"
+        },
+        {
+          "key": "relation",
+          "value": 10,
+          "ref": "sute"
+        }
+      ]
     },
     {
-      "id": "mountain_hunter", "name": "山野獵戶",
+      "id": "mountain_hunter",
+      "name": "山野獵戶",
       "desc": "在崤山深處跟著父親追鹿射狐。你走山路不出聲，聞得出三里外的雨。",
-      "effects": [ { "key": "agi", "value": 2, "ref": "" }, { "key": "food", "value": 20, "ref": "" }, { "key": "lineRank", "value": 1, "ref": "hidden" } ]
+      "effects": [
+        {
+          "key": "agi",
+          "value": 2,
+          "ref": ""
+        },
+        {
+          "key": "food",
+          "value": 20,
+          "ref": ""
+        },
+        {
+          "key": "lineRank",
+          "value": 1,
+          "ref": "hidden"
+        }
+      ]
     },
     {
-      "id": "temple_foundling", "name": "寺院棄嬰",
+      "id": "temple_foundling",
+      "name": "寺院棄嬰",
       "desc": "襁褓裡被放在少室山下的寺門口，跟著老僧掃地挑水長到八歲，才被師父領上崤山。",
-      "effects": [ { "key": "con", "value": 1, "ref": "" }, { "key": "wit", "value": 1, "ref": "" }, { "key": "insightChance", "value": 0.03, "ref": "" }, { "key": "relation", "value": 15, "ref": "shaolin" } ]
+      "effects": [
+        {
+          "key": "con",
+          "value": 1,
+          "ref": ""
+        },
+        {
+          "key": "wit",
+          "value": 1,
+          "ref": ""
+        },
+        {
+          "key": "insightChance",
+          "value": 0.03,
+          "ref": ""
+        },
+        {
+          "key": "relation",
+          "value": 15,
+          "ref": "shaolin"
+        }
+      ]
     }
   ],
   "storyCharacters": [
     {
-      "id": "master", "name": "褚寒山", "role": "師父・崤山劍門掌門", "gender": "男", "age": 61,
-      "desc": "崤山劍門第三代掌門，白鬚灰袍，劍法沉雄，一生不肯入仕。早年曾在李衛公舊部門下效力，藏著一段不肯對人說的往事。",
-      "portrait": "master", "rank": "S+", "cap": "SS",
-      "lines": [ { "id": "sword", "rank": "S", "cap": "SS" }, { "id": "neigong", "rank": "S", "cap": "S+" }, { "id": "qinggong", "rank": "A+", "cap": "S" }, { "id": "teaching", "rank": "A", "cap": "S" }, { "id": "medicine", "rank": "B", "cap": "A" } ]
+      "id": "master",
+      "name": "褚寒山",
+      "courtesy": "子峻",
+      "title": "崤山劍門第三代掌門",
+      "role": "師父・崤山劍門掌門",
+      "gender": "男",
+      "age": 61,
+      "faction": "",
+      "group": "sect",
+      "portrait": "master",
+      "expressions": [
+        "angry",
+        "smile"
+      ],
+      "rank": "S+",
+      "cap": "SS",
+      "lines": [
+        {
+          "id": "sword",
+          "rank": "S",
+          "cap": "SS"
+        },
+        {
+          "id": "neigong",
+          "rank": "S",
+          "cap": "S+"
+        },
+        {
+          "id": "qinggong",
+          "rank": "A+",
+          "cap": "S"
+        },
+        {
+          "id": "teaching",
+          "rank": "A",
+          "cap": "S"
+        },
+        {
+          "id": "medicine",
+          "rank": "B",
+          "cap": "A"
+        }
+      ],
+      "dialogue": [
+        "劍要練到心裡去。手上快三分，不如心裡早一步。",
+        "十年之約，到期了。",
+        "有些舊帳，終究要還。",
+        "門中事務，交給你。我若三月不回，便當我雲遊去了。"
+      ],
+      "signatureSkills": [
+        "崤山十三劍",
+        "崤山吐納法",
+        "踏雪無痕"
+      ],
+      "appearance": "六十許，白鬚及胸，灰布長袍洗得發白；身形清瘦，站得極直。背一柄鞘口纏舊布的長劍，右手虎口有一道老繭裂痕。",
+      "personality": "寡言重諾，教劍嚴、待人寬。從不談自己的過去；酒只喝一杯，棋從不悔子。生氣時不罵人，只把劍放在桌上。",
+      "background": "少年從軍，在安西軍中待過十餘年，又隨主將回長安做了幾年親兵。年近四十才投入崤山劍門，三年後老掌門臨終傳位於他。此後二十年不入仕、不結權貴，只守著半山腰三進院落。十年前他與一位洛陽故人立下「十年之約」，期滿那年秋天背劍下山，至今未歸。",
+      "relation": "你八歲被他領上崤山，是他一手帶大的首徒。他把門戶交給你，卻沒告訴你為什麼要走。",
+      "questline": "q_master",
+      "desc": "崤山劍門第三代掌門，白鬚灰袍，劍法沉雄，一生不肯入仕。早年曾在李衛公舊部門下效力，藏著一段不肯對人說的往事。"
     },
     {
-      "id": "friend_m", "name": "謝瑾", "role": "青梅竹馬・軍師", "gender": "男", "age": 21,
-      "desc": "洛陽謝家子，與主角同巷長大。風姿俊雅，善琴，精讀兵書；撫琴時眉目溫和，論起兵事來滿座噤聲。對主角，從無二心。",
-      "portrait": "friend_m", "rank": "A+", "cap": "S+",
-      "lines": [ { "id": "sword", "rank": "A", "cap": "S" }, { "id": "qinggong", "rank": "A", "cap": "A+" }, { "id": "neigong", "rank": "B", "cap": "A" }, { "id": "teaching", "rank": "A", "cap": "S" }, { "id": "commerce", "rank": "B", "cap": "A" } ]
+      "id": "friend_m",
+      "name": "謝瑾",
+      "courtesy": "懷瑜",
+      "title": "洛陽謝家子・青梅竹馬",
+      "role": "青梅竹馬・軍師",
+      "gender": "男",
+      "age": 21,
+      "faction": "",
+      "group": "friend",
+      "portrait": "friend_m",
+      "expressions": [
+        "angry",
+        "smile"
+      ],
+      "rank": "A+",
+      "cap": "S+",
+      "lines": [
+        {
+          "id": "sword",
+          "rank": "A",
+          "cap": "S"
+        },
+        {
+          "id": "qinggong",
+          "rank": "A",
+          "cap": "A+"
+        },
+        {
+          "id": "neigong",
+          "rank": "B",
+          "cap": "A"
+        },
+        {
+          "id": "teaching",
+          "rank": "A",
+          "cap": "S"
+        },
+        {
+          "id": "commerce",
+          "rank": "B",
+          "cap": "A"
+        }
+      ],
+      "dialogue": [
+        "先忍著。寄人籬下，就要先數清楚屋簷有多低。",
+        "記帳吧。他今天借我們一座山，來日我們還他一座山——連本帶利。",
+        "曲有誤，我自會回頭；人有誤，我只看一眼。"
+      ],
+      "signatureSkills": [
+        "青萍劍訣",
+        "八步趕蟬",
+        "燈下論兵"
+      ],
+      "appearance": "身量修長，眉目清朗如畫；常著月白襴袍、外罩青灰半臂，腰間不佩劍而懸一支短笛，背上一張舊桐木琴。",
+      "personality": "溫雅自信，謀定後動。平日談笑風生，論兵時一句廢話也無；聽得出琴曲裡錯一個音，也看得出人心裡藏一分假。驕傲，卻從不在你面前驕傲。",
+      "background": "洛陽謝家子，祖上自江左遷來，家中藏書以兵書最多。與你同巷長大，你八歲上崤山後，他隔三差五上山蹭飯看劍，順手把劍門的帳理得清清楚楚。十七歲在洛陽文會上論《衛公問對》，滿座將校噤聲；范陽、河西兩府都送過聘書，他一封也沒回。",
+      "relation": "與你青梅竹馬，從無二心。山門遭難那夜，他在澗口等了一整夜。他是摯友，是軍師；你是女子，這份情誼在旁人眼裡便多了幾分說不清——他自己說得清，只是還沒說。",
+      "questline": "q_friend",
+      "desc": "洛陽謝家子，與主角同巷長大。風姿俊雅，善琴，精讀兵書；撫琴時眉目溫和，論起兵事來滿座噤聲。對主角，從無二心。"
     },
     {
-      "id": "friend_f", "name": "謝蘊", "role": "青梅竹馬・軍師", "gender": "女", "age": 20,
-      "desc": "洛陽謝家女，與主角同巷長大。琴藝冠絕兩京，胸中自有千軍；看人極準，說話極輕，一句話往往定下大局。對主角，從無二心。",
-      "portrait": "friend_f", "rank": "A+", "cap": "S+",
-      "lines": [ { "id": "hidden", "rank": "A", "cap": "S" }, { "id": "qinggong", "rank": "A", "cap": "S" }, { "id": "sword", "rank": "B", "cap": "A" }, { "id": "medicine", "rank": "A", "cap": "A+" }, { "id": "teaching", "rank": "A", "cap": "S" } ]
+      "id": "friend_f",
+      "name": "謝蘊",
+      "courtesy": "含章",
+      "title": "洛陽謝家女・青梅竹馬",
+      "role": "青梅竹馬・軍師",
+      "gender": "女",
+      "age": 20,
+      "faction": "",
+      "group": "friend",
+      "portrait": "friend_f",
+      "expressions": [
+        "angry",
+        "smile"
+      ],
+      "rank": "A+",
+      "cap": "S+",
+      "lines": [
+        {
+          "id": "hidden",
+          "rank": "A",
+          "cap": "S"
+        },
+        {
+          "id": "qinggong",
+          "rank": "A",
+          "cap": "S"
+        },
+        {
+          "id": "sword",
+          "rank": "B",
+          "cap": "A"
+        },
+        {
+          "id": "medicine",
+          "rank": "A",
+          "cap": "A+"
+        },
+        {
+          "id": "teaching",
+          "rank": "A",
+          "cap": "S"
+        }
+      ],
+      "dialogue": [
+        "先忍著。寄人籬下，就要先數清楚屋簷有多低。",
+        "記帳吧。他今天借我們一座山，來日我們還他一座山——連本帶利。",
+        "曲有誤，我自會回頭；人有誤，我只看一眼。"
+      ],
+      "signatureSkills": [
+        "梅花透骨針",
+        "踏雪無痕",
+        "千金方摘要"
+      ],
+      "appearance": "眉目清麗而沉靜，青碧襦裙外披淺色披帛，髮挽低髻、插一支素銀簪；指尖有常年撫琴的薄繭，袖中藏著幾枚梅花針。",
+      "personality": "看人極準，說話極輕，一句話往往定下大局。外柔內剛，從不在人前失態；被逼急了只會更冷靜。愛琴、愛棋，也愛看你輸棋時的臉。",
+      "background": "洛陽謝家女，琴藝冠絕兩京，自小陪兄長讀兵書，讀得比兄長還熟。與你同巷長大，你上崤山後，她常借送藥之名上山，替劍門理帳、替師父抄譜。洛陽人說她撫琴時眉目溫和，論起兵事滿座將校都要噤聲。",
+      "relation": "與你青梅竹馬，從無二心。山門遭難那夜，她在澗口等了一整夜。她是摯友，是軍師；你是男子，旁人早把你們看成一對——她從不否認，也從不承認。",
+      "questline": "q_friend",
+      "desc": "洛陽謝家女，與主角同巷長大。琴藝冠絕兩京，胸中自有千軍；看人極準，說話極輕，一句話往往定下大局。對主角，從無二心。"
     },
     {
-      "id": "elder_villain", "name": "封伯陽", "role": "華嶽派掌門", "gender": "男", "age": 55,
-      "desc": "華嶽派掌門，錦袍玉帶，笑眼常彎。與褚寒山論交三十年，人人稱他「封善人」；他借出去的每一分情，都記在帳上。",
-      "portrait": "elder_villain", "rank": "S+", "cap": "SS",
-      "lines": [ { "id": "sword", "rank": "S", "cap": "S" }, { "id": "neigong", "rank": "S", "cap": "S+" }, { "id": "fist", "rank": "A+", "cap": "S" }, { "id": "commerce", "rank": "A", "cap": "S" } ]
+      "id": "uncle_schemer",
+      "name": "聶遠山",
+      "courtesy": "子巖",
+      "title": "崤山劍門師叔・後山長老",
+      "role": "本門師叔・後山長老",
+      "gender": "男",
+      "age": 52,
+      "faction": "",
+      "group": "sect",
+      "portrait": "uncle_schemer",
+      "expressions": [
+        "smile"
+      ],
+      "rank": "S",
+      "cap": "S+",
+      "lines": [
+        {
+          "id": "sword",
+          "rank": "S",
+          "cap": "S+"
+        },
+        {
+          "id": "qinggong",
+          "rank": "A",
+          "cap": "A+"
+        },
+        {
+          "id": "neigong",
+          "rank": "A",
+          "cap": "A"
+        },
+        {
+          "id": "teaching",
+          "rank": "A",
+          "cap": "S"
+        }
+      ],
+      "dialogue": [
+        "你師父守的是一句話，我守的是這座山。你說，哪一樣重？",
+        "閉關閉的是門，不是耳朵。",
+        "門派要活，先得低頭。抬頭的事，留給活下來的人。"
+      ],
+      "signatureSkills": [
+        "崤山十三劍",
+        "函谷紫氣劍",
+        "崤山吐納法"
+      ],
+      "appearance": "瘦長身材，兩鬢斑白，鷹鉤鼻，眼角帶著細密笑紋；常穿一件洗舊的墨綠長袍，腰插一支紫竹洞簫，指節修長如讀書人。",
+      "personality": "談吐溫和、極有耐心，說話只說七分。精於算計人情，卻真心認為一切都為了劍門。對你總是笑，你卻很難記起他真正生氣的樣子。",
+      "background": "第二代掌門的入室大弟子，自幼在崤山長大，劍法悟性當年都在師父之上。師父年近四十才入門，老掌門以年齒排行，令他稱師父為師兄；三年後老掌門臨終，竟把掌門之位傳給了這位新來的師兄，只留下一句「遠山心太活」。十年前師父立約那年，他自請入後山閉關，從此不問門事，只有夜裡偶爾傳來簫聲。",
+      "relation": "你的師叔，看著你長大，卻很少與你說話。山門遭難後他忽然出關，願意輔佐你——他知道很多你不知道的事。",
+      "questline": "q_uncle_schemer",
+      "desc": "崤山劍門師叔，師父的師弟。當年劍法悟性都在師父之上，卻沒能接掌門戶；閉關後山十年，腰插洞簫，笑起來眼角細紋極深。"
     },
     {
-      "id": "warlord", "name": "屈突烈", "role": "黑山鐵騎統領", "gender": "男", "age": 45,
-      "desc": "胡漢雜血的邊將，披狼裘、使陌刀，手下兩千騎吃的是官糧、幹的是私事。他要《衛公兵法》，為的不是江湖名聲。",
-      "portrait": "warlord", "rank": "S+", "cap": "S+",
-      "lines": [ { "id": "blade", "rank": "S", "cap": "S" }, { "id": "polearm", "rank": "A+", "cap": "S" }, { "id": "fist", "rank": "A", "cap": "A" } ]
+      "id": "elder_villain",
+      "name": "封伯陽",
+      "courtesy": "德輝",
+      "title": "華嶽派掌門・人稱封善人",
+      "role": "華嶽派掌門",
+      "gender": "男",
+      "age": 55,
+      "faction": "huayue",
+      "group": "enemy",
+      "portrait": "elder_villain",
+      "expressions": [
+        "angry",
+        "smile"
+      ],
+      "rank": "S+",
+      "cap": "SS",
+      "lines": [
+        {
+          "id": "sword",
+          "rank": "S",
+          "cap": "S"
+        },
+        {
+          "id": "neigong",
+          "rank": "S",
+          "cap": "S+"
+        },
+        {
+          "id": "fist",
+          "rank": "A+",
+          "cap": "S"
+        },
+        {
+          "id": "commerce",
+          "rank": "A",
+          "cap": "S"
+        }
+      ],
+      "dialogue": [
+        "好孩子，受苦了。褚兄的事，就是我封某的事。",
+        "都是一家人——一家人，才好算帳。",
+        "江湖這張桌子，總得有人坐主位。"
+      ],
+      "signatureSkills": [
+        "太華十九式",
+        "紫府玄元功",
+        "蓮花峰掌"
+      ],
+      "appearance": "面團團一張富態臉，笑眼常彎，三綹長鬚梳得一絲不亂；錦袍玉帶，拇指套一枚羊脂玉扳指，袖口熏著龍腦香。",
+      "personality": "慷慨好客，愛名甚於愛錢，更愛別人欠他。記帳如記仇，表面寬厚，骨子裡容不得任何人與他平起平坐。野心大過才具，順境時豪氣干雲，逆境時翻臉比翻書快。",
+      "background": "華嶽派第五代掌門，憑紫府玄元功與長安權貴、王府門客交好，殿宇別院越蓋越多。與師父論交三十年，人人稱他「封善人」。近年他常說江湖該有個盟主，說的時候總是看著自己的扳指。",
+      "relation": "師父的老友、你的「世伯」。懷璧之禍時收留你、扣下鐵匣；背盟之禍時替你出頭，換你頭上一面旗。不論哪條路，他都在你的帳上記了一筆。",
+      "questline": "q_elder_villain",
+      "desc": "華嶽派掌門，錦袍玉帶，笑眼常彎。與褚寒山論交三十年，人人稱他「封善人」；他借出去的每一分情，都記在帳上。"
     },
     {
-      "id": "official", "name": "范希仁", "role": "殿中侍御史", "gender": "男", "age": 50,
-      "desc": "武舉出身轉任御史，緋袍幞頭，袖中藏著一手透骨釘。御史臺裡人稱「羅織手」，替宮中大璫辦過不少見不得光的案子。",
-      "portrait": "official", "rank": "A+", "cap": "S+",
-      "lines": [ { "id": "hidden", "rank": "A", "cap": "S" }, { "id": "fist", "rank": "A", "cap": "A+" }, { "id": "neigong", "rank": "B", "cap": "A" } ]
+      "id": "warlord",
+      "name": "屈突烈",
+      "courtesy": "伯威",
+      "title": "黑山鐵騎統領",
+      "role": "黑山鐵騎統領",
+      "gender": "男",
+      "age": 45,
+      "faction": "heishan",
+      "group": "enemy",
+      "portrait": "warlord",
+      "expressions": [
+        "angry",
+        "smile"
+      ],
+      "rank": "S+",
+      "cap": "S+",
+      "lines": [
+        {
+          "id": "blade",
+          "rank": "S",
+          "cap": "S"
+        },
+        {
+          "id": "polearm",
+          "rank": "A+",
+          "cap": "S"
+        },
+        {
+          "id": "fist",
+          "rank": "A",
+          "cap": "A"
+        }
+      ],
+      "dialogue": [
+        "交出來，山上的人都能活。",
+        "我屈突烈說話算數。這天下，說話算數的人不多了。",
+        "你跪得好看，比站著的那些強。"
+      ],
+      "signatureSkills": [
+        "陌刀斬馬式",
+        "黑山騎射",
+        "角抵摔法"
+      ],
+      "appearance": "虯髯高顴，左耳缺了半片；鐵甲外披一領灰狼裘，鞍旁掛一柄長逾七尺的陌刀，手背刺著褪色的狼頭青紋。",
+      "personality": "粗中有細，說一不二。敬勇者，恨偽君子；殺人不眨眼，卻從不食言。對手下極護短，對上頭極不耐煩。",
+      "background": "鮮卑屈突氏之後，母親是突厥人，在營州胡漢雜處的軍營裡長大，十五歲隨軍砍過契丹人的頭。以捉生將之名在太原、雁門間養了兩千私騎，糧餉來路不明。他要《衛公兵法》殘卷，為的不是江湖名聲。",
+      "relation": "懷璧之禍中燒你山門的人。若你降了黑山，他是你頭上的刀，也是你唯一說話算數的「主人」；其他路線裡，他是崤函道上隨時會出現的鐵騎。",
+      "questline": "q_warlord",
+      "desc": "胡漢雜血的邊將，披狼裘、使陌刀，手下兩千騎吃的是官糧、幹的是私事。他要《衛公兵法》，為的不是江湖名聲。"
     },
     {
-      "id": "rival_head", "name": "秦無咎", "role": "伏牛劍派掌門", "gender": "男", "age": 48,
-      "desc": "伏牛劍派掌門，面頰瘦削，劍快如鳴鏑。當年與褚寒山在洛水邊歃血為盟，如今盯上的，是崤函道上每年過往的胡商。",
-      "portrait": "rival_head", "rank": "S", "cap": "S+",
-      "lines": [ { "id": "sword", "rank": "S", "cap": "S" }, { "id": "qinggong", "rank": "A", "cap": "A+" }, { "id": "hidden", "rank": "A", "cap": "A" } ]
+      "id": "official",
+      "name": "范希仁",
+      "courtesy": "仲恕",
+      "title": "殿中侍御史・羅織手",
+      "role": "殿中侍御史",
+      "gender": "男",
+      "age": 50,
+      "faction": "yushitai",
+      "group": "court",
+      "portrait": "official",
+      "expressions": [],
+      "rank": "A+",
+      "cap": "S+",
+      "lines": [
+        {
+          "id": "hidden",
+          "rank": "A",
+          "cap": "S"
+        },
+        {
+          "id": "fist",
+          "rank": "A",
+          "cap": "A+"
+        },
+        {
+          "id": "neigong",
+          "rank": "B",
+          "cap": "A"
+        }
+      ],
+      "dialogue": [
+        "唐律：私有甲三領，絞。",
+        "本官從不冤枉人。本官只是讓該有罪的人，找得到罪。",
+        "江湖人講義氣，衙門講案卷。你說，哪一樣留得久？"
+      ],
+      "signatureSkills": [
+        "梅花透骨針",
+        "臺獄鎖拿手",
+        "開碑手"
+      ],
+      "appearance": "面白無鬚，顴骨高，眼皮薄而下垂；蒙賜緋色圓領官袍、黑幞頭，腰束銀帶。左袖比右袖略沉——那裡藏著一筒透骨釘。",
+      "personality": "心思縝密，冷而有禮；唐律背得一字不差，專挑律文的縫隙用。寒門武舉出身，在進士滿堂的御史臺被人看不起，所以比誰都想往上爬。",
+      "background": "武舉出身，在河南府做過法曹，以辦案「從無翻案」聞名，被內侍省一位大璫提拔入御史臺，蒙賜緋袍。經手的大案十有六七與宦官莊園有關。人稱「羅織手」，他自己倒說：律文是現成的，他只是會讀。",
+      "relation": "官府迫害之禍中封你山門、逼你畫押的人。其他路線裡，他是一個總在你名字附近出現的御史，似乎在找什麼東西——或者什麼人。",
+      "questline": "q_official",
+      "desc": "武舉出身轉任御史，緋袍幞頭，袖中藏著一手透骨釘。御史臺裡人稱「羅織手」，替宮中大璫辦過不少見不得光的案子。"
+    },
+    {
+      "id": "rival_head",
+      "name": "秦無咎",
+      "courtesy": "子悔",
+      "title": "伏牛劍派掌門",
+      "role": "伏牛劍派掌門",
+      "gender": "男",
+      "age": 48,
+      "faction": "funiu",
+      "group": "enemy",
+      "portrait": "rival_head",
+      "expressions": [],
+      "rank": "S",
+      "cap": "S+",
+      "lines": [
+        {
+          "id": "sword",
+          "rank": "S",
+          "cap": "S"
+        },
+        {
+          "id": "qinggong",
+          "rank": "A",
+          "cap": "A+"
+        },
+        {
+          "id": "hidden",
+          "rank": "A",
+          "cap": "A"
+        }
+      ],
+      "dialogue": [
+        "這條路，不該由一群沒了師父的孩子守著。",
+        "兩派一家，禍福同當——當年的話，我記得。",
+        "伏牛山一百三十張嘴，你替我餵？"
+      ],
+      "signatureSkills": [
+        "伏牛七絕劍",
+        "鳴鏑飛石",
+        "八步趕蟬"
+      ],
+      "appearance": "面頰瘦削，顴下兩道深紋，鬚短而硬；青黑勁裝、舊皮護腕，佩一柄劍鞘纏黃銅絲的長劍，腰間皮囊裝著幾枚鳴鏑飛石。",
+      "personality": "急躁、精明而短視；肯吃苦，不肯吃虧。嘴上講兄弟義氣，心裡算的是門中一百多張嘴明年吃什麼。背盟之後，夜裡常睡不好。",
+      "background": "伏牛劍派掌門，與師父在洛水邊歃血為盟二十年。伏牛山地瘠人窮，門中弟子連年流失；他看著崤函道上一隊隊胡商駝隊從崤山腳下過，越看越不甘心。",
+      "relation": "師父的結義兄弟、你口中的「秦師叔」。同道背盟之禍中擲杯為號、奪你山門；其他路線裡，他是欠著舊盟、眼睛盯著崤函道的鄰居。",
+      "questline": "q_rival_head",
+      "desc": "伏牛劍派掌門，面頰瘦削，劍快如鳴鏑。當年與褚寒山在洛水邊歃血為盟，如今盯上的，是崤函道上每年過往的胡商。"
+    },
+    {
+      "id": "leader_jinwuwei",
+      "name": "獨孤鎮",
+      "courtesy": "元衡",
+      "title": "左金吾衛大將軍",
+      "role": "金吾衛・左金吾衛大將軍",
+      "gender": "男",
+      "age": 56,
+      "faction": "jinwuwei",
+      "group": "court",
+      "portrait": "leader_jinwuwei",
+      "expressions": [],
+      "rank": "A+",
+      "cap": "S",
+      "lines": [
+        {
+          "id": "blade",
+          "rank": "A+",
+          "cap": "S"
+        },
+        {
+          "id": "polearm",
+          "rank": "B",
+          "cap": "A"
+        },
+        {
+          "id": "teaching",
+          "rank": "B",
+          "cap": "A"
+        }
+      ],
+      "dialogue": [
+        "鼓聲一停，坊門就關。王侯也一樣。",
+        "我只管長安的夜。白天的爛帳，找御史臺去。",
+        "安西的雪，比長安的乾淨。"
+      ],
+      "signatureSkills": [
+        "橫刀十二路",
+        "金吾陌刀陣"
+      ],
+      "appearance": "鬢髮灰白，方臉濃眉，頷下短鬚如鐵刷；常服也穿得像甲冑，腰懸一柄磨得發亮的橫刀。",
+      "personality": "剛直守規矩，厭惡宦官干政；說話短，脾氣硬，認律不認人。私下愛聽胡琴，從不承認。",
+      "background": "鮮卑獨孤氏將門之後，少年時在安西軍中當過旅帥，後回京掌街鼓夜禁二十年。長安一百零八坊的坊門何時開闔，比他自家門還熟。",
+      "relation": "掌兩京巡警的人，官府若要拿你，最先來的是他的甲士；可他對內侍省的厭惡，或許比對江湖人更深。",
+      "questline": "q_leader_jinwuwei",
+      "desc": "掌京城晝夜巡警、街鼓夜禁。官府要拿江湖人，十有八九派的是金吾衛的甲士。"
+    },
+    {
+      "id": "leader_yushitai",
+      "name": "宇文嶠",
+      "courtesy": "子高",
+      "title": "御史大夫",
+      "role": "御史臺・御史大夫",
+      "gender": "男",
+      "age": 63,
+      "faction": "yushitai",
+      "group": "court",
+      "portrait": "leader_yushitai",
+      "expressions": [],
+      "rank": "B",
+      "cap": "B",
+      "lines": [
+        {
+          "id": "sword",
+          "rank": "B",
+          "cap": "B"
+        },
+        {
+          "id": "fist",
+          "rank": "C",
+          "cap": "B"
+        },
+        {
+          "id": "teaching",
+          "rank": "A",
+          "cap": "A+"
+        }
+      ],
+      "dialogue": [
+        "本臺只問事，不問人。",
+        "彈章寫得好，不如寫得巧。",
+        "老夫老了，看不清——除非有人把燈遞到眼前。"
+      ],
+      "signatureSkills": [
+        "臺獄鎖拿手"
+      ],
+      "appearance": "清瘦長身，白鬚修剪得一絲不苟；紫袍金帶，手裡總捏著一串沉香念珠，眼睛半睜半閉。",
+      "personality": "圓滑愛惜羽毛，凡事留餘地；看似糊塗，其實比誰都清醒。最怕的不是奸佞，是被人說成奸佞的同黨。",
+      "background": "進士出身，歷任三州刺史，晚年執掌御史臺。手下的范希仁替宮裡辦案，他睜一隻眼閉一隻眼，卻把每件案子的副本都收在自己書房裡。",
+      "relation": "范希仁的上司。他不會替你出頭，但若你給他一個不必擔干係的理由，他會讓御史臺的風向轉一轉。",
+      "questline": "q_leader_yushitai",
+      "desc": "糾察百官、推鞫刑獄。一紙彈章能讓刺史丟官，一座臺獄能讓好漢開口。"
+    },
+    {
+      "id": "leader_neishisheng",
+      "name": "霍元昌",
+      "courtesy": "",
+      "title": "內常侍",
+      "role": "內侍省・內常侍",
+      "gender": "男",
+      "age": 58,
+      "faction": "neishisheng",
+      "group": "court",
+      "portrait": "leader_neishisheng",
+      "expressions": [],
+      "rank": "S",
+      "cap": "S",
+      "lines": [
+        {
+          "id": "fist",
+          "rank": "S",
+          "cap": "S"
+        },
+        {
+          "id": "hidden",
+          "rank": "A",
+          "cap": "A"
+        },
+        {
+          "id": "neigong",
+          "rank": "A",
+          "cap": "A"
+        }
+      ],
+      "dialogue": [
+        "咱家只是喜歡那片松林。",
+        "東西是好東西，可惜放錯了地方。",
+        "人情嘛，總要有來有往。"
+      ],
+      "signatureSkills": [
+        "陰柔綿掌",
+        "宮門擒拿"
+      ],
+      "appearance": "面白無鬚，慈眉善目，聲音輕而柔；紫袍外罩一件素紗，手指保養得像女子，指甲修得極短。",
+      "personality": "說話輕、記仇深，對誰都笑。喜歡園林與古松，看中的東西從不開口要，只等別人「獻」。",
+      "background": "十二歲入宮，靠著一手陰柔綿掌與一副好記性步步升遷，如今是內侍省裡數一數二的大璫。兩京近畿的莊園、別業、寺產，十有二三掛在他名下。",
+      "relation": "宮中大璫。官府迫害線裡看中崤山的就是他；其他路線裡，他是一個從不露面、卻總有人替他辦事的名字。",
+      "questline": "q_leader_neishisheng",
+      "desc": "宮中宦官之署。近年大璫權勢日盛，莊園、別業、寺產遍布兩京近畿，誰的山好，便看上誰的山。"
+    },
+    {
+      "id": "leader_henan_fu",
+      "name": "韋元溥",
+      "courtesy": "希聲",
+      "title": "河南尹",
+      "role": "河南府・河南尹",
+      "gender": "男",
+      "age": 52,
+      "faction": "henan_fu",
+      "group": "court",
+      "portrait": "leader_henan_fu",
+      "expressions": [],
+      "rank": "B",
+      "cap": "B",
+      "lines": [
+        {
+          "id": "sword",
+          "rank": "B",
+          "cap": "B"
+        },
+        {
+          "id": "teaching",
+          "rank": "A",
+          "cap": "A+"
+        },
+        {
+          "id": "farming",
+          "rank": "A",
+          "cap": "A"
+        }
+      ],
+      "dialogue": [
+        "洛陽一斗米漲十文，我便少睡一個時辰。",
+        "府裡的不良人，比江湖人更懂江湖。",
+        "幫我一回，我記一筆。府衙的帳，比華嶽的乾淨。"
+      ],
+      "signatureSkills": [
+        "不良人緝捕術"
+      ],
+      "appearance": "中等身材，面容和善而疲憊，鬍鬚稀疏；常穿一件舊紫袍，袖口沾著墨跡，案頭永遠堆著三尺高的文書。",
+      "personality": "能吏，務實，厭惡空談；心裡裝著洛陽十幾縣的米價。對江湖人不親不疏，有用則用。",
+      "background": "京兆韋氏出身，以理財治水起家，兩任河南尹。大疫那年他開官倉賑濟，被戶部參了一本，至今還在罰俸。",
+      "relation": "東都的父母官。他需要人替他剿匪、押糧、穩住地方——只要你不給他惹麻煩，他願意給你方便。",
+      "questline": "q_leader_henan_fu",
+      "desc": "東都所在的京畿府衙，管著洛陽與周邊十數縣。府裡的不良人，比江湖人更懂江湖。"
+    },
+    {
+      "id": "leader_hexi_jds",
+      "name": "渾元朗",
+      "courtesy": "",
+      "title": "河西節度使",
+      "role": "河西節度使府・河西節度使",
+      "gender": "男",
+      "age": 50,
+      "faction": "hexi_jds",
+      "group": "court",
+      "portrait": "leader_hexi_jds",
+      "expressions": [],
+      "rank": "S",
+      "cap": "S",
+      "lines": [
+        {
+          "id": "polearm",
+          "rank": "S",
+          "cap": "S"
+        },
+        {
+          "id": "blade",
+          "rank": "A",
+          "cap": "A"
+        }
+      ],
+      "dialogue": [
+        "河西不缺刀，缺的是握刀的手。",
+        "我這裡不問來歷，只問你敢不敢往西走。",
+        "吐蕃人怕的不是槊，是後面那一萬匹馬。"
+      ],
+      "signatureSkills": [
+        "河西馬槊",
+        "赤水軍弓陣"
+      ],
+      "appearance": "鐵勒渾部之後，身材魁梧，絡腮短鬚，臉被河西的風吹成赭色；明光鎧外披一領紅袍，手持一桿破陣槊。",
+      "personality": "豪爽愛才，治軍極嚴。喝酒用大碗，殺逃兵也不手軟。看人先看手上的繭。",
+      "background": "鐵勒渾部歸唐之後，三代從軍。他從赤水軍的小校一路打到河西節度使，斷隔吐蕃與突厥，河西七州的兵馬盡歸節度。",
+      "relation": "西陲最大的雇主。他給健兒的餉比府兵高，崤山出去的弟子若要投軍，他的大門總是開著。",
+      "questline": "q_leader_hexi_jds",
+      "desc": "斷隔吐蕃與突厥，河西七州的兵馬盡歸節度。招募健兒的餉比府兵高，山東子弟紛紛西投。",
+      "weapon": "weapon_pozhen_shuo"
+    },
+    {
+      "id": "leader_anxi_dhf",
+      "name": "裴行遠",
+      "courtesy": "仲遐",
+      "title": "安西副大都護",
+      "role": "安西都護府・安西副大都護",
+      "gender": "男",
+      "age": 54,
+      "faction": "anxi_dhf",
+      "group": "court",
+      "portrait": "leader_anxi_dhf",
+      "expressions": [],
+      "rank": "S",
+      "cap": "S+",
+      "lines": [
+        {
+          "id": "blade",
+          "rank": "S",
+          "cap": "S+"
+        },
+        {
+          "id": "polearm",
+          "rank": "A",
+          "cap": "A+"
+        }
+      ],
+      "dialogue": [
+        "四鎮的戍卒，十年沒見過爹娘。",
+        "長安記得我們嗎？不記得也無妨，我們記得長安。",
+        "這一刀，替碎葉城外那三百人砍的。"
+      ],
+      "signatureSkills": [
+        "安西橫刀",
+        "大漠陌刀陣"
+      ],
+      "appearance": "河東裴氏的清癯面容，鬚髮已白了大半，眼神卻像鷹；常著半舊的圓領戎袍，腰懸安西橫刀，袍角補過三回。",
+      "personality": "沉靜、念舊、守信。十年未歸長安，家書寫得比奏章還勤。對戍卒極好，對朝中說客極冷。",
+      "background": "河東裴氏子弟，少年中明經，卻棄筆從戎。鎮撫西域諸國二十年，四鎮孤懸萬里之外，他把龜茲當成了家。",
+      "relation": "遠在龜茲的副大都護。崤山若有人往西走，他是能在大漠裡給你一碗水、一道通關文書的人。",
+      "questline": "q_leader_anxi_dhf",
+      "desc": "鎮撫西域諸國，四鎮孤懸萬里之外。戍卒十年不得歸，家書要走大半年。"
+    },
+    {
+      "id": "leader_fanyang_jds",
+      "name": "張懷遠",
+      "courtesy": "",
+      "title": "范陽節度使",
+      "role": "范陽節度使府・范陽節度使",
+      "gender": "男",
+      "age": 60,
+      "faction": "fanyang_jds",
+      "group": "court",
+      "portrait": "leader_fanyang_jds",
+      "expressions": [],
+      "rank": "S",
+      "cap": "S",
+      "lines": [
+        {
+          "id": "polearm",
+          "rank": "S",
+          "cap": "S"
+        },
+        {
+          "id": "blade",
+          "rank": "A",
+          "cap": "A"
+        }
+      ],
+      "dialogue": [
+        "河北的事，河北人說了算。",
+        "老夫帳下胡漢一家，這才是大唐的氣象。",
+        "翰兒孝順，比我親生的還孝順。"
+      ],
+      "signatureSkills": [
+        "幽燕騎射",
+        "曳落河短刀"
+      ],
+      "appearance": "身材高大而發福，白鬚過胸，臉上一道舊刀疤從額角拖到耳根；穿紫袍也像穿甲，說話聲如洪鐘。",
+      "personality": "老辣而晚年昏聵，愛聽好話，也愛提拔會說好話的人。對胡將寬，對漢將嚴，自以為洞察人心。",
+      "background": "鎮河北二十年，制奚與契丹，胡漢健兒雜編成軍。朝中說這支兵只認節度使，他聽了只是笑。帳下營州牙將阿史德翰通六蕃語，他視之如子。",
+      "relation": "河北的土皇帝。謝家與他府中有姻親，他的聘書曾送到謝家門上；他若看中你，會給你一面旗——也給你一條拴繩。",
+      "questline": "q_leader_fanyang_jds",
+      "desc": "鎮河北、制奚與契丹，胡漢健兒雜編成軍。朝中有人私下說：這支兵，只認節度使。"
+    },
+    {
+      "id": "leader_shaolin",
+      "name": "了空大師",
+      "courtesy": "",
+      "title": "少林方丈",
+      "role": "少林寺・少林方丈",
+      "gender": "男",
+      "age": 72,
+      "faction": "shaolin",
+      "group": "leader",
+      "portrait": "leader_shaolin",
+      "expressions": [],
+      "rank": "S+",
+      "cap": "S+",
+      "lines": [
+        {
+          "id": "polearm",
+          "rank": "S+",
+          "cap": "S+"
+        },
+        {
+          "id": "fist",
+          "rank": "A+",
+          "cap": "A+"
+        },
+        {
+          "id": "neigong",
+          "rank": "A+",
+          "cap": "A+"
+        },
+        {
+          "id": "medicine",
+          "rank": "A",
+          "cap": "S"
+        }
+      ],
+      "dialogue": [
+        "佛門不問是非，只救眼前人。",
+        "棍子不殺人，殺人的是拿棍子的手。",
+        "苦筍要趁早挖，人要趁早救。"
+      ],
+      "signatureSkills": [
+        "少林棍法",
+        "伏虎羅漢拳",
+        "達摩禪定功"
+      ],
+      "appearance": "鬚眉皆白，臉上皺紋深如刀刻，身形卻不見佝僂；一領洗舊的赭黃袈裟，腕上一串磨亮的菩提子，身旁總倚著一根齊眉長棍。",
+      "personality": "慈悲而有棱角，不問是非、只救眼前人；可一旦有人在山門內動刀，他的棍比戒律院還快。愛吃寺後的苦筍。",
+      "background": "少林第十代方丈，十三棍僧之後的傳人。年輕時在寺外行腳二十年，見過饑荒、兵災與冤獄，回寺後才肯接方丈。官府的公文，他看完一律交給知客僧退回。",
+      "relation": "少林是江湖的庇護所。你若有難，他會開山門；你若在少室山下作惡，他也會親自下山。",
+      "questline": "q_leader_shaolin",
+      "desc": "寺僧助太宗擒王世充，御賜田地，敕書至今供在寺中。官府不輕易登門，江湖人也不敢放肆。",
+      "weapon": "weapon_monk_staff"
+    },
+    {
+      "id": "leader_louguan",
+      "name": "尹太初",
+      "courtesy": "",
+      "title": "樓觀觀主",
+      "role": "樓觀派・樓觀觀主",
+      "gender": "男",
+      "age": 68,
+      "faction": "louguan",
+      "group": "leader",
+      "portrait": "leader_louguan",
+      "expressions": [],
+      "rank": "S",
+      "cap": "S",
+      "lines": [
+        {
+          "id": "neigong",
+          "rank": "S",
+          "cap": "S"
+        },
+        {
+          "id": "fist",
+          "rank": "A",
+          "cap": "A"
+        },
+        {
+          "id": "alchemy",
+          "rank": "S",
+          "cap": "S"
+        }
+      ],
+      "dialogue": [
+        "長生不在丹爐裡。",
+        "說經台上說的是經，不是是非。",
+        "你心裡的火太旺，喝杯茶。"
+      ],
+      "signatureSkills": [
+        "紫氣東來掌",
+        "說經台吐納"
+      ],
+      "appearance": "白髮挽成道髻，插一支烏木簪；面容清瘦，眉長過眼，一身青灰道袍，手持拂塵，走路無聲。",
+      "personality": "清靜寡言，不問江湖事；對人淡，對茶講究。唯一會動氣的時候，是有人拿丹藥騙人。",
+      "background": "終南山樓觀道院的觀主，皇家尊崇的道門。宮裡數次召他煉長生丹，他只送去一卷《道德經》注，說長生之藥就在裡面。",
+      "relation": "終南山上的老道。他不會替誰出手，卻知道很多不該知道的事；問得對，他會指一條路。",
+      "questline": "q_leader_louguan",
+      "desc": "終南山樓觀道院，皇家尊崇的道門。道士們不問江湖事，卻個個內功深厚。"
+    },
+    {
+      "id": "leader_wulong",
+      "name": "呂元貞",
+      "courtesy": "",
+      "title": "五龍觀主",
+      "role": "五龍觀・五龍觀主",
+      "gender": "男",
+      "age": 45,
+      "faction": "wulong",
+      "group": "leader",
+      "portrait": "leader_wulong",
+      "expressions": [],
+      "rank": "A+",
+      "cap": "S+",
+      "lines": [
+        {
+          "id": "sword",
+          "rank": "A+",
+          "cap": "S+"
+        },
+        {
+          "id": "fist",
+          "rank": "B",
+          "cap": "A+"
+        },
+        {
+          "id": "neigong",
+          "rank": "B",
+          "cap": "A+"
+        }
+      ],
+      "dialogue": [
+        "水不爭，所以無所不至。",
+        "茶要等，劍也要等。",
+        "五龍觀窮，所以清靜。"
+      ],
+      "signatureSkills": [
+        "玄武劍",
+        "龜蛇導引術"
+      ],
+      "appearance": "中年道人，面容溫潤，留三綹黑鬚，青布道袍打著補丁；背一柄木鞘長劍，鞘上刻著龜蛇紋。",
+      "personality": "謙和、守拙、後發制人；不爭名，也不讓人欺。說話慢，出劍更慢——慢到你看清的時候已經輸了。",
+      "background": "武當山五龍祠的道人，十年前帶著七個徒弟上山，種茶修祠，練一種以柔克剛的拳劍。人少，名聲卻在江湖上慢慢傳開。",
+      "relation": "一個想讓弟子安安穩穩練劍的同道。他敬重崤山劍門的名聲，也願意與你交換劍理。",
+      "questline": "q_leader_wulong",
+      "desc": "武當山五龍祠的道人，練一種以柔克剛、後發先至的拳劍。人少，名聲卻在江湖上慢慢傳開。"
+    },
+    {
+      "id": "leader_emei",
+      "name": "靜玄師太",
+      "courtesy": "",
+      "title": "峨眉劍宗掌門",
+      "role": "峨眉劍宗・峨眉劍宗掌門",
+      "gender": "女",
+      "age": 58,
+      "faction": "emei",
+      "group": "leader",
+      "portrait": "leader_emei",
+      "expressions": [],
+      "rank": "A+",
+      "cap": "S",
+      "lines": [
+        {
+          "id": "sword",
+          "rank": "A+",
+          "cap": "S"
+        },
+        {
+          "id": "fist",
+          "rank": "B",
+          "cap": "A"
+        }
+      ],
+      "dialogue": [
+        "峨眉的劍，不是練給男人看的。",
+        "金頂的佛光，一年只見三回，劍光卻天天見。",
+        "護不住自己的人，先學護住別人。"
+      ],
+      "signatureSkills": [
+        "金頂佛光掌",
+        "峨眉刺法"
+      ],
+      "appearance": "清瘦挺拔，灰白長髮挽成道姑式髻；素白劍袍，袖口繡一枝淡紫藤花，劍不離手，眼神溫和而銳利。",
+      "personality": "外寬內嚴，護短；對女弟子如母，對欺負女弟子的人如閻王。一生不入佛門，只在劍上修行。",
+      "background": "峨眉山上的俗家劍宗掌門，與山上佛寺比鄰而居。年輕時一人一劍下三峽，挑了七個水寨，從此峨眉女劍客的名聲傳出蜀中。",
+      "relation": "蜀中劍宗的掌門。她若欣賞你，會讓弟子與你同行；她若看不慣，會直接說出口。",
+      "questline": "q_leader_emei",
+      "desc": "峨眉山上的俗家劍宗，與山上佛寺比鄰。門下多女弟子，劍走輕靈。"
+    },
+    {
+      "id": "leader_chicheng",
+      "name": "陸孤雲",
+      "courtesy": "",
+      "title": "赤城劍閣閣主",
+      "role": "赤城劍閣・赤城劍閣閣主",
+      "gender": "男",
+      "age": 66,
+      "faction": "chicheng",
+      "group": "leader",
+      "portrait": "leader_chicheng",
+      "expressions": [],
+      "rank": "S",
+      "cap": "S",
+      "lines": [
+        {
+          "id": "sword",
+          "rank": "S",
+          "cap": "S"
+        },
+        {
+          "id": "neigong",
+          "rank": "A",
+          "cap": "A"
+        }
+      ],
+      "dialogue": [
+        "我看不見，所以看得清。",
+        "名門大派的劍，太重。",
+        "崤山那兩個小子，當年都比我年輕時強。"
+      ],
+      "signatureSkills": [
+        "赤城霞劍",
+        "天台止觀"
+      ],
+      "appearance": "瘦高如鶴，白髮披肩不束，一身褪色的赭紅長衫；雙目微盲，以竹杖探路，劍卻從不離腰。",
+      "personality": "孤傲、尖刻、言簡意賅；二十年不下山，對天下事卻瞭如指掌。看不起名門大派，偏偏欣賞小門小戶的硬骨頭。",
+      "background": "天台山赤城峰上的劍閣閣主，劍法如霞光散落。二十年前與人論劍傷了雙目，從此不下山，只讓弟子替他四處行走、帶回消息。",
+      "relation": "一位與第二代崤山掌門有舊的老劍客。他記得褚寒山與聶遠山當年爭位的事，也記得誰說了謊。",
+      "questline": "q_leader_chicheng",
+      "desc": "天台山赤城峰上的劍閣，閣中弟子劍法如霞光散落。閣主二十年不下山，江湖上的消息卻一件也不少知道。"
+    },
+    {
+      "id": "leader_zhurong",
+      "name": "鍾離熾",
+      "courtesy": "",
+      "title": "祝融門門主",
+      "role": "祝融門・祝融門門主",
+      "gender": "男",
+      "age": 47,
+      "faction": "zhurong",
+      "group": "leader",
+      "portrait": "leader_zhurong",
+      "expressions": [],
+      "rank": "A+",
+      "cap": "A+",
+      "lines": [
+        {
+          "id": "fist",
+          "rank": "A+",
+          "cap": "A+"
+        },
+        {
+          "id": "sword",
+          "rank": "B",
+          "cap": "B"
+        }
+      ],
+      "dialogue": [
+        "南方人也是人！",
+        "掌要燒到骨頭裡，才算祝融掌。",
+        "你敬我一尺，我還你一丈；你踩我一腳，我拆你一座山。"
+      ],
+      "signatureSkills": [
+        "祝融烈掌",
+        "回雁劍"
+      ],
+      "appearance": "身材粗壯，紅臉膛，絡腮鬍子像一團火；赤褐短袍敞著前襟，露出胸口一片燙傷舊疤，雙掌厚如蒲扇。",
+      "personality": "烈性如火，愛恨分明；吃軟不吃硬，最恨別人看不起南方人。喝醉了會哭，醒了不承認。",
+      "background": "南嶽衡山的掌門派門主，祝融烈掌剛猛無儔。少年時在潭州碼頭扛貨，被人欺負，拜師三年後回去把碼頭砸了。",
+      "relation": "南方武林的火爆脾氣。結交他容易，得罪他更容易；他的友誼和仇恨都一樣長。",
+      "questline": "q_leader_zhurong",
+      "desc": "南嶽衡山的掌門派，掌法剛烈如火。門主脾氣比掌法更烈。"
+    },
+    {
+      "id": "leader_yeyu",
+      "name": "夜雨樓主",
+      "courtesy": "",
+      "title": "夜雨樓主",
+      "role": "夜雨樓・夜雨樓主",
+      "gender": "不詳",
+      "age": 0,
+      "faction": "yeyu",
+      "group": "leader",
+      "portrait": "leader_yeyu",
+      "expressions": [],
+      "rank": "S+",
+      "cap": "S+",
+      "lines": [
+        {
+          "id": "sword",
+          "rank": "S+",
+          "cap": "S+"
+        },
+        {
+          "id": "hidden",
+          "rank": "A+",
+          "cap": "A+"
+        },
+        {
+          "id": "qinggong",
+          "rank": "A+",
+          "cap": "A+"
+        }
+      ],
+      "dialogue": [
+        "夜雨樓只收錢，不問因由。",
+        "約就是約。十年也是約。",
+        "你要見我？先學會在雨裡站一夜。"
+      ],
+      "signatureSkills": [
+        "霜鍔短劍",
+        "聽雨暗器"
+      ],
+      "appearance": "戴一張素白無紋的面具，身著寬大的墨色斗篷，看不出身形；聲音低而平，分不清男女。腰間一柄短劍，劍鞘如結霜。",
+      "personality": "冷靜、守約、不問因由；只收錢，也只認約。對背約者從不手軟，對守約者從不虧欠。",
+      "background": "兩京之間流傳的刺客樓之主，無人見過面具下的臉。據說那位與師父徹夜長談的洛陽來客，就是夜雨樓的人。",
+      "relation": "與師父的十年之約有關的人。你若要找師父，終究要走進夜雨樓。",
+      "questline": "q_leader_yeyu",
+      "desc": "兩京之間流傳的刺客樓。只收錢，不問因由。據說那位洛陽來客，與夜雨樓有些關係。",
+      "weapon": "weapon_shuange"
+    },
+    {
+      "id": "leader_nongchao",
+      "name": "錢四娘",
+      "courtesy": "",
+      "title": "錢塘弄潮幫幫主",
+      "role": "錢塘弄潮幫・錢塘弄潮幫幫主",
+      "gender": "女",
+      "age": 41,
+      "faction": "nongchao",
+      "group": "leader",
+      "portrait": "leader_nongchao",
+      "expressions": [],
+      "rank": "A",
+      "cap": "A+",
+      "lines": [
+        {
+          "id": "hidden",
+          "rank": "A",
+          "cap": "A+"
+        },
+        {
+          "id": "blade",
+          "rank": "C",
+          "cap": "B"
+        },
+        {
+          "id": "commerce",
+          "rank": "A",
+          "cap": "S"
+        }
+      ],
+      "dialogue": [
+        "潮水不等人，錢塘幫也不等。",
+        "上了我的船，命是我的；下了船，命是你自己的。",
+        "價錢可以談，規矩不能談。"
+      ],
+      "signatureSkills": [
+        "弄潮分水刺",
+        "舟楫刀"
+      ],
+      "appearance": "膚色黝黑，身形精悍，髮髻用一根竹籤別住；短褐窄袖，褲腳挽到膝上，腰插兩柄分水刺，笑起來露一顆金牙。",
+      "personality": "爽利、豪氣、算盤精；江口一半的渡船聽她的，她只聽潮水的。講信用，也講價錢。",
+      "background": "錢塘船家女，十二歲就在八月大潮裡弄潮，十八歲嫁給前任幫主，二十五歲守寡接了幫。官府的鹽船、商船過江口，都要先給弄潮幫遞一聲招呼。",
+      "relation": "江南水路的地頭蛇。你若要在江南立足，或從水路運貨，繞不開她的船。",
+      "questline": "q_leader_nongchao",
+      "desc": "錢塘江上的船家與弄潮兒結成的幫會，管著江口一半的渡船。能在船舷上走，也能在浪頭上打。"
+    },
+    {
+      "id": "leader_cuishi",
+      "name": "崔元禮",
+      "courtesy": "敬之",
+      "title": "博陵崔氏宗長",
+      "role": "博陵崔氏・博陵崔氏宗長",
+      "gender": "男",
+      "age": 67,
+      "faction": "cuishi",
+      "group": "leader",
+      "portrait": "leader_cuishi",
+      "expressions": [],
+      "rank": "B",
+      "cap": "B",
+      "lines": [
+        {
+          "id": "polearm",
+          "rank": "B",
+          "cap": "B"
+        },
+        {
+          "id": "teaching",
+          "rank": "S",
+          "cap": "S"
+        },
+        {
+          "id": "commerce",
+          "rank": "A",
+          "cap": "S"
+        }
+      ],
+      "dialogue": [
+        "崔氏之女，不嫁非類。",
+        "門第不是用來驕人的，是用來守的。",
+        "老夫不與江湖人往來——除非江湖人有禮。"
+      ],
+      "signatureSkills": [
+        "崔氏家傳槊法"
+      ],
+      "appearance": "鬚髮皆白，面容方正，衣著樸素卻料子極好；坐姿端得像一方碑，手邊永遠放著一卷族譜。",
+      "personality": "重門第、重禮法、重面子；說話慢條斯理，句句有典故。對子弟極嚴，對外人極客氣——客氣得像一堵牆。",
+      "background": "山東五姓七家之一的博陵崔氏宗長，天子嫁女都嫌門第不夠。家兵不多，人脈卻遍及朝野；崔家一封信，比刺史一道公文管用。",
+      "relation": "崔家的離家子弟崔鈺投在你門下，他遲早要找上門來；若能得他一句話，河北士族的門都會為你打開。",
+      "questline": "q_leader_cuishi",
+      "desc": "山東五姓七家之一，天子嫁女都嫌門第不夠。家兵不多，人脈卻遍及朝野。"
+    },
+    {
+      "id": "leader_sute",
+      "name": "安延年",
+      "courtesy": "",
+      "title": "粟特商團薩寶",
+      "role": "粟特商團・粟特商團薩寶",
+      "gender": "男",
+      "age": 55,
+      "faction": "sute",
+      "group": "leader",
+      "portrait": "leader_sute",
+      "expressions": [],
+      "rank": "A",
+      "cap": "A+",
+      "lines": [
+        {
+          "id": "blade",
+          "rank": "A",
+          "cap": "A+"
+        },
+        {
+          "id": "hidden",
+          "rank": "C",
+          "cap": "B"
+        },
+        {
+          "id": "commerce",
+          "rank": "S",
+          "cap": "S+"
+        }
+      ],
+      "dialogue": [
+        "三年。替我押三年貨，我替你養三年人。",
+        "帳不會說謊，人會。",
+        "從撒馬爾罕到長安，每一里路都有價錢。"
+      ],
+      "signatureSkills": [
+        "胡旋刀",
+        "駝隊連弩陣"
+      ],
+      "appearance": "高鼻深目，濃密的捲曲大鬍子已經花白；頭戴尖頂氈帽，錦緞翻領長袍上綴著聯珠紋，十根手指戴了七枚戒指。",
+      "personality": "精明、熱情、重然諾；談生意時笑得最大聲，算帳時一聲不吭。信奉祆教，每逢火祭必回涼州。",
+      "background": "昭武九姓安國人之後，從撒馬爾罕到長安，駝隊不絕於道。身為薩寶，替朝廷管著胡商的事務，他的帳簿比朝廷的邸報更早知道天下大事。",
+      "relation": "絲路上的大商人。康瑟的舅家在他的商團裡；他願意與任何守信的人做生意。",
+      "questline": "q_leader_sute",
+      "desc": "昭武九姓的商人，從撒馬爾罕到長安，駝隊不絕於道。他們的帳簿，比朝廷的邸報更早知道天下大事。"
+    },
+    {
+      "id": "leader_yanbang",
+      "name": "莫三川",
+      "courtesy": "",
+      "title": "揚州鹽幫鹽總",
+      "role": "揚州鹽幫・揚州鹽幫鹽總",
+      "gender": "男",
+      "age": 49,
+      "faction": "yanbang",
+      "group": "leader",
+      "portrait": "leader_yanbang",
+      "expressions": [],
+      "rank": "A",
+      "cap": "S",
+      "lines": [
+        {
+          "id": "blade",
+          "rank": "A",
+          "cap": "S"
+        },
+        {
+          "id": "fist",
+          "rank": "C",
+          "cap": "B"
+        },
+        {
+          "id": "commerce",
+          "rank": "S",
+          "cap": "S"
+        }
+      ],
+      "dialogue": [
+        "鹽是白的，錢是白的，人心是黑的。",
+        "朋友，喝茶。茶裡沒有鹽。",
+        "運河很長，裝得下很多人。"
+      ],
+      "signatureSkills": [
+        "鹽梟短刀",
+        "瓜洲水戰"
+      ],
+      "appearance": "身材矮壯，圓臉小眼，總是笑咪咪的；一身寶藍綢袍，腰間繫著一只舊皮囊，囊裡裝的是一把鹽和一柄短刀。",
+      "personality": "和氣生財，笑裡藏刀；斷他財路的人沉運河，幫過他的人他記一輩子。最討厭官府，最喜歡官府的錢。",
+      "background": "淮南鹽場灶戶之子，十四歲販私鹽，三十歲當上鹽總。官鹽私鹽他都賣，揚州一半的漕船都有他的股。",
+      "relation": "江淮最有錢的人之一。他可以讓你的門派富甲一方，也可以讓你一粒鹽都買不到。",
+      "questline": "q_leader_yanbang",
+      "desc": "淮南鹽場的大商與私販結成的幫會。官鹽私鹽，他們都賣；誰斷他們的財路，誰就沉運河。"
+    },
+    {
+      "id": "leader_heisong",
+      "name": "胡大眼",
+      "courtesy": "",
+      "title": "黑松寨寨主",
+      "role": "黑松寨・黑松寨寨主",
+      "gender": "男",
+      "age": 38,
+      "faction": "heisong",
+      "group": "leader",
+      "portrait": "leader_heisong",
+      "expressions": [],
+      "rank": "B",
+      "cap": "A",
+      "lines": [
+        {
+          "id": "blade",
+          "rank": "B",
+          "cap": "A"
+        },
+        {
+          "id": "fist",
+          "rank": "C",
+          "cap": "B"
+        }
+      ],
+      "dialogue": [
+        "此山是我開，此樹是我栽！",
+        "胡商的錢不算錢，那是天上掉的。",
+        "褚老頭在的時候，我可沒來過。"
+      ],
+      "signatureSkills": [
+        "開山斧"
+      ],
+      "appearance": "滿臉橫肉，一雙牛眼瞪得溜圓，頭裹黑巾，敞著胸口一叢黑毛；肩上扛一柄開山大斧，斧刃缺了兩個口。",
+      "personality": "粗魯、貪財、欺軟怕硬，卻講一點綠林義氣：不劫窮人，不碰女人。心裡最怕的是官府真的來剿。",
+      "background": "原是陝州的屠戶，殺了欺負妹妹的里正，逃上崤函道的黑松林落草。手下一百多人，專劫落單的胡商；官府貼了三回告示，寨子還在。",
+      "relation": "崤山腳下的老鄰居。他劫過劍門的米車，也被師父打斷過兩根肋骨；如今師父不在，他的膽子又大了。",
+      "questline": "q_leader_heisong",
+      "desc": "盤踞崤函道上的一夥強人，專劫落單的胡商。官府貼了三回告示，寨子還在。"
+    },
+    {
+      "id": "leader_taihang",
+      "name": "程鐵牛",
+      "courtesy": "",
+      "title": "太行十八寨總瓢把子",
+      "role": "太行十八寨・太行十八寨總瓢把子",
+      "gender": "男",
+      "age": 44,
+      "faction": "taihang",
+      "group": "leader",
+      "portrait": "leader_taihang",
+      "expressions": [],
+      "rank": "A+",
+      "cap": "S",
+      "lines": [
+        {
+          "id": "blade",
+          "rank": "A+",
+          "cap": "S"
+        },
+        {
+          "id": "fist",
+          "rank": "B",
+          "cap": "A"
+        }
+      ],
+      "dialogue": [
+        "太行山上沒有官，只有人。",
+        "府兵？我也當過。我知道那身皮有多重。",
+        "要入夥？先喝了這碗血酒。"
+      ],
+      "signatureSkills": [
+        "太行刀",
+        "陘道伏擊"
+      ],
+      "appearance": "身高八尺，黑臉虯髯，額上有一塊舊烙印被刀刮去，只剩一片疤；披一件羊皮襖，腰插一口厚背砍刀。",
+      "personality": "豪邁、仗義、疑心重；收留天下逃丁逃兵，對官府恨之入骨。打仗精明，管錢糊塗。",
+      "background": "河北府兵逃丁出身，因上司剋扣軍糧殺官逃亡，十年間把太行八陘的十八座山寨捏成一股。官軍剿了又生，生了又剿。",
+      "relation": "逃丁逃兵的大哥。你若收容逃籍之人，他視你為同道；你若替官府辦事，他視你為死敵。",
+      "questline": "q_leader_taihang",
+      "desc": "太行山八陘之間的十八座山寨，逃丁、逃兵、逃奴都往這裡投。官軍剿了又生，生了又剿。"
+    },
+    {
+      "id": "leader_tubo",
+      "name": "噶爾·恭頓",
+      "courtesy": "",
+      "title": "吐蕃大論",
+      "role": "吐蕃・吐蕃大論",
+      "gender": "男",
+      "age": 52,
+      "faction": "tubo",
+      "group": "leader",
+      "portrait": "leader_tubo",
+      "expressions": [],
+      "rank": "S",
+      "cap": "S+",
+      "lines": [
+        {
+          "id": "polearm",
+          "rank": "S",
+          "cap": "S+"
+        },
+        {
+          "id": "fist",
+          "rank": "A",
+          "cap": "A+"
+        }
+      ],
+      "dialogue": [
+        "石堡城的每一塊石頭，都流過兩國的血。",
+        "漢人的書很好，漢人的話太多。",
+        "朋友與敵人，只隔一場雪。"
+      ],
+      "signatureSkills": [
+        "雪域摔角",
+        "鐵甲騎陣"
+      ],
+      "appearance": "高原人特有的紫紅臉膛，鬢髮編成數十條細辮，綴著綠松石；身披織金錦袍，外罩犛牛皮甲，腰間懸一柄嵌珊瑚的長刀。",
+      "personality": "城府極深，禮數周全；能用漢話引《論語》，也能在宴席上一刀砍下叛將的頭。尊重強者，看不起討價還價的人。",
+      "background": "噶爾家族世代執掌吐蕃軍政，他是這一代的大論，石堡城下與唐軍爭了二十年。他讀過漢人的兵書，最想讀的一部，叫《衛公兵法》。",
+      "relation": "高原強國的權臣。他與大唐時和時戰；若殘卷的消息傳到邏些，他會派人來買，或來搶。",
+      "questline": "q_leader_tubo",
+      "desc": "高原上的強國，與大唐時和時戰。石堡城下，兩國的兵已經爭了好幾代人。"
+    },
+    {
+      "id": "leader_huihe",
+      "name": "藥羅葛·烏蘇",
+      "courtesy": "",
+      "title": "回紇俟利發",
+      "role": "回紇・回紇俟利發",
+      "gender": "男",
+      "age": 46,
+      "faction": "huihe",
+      "group": "leader",
+      "portrait": "leader_huihe",
+      "expressions": [],
+      "rank": "A+",
+      "cap": "S",
+      "lines": [
+        {
+          "id": "blade",
+          "rank": "A+",
+          "cap": "S"
+        },
+        {
+          "id": "hidden",
+          "rank": "B",
+          "cap": "A"
+        }
+      ],
+      "dialogue": [
+        "草原上的話，說出口就是一支箭。",
+        "唐人的絹換我們的馬，很公平。",
+        "風向變的時候，聰明人先下馬。"
+      ],
+      "signatureSkills": [
+        "草原騎射",
+        "狼頭彎刀"
+      ],
+      "appearance": "身材健碩，臉龐寬闊，長髮編成兩條粗辮垂在胸前；頭戴貂皮帽，翻領皮袍鑲著狼毛，腰間懸一柄狼頭彎刀。",
+      "personality": "直爽、好客、重然諾，也極有耐心；能在草原上等一個月，只為等一陣對的風。喜歡唐人的絹，更喜歡唐人的茶。",
+      "background": "鐵勒諸部中最強一支的首領，與大唐互市絹馬。突厥衰落後，他在漠北一點點收攏各部，草原上的風向，正在他手裡悄悄轉變。",
+      "relation": "漠北草原的主人。他的馬是天下最好的馬；你若要走中受降城以北，就要先拜他的帳。",
+      "questline": "q_leader_huihe",
+      "desc": "鐵勒諸部中最強的一支，與大唐互市絹馬。草原上的風向，正在悄悄轉變。"
+    },
+    {
+      "id": "leader_tuqishi",
+      "name": "骨咄祿·阿悉",
+      "courtesy": "",
+      "title": "突騎施可汗",
+      "role": "突騎施・突騎施可汗",
+      "gender": "男",
+      "age": 40,
+      "faction": "tuqishi",
+      "group": "leader",
+      "portrait": "leader_tuqishi",
+      "expressions": [],
+      "rank": "S",
+      "cap": "S",
+      "lines": [
+        {
+          "id": "blade",
+          "rank": "S",
+          "cap": "S"
+        },
+        {
+          "id": "hidden",
+          "rank": "A",
+          "cap": "A"
+        }
+      ],
+      "dialogue": [
+        "碎葉是突騎施的，從來都是。",
+        "唐人的冊封，跟草原上的雪一樣，一到春天就化。",
+        "給我一個理由，不砍你的頭。"
+      ],
+      "signatureSkills": [
+        "西突厥騎射",
+        "碎葉彎刀"
+      ],
+      "appearance": "瘦削剽悍，鷹鉤鼻，眉骨高聳，留著兩撇上翹的鬍子；頭戴金狼冠，身披紅錦戰袍，手裡永遠握著一條馬鞭。",
+      "personality": "多疑、驕傲、反覆無常；今日受唐冊封，明日便劫掠安西。最恨被人看輕，最愛聽人說他是「西方的天可汗」。",
+      "background": "西突厥十姓之一突騎施的可汗，據碎葉為牙帳。他的父親死於部族內亂，他踩著兄弟的屍首坐上汗位。",
+      "relation": "安西邊外的狼。他與安西都護府打打和和；魏老七在碎葉城外跟他的騎兵拼過刀。",
+      "questline": "q_leader_tuqishi",
+      "desc": "西突厥十姓之一，據碎葉為牙帳，時而受唐冊封，時而劫掠安西。"
+    },
+    {
+      "id": "leader_nanzhao",
+      "name": "蒙邏閣",
+      "courtesy": "",
+      "title": "南詔詔主",
+      "role": "南詔・南詔詔主",
+      "gender": "男",
+      "age": 43,
+      "faction": "nanzhao",
+      "group": "leader",
+      "portrait": "leader_nanzhao",
+      "expressions": [],
+      "rank": "A+",
+      "cap": "S",
+      "lines": [
+        {
+          "id": "blade",
+          "rank": "A+",
+          "cap": "S"
+        },
+        {
+          "id": "hidden",
+          "rank": "B",
+          "cap": "A"
+        }
+      ],
+      "dialogue": [
+        "洱海很大，裝得下六個詔，卻只要一個主。",
+        "大唐是天，南詔是山。山不必與天爭高。",
+        "中原人來，我給酒；中原兵來，我給弩。"
+      ],
+      "signatureSkills": [
+        "鐸鞘刀法",
+        "蒼山弩"
+      ],
+      "appearance": "身材精瘦，膚色深褐，頭裹紅色包頭，耳垂掛著銀環；身披虎皮披氈，腰間佩一柄鐸鞘長刀，眼神沉靜如洱海。",
+      "personality": "隱忍、精明、志向遠大；對大唐恭順有禮，對其餘五詔毫不留情。愛才，不問出身。",
+      "background": "洱海邊蒙舍詔的詔主，正在一步步吞併其餘五詔。朝廷樂見其成，賜他名號；邊將卻暗自擔心，這頭小虎長大之後會往哪邊撲。",
+      "relation": "西南邊陲的新主人。南詔的蒼山弩與鐸鞘刀天下少見；他歡迎中原的能人，也提防中原的野心。",
+      "questline": "q_leader_nanzhao",
+      "desc": "洱海邊的蒙舍詔，正在吞併其餘五詔。朝廷樂見其成，邊將卻暗自擔心。"
+    },
+    {
+      "id": "prodigy_emei",
+      "name": "葉青鸞",
+      "courtesy": "",
+      "title": "峨眉劍宗親傳弟子",
+      "role": "新秀・峨眉劍宗",
+      "gender": "女",
+      "age": 18,
+      "faction": "emei",
+      "group": "prodigy",
+      "portrait": "prodigy_emei",
+      "expressions": [],
+      "rank": "A",
+      "cap": "S",
+      "lines": [
+        {
+          "id": "sword",
+          "rank": "A",
+          "cap": "S"
+        },
+        {
+          "id": "qinggong",
+          "rank": "B",
+          "cap": "A"
+        },
+        {
+          "id": "medicine",
+          "rank": "B",
+          "cap": "A"
+        }
+      ],
+      "dialogue": [
+        "峨眉的劍，不是練給人看的。",
+        "你這人，看著倒不像壞人——先打一場再說。",
+        "師父說我太急。可壞人跑得比我還急。"
+      ],
+      "signatureSkills": [
+        "峨眉刺法",
+        "踏雪無痕"
+      ],
+      "appearance": "身形纖長，面容清秀帶著英氣；高束單髻，插一支白玉簪，素白劍袍袖口繡著淡紫藤花，背一柄細長的峨眉劍。",
+      "personality": "直率熱心、好打抱不平，劍走輕靈；嘴上不饒人，心裡最軟。最受不了別人說她是靜玄師太「養的乖孩子」。",
+      "background": "蜀中鹽戶之女，七歲被靜玄師太從一場水寨火併裡抱出來，自小在峨眉金頂練劍。十六歲第一次下山，便一人挑了嘉州江上一夥欺壓船家的水匪。",
+      "relation": "一個在路上和你不打不相識的年輕劍客。她欣賞崤山劍門的骨氣，也想看看崤山十三劍到底有多快。",
+      "questline": "q_prodigy_emei",
+      "desc": "身形纖長，面容清秀帶著英氣；高束單髻，插一支白玉簪，素白劍袍袖口繡著淡紫藤花，背一柄細長的峨眉劍。"
+    },
+    {
+      "id": "prodigy_shaolin",
+      "name": "圓覺",
+      "courtesy": "",
+      "title": "少林武僧",
+      "role": "新秀・少林寺",
+      "gender": "男",
+      "age": 19,
+      "faction": "shaolin",
+      "group": "prodigy",
+      "portrait": "prodigy_shaolin",
+      "expressions": [],
+      "rank": "A",
+      "cap": "S",
+      "lines": [
+        {
+          "id": "fist",
+          "rank": "A",
+          "cap": "S"
+        },
+        {
+          "id": "polearm",
+          "rank": "B",
+          "cap": "A"
+        },
+        {
+          "id": "neigong",
+          "rank": "B",
+          "cap": "A"
+        }
+      ],
+      "dialogue": [
+        "阿彌陀佛——施主，請賜教！",
+        "方丈說我拳太滿。我也不知道怎麼才算不滿。",
+        "這個胡餅好吃。不是葷的吧？"
+      ],
+      "signatureSkills": [
+        "伏虎羅漢拳",
+        "齊眉棍"
+      ],
+      "appearance": "身材高大，剃得發青的光頭上有九點戒疤；濃眉大眼，赭黃僧衣捲到肘上，手臂肌肉結實，腕上纏著一串木念珠。",
+      "personality": "憨直、好武、心地純善，不太會說話；打起拳來一臉歡喜，輸了也一臉歡喜。最怕戒律院首座道堅。",
+      "background": "少林寺山門口撿來的孤兒，與你一樣在寺裡長大（若你出身寺院棄嬰，你們是同一年被撿到的）。十五歲便打遍羅漢堂，了空方丈說他「拳太滿，心太空」，准他下山行腳一年。",
+      "relation": "一個想看看天下的小和尚。他聽說過崤山十三劍，下山第一件事就是來找你切磋。",
+      "questline": "q_prodigy_shaolin",
+      "desc": "身材高大，剃得發青的光頭上有九點戒疤；濃眉大眼，赭黃僧衣捲到肘上，手臂肌肉結實，腕上纏著一串木念珠。"
+    },
+    {
+      "id": "prodigy_cui",
+      "name": "崔湛",
+      "courtesy": "子澄",
+      "title": "博陵崔氏嫡孫",
+      "role": "新秀・博陵崔氏",
+      "gender": "男",
+      "age": 20,
+      "faction": "cuishi",
+      "group": "prodigy",
+      "portrait": "prodigy_cui",
+      "expressions": [],
+      "rank": "B",
+      "cap": "S",
+      "lines": [
+        {
+          "id": "sword",
+          "rank": "B",
+          "cap": "S"
+        },
+        {
+          "id": "polearm",
+          "rank": "C",
+          "cap": "A"
+        },
+        {
+          "id": "teaching",
+          "rank": "B",
+          "cap": "A"
+        }
+      ],
+      "dialogue": [
+        "五姓七家？七座好看的籠子。",
+        "我堂弟比我勇敢，他敢跑。",
+        "你們這裡的劍，有一股我家沒有的味道——窮的味道，真好。"
+      ],
+      "signatureSkills": [
+        "青萍劍訣",
+        "崔氏家傳槊法"
+      ],
+      "appearance": "身姿挺拔，面如冠玉，眉目間帶著世家子的倦意；月白圓領袍、金玉帶，腰懸一柄嵌綠松石的長劍，手指修長乾淨。",
+      "personality": "聰明、驕傲、厭倦規矩；說話帶刺，卻從不說謊。讀書過目成誦，練劍只練給自己看。",
+      "background": "博陵崔氏宗長崔元禮的嫡孫，十六歲明經及第，被家族寄予厚望。他對做官毫無興趣，私下拜過三個江湖劍客為師，每一個都被崔家打發走了。",
+      "relation": "崔鈺的堂兄。他奉家族之命來找崔鈺回家，卻一眼看上了你們這個「沒有規矩的地方」。家族還要他與謝家議親。",
+      "questline": "q_prodigy_cui",
+      "desc": "身姿挺拔，面如冠玉，眉目間帶著世家子的倦意；月白圓領袍、金玉帶，腰懸一柄嵌綠松石的長劍，手指修長乾淨。"
+    },
+    {
+      "id": "prodigy_chicheng",
+      "name": "殷照雪",
+      "courtesy": "",
+      "title": "赤城劍閣關門弟子",
+      "role": "新秀・赤城劍閣",
+      "gender": "女",
+      "age": 21,
+      "faction": "chicheng",
+      "group": "prodigy",
+      "portrait": "prodigy_chicheng",
+      "expressions": [],
+      "rank": "A",
+      "cap": "S",
+      "lines": [
+        {
+          "id": "sword",
+          "rank": "A",
+          "cap": "S"
+        },
+        {
+          "id": "qinggong",
+          "rank": "B",
+          "cap": "A"
+        }
+      ],
+      "dialogue": [
+        "拔劍。",
+        "你的劍有心事。",
+        "師父說崤山的劍很直。我來看看有多直。"
+      ],
+      "signatureSkills": [
+        "赤城霞劍",
+        "天台止觀"
+      ],
+      "appearance": "膚色蒼白，眉目冷峭如霜；黑髮半束、垂至腰際，一身玄赭劍袍，左手永遠扶在劍柄上，右手纏著白布。",
+      "personality": "冷漠寡言、驕傲到近乎孤僻；只對劍有興趣，對人沒有。偶爾說一句話，往往刺得人無話可說。",
+      "background": "天台山腳樵夫之女，十歲時在山澗邊用柴刀擋下野豬，被陸孤雲收為關門弟子。十一年來替雙目微盲的師父四處行走，挑戰各地名劍，從未敗過。",
+      "relation": "一個給你下戰書的劍客。她要的不是名聲，是師父交代的一句話：去看看崤山的劍。",
+      "questline": "q_prodigy_chicheng",
+      "desc": "膚色蒼白，眉目冷峭如霜；黑髮半束、垂至腰際，一身玄赭劍袍，左手永遠扶在劍柄上，右手纏著白布。"
+    },
+    {
+      "id": "prodigy_sute",
+      "name": "曹拂延",
+      "courtesy": "",
+      "title": "粟特商團少年護衛",
+      "role": "新秀・粟特商團",
+      "gender": "男",
+      "age": 18,
+      "faction": "sute",
+      "group": "prodigy",
+      "portrait": "prodigy_sute",
+      "expressions": [],
+      "rank": "A",
+      "cap": "S",
+      "lines": [
+        {
+          "id": "blade",
+          "rank": "A",
+          "cap": "S"
+        },
+        {
+          "id": "hidden",
+          "rank": "B",
+          "cap": "A"
+        },
+        {
+          "id": "commerce",
+          "rank": "A",
+          "cap": "A+"
+        }
+      ],
+      "dialogue": [
+        "這把刀？從撒馬爾罕換來的，三匹絹。不，不賣。",
+        "中原人說話繞，我們粟特人說話直——直到談價錢。",
+        "表姐在你們那兒還好嗎？她不會算錯帳吧？"
+      ],
+      "signatureSkills": [
+        "胡旋刀",
+        "胡商算學"
+      ],
+      "appearance": "捲曲的栗色短髮，深目高鼻，綠褐色眼睛笑起來彎成月牙；翻領錦袍敞著，耳垂一只金環，腰間掛一柄彎刀與一只算盤。",
+      "personality": "活潑、狡黠、能言善道，五種胡語張口就來；看似沒心沒肺，其實極重情義。打架和討價還價都愛贏。",
+      "background": "昭武九姓曹國人之後，父母死於沙州的一場劫掠，被安延年收為養子。十四歲開始隨駝隊走絲路，一柄胡旋刀在駝隊護衛裡已排得上前三。",
+      "relation": "康瑟的遠房表弟，在駝隊裡長大的少年。他對中原門派好奇得要命，也想知道「劍客」是不是比商人更快活。",
+      "questline": "q_prodigy_sute",
+      "desc": "捲曲的栗色短髮，深目高鼻，綠褐色眼睛笑起來彎成月牙；翻領錦袍敞著，耳垂一只金環，腰間掛一柄彎刀與一只算盤。"
     }
   ]
 }

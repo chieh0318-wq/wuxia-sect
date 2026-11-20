@@ -1,0 +1,721 @@
+{
+  "pool": [
+    {
+      "id": "npc_ym01",
+      "gender": "男",
+      "age": "youth",
+      "tags": [
+        "commoner"
+      ],
+      "desc": "lean farm boy, sunburnt, short hair tied with cloth, coarse hemp tunic, earnest"
+    },
+    {
+      "id": "npc_ym02",
+      "gender": "男",
+      "age": "youth",
+      "tags": [
+        "scholar"
+      ],
+      "desc": "bookish youth, thin face, neat topknot with cloth cap 幞頭, pale blue scholar robe, shy"
+    },
+    {
+      "id": "npc_ym03",
+      "gender": "男",
+      "age": "youth",
+      "tags": [
+        "commoner"
+      ],
+      "desc": "tough street youth, bruised cheek, rough hair band, patched brown jacket, defiant"
+    },
+    {
+      "id": "npc_ym04",
+      "gender": "男",
+      "age": "youth",
+      "tags": [
+        "martial"
+      ],
+      "desc": "tall young hunter, sharp eyes, fur-trimmed vest over grey tunic, bow string on shoulder"
+    },
+    {
+      "id": "npc_ym05",
+      "gender": "男",
+      "age": "youth",
+      "tags": [
+        "commoner"
+      ],
+      "desc": "plump cheerful youth, round face, small bun, mustard yellow robe, friendly smile"
+    },
+    {
+      "id": "npc_ym06",
+      "gender": "男",
+      "age": "youth",
+      "tags": [
+        "commoner"
+      ],
+      "desc": "young blacksmith apprentice, broad shoulders, soot smudges, leather apron, headcloth"
+    },
+    {
+      "id": "npc_ym07",
+      "gender": "男",
+      "age": "youth",
+      "tags": [
+        "martial"
+      ],
+      "desc": "refined young swordsman, long hair half-up, deep green robe, calm proud look"
+    },
+    {
+      "id": "npc_ym08",
+      "gender": "男",
+      "age": "youth",
+      "tags": [
+        "commoner"
+      ],
+      "desc": "skinny young fisherman, bamboo hat hanging on back, rolled sleeves, weathered skin"
+    },
+    {
+      "id": "npc_ym09",
+      "gender": "男",
+      "age": "youth",
+      "tags": [
+        "martial"
+      ],
+      "desc": "young ex-soldier, short beard shadow, faded red military tunic, stern"
+    },
+    {
+      "id": "npc_ym10",
+      "gender": "男",
+      "age": "youth",
+      "tags": [
+        "commoner"
+      ],
+      "desc": "mischievous boy of 16, messy hair, oversized grey robe, sly grin"
+    },
+    {
+      "id": "npc_yf01",
+      "gender": "女",
+      "age": "youth",
+      "tags": [
+        "commoner"
+      ],
+      "desc": "village girl, braided hair, plain blue cotton dress, freckles, bright eyes"
+    },
+    {
+      "id": "npc_yf02",
+      "gender": "女",
+      "age": "youth",
+      "tags": [
+        "martial"
+      ],
+      "desc": "young swordswoman, high bun with plain pin, slate grey robe, determined"
+    },
+    {
+      "id": "npc_yf03",
+      "gender": "女",
+      "age": "youth",
+      "tags": [
+        "commoner"
+      ],
+      "desc": "gentle herbalist girl, low bun with flower, pale green robe, basket strap"
+    },
+    {
+      "id": "npc_yf04",
+      "gender": "女",
+      "age": "youth",
+      "tags": [
+        "commoner"
+      ],
+      "desc": "tomboyish girl, short tied hair, brown jacket, scraped knuckles, cheeky"
+    },
+    {
+      "id": "npc_yf05",
+      "gender": "女",
+      "age": "youth",
+      "tags": [
+        "commoner"
+      ],
+      "desc": "elegant young lady of a minor family, double bun with jade pins, rose-pink ruqun"
+    },
+    {
+      "id": "npc_yf06",
+      "gender": "女",
+      "age": "youth",
+      "tags": [
+        "commoner"
+      ],
+      "desc": "quiet orphan girl of 15, thin, worn grey clothes, wary large eyes"
+    },
+    {
+      "id": "npc_yf07",
+      "gender": "女",
+      "age": "youth",
+      "tags": [
+        "martial"
+      ],
+      "desc": "young female acrobat, red ribbon headband, tight black outfit, confident"
+    },
+    {
+      "id": "npc_yf08",
+      "gender": "女",
+      "age": "youth",
+      "tags": [
+        "commoner"
+      ],
+      "desc": "weaver's daughter, neat bun, indigo dyed dress, calm smile"
+    },
+    {
+      "id": "npc_yf09",
+      "gender": "女",
+      "age": "youth",
+      "tags": [
+        "martial"
+      ],
+      "desc": "young huntress, fur collar, hair in single braid, deerskin vest, fierce"
+    },
+    {
+      "id": "npc_yf10",
+      "gender": "女",
+      "age": "youth",
+      "tags": [
+        "scholar"
+      ],
+      "desc": "scholarly girl, hair in simple bun with brush hairpin, celadon robe, thoughtful"
+    },
+    {
+      "id": "npc_am01",
+      "gender": "男",
+      "age": "adult",
+      "tags": [
+        "martial"
+      ],
+      "desc": "weathered caravan guard, scar on cheek, brown leather armor, short beard"
+    },
+    {
+      "id": "npc_am02",
+      "gender": "男",
+      "age": "adult",
+      "tags": [
+        "scholar"
+      ],
+      "desc": "middle-aged scholar, long thin moustache, black 幞頭 cap, dark blue robe"
+    },
+    {
+      "id": "npc_am03",
+      "gender": "男",
+      "age": "adult",
+      "tags": [
+        "commoner"
+      ],
+      "desc": "burly butcher, thick neck, bald with headcloth, stained apron"
+    },
+    {
+      "id": "npc_am04",
+      "gender": "男",
+      "age": "adult",
+      "tags": [
+        "martial"
+      ],
+      "desc": "stern swordsman about 35, short goatee, dark grey robe, sword hilt over shoulder"
+    },
+    {
+      "id": "npc_am05",
+      "gender": "男",
+      "age": "adult",
+      "tags": [
+        "commoner"
+      ],
+      "desc": "farmer about 40, wrinkled tanned face, straw hat on back, hemp clothes"
+    },
+    {
+      "id": "npc_am06",
+      "gender": "男",
+      "age": "adult",
+      "tags": [
+        "commoner"
+      ],
+      "desc": "innkeeper about 45, plump, friendly moustache, brown vest over white shirt"
+    },
+    {
+      "id": "npc_am07",
+      "gender": "男",
+      "age": "adult",
+      "tags": [
+        "martial"
+      ],
+      "desc": "retired military officer about 45, greying temples, faded red uniform, stern"
+    },
+    {
+      "id": "npc_am08",
+      "gender": "男",
+      "age": "adult",
+      "tags": [
+        "scholar"
+      ],
+      "desc": "wandering physician about 38, neat beard, medicine box strap, grey-green robe"
+    },
+    {
+      "id": "npc_am09",
+      "gender": "男",
+      "age": "adult",
+      "tags": [
+        "martial"
+      ],
+      "desc": "bandit-looking man about 30, eyepatch, wild hair, sheepskin vest, grin"
+    },
+    {
+      "id": "npc_am10",
+      "gender": "男",
+      "age": "adult",
+      "tags": [
+        "commoner"
+      ],
+      "desc": "quiet carpenter about 33, sawdust on sleeves, headband, calm diligent"
+    },
+    {
+      "id": "npc_af01",
+      "gender": "女",
+      "age": "adult",
+      "tags": [
+        "commoner"
+      ],
+      "desc": "innkeeper woman about 40, hair in practical bun, apron over maroon robe, shrewd smile"
+    },
+    {
+      "id": "npc_af02",
+      "gender": "女",
+      "age": "adult",
+      "tags": [
+        "martial"
+      ],
+      "desc": "female sword instructor about 35, sharp features, black robe, stern"
+    },
+    {
+      "id": "npc_af03",
+      "gender": "女",
+      "age": "adult",
+      "tags": [
+        "commoner"
+      ],
+      "desc": "farm wife about 38, headscarf, sun-browned, kind eyes"
+    },
+    {
+      "id": "npc_af04",
+      "gender": "女",
+      "age": "adult",
+      "tags": [
+        "commoner"
+      ],
+      "desc": "widowed seamstress about 30, white mourning hairband, grey robe, melancholy"
+    },
+    {
+      "id": "npc_af05",
+      "gender": "女",
+      "age": "adult",
+      "tags": [
+        "commoner"
+      ],
+      "desc": "female physician about 42, neat bun, light grey robe, calm intelligent"
+    },
+    {
+      "id": "npc_af06",
+      "gender": "女",
+      "age": "adult",
+      "tags": [
+        "martial"
+      ],
+      "desc": "courtesan-turned-spy about 28, elegant makeup, purple silk robe, knowing gaze"
+    },
+    {
+      "id": "npc_af07",
+      "gender": "女",
+      "age": "adult",
+      "tags": [
+        "commoner"
+      ],
+      "desc": "tea-house owner about 45, gold hairpin, dark green robe, warm laugh"
+    },
+    {
+      "id": "npc_af08",
+      "gender": "女",
+      "age": "adult",
+      "tags": [
+        "martial"
+      ],
+      "desc": "martial heroine about 32, scar on chin, dark red robe, confident"
+    },
+    {
+      "id": "npc_em01",
+      "gender": "男",
+      "age": "elder",
+      "tags": [
+        "commoner"
+      ],
+      "desc": "old village elder about 70, long white beard, walking staff, plain brown robe"
+    },
+    {
+      "id": "npc_em02",
+      "gender": "男",
+      "age": "elder",
+      "tags": [
+        "martial"
+      ],
+      "desc": "old retired master about 65, grey goatee, faded blue robe, sharp eyes"
+    },
+    {
+      "id": "npc_em03",
+      "gender": "男",
+      "age": "elder",
+      "tags": [
+        "commoner"
+      ],
+      "desc": "old fisherman about 68, deeply wrinkled, straw cape, toothless smile"
+    },
+    {
+      "id": "npc_em04",
+      "gender": "男",
+      "age": "elder",
+      "tags": [
+        "scholar"
+      ],
+      "desc": "old scholar about 72, thin white moustache, black scholar cap, spectacles-free squint"
+    },
+    {
+      "id": "npc_em05",
+      "gender": "男",
+      "age": "elder",
+      "tags": [
+        "martial"
+      ],
+      "desc": "grizzled old soldier about 60, eye scar, grey stubble, worn armor vest"
+    },
+    {
+      "id": "npc_em06",
+      "gender": "男",
+      "age": "elder",
+      "tags": [
+        "commoner"
+      ],
+      "desc": "old blacksmith about 63, bald, thick white eyebrows, muscular arms, apron"
+    },
+    {
+      "id": "npc_ef01",
+      "gender": "女",
+      "age": "elder",
+      "tags": [
+        "commoner"
+      ],
+      "desc": "grandmother about 70, white hair bun, dark brown robe, gentle wrinkled smile"
+    },
+    {
+      "id": "npc_ef02",
+      "gender": "女",
+      "age": "elder",
+      "tags": [
+        "commoner"
+      ],
+      "desc": "stern old matriarch about 65, silver hairpins, black embroidered robe"
+    },
+    {
+      "id": "npc_ef03",
+      "gender": "女",
+      "age": "elder",
+      "tags": [
+        "commoner"
+      ],
+      "desc": "old herb woman about 68, hunched, headscarf, basket of herbs"
+    },
+    {
+      "id": "npc_ef04",
+      "gender": "女",
+      "age": "elder",
+      "tags": [
+        "martial"
+      ],
+      "desc": "old swordswoman about 60, white hair tied high, grey robe, piercing eyes"
+    },
+    {
+      "id": "npc_monk01",
+      "gender": "男",
+      "age": "youth",
+      "tags": [
+        "monk"
+      ],
+      "desc": "young Buddhist monk about 18, shaved head with incense burn dots, ochre robe, earnest"
+    },
+    {
+      "id": "npc_monk02",
+      "gender": "男",
+      "age": "adult",
+      "tags": [
+        "monk"
+      ],
+      "desc": "Buddhist warrior monk about 35, shaved head, muscular, dark yellow robe, prayer beads"
+    },
+    {
+      "id": "npc_monk03",
+      "gender": "男",
+      "age": "elder",
+      "tags": [
+        "monk"
+      ],
+      "desc": "elderly Buddhist abbot-type monk about 70, long white eyebrows, saffron kasaya, serene"
+    },
+    {
+      "id": "npc_nun01",
+      "gender": "女",
+      "age": "youth",
+      "tags": [
+        "nun"
+      ],
+      "desc": "young Buddhist nun about 20, shaved head under grey hood, grey robe, gentle"
+    },
+    {
+      "id": "npc_nun02",
+      "gender": "女",
+      "age": "elder",
+      "tags": [
+        "nun"
+      ],
+      "desc": "elderly Buddhist nun about 65, grey hood, prayer beads, kind stern face"
+    },
+    {
+      "id": "npc_tao01",
+      "gender": "男",
+      "age": "adult",
+      "tags": [
+        "taoist"
+      ],
+      "desc": "Taoist priest about 40, black beard, Taoist crown, dark blue Taoist robe with yin-yang, horsetail whisk"
+    },
+    {
+      "id": "npc_tao02",
+      "gender": "男",
+      "age": "elder",
+      "tags": [
+        "taoist"
+      ],
+      "desc": "old Taoist hermit about 75, long white hair and beard, simple grey robe, otherworldly calm"
+    },
+    {
+      "id": "npc_tao03",
+      "gender": "女",
+      "age": "adult",
+      "tags": [
+        "taoist"
+      ],
+      "desc": "female Taoist priestess about 30, lotus crown, white and grey robe, serene beauty"
+    },
+    {
+      "id": "npc_off01",
+      "gender": "男",
+      "age": "adult",
+      "tags": [
+        "official"
+      ],
+      "desc": "county clerk official about 35, black 幞頭 hat, green official round-collar robe, cautious"
+    },
+    {
+      "id": "npc_off02",
+      "gender": "男",
+      "age": "adult",
+      "tags": [
+        "official",
+        "martial"
+      ],
+      "desc": "Tang military officer about 40, helmet under arm, lamellar armor, black beard"
+    },
+    {
+      "id": "npc_off03",
+      "gender": "男",
+      "age": "elder",
+      "tags": [
+        "official"
+      ],
+      "desc": "senior civil official about 60, purple round-collar official robe, black 幞頭, grey beard, dignified"
+    },
+    {
+      "id": "npc_mer01",
+      "gender": "男",
+      "age": "adult",
+      "tags": [
+        "merchant"
+      ],
+      "desc": "silk merchant about 40, plump, fine brown silk robe, abacus, calculating smile"
+    },
+    {
+      "id": "npc_mer02",
+      "gender": "男",
+      "age": "elder",
+      "tags": [
+        "merchant"
+      ],
+      "desc": "old salt merchant about 62, thin, rich dark robe, jade ring, sly eyes"
+    },
+    {
+      "id": "npc_mer03",
+      "gender": "女",
+      "age": "adult",
+      "tags": [
+        "merchant"
+      ],
+      "desc": "female merchant about 35, sharp eyes, practical bun, deep blue robe, ledger book"
+    },
+    {
+      "id": "npc_hu01",
+      "gender": "男",
+      "age": "youth",
+      "tags": [
+        "hu"
+      ],
+      "desc": "Sogdian youth about 19, curly brown hair, green eyes, embroidered round-collar caftan, earring"
+    },
+    {
+      "id": "npc_hu02",
+      "gender": "男",
+      "age": "adult",
+      "tags": [
+        "hu"
+      ],
+      "desc": "Sogdian caravan master about 40, thick curly beard, high nose, pointed felt hat, patterned caftan"
+    },
+    {
+      "id": "npc_hu03",
+      "gender": "男",
+      "age": "elder",
+      "tags": [
+        "hu"
+      ],
+      "desc": "old Persian-Sogdian sage about 65, white curly beard, turban-like cap, rich brocade robe"
+    },
+    {
+      "id": "npc_hu04",
+      "gender": "女",
+      "age": "youth",
+      "tags": [
+        "hu"
+      ],
+      "desc": "Sogdian dancer girl about 19, light brown wavy hair, hazel eyes, red embroidered dress, veil on hair"
+    },
+    {
+      "id": "npc_hu05",
+      "gender": "女",
+      "age": "adult",
+      "tags": [
+        "hu"
+      ],
+      "desc": "Western Regions woman about 32, high cheekbones, braided auburn hair, teal brocade coat"
+    },
+    {
+      "id": "npc_st01",
+      "gender": "男",
+      "age": "youth",
+      "tags": [
+        "steppe"
+      ],
+      "desc": "young Turkic steppe rider about 20, braided hair, fur hat, leather coat, wind-burned cheeks"
+    },
+    {
+      "id": "npc_st02",
+      "gender": "男",
+      "age": "adult",
+      "tags": [
+        "steppe"
+      ],
+      "desc": "Uyghur steppe warrior about 38, long braids, fur-trimmed armor, thick moustache"
+    },
+    {
+      "id": "npc_st03",
+      "gender": "女",
+      "age": "youth",
+      "tags": [
+        "steppe"
+      ],
+      "desc": "steppe girl about 18, many small braids, fur-trimmed felt coat, red cheeks, bold"
+    },
+    {
+      "id": "npc_st04",
+      "gender": "女",
+      "age": "adult",
+      "tags": [
+        "steppe"
+      ],
+      "desc": "steppe noblewoman about 35, tall felt headdress, fur cape, proud gaze"
+    },
+    {
+      "id": "recruit_m1",
+      "gender": "男",
+      "age": "youth",
+      "tags": [
+        "commoner",
+        "martial"
+      ],
+      "desc": "ragged youth, messy black hair, soot-smudged cheeks, patched grey-brown hemp robe, wary"
+    },
+    {
+      "id": "recruit_m2",
+      "gender": "男",
+      "age": "youth",
+      "tags": [
+        "commoner",
+        "martial"
+      ],
+      "desc": "muscular young smith, hair in a rough bun, sleeveless tunic under leather apron, steady gaze"
+    },
+    {
+      "id": "recruit_m3",
+      "gender": "男",
+      "age": "youth",
+      "tags": [
+        "commoner",
+        "martial"
+      ],
+      "desc": "grinning street performer, ponytail tied with red cord, green jacket, coil of rope on shoulder"
+    },
+    {
+      "id": "recruit_m4",
+      "gender": "男",
+      "age": "adult",
+      "tags": [
+        "martial",
+        "commoner"
+      ],
+      "desc": "weathered ex-soldier about 30, dark head-wrap, goatee, worn lamellar shoulder guard, grim"
+    },
+    {
+      "id": "recruit_f1",
+      "gender": "女",
+      "age": "youth",
+      "tags": [
+        "commoner"
+      ],
+      "desc": "frail girl with long single braid, plain grey robe, cloth bundle on back, downcast"
+    },
+    {
+      "id": "recruit_f2",
+      "gender": "女",
+      "age": "youth",
+      "tags": [
+        "commoner"
+      ],
+      "desc": "herb-gatherer girl, green headscarf with sprig of herbs, green robe, rope basket strap"
+    },
+    {
+      "id": "recruit_f3",
+      "gender": "女",
+      "age": "youth",
+      "tags": [
+        "commoner",
+        "martial"
+      ],
+      "desc": "confident young woman, high bun with red hairpin, dark red embroidered robe, arms crossed, sly smile"
+    },
+    {
+      "id": "recruit_f4",
+      "gender": "女",
+      "age": "adult",
+      "tags": [
+        "martial"
+      ],
+      "desc": "stern swordswoman about 26, high bun tied with white ribbon, slate robe, sword hilt over shoulder"
+    }
+  ]
+}

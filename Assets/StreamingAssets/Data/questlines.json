@@ -1,0 +1,6814 @@
+{
+  "questlines": [
+    {
+      "id": "q_master",
+      "character": "master",
+      "title": "十年之約",
+      "summary": "師父下山赴十年之約，至今未歸。一束舊劍穗，牽出三十年前安西的一樁冤案。",
+      "beats": [
+        {
+          "id": "q_master_1",
+          "title": "舊劍穗",
+          "summary": "雨夜有人送來師父的舊劍穗與七字手書。",
+          "playable": true,
+          "trigger": {
+            "minMonth": 1,
+            "maxMonth": 0,
+            "flag": "",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [
+            {
+              "speaker": "",
+              "portrait": "",
+              "image": "",
+              "text": "開春頭一場雨夜，山門外來了個戴斗笠的女子，把一只油布包擱在門檻上，轉身就走。守門的弟子追出去，只看見雨。"
+            },
+            {
+              "speaker": "",
+              "portrait": "",
+              "image": "",
+              "text": "油布包裡是一束褪了色的劍穗——師父那柄舊劍上的劍穗，打結的手法，你閉著眼也認得。另有一張紙，只寫了七個字。"
+            },
+            {
+              "speaker": "師父　褚寒山（手書）",
+              "portrait": "master",
+              "image": "",
+              "text": "勿尋。守好山門。寒山。"
+            },
+            {
+              "speaker": "三師姐　許雁",
+              "portrait": "xu",
+              "image": "",
+              "text": "{title}，紙是洛陽南市紙坊的竹紙，墨裡摻了松煙。送信的人，是從洛陽來的。"
+            },
+            {
+              "speaker": "{friend}",
+              "portrait": "friend",
+              "image": "",
+              "text": "「勿尋」兩個字寫得穩，手沒抖。人還活著，而且不想讓你捲進來。這比死了更麻煩。"
+            },
+            {
+              "speaker": "",
+              "portrait": "",
+              "image": "cg_master_leaves",
+              "text": "你想起那年秋末，師父下山前在石階上停了一下，回頭看了一眼藏經閣頂樓。那一眼，你當時沒看懂。"
+            },
+            {
+              "speaker": "{name}",
+              "portrait": "hero",
+              "image": "",
+              "text": "師父，您這一走，究竟是去還誰的帳？"
+            }
+          ],
+          "choices": [
+            {
+              "text": "遵師命，先守好山門",
+              "effects": [
+                {
+                  "key": "loyaltyAll",
+                  "value": 3,
+                  "ref": ""
+                }
+              ],
+              "setFlag": "master_letter_obey",
+              "next": "q_master_2a",
+              "relation": 5
+            },
+            {
+              "text": "暗中追查送信的人",
+              "effects": [
+                {
+                  "key": "relation",
+                  "value": -5,
+                  "ref": "yeyu"
+                }
+              ],
+              "setFlag": "master_trace_yeyu",
+              "next": "q_master_2b",
+              "relation": 0
+            }
+          ],
+          "outline": ""
+        },
+        {
+          "id": "q_master_2a",
+          "title": "缺頁",
+          "summary": "許雁憑記憶默寫師父手記，發現缺了一頁。",
+          "playable": true,
+          "trigger": {
+            "minMonth": 4,
+            "maxMonth": 0,
+            "flag": "master_letter_obey",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [
+            {
+              "speaker": "",
+              "portrait": "",
+              "image": "",
+              "text": "許雁連熬了七夜，把師父的手記從記憶裡一字一字默了出來。第三冊默到一半，她停了筆。"
+            },
+            {
+              "speaker": "三師姐　許雁",
+              "portrait": "xu",
+              "image": "",
+              "text": "{title}，第三冊少了一頁。前一頁最後一行寫著「開元二年，安西」，後一頁第一行是「孤女已託人」。"
+            },
+            {
+              "speaker": "三師姐　許雁",
+              "portrait": "xu",
+              "image": "",
+              "text": "中間那頁，我從沒見過。裝訂線是新的——師父自己拆的。"
+            },
+            {
+              "speaker": "{friend}",
+              "portrait": "friend",
+              "image": "",
+              "text": "開元二年，安西……那年安西有位蕭定遠將軍以謀反罪死在臺獄。洛陽的老人提起，都只搖頭。"
+            },
+            {
+              "speaker": "師父　褚寒山",
+              "portrait": "master__angry",
+              "image": "",
+              "text": "（你彷彿聽見師父的聲音）有些帳，不該讓你們背。"
+            },
+            {
+              "speaker": "{name}",
+              "portrait": "hero",
+              "image": "",
+              "text": "師父不讓我們背，我們偏要知道是什麼帳。"
+            }
+          ],
+          "choices": [
+            {
+              "text": "讓許雁繼續查安西舊事",
+              "effects": [
+                {
+                  "key": "charRelation",
+                  "value": 5,
+                  "ref": "xu"
+                }
+              ],
+              "setFlag": "master_xiao_clue",
+              "next": "q_master_3",
+              "relation": 0
+            },
+            {
+              "text": "燒掉默稿，遵師父的意思",
+              "effects": [
+                {
+                  "key": "loyaltyAll",
+                  "value": 2,
+                  "ref": ""
+                }
+              ],
+              "setFlag": "master_page_burned",
+              "next": "q_master_3",
+              "relation": 10
+            }
+          ],
+          "outline": ""
+        },
+        {
+          "id": "q_master_2b",
+          "title": "夜雨樓",
+          "summary": "循線找到洛陽南市，夜雨樓主親自現身。",
+          "playable": true,
+          "trigger": {
+            "minMonth": 4,
+            "maxMonth": 0,
+            "flag": "master_trace_yeyu",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": "luoyang"
+          },
+          "scene": [
+            {
+              "speaker": "",
+              "portrait": "",
+              "image": "",
+              "text": "洛陽南市的竹紙坊後門通往一間茶肆，茶肆二樓沒有窗。你等到三更，一個戴素白面具的人才從屏風後走出來。"
+            },
+            {
+              "speaker": "夜雨樓主",
+              "portrait": "leader_yeyu",
+              "image": "",
+              "text": "褚先生在我這裡做客。他欠我家一筆帳，十年前約好今年還。"
+            },
+            {
+              "speaker": "{name}",
+              "portrait": "hero",
+              "image": "",
+              "text": "師父欠的帳，弟子來還。請樓主讓我見他一面。"
+            },
+            {
+              "speaker": "夜雨樓主",
+              "portrait": "leader_yeyu",
+              "image": "",
+              "text": "這筆帳，你還不起。他讓我轉告你：劍要練到心裡去。"
+            },
+            {
+              "speaker": "{friend}",
+              "portrait": "friend__angry",
+              "image": "",
+              "text": "（低聲）屏風後至少四個人，袖裡都有東西。別在這裡拔劍。"
+            }
+          ],
+          "choices": [
+            {
+              "text": "請樓主帶一句話給師父",
+              "effects": [
+                {
+                  "key": "relation",
+                  "value": 5,
+                  "ref": "yeyu"
+                },
+                {
+                  "key": "charRelation",
+                  "value": 5,
+                  "ref": "leader_yeyu"
+                }
+              ],
+              "setFlag": "master_msg_sent",
+              "next": "q_master_3",
+              "relation": 5
+            },
+            {
+              "text": "拔劍：把師父交出來",
+              "effects": [
+                {
+                  "key": "relation",
+                  "value": -15,
+                  "ref": "yeyu"
+                },
+                {
+                  "key": "charRelation",
+                  "value": -10,
+                  "ref": "leader_yeyu"
+                },
+                {
+                  "key": "reputation",
+                  "value": 3,
+                  "ref": ""
+                }
+              ],
+              "setFlag": "master_yeyu_hostile",
+              "next": "q_master_3",
+              "relation": -5
+            }
+          ],
+          "outline": ""
+        },
+        {
+          "id": "q_master_3",
+          "title": "蕭家舊案",
+          "summary": "真相浮出：師父當年是蕭定遠的親兵，十年之約是為蕭家翻案。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 12,
+            "maxMonth": 0,
+            "flag": "",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "許雁的默稿或夜雨樓的口信拼出真相：師父曾是安西將軍蕭定遠的親兵，背著《衛公兵法》殘卷與蕭家孤女逃出長安；孤女就是夜雨樓主。構陷蕭家的人，是今日的內常侍霍元昌。抉擇：①助師父翻案——設法把殘卷中的蕭定遠血書送到金吾衛獨孤鎮或御史大夫宇文嶠手中，與內侍省為敵；②勸師父放下——帶回師父，但與夜雨樓決裂，霍元昌仍在暗處。官府迫害線中，此段會直接揭穿當年搜山的真正目的。"
+        },
+        {
+          "id": "q_master_4",
+          "title": "師父歸來",
+          "summary": "十年之約的終局。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 25,
+            "maxMonth": 0,
+            "flag": "",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "結局分歧：①翻案成功且師父好感≥40——師父歸山，傳《崤山劍經》全本（觸發「師父歸來」突破），霍元昌下獄；②翻案失敗或與夜雨樓為敵——師父被困長安臺獄，須劫獄或以殘卷交換，師父歸來後劍已半廢；③師父與霍元昌同歸於盡，夜雨樓主帶著舊劍上山，把殘卷交到你手裡，從此夜雨樓與你為盟。"
+        }
+      ]
+    },
+    {
+      "id": "q_friend",
+      "character": "friend",
+      "title": "曲有誤",
+      "summary": "青梅竹馬的軍師替你謀劃天下，自己的路卻被家族與病體牽住。",
+      "beats": [
+        {
+          "id": "q_friend_1",
+          "title": "燈下三策",
+          "summary": "新山門第一個月夜，青梅竹馬攤開輿圖，給你三條路。",
+          "playable": true,
+          "trigger": {
+            "minMonth": 1,
+            "maxMonth": 0,
+            "flag": "",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [
+            {
+              "speaker": "",
+              "portrait": "",
+              "image": "cg_friend_vow",
+              "text": "新山門的第一個月夜，{friend}在廊下擺了琴，卻沒有彈，只把一卷輿圖攤在琴面上。"
+            },
+            {
+              "speaker": "{friend}",
+              "portrait": "friend",
+              "image": "",
+              "text": "山門有了，人也有了。可{sect}往後十年靠什麼活？我想了三條路，你挑。"
+            },
+            {
+              "speaker": "{friend}",
+              "portrait": "friend",
+              "image": "",
+              "text": "其一，閉門練兵，養出一批能打的弟子，十年後誰也不敢小看我們。慢，卻最穩。"
+            },
+            {
+              "speaker": "{friend}",
+              "portrait": "friend",
+              "image": "",
+              "text": "其二，廣結四方，少林、五龍、粟特商團，誰肯結交就結交。快，但欠下的人情總要還。"
+            },
+            {
+              "speaker": "{friend}",
+              "portrait": "friend",
+              "image": "",
+              "text": "其三，先求財。有錢便有糧、有人、有消息。只是江湖人看不起銅臭，名聲要吃些虧。"
+            },
+            {
+              "speaker": "{name}",
+              "portrait": "hero",
+              "image": "",
+              "text": "你自己呢？你心裡選的是哪一條？"
+            },
+            {
+              "speaker": "{friend}",
+              "portrait": "friend__smile",
+              "image": "",
+              "text": "我選哪條不要緊。你選了，我就讓它變成對的那一條。"
+            }
+          ],
+          "choices": [
+            {
+              "text": "閉門練兵，十年磨一劍",
+              "effects": [
+                {
+                  "key": "trainBonusPct",
+                  "value": 5,
+                  "ref": ""
+                }
+              ],
+              "setFlag": "strat_root",
+              "next": "q_friend_2",
+              "relation": 5
+            },
+            {
+              "text": "廣結四方，借勢而起",
+              "effects": [
+                {
+                  "key": "reputation",
+                  "value": 5,
+                  "ref": ""
+                },
+                {
+                  "key": "relation",
+                  "value": 5,
+                  "ref": "shaolin"
+                },
+                {
+                  "key": "relation",
+                  "value": 5,
+                  "ref": "sute"
+                }
+              ],
+              "setFlag": "strat_alliance",
+              "next": "q_friend_2",
+              "relation": 5
+            },
+            {
+              "text": "先求財，再求名",
+              "effects": [
+                {
+                  "key": "silver",
+                  "value": 30,
+                  "ref": ""
+                },
+                {
+                  "key": "reputation",
+                  "value": -3,
+                  "ref": ""
+                }
+              ],
+              "setFlag": "strat_wealth",
+              "next": "q_friend_2",
+              "relation": 5
+            }
+          ],
+          "outline": ""
+        },
+        {
+          "id": "q_friend_2",
+          "title": "謝家家書",
+          "summary": "謝家要青梅竹馬去范陽幕府，並議一門親事。",
+          "playable": true,
+          "trigger": {
+            "minMonth": 4,
+            "maxMonth": 0,
+            "flag": "",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [
+            {
+              "speaker": "",
+              "portrait": "",
+              "image": "",
+              "text": "洛陽來了家僕，捧著一封火漆封的家書。{friend}看完，把信折成四折，夾進了琴譜裡。"
+            },
+            {
+              "speaker": "{name}",
+              "portrait": "hero",
+              "image": "",
+              "text": "家裡出事了？"
+            },
+            {
+              "speaker": "{friend}",
+              "portrait": "friend",
+              "image": "",
+              "text": "沒出事，是要辦喜事。范陽節度使府來了聘書，要我去幕府掌書記；家裡順便替我議了一門親。"
+            },
+            {
+              "speaker": "{friend}",
+              "portrait": "friend",
+              "image": "",
+              "text": "范陽兵強，幕府裡全是能人。去了，十年後我或許能替你在河北撐起一片天。"
+            },
+            {
+              "speaker": "{friend}",
+              "portrait": "friend__angry",
+              "image": "",
+              "text": "……可我看過幕府的名冊。節度使老了，帳下有個胡將笑得太多。那地方，將來要出事。"
+            },
+            {
+              "speaker": "{friend}",
+              "portrait": "friend",
+              "image": "",
+              "text": "你說一句，我就留下。你不說，我也不怪你。"
+            }
+          ],
+          "choices": [
+            {
+              "text": "「留下來。我需要你。」",
+              "effects": [
+                {
+                  "key": "relation",
+                  "value": -10,
+                  "ref": "fanyang_jds"
+                },
+                {
+                  "key": "relation",
+                  "value": -5,
+                  "ref": "cuishi"
+                }
+              ],
+              "setFlag": "friend_stayed",
+              "next": "q_friend_3a",
+              "relation": 10
+            },
+            {
+              "text": "「去吧，替我們看住河北。」",
+              "effects": [
+                {
+                  "key": "relation",
+                  "value": 10,
+                  "ref": "fanyang_jds"
+                },
+                {
+                  "key": "silver",
+                  "value": 20,
+                  "ref": ""
+                }
+              ],
+              "setFlag": "friend_to_fanyang",
+              "next": "q_friend_3b",
+              "relation": 0
+            }
+          ],
+          "outline": ""
+        },
+        {
+          "id": "q_friend_3a",
+          "title": "火計",
+          "summary": "留下的軍師，替你打第一場硬仗。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 10,
+            "maxMonth": 0,
+            "flag": "friend_stayed",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "強敵壓境（懷璧線為屈突烈，背盟線為秦無咎，官府線為金吾衛的追捕隊，大疫線為太行十八寨）。青梅竹馬設下火計，須在東風起時於狹谷放火：選擇親自誘敵（主角負傷、聲望大增）或讓林照誘敵（林照可能重傷）。勝後謝家與范陽府徹底翻臉，青梅竹馬第一次咳出了血。"
+        },
+        {
+          "id": "q_friend_3b",
+          "title": "范陽來信",
+          "summary": "遠赴范陽的軍師寄回一封密信。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 10,
+            "maxMonth": 0,
+            "flag": "friend_to_fanyang",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "范陽寄回密信：營州牙將阿史德翰囤馬積糧，私通黑山鐵騎與華嶽封伯陽，所求正是《衛公兵法》。選擇：①召回軍師——帶回情報，與阿史德翰結仇；②讓軍師留作內應——情報不斷，但軍師處境日危，若好感不足，第四段將在范陽失去音訊。"
+        },
+        {
+          "id": "q_friend_4",
+          "title": "曲有誤，周郎顧",
+          "summary": "青梅竹馬的終局。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 24,
+            "maxMonth": 0,
+            "flag": "",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "舊創（男：胸中箭鏃；女：幼年肺疾）發作。結局：①若韓守拙在門中且醫術達A+，或取得《千金方》手抄本——病癒，青梅竹馬成為本門軍師；好感≥60時可結為連理（不分主角性別）；②無藥可救——青梅竹馬留下一部親手批註的兵書（教導與謀略上限提升）後病逝，臨終一曲〈長相思〉彈錯一個音，等你回頭；③若曾留在范陽而好感不足——下落不明，只寄回一張無字琴譜。"
+        }
+      ]
+    },
+    {
+      "id": "q_uncle_schemer",
+      "character": "uncle_schemer",
+      "title": "後山簫聲",
+      "summary": "閉關十年的師叔忽然出關。他輔佐你，也算計你——或者，他只是用自己的方法守著崤山。",
+      "beats": [
+        {
+          "id": "q_uncle_schemer_1",
+          "title": "簫聲",
+          "summary": "夜半簫聲，閉關十年的師叔聶遠山找上門來。",
+          "playable": true,
+          "trigger": {
+            "minMonth": 2,
+            "maxMonth": 0,
+            "flag": "",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [
+            {
+              "speaker": "",
+              "portrait": "",
+              "image": "",
+              "text": "夜深時，新山門外傳來一陣簫聲，曲調是崤山老一輩的〈松風引〉。你提燈出去，石階上坐著一個瘦長的人影。"
+            },
+            {
+              "speaker": "師叔　聶遠山",
+              "portrait": "uncle_schemer__smile",
+              "image": "",
+              "text": "{title}，十年沒見，你長高了。小滿說後山夜裡有人吹笛子——他沒聽錯，是我。"
+            },
+            {
+              "speaker": "",
+              "portrait": "",
+              "image": "",
+              "text": "聶遠山是師父的師弟。十年前師父立約那年，他自請入後山閉關，從此誰也沒再見過他。山門遭難那夜，他也沒有出現。"
+            },
+            {
+              "speaker": "{name}",
+              "portrait": "hero",
+              "image": "",
+              "text": "師叔，山門出事那夜，您在哪裡？"
+            },
+            {
+              "speaker": "師叔　聶遠山",
+              "portrait": "uncle_schemer",
+              "image": "",
+              "text": "在後山，看著火燒了一整夜。我一個人下去，不過多一具屍首。我留著這條命，是想等一個用得著我的人。"
+            },
+            {
+              "speaker": "師叔　聶遠山",
+              "portrait": "uncle_schemer__smile",
+              "image": "",
+              "text": "你師父守的是一句話，我守的是這座山。如今山沒了，我總得守點什麼。讓我留下，教孩子們劍。"
+            },
+            {
+              "speaker": "{friend}",
+              "portrait": "friend",
+              "image": "",
+              "text": "（低聲）他十年不下山，偏偏這時下山。留他可以，別把鑰匙都交給他。"
+            }
+          ],
+          "choices": [
+            {
+              "text": "請師叔坐鎮，奉為長老",
+              "effects": [
+                {
+                  "key": "trainBonusPct",
+                  "value": 5,
+                  "ref": ""
+                }
+              ],
+              "setFlag": "uncle_elder",
+              "next": "q_uncle_schemer_2a",
+              "relation": 10
+            },
+            {
+              "text": "留他住下，但暗中提防",
+              "effects": [
+                {
+                  "key": "charRelation",
+                  "value": 5,
+                  "ref": "friend"
+                }
+              ],
+              "setFlag": "uncle_watched",
+              "next": "q_uncle_schemer_2b",
+              "relation": 0
+            }
+          ],
+          "outline": ""
+        },
+        {
+          "id": "q_uncle_schemer_2a",
+          "title": "師叔的人情",
+          "summary": "聶遠山提議寫信給舊識，替劍門求庇護。",
+          "playable": true,
+          "trigger": {
+            "minMonth": 5,
+            "maxMonth": 0,
+            "flag": "uncle_elder",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [
+            {
+              "speaker": "",
+              "portrait": "",
+              "image": "",
+              "text": "聶遠山教劍極有耐心，三個月下來，弟子們的劍招乾淨了不少。只是他總在黃昏時一個人下山，天黑才回。"
+            },
+            {
+              "speaker": "師叔　聶遠山",
+              "portrait": "uncle_schemer__smile",
+              "image": "",
+              "text": "{title}，門裡缺錢缺糧，我知道。華嶽封掌門、河南府韋大尹，當年都欠過我一點舊情。"
+            },
+            {
+              "speaker": "師叔　聶遠山",
+              "portrait": "uncle_schemer",
+              "image": "",
+              "text": "我寫幾封信，不求錢，只求他們別為難{sect}。這種事你師父不屑做，我替他做。"
+            },
+            {
+              "speaker": "{name}",
+              "portrait": "hero",
+              "image": "",
+              "text": "師叔閉關這些年，倒沒斷了跟山外的往來？"
+            },
+            {
+              "speaker": "師叔　聶遠山",
+              "portrait": "uncle_schemer__smile",
+              "image": "",
+              "text": "閉關閉的是門，不是耳朵。"
+            }
+          ],
+          "choices": [
+            {
+              "text": "允他去信，借舊情周旋",
+              "effects": [
+                {
+                  "key": "relation",
+                  "value": 10,
+                  "ref": "huayue"
+                },
+                {
+                  "key": "relation",
+                  "value": 10,
+                  "ref": "henan_fu"
+                },
+                {
+                  "key": "silver",
+                  "value": 20,
+                  "ref": ""
+                }
+              ],
+              "setFlag": "uncle_letters",
+              "next": "q_uncle_schemer_3",
+              "relation": 10
+            },
+            {
+              "text": "「{sect}不欠這種人情。」",
+              "effects": [
+                {
+                  "key": "reputation",
+                  "value": 3,
+                  "ref": ""
+                }
+              ],
+              "setFlag": "uncle_refused",
+              "next": "q_uncle_schemer_3",
+              "relation": -5
+            }
+          ],
+          "outline": ""
+        },
+        {
+          "id": "q_uncle_schemer_2b",
+          "title": "夜半密信",
+          "summary": "許雁截下一封師叔送出的密信。",
+          "playable": true,
+          "trigger": {
+            "minMonth": 5,
+            "maxMonth": 0,
+            "flag": "uncle_watched",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [
+            {
+              "speaker": "",
+              "portrait": "",
+              "image": "",
+              "text": "許雁值夜時，看見聶遠山房裡的燈亮到三更。天快亮時，一個挑柴的漢子從他窗下取走了一只竹筒。"
+            },
+            {
+              "speaker": "三師姐　許雁",
+              "portrait": "xu",
+              "image": "",
+              "text": "竹筒我截下來了，又照原樣封好放了回去。信是用崤山老派的暗語寫的，師父教過我一半。"
+            },
+            {
+              "speaker": "三師姐　許雁",
+              "portrait": "xu",
+              "image": "",
+              "text": "我只讀得懂幾個字：「山已易主」「舊約可續」「靜候」。收信的人，信上沒寫。"
+            },
+            {
+              "speaker": "{friend}",
+              "portrait": "friend",
+              "image": "",
+              "text": "「舊約」……他跟誰有約？這個「約」字，跟師父的十年之約，是同一個字。"
+            },
+            {
+              "speaker": "{name}",
+              "portrait": "hero",
+              "image": "",
+              "text": "先別打草驚蛇。那個挑柴漢，往哪裡去了？"
+            }
+          ],
+          "choices": [
+            {
+              "text": "派人暗中跟著挑柴漢",
+              "effects": [
+                {
+                  "key": "charRelation",
+                  "value": 5,
+                  "ref": "xu"
+                }
+              ],
+              "setFlag": "uncle_tailed",
+              "next": "q_uncle_schemer_3",
+              "relation": 0
+            },
+            {
+              "text": "當面問師叔",
+              "effects": [
+                {
+                  "key": "loyaltyAll",
+                  "value": 2,
+                  "ref": ""
+                }
+              ],
+              "setFlag": "uncle_confronted",
+              "next": "q_uncle_schemer_3",
+              "relation": -10
+            }
+          ],
+          "outline": ""
+        },
+        {
+          "id": "q_uncle_schemer_3",
+          "title": "舊約",
+          "summary": "師叔的「舊約」因災禍而異。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 10,
+            "maxMonth": 0,
+            "flag": "",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "同道背盟線：證據確鑿——聶遠山把崤山佈防圖交給秦無咎，換秦承諾立他為掌門、不傷弟子，秦食言。懷璧線：向屈突烈透露鐵匣的密信用的是崤山暗語，但無鐵證。官府線：他曾與綠袍內侍馮順通信，主張「讓山保人」。大疫線：他私下把劍門田契押給封伯陽換糧。另揭：他篡改過《崤山劍經》第十三劍四句劍訣。選擇：公開對質／暗中收集證據／裝作不知繼續用他。"
+        },
+        {
+          "id": "q_uncle_schemer_4",
+          "title": "清理門戶",
+          "summary": "師叔的終局。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 18,
+            "maxMonth": 0,
+            "flag": "",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "結局：①公開問罪、逐出門牆——門人忠誠上升，聶遠山投向封伯陽，日後成為華嶽的謀士；②讓他戴罪立功——與秦無咎或屈突烈決戰時，他替你擋下一劍而死，臨終默出《崤山劍經》正確的四句劍訣；③若你始終全信他而聲望低落——他聯合外援奪門自立，你須奪回本門，他在後山吹完最後一曲〈松風引〉後自刎。"
+        }
+      ]
+    },
+    {
+      "id": "q_elder_villain",
+      "character": "elder_villain",
+      "title": "封善人的帳",
+      "summary": "華嶽封伯陽要立「關中劍盟」，自任盟主。他借出去的每一分情，都要連本帶利收回。",
+      "beats": [
+        {
+          "id": "q_elder_villain_1",
+          "title": "劍盟請帖",
+          "summary": "封伯陽廣發請帖，要立關中劍盟。",
+          "playable": true,
+          "trigger": {
+            "minMonth": 4,
+            "maxMonth": 0,
+            "flag": "",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [
+            {
+              "speaker": "",
+              "portrait": "",
+              "image": "",
+              "text": "華嶽派的執法長老鄔通親自上山，送來一張灑金請帖：封掌門要在華山蓮花峰設「關中劍盟」，請各派共推盟主。"
+            },
+            {
+              "speaker": "華嶽派執法長老　鄔通",
+              "portrait": "npc_am04",
+              "image": "",
+              "text": "掌門說，{sect}與華嶽是一家人。一家人的位子，自然排在前頭。"
+            },
+            {
+              "speaker": "華嶽派掌門　封伯陽",
+              "portrait": "elder_villain__smile",
+              "image": "cg_elder_hall",
+              "text": "賢侄來了！江湖一盤散沙，總得有人坐主位，替大家擋擋官府的風雨。老夫不才，只好勉為其難。"
+            },
+            {
+              "speaker": "華嶽派掌門　封伯陽",
+              "portrait": "elder_villain",
+              "image": "",
+              "text": "劍盟各派每年納一份「盟費」，不多，十取其一。賢侄是自家人，這頭一份，就由你帶個好頭吧？"
+            },
+            {
+              "speaker": "{friend}",
+              "portrait": "friend",
+              "image": "",
+              "text": "（低聲）十取其一，是要天下劍派替他納稅。袁公路當年也是這樣，先稱盟主，再稱別的。"
+            }
+          ],
+          "choices": [
+            {
+              "text": "帶頭入盟，繳納盟費",
+              "effects": [
+                {
+                  "key": "silver",
+                  "value": -20,
+                  "ref": ""
+                },
+                {
+                  "key": "relation",
+                  "value": 15,
+                  "ref": "huayue"
+                },
+                {
+                  "key": "reputation",
+                  "value": -3,
+                  "ref": ""
+                }
+              ],
+              "setFlag": "joined_sword_league",
+              "next": "q_elder_villain_2a",
+              "relation": 10
+            },
+            {
+              "text": "婉辭：{sect}新立，不敢高攀",
+              "effects": [
+                {
+                  "key": "relation",
+                  "value": -10,
+                  "ref": "huayue"
+                },
+                {
+                  "key": "reputation",
+                  "value": 5,
+                  "ref": ""
+                }
+              ],
+              "setFlag": "refused_sword_league",
+              "next": "q_elder_villain_2b",
+              "relation": -10
+            }
+          ],
+          "outline": ""
+        },
+        {
+          "id": "q_elder_villain_2a",
+          "title": "盟主冠服",
+          "summary": "入盟之後，封伯陽越走越遠。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 10,
+            "maxMonth": 0,
+            "flag": "joined_sword_league",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "封伯陽在蓮花峰受盟主之位，冠服逾制、自稱「孤」，御史臺開始查華嶽。你作為劍盟首席被牽連：①向宇文嶠呈上華嶽囤糧與逾制的證據（與華嶽決裂、官府好感上升）；②替封伯陽遮掩（得華嶽重酬，若事發則同罪）。懷璧線中，可趁亂從藏劍樓取回鐵匣。"
+        },
+        {
+          "id": "q_elder_villain_2b",
+          "title": "斷糧",
+          "summary": "拒盟之後，封善人翻臉。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 8,
+            "maxMonth": 0,
+            "flag": "refused_sword_league",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "封伯陽散布流言說本門私通黑山、截斷關中糧道，並唆使伏牛劍派施壓。選擇：①聯合少林、五龍觀揭穿流言；②向河南府韋元溥求糧，欠下官府人情。懷璧線中他會以鐵匣要挾，同盟線（owes_huayue）中他會索回人質。"
+        },
+        {
+          "id": "q_elder_villain_3",
+          "title": "華山論帳",
+          "summary": "封善人的終局。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 20,
+            "maxMonth": 0,
+            "flag": "",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "結局：①封伯陽私通范陽、以殘卷換「關中節度」的密約曝光，大弟子封慎當眾與父決裂，華嶽一分為二；②陸孤雲的弟子殷照雪前來討還二十年前的一劍，封伯陽雙目受傷，從此閉門；③你與封伯陽華山決戰，他臨死仍在算帳：「這一劍，算你欠我的。」懷璧線、同盟線可在此救回羅小滿與康瑟。"
+        }
+      ]
+    },
+    {
+      "id": "q_warlord",
+      "character": "warlord",
+      "title": "陌刀",
+      "summary": "黑山鐵騎的屈突烈只認說話算數的人。他背後的主子，才是真正想要殘卷的人。",
+      "beats": [
+        {
+          "id": "q_warlord_1",
+          "title": "陌刀攔路",
+          "summary": "屈突烈率騎攔住下山採買的車隊。",
+          "playable": true,
+          "trigger": {
+            "minMonth": 5,
+            "maxMonth": 0,
+            "flag": "",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [
+            {
+              "speaker": "",
+              "portrait": "",
+              "image": "",
+              "text": "下山採買的車隊走到一處山口，前後忽然各閃出十來騎。為首的人披著狼裘，陌刀橫在鞍前。"
+            },
+            {
+              "speaker": "黑山鐵騎　屈突烈",
+              "portrait": "warlord",
+              "image": "",
+              "text": "別慌，今天不殺人。我屈突烈想看看，褚老兒的徒弟長什麼樣子。"
+            },
+            {
+              "speaker": "黑山鐵騎　屈突烈",
+              "portrait": "warlord",
+              "image": "",
+              "text": "江湖上都說{sect}有骨氣。骨氣這東西，我見過的不多，見過的都折了。"
+            },
+            {
+              "speaker": "{name}",
+              "portrait": "hero",
+              "image": "",
+              "text": "統領想要什麼，直說。"
+            },
+            {
+              "speaker": "黑山鐵騎　屈突烈",
+              "portrait": "warlord__smile",
+              "image": "",
+              "text": "爽快。接我一刀。接得住，這條道你以後隨便走；接不住，車上的糧留下。"
+            }
+          ],
+          "choices": [
+            {
+              "text": "拔劍接刀",
+              "effects": [
+                {
+                  "key": "reputation",
+                  "value": 8,
+                  "ref": ""
+                },
+                {
+                  "key": "relation",
+                  "value": 10,
+                  "ref": "heishan"
+                }
+              ],
+              "setFlag": "took_warlord_blade",
+              "next": "q_warlord_2a",
+              "relation": 15
+            },
+            {
+              "text": "讓出糧車，不逞一時之勇",
+              "effects": [
+                {
+                  "key": "food",
+                  "value": -20,
+                  "ref": ""
+                },
+                {
+                  "key": "relation",
+                  "value": 5,
+                  "ref": "heishan"
+                }
+              ],
+              "setFlag": "warlord_paid",
+              "next": "q_warlord_2b",
+              "relation": -5
+            }
+          ],
+          "outline": ""
+        },
+        {
+          "id": "q_warlord_2a",
+          "title": "狼裘下的兵書",
+          "summary": "接下一刀之後，屈突烈請你喝酒。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 11,
+            "maxMonth": 0,
+            "flag": "took_warlord_blade",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "屈突烈醉後吐露：糧餉來自范陽營州牙將阿史德翰，他要殘卷練一支「只聽一人號令」的兵。屈突烈說他不在乎誰坐長安，只在乎手下兩千人有飯吃。選擇：①勸他另尋出路（可能讓他倒戈）；②將此事密報河西渾元朗或金吾衛獨孤鎮（他會視你為叛徒）。"
+        },
+        {
+          "id": "q_warlord_2b",
+          "title": "借道",
+          "summary": "屈突烈要你的弟子替黑山帶路。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 11,
+            "maxMonth": 0,
+            "flag": "warlord_paid",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "黑山鐵騎要借崤函道運一批「貨」——實為范陽私購的胡馬。選擇：①帶路賺錢（與粟特商團、河西節度使府關係下降）；②暗中通知官府截貨（屈突烈震怒來襲）。懷璧投降線（bowed_to_heishan）中此段強制發生。"
+        },
+        {
+          "id": "q_warlord_3",
+          "title": "斬馬",
+          "summary": "屈突烈的終局。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 22,
+            "maxMonth": 0,
+            "flag": "",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "結局：①倒戈——屈突烈率殘部投靠渾元朗，臨走把陌刀留給你（斬馬陌刀）；②決戰——你在崤函道擊敗屈突烈，他求一死，說「你接得住我的刀，就配拿走我的命」；③若你始終依附黑山——阿史德翰滅口，屈突烈死於自己人之手，黑山舊部投入本門。"
+        }
+      ]
+    },
+    {
+      "id": "q_official",
+      "character": "official",
+      "title": "第十八件案子",
+      "summary": "替大璫辦了十七件案子的御史，發現第十八件寫著自己的名字。",
+      "beats": [
+        {
+          "id": "q_official_1",
+          "title": "賜緋之人",
+          "summary": "驛道茶棚裡，換了便服的范希仁等著你。",
+          "playable": true,
+          "trigger": {
+            "minMonth": 6,
+            "maxMonth": 0,
+            "flag": "",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [
+            {
+              "speaker": "",
+              "portrait": "",
+              "image": "",
+              "text": "驛道旁的茶棚裡，一個穿素色襴衫的中年人獨自喝茶。你認得那雙下垂的眼皮——殿中侍御史范希仁。"
+            },
+            {
+              "speaker": "殿中侍御史　范希仁",
+              "portrait": "official",
+              "image": "",
+              "text": "坐。今日本官沒穿官袍，你也不必拔劍。"
+            },
+            {
+              "speaker": "殿中侍御史　范希仁",
+              "portrait": "official",
+              "image": "",
+              "text": "三年來我替一位大璫辦了十七件案子，件件辦得乾淨。上個月，他把第十八件案子的案卷寫上了我的名字。"
+            },
+            {
+              "speaker": "殿中侍御史　范希仁",
+              "portrait": "official",
+              "image": "",
+              "text": "褚寒山當年從安西帶回來的東西，那位大璫找了二十年。誰先找到它，誰就能活。你我都一樣。"
+            },
+            {
+              "speaker": "{name}",
+              "portrait": "hero",
+              "image": "",
+              "text": "御史想要我做什麼？"
+            },
+            {
+              "speaker": "殿中侍御史　范希仁",
+              "portrait": "official",
+              "image": "",
+              "text": "不做什麼。只想知道，你是要跟我一起活，還是看我先死。"
+            }
+          ],
+          "choices": [
+            {
+              "text": "聽聽他的條件",
+              "effects": [
+                {
+                  "key": "relation",
+                  "value": 5,
+                  "ref": "yushitai"
+                }
+              ],
+              "setFlag": "official_deal",
+              "next": "q_official_2a",
+              "relation": 10
+            },
+            {
+              "text": "轉身就走，不與鷹犬同席",
+              "effects": [
+                {
+                  "key": "reputation",
+                  "value": 3,
+                  "ref": ""
+                }
+              ],
+              "setFlag": "official_spurned",
+              "next": "q_official_2b",
+              "relation": -10
+            }
+          ],
+          "outline": ""
+        },
+        {
+          "id": "q_official_2a",
+          "title": "底稿",
+          "summary": "范希仁交出十七件案子的底稿。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 12,
+            "maxMonth": 0,
+            "flag": "official_deal",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "范希仁交出底稿：每一件都指向內常侍霍元昌，其中一件正是二十年前的蕭定遠案。條件是保他一家出長安。選擇：①把底稿交給御史大夫宇文嶠（穩妥，但宇文嶠可能壓下）；②交給金吾衛獨孤鎮（激進，霍元昌會立刻反撲）。官府迫害線中，可藉此重開崤山之案、取回山門。"
+        },
+        {
+          "id": "q_official_2b",
+          "title": "反咬",
+          "summary": "被拒絕的范希仁轉而拿你頂罪。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 12,
+            "maxMonth": 0,
+            "flag": "official_spurned",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "范希仁為自保，向霍元昌獻計：以「私藏軍國兵書」之罪搜捕本門。選擇：①先發制人，劫下他的案卷；②借少林或夜雨樓之力避禍。若沈青在門中，她認出范希仁是當年夜雨樓的一位「主顧」。"
+        },
+        {
+          "id": "q_official_3",
+          "title": "羅織手",
+          "summary": "范希仁的終局。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 20,
+            "maxMonth": 0,
+            "flag": "",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "結局：①霍元昌倒台，范希仁作為證人免死、流放嶺南，臨行說「本官這輩子，總算讀對了一條律文」；②霍元昌滅口，范希仁死於臺獄，留給你一句暗語，指向殘卷所藏血書的另一半；③你親手了結他——官府迫害線中，這是林照最想看到的結局。"
+        }
+      ]
+    },
+    {
+      "id": "q_rival_head",
+      "character": "rival_head",
+      "title": "洛水舊盟",
+      "summary": "背盟的秦無咎窮途末路，向你伸出手——是悔，還是另一個圈套？",
+      "beats": [
+        {
+          "id": "q_rival_head_1",
+          "title": "秦小樓",
+          "summary": "伏牛劍派首徒秦小樓帶傷送來一封信。",
+          "playable": true,
+          "trigger": {
+            "minMonth": 5,
+            "maxMonth": 0,
+            "flag": "",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [
+            {
+              "speaker": "",
+              "portrait": "",
+              "image": "",
+              "text": "一個年輕人渾身是泥倒在山門外，懷裡死死揣著一封信。是伏牛劍派首徒，秦無咎的侄兒秦小樓。"
+            },
+            {
+              "speaker": "伏牛劍派首徒　秦小樓",
+              "portrait": "npc_ym07",
+              "image": "",
+              "text": "叔父……叔父要我送來的。他說，這信要親手交到{title}手上。"
+            },
+            {
+              "speaker": "伏牛劍派掌門　秦無咎（信）",
+              "portrait": "rival_head",
+              "image": "",
+              "text": "洛水之盟，我負褚兄。伏牛山今冬斷糧，華嶽封某欲吞我門。"
+            },
+            {
+              "speaker": "伏牛劍派掌門　秦無咎（信）",
+              "portrait": "rival_head",
+              "image": "",
+              "text": "賢侄若肯伸手，伏牛山願以崤函道之半相還。若不肯，秦某也無話可說。"
+            },
+            {
+              "speaker": "{friend}",
+              "portrait": "friend",
+              "image": "",
+              "text": "他背過一次盟，就會背第二次。可封伯陽吞了伏牛，下一個就是我們。"
+            }
+          ],
+          "choices": [
+            {
+              "text": "送糧伏牛，看他是否真心",
+              "effects": [
+                {
+                  "key": "food",
+                  "value": -25,
+                  "ref": ""
+                },
+                {
+                  "key": "relation",
+                  "value": 20,
+                  "ref": "funiu"
+                }
+              ],
+              "setFlag": "funiu_aided",
+              "next": "q_rival_head_2a",
+              "relation": 15
+            },
+            {
+              "text": "扣下秦小樓，要秦無咎親自來談",
+              "effects": [
+                {
+                  "key": "relation",
+                  "value": -10,
+                  "ref": "funiu"
+                },
+                {
+                  "key": "reputation",
+                  "value": 2,
+                  "ref": ""
+                }
+              ],
+              "setFlag": "xiaolou_held",
+              "next": "q_rival_head_2b",
+              "relation": -10
+            }
+          ],
+          "outline": ""
+        },
+        {
+          "id": "q_rival_head_2a",
+          "title": "半條崤函道",
+          "summary": "秦無咎兌現承諾，卻另有隱情。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 11,
+            "maxMonth": 0,
+            "flag": "funiu_aided",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "秦無咎交還半條崤函道，並在酒後吐露：背盟那夜的佈防圖，是門內有人給的。同道背盟線中，他說出聶遠山的名字；其他線中，他只說「你們山上有人比我更想要那條路」。選擇：①追問到底（與聶遠山的支線交會）；②就此收手，保住新盟。"
+        },
+        {
+          "id": "q_rival_head_2b",
+          "title": "叔侄",
+          "summary": "秦無咎親自上門，跪在山門外。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 11,
+            "maxMonth": 0,
+            "flag": "xiaolou_held",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "秦無咎孤身上山，在山門外跪了一夜。選擇：①放人，訂立新約（伏牛成為附庸，秦小樓入你門下）；②要他當眾認罪（伏牛劍派聲望崩潰，封伯陽趁機吞併伏牛）。"
+        },
+        {
+          "id": "q_rival_head_3",
+          "title": "洛水",
+          "summary": "秦無咎的終局。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 20,
+            "maxMonth": 0,
+            "flag": "",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "結局：①洛水邊重訂盟約，秦無咎把伏牛七絕劍的劍譜交給你，自請隱退；②洛水邊一決生死，秦無咎死前說「那一杯酒，我摔得太重了」；③華嶽吞併伏牛，秦無咎死於封伯陽之手，秦小樓帶著殘部投奔本門。同道背盟線中，本段可奪回崤山舊山門。"
+        }
+      ]
+    },
+    {
+      "id": "q_lin",
+      "character": "lin",
+      "title": "逃籍",
+      "summary": "林照的逃籍舊案被翻了出來；河西的長征健兒，或許是他的另一條路。",
+      "beats": [
+        {
+          "id": "q_lin_1",
+          "title": "點兵冊",
+          "summary": "折衝府府吏拿著點兵冊找上門。",
+          "playable": true,
+          "trigger": {
+            "minMonth": 4,
+            "maxMonth": 0,
+            "flag": "",
+            "notFlag": "lin_exiled",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [
+            {
+              "speaker": "",
+              "portrait": "",
+              "image": "",
+              "text": "山下來了兩個折衝府的府吏，手裡拿著一本點兵冊，挨家挨戶地問。"
+            },
+            {
+              "speaker": "折衝府府吏",
+              "portrait": "npc_off01",
+              "image": "",
+              "text": "衛士林照，逃籍六年。按律當加役流。有人說，他就在你們山上。"
+            },
+            {
+              "speaker": "二師兄　林照",
+              "portrait": "lin",
+              "image": "",
+              "text": "{title}，不用替我遮掩。我是逃了——家裡賣了兩頭牛替我置弓刀，我番上兩回，回來田就被人佔了。"
+            },
+            {
+              "speaker": "二師兄　林照",
+              "portrait": "lin",
+              "image": "",
+              "text": "河西節度使在募長征健兒，給餉，不問來歷。去那裡，我這身府兵的本事還值點錢。"
+            },
+            {
+              "speaker": "{name}",
+              "portrait": "hero",
+              "image": "",
+              "text": "你若想走，我不攔。你若想留，誰也帶不走你。"
+            }
+          ],
+          "choices": [
+            {
+              "text": "花錢打點，替他銷籍",
+              "effects": [
+                {
+                  "key": "silver",
+                  "value": -30,
+                  "ref": ""
+                },
+                {
+                  "key": "relation",
+                  "value": 5,
+                  "ref": "henan_fu"
+                }
+              ],
+              "setFlag": "lin_discharged",
+              "next": "q_lin_2a",
+              "relation": 10
+            },
+            {
+              "text": "把府吏打發走，人我保了",
+              "effects": [
+                {
+                  "key": "reputation",
+                  "value": 3,
+                  "ref": ""
+                },
+                {
+                  "key": "relation",
+                  "value": -10,
+                  "ref": "henan_fu"
+                },
+                {
+                  "key": "loyaltyAll",
+                  "value": 3,
+                  "ref": ""
+                }
+              ],
+              "setFlag": "lin_hidden",
+              "next": "q_lin_2b",
+              "relation": 15
+            }
+          ],
+          "outline": ""
+        },
+        {
+          "id": "q_lin_2a",
+          "title": "長征健兒",
+          "summary": "銷了籍的林照，仍想著河西。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 10,
+            "maxMonth": 0,
+            "flag": "lin_discharged",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "銷籍後，河西節度使府的募兵官親自來請林照。選擇：①讓林照帶幾名弟子西去從軍（與河西節度使府關係大升，林照暫離）；②留他做本門的教頭（教導上限提升）。"
+        },
+        {
+          "id": "q_lin_2b",
+          "title": "穆青槍",
+          "summary": "太行來人，說林照欠她一條路。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 10,
+            "maxMonth": 0,
+            "flag": "lin_hidden",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "太行十八寨二寨主穆青槍來訪——林照逃籍那年，是她放他過的太行。她邀林照入寨。選擇：①放林照去太行還情（與太行十八寨結好，官府起疑）；②請穆青槍留下切磋，化解舊債。"
+        },
+        {
+          "id": "q_lin_3",
+          "title": "歸營",
+          "summary": "林照的終局。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 20,
+            "maxMonth": 0,
+            "flag": "",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "結局：①林照成為河西赤水軍的隊正，日後帶一隊健兒回援本門；②林照留守山門，成為門中第一位教頭；③若曾流放（官府迫害・認罪線，lin_exiled）——另起支線：二千里外，他寄回一封信，請你去嶺南接他。"
+        }
+      ]
+    },
+    {
+      "id": "q_xu",
+      "character": "xu",
+      "title": "過目不忘",
+      "summary": "許雁憑記憶重建藏經閣，卻發現《崤山劍經》被人改過。",
+      "beats": [
+        {
+          "id": "q_xu_1",
+          "title": "四句劍訣",
+          "summary": "許雁默書時發現劍經第十三劍差了四句。",
+          "playable": true,
+          "trigger": {
+            "minMonth": 6,
+            "maxMonth": 0,
+            "flag": "",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [
+            {
+              "speaker": "",
+              "portrait": "",
+              "image": "",
+              "text": "許雁的屋裡堆滿了紙。她每天默寫十卷書，墨磨得比伙房的米還快。"
+            },
+            {
+              "speaker": "三師姐　許雁",
+              "portrait": "xu",
+              "image": "",
+              "text": "藏經閣的書沒能帶出來，可都在我腦子裡。這幾個月我默出來兩百一十卷，還差九十卷。"
+            },
+            {
+              "speaker": "三師姐　許雁",
+              "portrait": "xu",
+              "image": "",
+              "text": "只是有件怪事：《崤山劍經》第十三劍的劍訣，我記得的和師父教的不一樣，差了四句。"
+            },
+            {
+              "speaker": "三師姐　許雁",
+              "portrait": "xu",
+              "image": "",
+              "text": "要嘛是我記錯了，要嘛——是有人在我們讀之前，改過那本劍經。"
+            },
+            {
+              "speaker": "{name}",
+              "portrait": "hero",
+              "image": "",
+              "text": "能碰劍經的，門裡只有幾個人。"
+            }
+          ],
+          "choices": [
+            {
+              "text": "撥人手幫她默書，重建藏經閣",
+              "effects": [
+                {
+                  "key": "insightChance",
+                  "value": 0.02,
+                  "ref": ""
+                }
+              ],
+              "setFlag": "xu_library",
+              "next": "q_xu_2a",
+              "relation": 10
+            },
+            {
+              "text": "先查是誰改了劍經",
+              "effects": [
+                {
+                  "key": "charRelation",
+                  "value": -5,
+                  "ref": "uncle_schemer"
+                }
+              ],
+              "setFlag": "xu_investigate",
+              "next": "q_xu_2b",
+              "relation": 5
+            }
+          ],
+          "outline": ""
+        },
+        {
+          "id": "q_xu_2a",
+          "title": "藏經閣",
+          "summary": "三百卷書，重新上架。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 12,
+            "maxMonth": 0,
+            "flag": "xu_library",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "藏經閣重建完成，許雁成為本門的典籍執事。選擇：①把默寫的拳譜劍經公開給所有弟子（訓練加成、感悟機率上升）；②只傳核心弟子（忠誠上升）。"
+        },
+        {
+          "id": "q_xu_2b",
+          "title": "篡改者",
+          "summary": "四句劍訣的線索指向後山。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 10,
+            "maxMonth": 0,
+            "flag": "xu_investigate",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "許雁比對筆跡，發現改劍經的人寫字習慣與聶遠山相同。與聶遠山支線交會：選擇公開或私下處理。若同時進行師父支線，許雁會發現缺頁與改經是同一年。"
+        },
+        {
+          "id": "q_xu_3",
+          "title": "全本",
+          "summary": "許雁的終局。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 18,
+            "maxMonth": 0,
+            "flag": "",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "結局：①劍經復原，得《崤山劍經》全本（主角劍術上限提升）；②許雁下山遍訪各派，替本門編成一部《江湖兵器譜》；③若聶遠山奪門，許雁帶著默稿出走，在你最危急時把正確的劍訣送到你手上。"
+        }
+      ]
+    },
+    {
+      "id": "q_shen",
+      "character": "shen",
+      "title": "右手",
+      "summary": "夜雨樓的催帳牌送到沈青門前。她欠下的那隻右手，三天後有人來取。",
+      "beats": [
+        {
+          "id": "q_shen_1",
+          "title": "催帳牌",
+          "summary": "沈青收到夜雨樓的黑漆木牌。",
+          "playable": true,
+          "trigger": {
+            "minMonth": 5,
+            "maxMonth": 0,
+            "flag": "outlaw",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [
+            {
+              "speaker": "",
+              "portrait": "",
+              "image": "",
+              "text": "沈青在井邊洗劍，洗了很久。井台上擱著一枚黑漆木牌，牌上刻著一滴雨。"
+            },
+            {
+              "speaker": "沈青",
+              "portrait": "shen",
+              "image": "",
+              "text": "今早有人塞進我門縫的。夜雨樓的催帳牌。"
+            },
+            {
+              "speaker": "沈青",
+              "portrait": "shen",
+              "image": "",
+              "text": "我在夜雨樓待過四年。殺過人，也救過該殺的人。救的那個，讓我欠下一隻右手。"
+            },
+            {
+              "speaker": "沈青",
+              "portrait": "shen",
+              "image": "",
+              "text": "三天後他們來取。我可以走，不連累你們。也可以留下，那就要連累你們了。"
+            },
+            {
+              "speaker": "{name}",
+              "portrait": "hero",
+              "image": "",
+              "text": "你那夜開縣獄的時候，可沒問會不會連累你自己。"
+            }
+          ],
+          "choices": [
+            {
+              "text": "「留下。{sect}的人，誰也拿不走。」",
+              "effects": [
+                {
+                  "key": "relation",
+                  "value": -15,
+                  "ref": "yeyu"
+                },
+                {
+                  "key": "loyaltyAll",
+                  "value": 3,
+                  "ref": ""
+                }
+              ],
+              "setFlag": "shen_protected",
+              "next": "q_shen_2a",
+              "relation": 15
+            },
+            {
+              "text": "陪她去洛陽，跟夜雨樓談",
+              "effects": [
+                {
+                  "key": "silver",
+                  "value": -20,
+                  "ref": ""
+                }
+              ],
+              "setFlag": "shen_negotiate",
+              "next": "q_shen_2b",
+              "relation": 10
+            }
+          ],
+          "outline": ""
+        },
+        {
+          "id": "q_shen_2a",
+          "title": "雨夜",
+          "summary": "夜雨樓的人來了。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 6,
+            "maxMonth": 0,
+            "flag": "shen_protected",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "第三夜，三名刺客潛入山門。擊退後，執事雨十三現身，說樓主願以一事抵債：替夜雨樓護送一個人出長安。選擇：①答應（與師父支線交會，那個人是誰？）；②拒絕（夜雨樓敵意大增）。"
+        },
+        {
+          "id": "q_shen_2b",
+          "title": "樓中規矩",
+          "summary": "洛陽夜雨樓，談一隻手的價錢。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 7,
+            "maxMonth": 0,
+            "flag": "shen_negotiate",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": "luoyang"
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "夜雨樓主親自開價：沈青當年救下的人，是范希仁的一位證人。選擇：①以銀錢贖身（銀兩大減）；②以情報抵債（須交出殘卷相關消息）；③立約替夜雨樓辦一件事。"
+        },
+        {
+          "id": "q_shen_3",
+          "title": "雨停",
+          "summary": "沈青的終局。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 16,
+            "maxMonth": 0,
+            "flag": "",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "結局：①債清，沈青正式拜入本門，成為劍術教頭；②沈青替你擋下刺客失去右手，改練左手劍，劍法反而更準；③沈青重回夜雨樓做你的內應，與師父支線的終局相連。"
+        }
+      ]
+    },
+    {
+      "id": "q_luo",
+      "character": "luo",
+      "title": "胡餅",
+      "summary": "貪嘴的小師弟偷偷下山買胡餅，卻聽見了不該聽的話。",
+      "beats": [
+        {
+          "id": "q_luo_1",
+          "title": "胡餅鋪",
+          "summary": "羅小滿偷溜下山，帶回一則消息。",
+          "playable": true,
+          "trigger": {
+            "minMonth": 7,
+            "maxMonth": 0,
+            "flag": "",
+            "notFlag": "owes_huayue",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [
+            {
+              "speaker": "",
+              "portrait": "",
+              "image": "",
+              "text": "羅小滿天黑才回來，嘴角沾著芝麻，懷裡還揣著兩個胡餅。他一見你，臉就白了。"
+            },
+            {
+              "speaker": "小師弟　羅小滿",
+              "portrait": "luo",
+              "image": "",
+              "text": "{title}，我錯了！可是……胡餅鋪裡有兩個佩刀的人，一直在問我們山上有幾個人、幾匹馬。"
+            },
+            {
+              "speaker": "小師弟　羅小滿",
+              "portrait": "luo",
+              "image": "",
+              "text": "我說我是砍柴的，什麼都不知道。他們給了我一個胡餅。……我、我沒吃完。"
+            },
+            {
+              "speaker": "{name}",
+              "portrait": "hero",
+              "image": "",
+              "text": "你做得對。下回想吃胡餅，跟我說，我帶你去。"
+            }
+          ],
+          "choices": [
+            {
+              "text": "誇他機靈，教他當探子",
+              "effects": [
+                {
+                  "key": "lineRank",
+                  "value": 1,
+                  "ref": "qinggong"
+                }
+              ],
+              "setFlag": "luo_scout",
+              "next": "q_luo_2a",
+              "relation": 10
+            },
+            {
+              "text": "罰他劈三天柴，再派人去查",
+              "effects": [
+                {
+                  "key": "loyaltyAll",
+                  "value": 1,
+                  "ref": ""
+                }
+              ],
+              "setFlag": "luo_punished",
+              "next": "q_luo_2b",
+              "relation": -5
+            }
+          ],
+          "outline": ""
+        },
+        {
+          "id": "q_luo_2a",
+          "title": "小探子",
+          "summary": "羅小滿的第一件差事。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 12,
+            "maxMonth": 0,
+            "flag": "luo_scout",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "羅小滿跟蹤佩刀人，發現他們是黑松寨的人，每月從一個挑柴漢手裡收銀子（與聶遠山支線交會）。結局：立功／被擄，須去黑松寨救人。"
+        },
+        {
+          "id": "q_luo_2b",
+          "title": "柴房",
+          "summary": "劈柴的羅小滿，看見了後山的燈。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 12,
+            "maxMonth": 0,
+            "flag": "luo_punished",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "羅小滿劈柴時看見師叔深夜與挑柴漢交談。結局：他把這事告訴許雁，或憋在心裡直到出事。"
+        }
+      ]
+    },
+    {
+      "id": "q_du",
+      "character": "du",
+      "title": "舊帳",
+      "summary": "揚州來的收帳人，找上了杜蘅。",
+      "beats": [
+        {
+          "id": "q_du_1",
+          "title": "收帳人",
+          "summary": "揚州鹽幫的人來找杜蘅收一筆舊帳。",
+          "playable": true,
+          "trigger": {
+            "minMonth": 6,
+            "maxMonth": 0,
+            "flag": "",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [
+            {
+              "speaker": "",
+              "portrait": "",
+              "image": "",
+              "text": "一個穿寶藍綢袍的胖子坐在伙房門口，笑咪咪地等杜蘅把一鍋粥熬完。"
+            },
+            {
+              "speaker": "揚州鹽幫帳房",
+              "portrait": "npc_mer01",
+              "image": "",
+              "text": "杜大娘，十二年了。莫鹽總說，您當年替幫裡收的最後一筆帳，還差三十貫沒交。"
+            },
+            {
+              "speaker": "伙房管事　杜蘅",
+              "portrait": "du",
+              "image": "",
+              "text": "那筆錢我拿去埋了我男人。莫三川要算，讓他自己來算。"
+            },
+            {
+              "speaker": "伙房管事　杜蘅",
+              "portrait": "du",
+              "image": "",
+              "text": "{title}，這是我的事，你別插手。這把菜刀，還認得回揚州的路。"
+            }
+          ],
+          "choices": [
+            {
+              "text": "替她還錢，了結舊帳",
+              "effects": [
+                {
+                  "key": "silver",
+                  "value": -30,
+                  "ref": ""
+                },
+                {
+                  "key": "relation",
+                  "value": 10,
+                  "ref": "yanbang"
+                }
+              ],
+              "setFlag": "du_debt_paid",
+              "next": "q_du_2a",
+              "relation": 10
+            },
+            {
+              "text": "由她處置，但派人跟著",
+              "effects": [
+                {
+                  "key": "relation",
+                  "value": -5,
+                  "ref": "yanbang"
+                }
+              ],
+              "setFlag": "du_own_way",
+              "next": "q_du_2b",
+              "relation": 5
+            }
+          ],
+          "outline": ""
+        },
+        {
+          "id": "q_du_2a",
+          "title": "帳清",
+          "summary": "鹽幫記下了這份人情。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 12,
+            "maxMonth": 0,
+            "flag": "du_debt_paid",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "莫三川回信致謝，願以平價供鹽給本門；杜蘅說出她當年在鹽幫看到的帳——霍元昌在揚州有私營鹽場。結局：一條經商之路，或一份扳倒大璫的證據。"
+        },
+        {
+          "id": "q_du_2b",
+          "title": "回揚州",
+          "summary": "杜蘅帶著菜刀下了揚州。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 12,
+            "maxMonth": 0,
+            "flag": "du_own_way",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "杜蘅獨闖揚州，與莫三川談判。結局：她帶回一份鹽幫的合夥契約，或帶著傷回來、從此鹽幫與本門為敵。"
+        }
+      ]
+    },
+    {
+      "id": "q_han",
+      "character": "han",
+      "title": "隴右來信",
+      "summary": "韓守拙斷了音訊的弟弟，忽然有了消息。",
+      "beats": [
+        {
+          "id": "q_han_1",
+          "title": "一封舊信",
+          "summary": "一個戍卒帶來韓守拙弟弟的消息。",
+          "playable": true,
+          "trigger": {
+            "minMonth": 8,
+            "maxMonth": 0,
+            "flag": "",
+            "notFlag": "shaolin_patron",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [
+            {
+              "speaker": "",
+              "portrait": "",
+              "image": "",
+              "text": "一個瘸腿的退役戍卒找上山，說要見藥房的韓先生。他從懷裡掏出一封沾著血跡的信。"
+            },
+            {
+              "speaker": "退役戍卒",
+              "portrait": "npc_em05",
+              "image": "",
+              "text": "臨洮那一仗，韓二郎被吐蕃人擄走了。他說，若我能活著回關內，就把這信帶給他哥哥。"
+            },
+            {
+              "speaker": "藥房執事　韓守拙",
+              "portrait": "han",
+              "image": "",
+              "text": "……他還活著？"
+            },
+            {
+              "speaker": "藥房執事　韓守拙",
+              "portrait": "han",
+              "image": "",
+              "text": "{title}，藥房的方子我都寫好了。我想去一趟隴右。……一趟就好。"
+            }
+          ],
+          "choices": [
+            {
+              "text": "讓他去，撥人護送",
+              "effects": [
+                {
+                  "key": "silver",
+                  "value": -20,
+                  "ref": ""
+                }
+              ],
+              "setFlag": "han_to_longyou",
+              "next": "q_han_2a",
+              "relation": 10
+            },
+            {
+              "text": "託粟特商團打聽，讓他留下",
+              "effects": [
+                {
+                  "key": "relation",
+                  "value": 5,
+                  "ref": "sute"
+                },
+                {
+                  "key": "silver",
+                  "value": -10,
+                  "ref": ""
+                }
+              ],
+              "setFlag": "han_stays",
+              "next": "q_han_2b",
+              "relation": 0
+            }
+          ],
+          "outline": ""
+        },
+        {
+          "id": "q_han_2a",
+          "title": "臨洮",
+          "summary": "韓守拙西行尋弟。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 14,
+            "maxMonth": 0,
+            "flag": "han_to_longyou",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "韓守拙在臨洮以醫術換取吐蕃俘虜的消息，結識吐蕃大論的醫官。結局：贖回弟弟／弟弟已成吐蕃將領的家奴，不願回來。"
+        },
+        {
+          "id": "q_han_2b",
+          "title": "駝隊消息",
+          "summary": "粟特駝隊帶回消息。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 14,
+            "maxMonth": 0,
+            "flag": "han_stays",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "安延年的駝隊帶回消息：韓二郎在邏些做藥奴。結局：花大錢贖人，或韓守拙決定從此把弟弟的名字寫進每一張藥方。"
+        }
+      ]
+    },
+    {
+      "id": "q_kang",
+      "character": "kang",
+      "title": "刀疤胡商",
+      "summary": "康瑟在南市見過的刀疤胡商，再次出現。",
+      "beats": [
+        {
+          "id": "q_kang_1",
+          "title": "刀疤",
+          "summary": "脖子帶疤的胡商在山下出沒。",
+          "playable": true,
+          "trigger": {
+            "minMonth": 6,
+            "maxMonth": 0,
+            "flag": "",
+            "notFlag": "owes_huayue",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [
+            {
+              "speaker": "",
+              "portrait": "",
+              "image": "",
+              "text": "康瑟從山下回來，臉色發白，算盤珠子掉了一地。"
+            },
+            {
+              "speaker": "外門弟子　康瑟",
+              "portrait": "kang",
+              "image": "",
+              "text": "我又見到他了——脖子上有刀疤的那個胡商。他的駝隊不馱絹，馱的是人。"
+            },
+            {
+              "speaker": "外門弟子　康瑟",
+              "portrait": "kang",
+              "image": "",
+              "text": "他們在山下收買逃戶的孩子，說是帶去涼州做學徒。可我舅舅說，涼州沒有那樣的商行。"
+            },
+            {
+              "speaker": "{name}",
+              "portrait": "hero",
+              "image": "",
+              "text": "你確定？"
+            }
+          ],
+          "choices": [
+            {
+              "text": "今夜就去截那支駝隊",
+              "effects": [
+                {
+                  "key": "reputation",
+                  "value": 5,
+                  "ref": ""
+                },
+                {
+                  "key": "relation",
+                  "value": -5,
+                  "ref": "sute"
+                }
+              ],
+              "setFlag": "kang_raid",
+              "next": "q_kang_2a",
+              "relation": 10
+            },
+            {
+              "text": "先讓康瑟去找舅舅查清",
+              "effects": [
+                {
+                  "key": "relation",
+                  "value": 5,
+                  "ref": "sute"
+                }
+              ],
+              "setFlag": "kang_ask_uncle",
+              "next": "q_kang_2b",
+              "relation": 5
+            }
+          ],
+          "outline": ""
+        },
+        {
+          "id": "q_kang_2a",
+          "title": "駝隊",
+          "summary": "截下駝隊，救出孩子。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 10,
+            "maxMonth": 0,
+            "flag": "kang_raid",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "截下駝隊，救出十二個孩子，刀疤胡商逃走。結局：孩子們成為本門的新弟子；刀疤胡商原來替黑山鐵騎販人，屈突烈派人來討。"
+        },
+        {
+          "id": "q_kang_2b",
+          "title": "舅舅",
+          "summary": "安延年的商團內部出了叛徒。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 10,
+            "maxMonth": 0,
+            "flag": "kang_ask_uncle",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "康瑟的舅舅查出刀疤胡商是商團叛徒。結局：安延年欠你一份大人情（粟特商團好感大升），康瑟在商團中得到一席之地。"
+        }
+      ]
+    },
+    {
+      "id": "q_pei",
+      "character": "pei",
+      "title": "落第",
+      "summary": "考了三回進士的書生，背著書箱來練氣。",
+      "beats": [
+        {
+          "id": "q_pei_1",
+          "title": "書箱",
+          "summary": "落第書生裴秉求入門下。",
+          "playable": true,
+          "trigger": {
+            "minMonth": 4,
+            "maxMonth": 0,
+            "flag": "",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [
+            {
+              "speaker": "",
+              "portrait": "",
+              "image": "",
+              "text": "山門外來了個背書箱的書生，衣衫洗得發白，站姿卻端端正正，先對著匾額作了個揖。"
+            },
+            {
+              "speaker": "落第書生　裴秉",
+              "portrait": "pei",
+              "image": "",
+              "text": "在下河東裴秉，三試進士不第。考官說我的文章「氣不足」，聽聞貴派善於練氣，特來求教。"
+            },
+            {
+              "speaker": "落第書生　裴秉",
+              "portrait": "pei",
+              "image": "",
+              "text": "我不求當什麼大俠，只求下回被權貴家奴推下馬時，能站得穩些。"
+            },
+            {
+              "speaker": "{name}",
+              "portrait": "hero",
+              "image": "",
+              "text": "練氣要吃苦，比考進士還苦。"
+            }
+          ],
+          "choices": [
+            {
+              "text": "收為記名弟子",
+              "effects": [
+                {
+                  "key": "followers",
+                  "value": 1,
+                  "ref": "pei"
+                }
+              ],
+              "setFlag": "pei_joined",
+              "next": "q_pei_2a",
+              "relation": 10
+            },
+            {
+              "text": "贈盤纏，勸他再考一回",
+              "effects": [
+                {
+                  "key": "silver",
+                  "value": -5,
+                  "ref": ""
+                },
+                {
+                  "key": "reputation",
+                  "value": 2,
+                  "ref": ""
+                }
+              ],
+              "setFlag": "pei_sent_away",
+              "next": "q_pei_2b",
+              "relation": 5
+            }
+          ],
+          "outline": ""
+        },
+        {
+          "id": "q_pei_2a",
+          "title": "門史",
+          "summary": "裴秉提筆寫本門的門史。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 12,
+            "maxMonth": 0,
+            "flag": "pei_joined",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "裴秉替本門寫門史、教弟子讀書。結局：門中文教大興（教導上限提升）；或他在長安的舊同窗請他回去做御史臺令史，成為你在官府的眼睛。"
+        },
+        {
+          "id": "q_pei_2b",
+          "title": "金榜",
+          "summary": "第四回進士考。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 14,
+            "maxMonth": 0,
+            "flag": "pei_sent_away",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "裴秉第四回應試及第，授縣尉。結局：他在任上替本門說話，或因得罪權貴被貶，最後還是上了山。"
+        }
+      ]
+    },
+    {
+      "id": "q_song",
+      "character": "song",
+      "title": "里正",
+      "summary": "宋秋娘想讓欺負人的里正好好說話。",
+      "beats": [
+        {
+          "id": "q_song_1",
+          "title": "腳錢",
+          "summary": "新山門附近的里正多收「腳錢」。",
+          "playable": true,
+          "trigger": {
+            "minMonth": 6,
+            "maxMonth": 0,
+            "flag": "plague_healers",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [
+            {
+              "speaker": "",
+              "portrait": "",
+              "image": "",
+              "text": "宋秋娘扛著兩袋米回來，臉上帶著一道指痕。"
+            },
+            {
+              "speaker": "宋秋娘",
+              "portrait": "song",
+              "image": "",
+              "text": "山下的里正又多收了一份「腳錢」，佃戶阿婆交不出，他就搶了她的雞。我攔他，他打了我一巴掌。"
+            },
+            {
+              "speaker": "宋秋娘",
+              "portrait": "song",
+              "image": "",
+              "text": "我沒還手。{title}說過，學功夫不是為了打架。"
+            },
+            {
+              "speaker": "{name}",
+              "portrait": "hero",
+              "image": "",
+              "text": "你做得對。這筆帳，我們換個方法算。"
+            }
+          ],
+          "choices": [
+            {
+              "text": "去縣衙告里正",
+              "effects": [
+                {
+                  "key": "reputation",
+                  "value": 5,
+                  "ref": ""
+                },
+                {
+                  "key": "relation",
+                  "value": 5,
+                  "ref": "henan_fu"
+                }
+              ],
+              "setFlag": "song_lawsuit",
+              "next": "q_song_2a",
+              "relation": 10
+            },
+            {
+              "text": "夜裡去「勸勸」里正",
+              "effects": [
+                {
+                  "key": "reputation",
+                  "value": 3,
+                  "ref": ""
+                },
+                {
+                  "key": "food",
+                  "value": 10,
+                  "ref": ""
+                }
+              ],
+              "setFlag": "song_scare",
+              "next": "q_song_2b",
+              "relation": 5
+            }
+          ],
+          "outline": ""
+        },
+        {
+          "id": "q_song_2a",
+          "title": "公堂",
+          "summary": "縣衙開審。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 12,
+            "maxMonth": 0,
+            "flag": "song_lawsuit",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "裴秉或許雁替佃戶寫狀子，縣令判里正退還腳錢。結局：附近村民紛紛送子弟來拜師（候選弟子+1），宋秋娘學會寫自己的名字。"
+        },
+        {
+          "id": "q_song_2b",
+          "title": "夜訪",
+          "summary": "里正一夜之間變得很好說話。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 12,
+            "maxMonth": 0,
+            "flag": "song_scare",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "里正變得客氣，卻暗中向縣尉告狀說本門恃武凌人。結局：宋秋娘挺身作證化解，或本門與官府生出嫌隙。"
+        }
+      ]
+    },
+    {
+      "id": "q_wei",
+      "character": "wei",
+      "title": "安西舊夢",
+      "summary": "魏老七夜夜喊醒的邊塞夢，來了一個故人。",
+      "beats": [
+        {
+          "id": "q_wei_1",
+          "title": "碎葉故人",
+          "summary": "一個獨眼老兵來找魏老七。",
+          "playable": true,
+          "trigger": {
+            "minMonth": 6,
+            "maxMonth": 0,
+            "flag": "broke_from_huayue",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [
+            {
+              "speaker": "",
+              "portrait": "",
+              "image": "",
+              "text": "半夜，魏老七又在門房裡喊了起來。第二天一早，山門外站著一個獨眼的老兵，說要找魏七。"
+            },
+            {
+              "speaker": "老卒　魏老七",
+              "portrait": "wei",
+              "image": "",
+              "text": "趙獨眼！你還活著？碎葉城外那三百人，我以為就剩我一個了。"
+            },
+            {
+              "speaker": "安西老兵　趙獨眼",
+              "portrait": "npc_em05",
+              "image": "",
+              "text": "還剩七個。都老了，田被佔了，勳官文書拿去當柴燒。七哥，你這兒還收人嗎？"
+            },
+            {
+              "speaker": "老卒　魏老七",
+              "portrait": "wei",
+              "image": "",
+              "text": "{title}……他們都是好兵。只是老了，吃得多。"
+            }
+          ],
+          "choices": [
+            {
+              "text": "收留安西老兵",
+              "effects": [
+                {
+                  "key": "food",
+                  "value": -15,
+                  "ref": ""
+                },
+                {
+                  "key": "lineRank",
+                  "value": 1,
+                  "ref": "polearm"
+                },
+                {
+                  "key": "reputation",
+                  "value": 3,
+                  "ref": ""
+                }
+              ],
+              "setFlag": "wei_veterans",
+              "next": "q_wei_2a",
+              "relation": 15
+            },
+            {
+              "text": "贈銀，替他們另謀生路",
+              "effects": [
+                {
+                  "key": "silver",
+                  "value": -20,
+                  "ref": ""
+                }
+              ],
+              "setFlag": "wei_veterans_helped",
+              "next": "q_wei_2b",
+              "relation": 5
+            }
+          ],
+          "outline": ""
+        },
+        {
+          "id": "q_wei_2a",
+          "title": "老兵營",
+          "summary": "七個老兵，一座山門。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 12,
+            "maxMonth": 0,
+            "flag": "wei_veterans",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "老兵們教弟子結陣守山，夜裡輪流值守，魏老七不再做噩夢。結局：本門得一支守山老兵；或老兵中有人認出聶遠山曾與黑松寨往來。"
+        },
+        {
+          "id": "q_wei_2b",
+          "title": "安西來使",
+          "summary": "安西都護府派人來找魏老七。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 12,
+            "maxMonth": 0,
+            "flag": "wei_veterans_helped",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "裴行遠的信使找到魏老七，請他回安西教新兵。結局：魏老七西去，從此本門在安西有了一條路。"
+        }
+      ]
+    },
+    {
+      "id": "q_cui",
+      "character": "cui",
+      "title": "離家",
+      "summary": "博陵崔氏的離家子弟，要來崤山拜師。",
+      "beats": [
+        {
+          "id": "q_cui_1",
+          "title": "玉佩",
+          "summary": "崔鈺帶著當玉佩的錢上山拜師。",
+          "playable": true,
+          "trigger": {
+            "minMonth": 7,
+            "maxMonth": 0,
+            "flag": "",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [
+            {
+              "speaker": "",
+              "portrait": "",
+              "image": "",
+              "text": "一個衣著考究卻滿身塵土的年輕人站在山門外，先作揖，再作揖，作完第三個揖才開口。"
+            },
+            {
+              "speaker": "世家子　崔鈺",
+              "portrait": "cui",
+              "image": "",
+              "text": "在下博陵崔鈺，旁支的旁支。家裡要我靠門蔭補個九品小官，我寧可在這兒挨揍。"
+            },
+            {
+              "speaker": "世家子　崔鈺",
+              "portrait": "cui",
+              "image": "",
+              "text": "盤纏是當了玉佩換的。當鋪掌櫃的手抖得像篩子，看來那玉佩不便宜。"
+            },
+            {
+              "speaker": "世家子　崔鈺",
+              "portrait": "cui",
+              "image": "",
+              "text": "要是有崔家的管事上山找人，請說沒見過我。"
+            }
+          ],
+          "choices": [
+            {
+              "text": "收他入門",
+              "effects": [
+                {
+                  "key": "followers",
+                  "value": 1,
+                  "ref": "cui"
+                },
+                {
+                  "key": "relation",
+                  "value": -10,
+                  "ref": "cuishi"
+                }
+              ],
+              "setFlag": "cui_joined",
+              "next": "q_cui_2a",
+              "relation": 10
+            },
+            {
+              "text": "勸他回家，修書給崔家",
+              "effects": [
+                {
+                  "key": "relation",
+                  "value": 10,
+                  "ref": "cuishi"
+                }
+              ],
+              "setFlag": "cui_sent_home",
+              "next": "q_cui_2b",
+              "relation": 0
+            }
+          ],
+          "outline": ""
+        },
+        {
+          "id": "q_cui_2a",
+          "title": "崔猛",
+          "summary": "崔家家將上門要人。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 12,
+            "maxMonth": 0,
+            "flag": "cui_joined",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "崔家家將崔猛上山要人，隨後嫡孫崔湛也來了（與崔湛支線交會）。結局：崔鈺當眾斷髮明志留下；或崔家以斷絕河北商路相逼。"
+        },
+        {
+          "id": "q_cui_2b",
+          "title": "宗長回信",
+          "summary": "崔元禮親筆回信。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 12,
+            "maxMonth": 0,
+            "flag": "cui_sent_home",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "崔元禮回信致謝，邀你赴博陵一敘。結局：得崔氏一份人情（河北士族的門為你打開）；崔鈺日後仍逃了出來，這回直接逃到你門下。"
+        }
+      ]
+    },
+    {
+      "id": "q_qiao",
+      "character": "qiao",
+      "title": "妹妹",
+      "summary": "喬小檀要把還在戲班裡的妹妹接出來。",
+      "beats": [
+        {
+          "id": "q_qiao_1",
+          "title": "戲班",
+          "summary": "洛陽南市的戲班又來了。",
+          "playable": true,
+          "trigger": {
+            "minMonth": 5,
+            "maxMonth": 0,
+            "flag": "raided_funiu",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [
+            {
+              "speaker": "",
+              "portrait": "",
+              "image": "",
+              "text": "喬小檀坐在屋脊上，望著山下的驛道。她一整天沒吃飯。"
+            },
+            {
+              "speaker": "喬小檀",
+              "portrait": "qiao",
+              "image": "",
+              "text": "戲班到了山下的鎮上。我看見妹妹了，她在走索，腳底下沒有網子。"
+            },
+            {
+              "speaker": "喬小檀",
+              "portrait": "qiao",
+              "image": "",
+              "text": "班主說要贖人，十貫錢。我沒有十貫錢。……我有一根竹竿。"
+            },
+            {
+              "speaker": "{name}",
+              "portrait": "hero",
+              "image": "",
+              "text": "竹竿先收起來。我們一起去。"
+            }
+          ],
+          "choices": [
+            {
+              "text": "出錢贖人",
+              "effects": [
+                {
+                  "key": "silver",
+                  "value": -10,
+                  "ref": ""
+                }
+              ],
+              "setFlag": "qiao_ransom",
+              "next": "q_qiao_2a",
+              "relation": 10
+            },
+            {
+              "text": "夜裡把人接出來",
+              "effects": [
+                {
+                  "key": "reputation",
+                  "value": 2,
+                  "ref": ""
+                },
+                {
+                  "key": "lineRank",
+                  "value": 1,
+                  "ref": "qinggong"
+                }
+              ],
+              "setFlag": "qiao_rescue",
+              "next": "q_qiao_2b",
+              "relation": 15
+            }
+          ],
+          "outline": ""
+        },
+        {
+          "id": "q_qiao_2a",
+          "title": "姊妹",
+          "summary": "喬家姊妹團聚。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 10,
+            "maxMonth": 0,
+            "flag": "qiao_ransom",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "妹妹喬小棠上山。結局：姊妹倆在本門練輕功；班主後來把戲班裡其他孩子也賣給了刀疤胡商（與康瑟支線交會）。"
+        },
+        {
+          "id": "q_qiao_2b",
+          "title": "屋脊",
+          "summary": "夜裡的屋脊上，不只有你們。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 10,
+            "maxMonth": 0,
+            "flag": "qiao_rescue",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "救人那夜，屋脊上另有一個黑衣人——夜雨樓的人也在盯戲班。結局：喬小檀被夜雨樓看中，你須決定是否讓她去學夜雨樓的輕功。"
+        }
+      ]
+    },
+    {
+      "id": "q_leader_jinwuwei",
+      "character": "leader_jinwuwei",
+      "title": "街鼓",
+      "summary": "長安夜禁之下，金吾衛大將軍獨孤鎮認出了你劍上的崤山劍穗。",
+      "beats": [
+        {
+          "id": "q_leader_jinwuwei_1",
+          "title": "犯夜",
+          "summary": "在長安犯了夜禁，被押到獨孤鎮面前。",
+          "playable": true,
+          "trigger": {
+            "minMonth": 6,
+            "maxMonth": 0,
+            "flag": "",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": "changan"
+          },
+          "scene": [
+            {
+              "speaker": "",
+              "portrait": "",
+              "image": "",
+              "text": "街鼓八百聲擂完，坊門已閉。你們晚了一步，被金吾衛的巡卒按在了朱雀大街上。"
+            },
+            {
+              "speaker": "左金吾衛大將軍　獨孤鎮",
+              "portrait": "leader_jinwuwei",
+              "image": "",
+              "text": "犯夜者，笞二十。王侯也一樣。……把他的劍拿來我看。"
+            },
+            {
+              "speaker": "左金吾衛大將軍　獨孤鎮",
+              "portrait": "leader_jinwuwei",
+              "image": "",
+              "text": "這劍穗的結法，是安西軍裡的打法。崤山劍門？褚寒山是你什麼人？"
+            },
+            {
+              "speaker": "{name}",
+              "portrait": "hero",
+              "image": "",
+              "text": "是家師。將軍認得他？"
+            },
+            {
+              "speaker": "左金吾衛大將軍　獨孤鎮",
+              "portrait": "leader_jinwuwei",
+              "image": "",
+              "text": "三十年前在安西，同吃過一鍋沙子。這二十笞，我記在帳上。你走吧。"
+            }
+          ],
+          "choices": [
+            {
+              "text": "坦言師父失蹤之事，向他求教",
+              "effects": [
+                {
+                  "key": "relation",
+                  "value": 10,
+                  "ref": "jinwuwei"
+                }
+              ],
+              "setFlag": "jinwu_confided",
+              "next": "q_leader_jinwuwei_2a",
+              "relation": 10
+            },
+            {
+              "text": "謝過將軍，不多說一字",
+              "effects": [
+                {
+                  "key": "reputation",
+                  "value": 2,
+                  "ref": ""
+                }
+              ],
+              "setFlag": "jinwu_silent",
+              "next": "q_leader_jinwuwei_2b",
+              "relation": 0
+            }
+          ],
+          "outline": ""
+        },
+        {
+          "id": "q_leader_jinwuwei_2a",
+          "title": "安西舊事",
+          "summary": "獨孤鎮說起蕭定遠將軍。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 12,
+            "maxMonth": 0,
+            "flag": "jinwu_confided",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "獨孤鎮私下說出蕭定遠案的疑點，並說「若有人拿得出證據，金吾衛的刀可以替他出鞘」。他是師父支線翻案的關鍵盟友；若你交出底稿或血書，他會與霍元昌正面衝突。"
+        },
+        {
+          "id": "q_leader_jinwuwei_2b",
+          "title": "夜巡",
+          "summary": "獨孤鎮請你替他辦一件夜裡的事。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 12,
+            "maxMonth": 0,
+            "flag": "jinwu_silent",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "長安有宦官家奴夜裡出坊行兇，金吾衛不便動手。替他擒下，便得金吾衛的通行令牌；拒絕則從此兩不相欠。"
+        }
+      ]
+    },
+    {
+      "id": "q_leader_yushitai",
+      "character": "leader_yushitai",
+      "title": "彈章",
+      "summary": "御史大夫宇文嶠想扳倒自己手下的羅織手，卻不肯沾一點干係。",
+      "beats": [
+        {
+          "id": "q_leader_yushitai_1",
+          "title": "沉香念珠",
+          "summary": "宇文嶠召你到御史臺問話。",
+          "playable": true,
+          "trigger": {
+            "minMonth": 8,
+            "maxMonth": 0,
+            "flag": "",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": "changan"
+          },
+          "scene": [
+            {
+              "speaker": "",
+              "portrait": "",
+              "image": "",
+              "text": "御史臺的公廨冷得像冰窖。宇文嶠閉著眼撥念珠，撥了足足一炷香，才開口。"
+            },
+            {
+              "speaker": "御史大夫　宇文嶠",
+              "portrait": "leader_yushitai",
+              "image": "",
+              "text": "殿中侍御史范希仁，辦案從無翻案。老夫想看看，是不是真的「無」。"
+            },
+            {
+              "speaker": "御史大夫　宇文嶠",
+              "portrait": "leader_yushitai",
+              "image": "",
+              "text": "聽說你與他打過交道。老夫不要你告狀，只要你「記得」幾件事，記清楚些。"
+            },
+            {
+              "speaker": "{name}",
+              "portrait": "hero",
+              "image": "",
+              "text": "大夫要我記得的事，若扯出比范希仁更大的人呢？"
+            },
+            {
+              "speaker": "御史大夫　宇文嶠",
+              "portrait": "leader_yushitai",
+              "image": "",
+              "text": "那就看風了。老夫老了，看不清——除非有人把燈遞到眼前。"
+            }
+          ],
+          "choices": [
+            {
+              "text": "答應作證",
+              "effects": [
+                {
+                  "key": "relation",
+                  "value": 15,
+                  "ref": "yushitai"
+                },
+                {
+                  "key": "relation",
+                  "value": -10,
+                  "ref": "neishisheng"
+                }
+              ],
+              "setFlag": "yushitai_witness",
+              "next": "q_leader_yushitai_2a",
+              "relation": 10
+            },
+            {
+              "text": "推說記不清了",
+              "effects": [
+                {
+                  "key": "relation",
+                  "value": -5,
+                  "ref": "yushitai"
+                }
+              ],
+              "setFlag": "yushitai_declined",
+              "next": "q_leader_yushitai_2b",
+              "relation": -5
+            }
+          ],
+          "outline": ""
+        },
+        {
+          "id": "q_leader_yushitai_2a",
+          "title": "作證",
+          "summary": "你的證詞放上了宇文嶠的案頭。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 14,
+            "maxMonth": 0,
+            "flag": "yushitai_witness",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "宇文嶠以你的證詞彈劾范希仁，卻刻意避開霍元昌。選擇：堅持把霍元昌寫進證詞（危險，但與師父、范希仁支線交會）或見好就收（換得御史臺的庇護）。"
+        },
+        {
+          "id": "q_leader_yushitai_2b",
+          "title": "風向",
+          "summary": "御史臺的風向轉了。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 14,
+            "maxMonth": 0,
+            "flag": "yushitai_declined",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "宇文嶠另尋證人，范希仁得知你曾被召見，懷疑你已出賣他。御史臺從此對你若即若離。"
+        }
+      ]
+    },
+    {
+      "id": "q_leader_neishisheng",
+      "character": "leader_neishisheng",
+      "title": "松林",
+      "summary": "宮中大璫霍元昌喜歡古松與泉水，也喜歡二十年前沒找到的東西。",
+      "beats": [
+        {
+          "id": "q_leader_neishisheng_1",
+          "title": "樊川別業",
+          "summary": "霍元昌請你到他的別業喝茶。",
+          "playable": true,
+          "trigger": {
+            "minMonth": 10,
+            "maxMonth": 0,
+            "flag": "",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [
+            {
+              "speaker": "",
+              "portrait": "",
+              "image": "",
+              "text": "綠袍內侍馮順送來一張帖子，請你到長安城南樊川的一座別業喝茶。帖子很香，字很軟。"
+            },
+            {
+              "speaker": "內常侍　霍元昌",
+              "portrait": "leader_neishisheng",
+              "image": "",
+              "text": "坐。這是蒙頂新茶，咱家只請懂事的人喝。"
+            },
+            {
+              "speaker": "內常侍　霍元昌",
+              "portrait": "leader_neishisheng",
+              "image": "",
+              "text": "崤山的松林是真好，可惜。褚先生是個倔人，咱家敬他。只是他手裡有一樣東西，放錯了地方。"
+            },
+            {
+              "speaker": "內常侍　霍元昌",
+              "portrait": "leader_neishisheng",
+              "image": "",
+              "text": "你若見著那只鐵匣，或匣裡的東西，送來這裡。咱家保你{sect}從此無災無難。"
+            },
+            {
+              "speaker": "{friend}",
+              "portrait": "friend__angry",
+              "image": "",
+              "text": "（低聲）別碰那杯茶。他問的不是鐵匣，是鐵匣裡的一頁紙。"
+            }
+          ],
+          "choices": [
+            {
+              "text": "虛與委蛇，假意應承",
+              "effects": [
+                {
+                  "key": "relation",
+                  "value": 15,
+                  "ref": "neishisheng"
+                },
+                {
+                  "key": "silver",
+                  "value": 30,
+                  "ref": ""
+                }
+              ],
+              "setFlag": "huo_feigned",
+              "next": "q_leader_neishisheng_2a",
+              "relation": 0
+            },
+            {
+              "text": "「家師的東西，弟子不知道。」",
+              "effects": [
+                {
+                  "key": "relation",
+                  "value": -15,
+                  "ref": "neishisheng"
+                },
+                {
+                  "key": "reputation",
+                  "value": 3,
+                  "ref": ""
+                }
+              ],
+              "setFlag": "huo_refused",
+              "next": "q_leader_neishisheng_2b",
+              "relation": -10
+            }
+          ],
+          "outline": ""
+        },
+        {
+          "id": "q_leader_neishisheng_2a",
+          "title": "香帖",
+          "summary": "霍元昌的帖子一封接一封。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 18,
+            "maxMonth": 0,
+            "flag": "huo_feigned",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "霍元昌不斷送來厚禮，要你回報鐵匣的下落。你可藉此打探內侍省、替師父與范希仁支線蒐證；但若被識破，他會以「私藏軍國兵書」之罪搜捕你。"
+        },
+        {
+          "id": "q_leader_neishisheng_2b",
+          "title": "無災無難",
+          "summary": "拒絕之後，災難接連而來。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 16,
+            "maxMonth": 0,
+            "flag": "huo_refused",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "本門的商路被截、弟子在洛陽被捕。選擇：投靠金吾衛獨孤鎮，或請少林庇護。終局與師父支線合流：霍元昌倒台或你失去山門。"
+        }
+      ]
+    },
+    {
+      "id": "q_leader_henan_fu",
+      "character": "leader_henan_fu",
+      "title": "官倉",
+      "summary": "河南尹韋元溥需要人替他剿匪押糧，他給的是官府的方便。",
+      "beats": [
+        {
+          "id": "q_leader_henan_fu_1",
+          "title": "府衙文書",
+          "summary": "韋元溥請你替河南府押送賑糧。",
+          "playable": true,
+          "trigger": {
+            "minMonth": 4,
+            "maxMonth": 0,
+            "flag": "",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": "luoyang"
+          },
+          "scene": [
+            {
+              "speaker": "",
+              "portrait": "",
+              "image": "",
+              "text": "河南府的大堂裡堆滿了文書。韋元溥從文書堆後探出頭來，袖口沾著墨，眼下兩團烏青。"
+            },
+            {
+              "speaker": "河南尹　韋元溥",
+              "portrait": "leader_henan_fu",
+              "image": "",
+              "text": "陝州今春缺糧，府裡撥了三百石賑糧。崤函道上黑松寨盯著，府兵又抽不出人手。"
+            },
+            {
+              "speaker": "河南尹　韋元溥",
+              "portrait": "leader_henan_fu",
+              "image": "",
+              "text": "你們{sect}的名聲，本府聽過。押一趟糧，府裡給腳錢；押得好，本府記一筆。"
+            },
+            {
+              "speaker": "不良帥　賈三",
+              "portrait": "npc_am09",
+              "image": "",
+              "text": "（咧嘴）府尹的帳比華嶽的乾淨，只是腳錢給得慢。"
+            },
+            {
+              "speaker": "{name}",
+              "portrait": "hero",
+              "image": "",
+              "text": "糧是給百姓的，這趟我們押。"
+            }
+          ],
+          "choices": [
+            {
+              "text": "接下押糧差事",
+              "effects": [
+                {
+                  "key": "relation",
+                  "value": 15,
+                  "ref": "henan_fu"
+                },
+                {
+                  "key": "silver",
+                  "value": 15,
+                  "ref": ""
+                },
+                {
+                  "key": "relation",
+                  "value": -10,
+                  "ref": "heisong"
+                }
+              ],
+              "setFlag": "henan_escort",
+              "next": "q_leader_henan_fu_2a",
+              "relation": 10
+            },
+            {
+              "text": "婉拒，不涉官府之事",
+              "effects": [
+                {
+                  "key": "relation",
+                  "value": -5,
+                  "ref": "henan_fu"
+                }
+              ],
+              "setFlag": "henan_declined",
+              "next": "q_leader_henan_fu_2b",
+              "relation": -5
+            }
+          ],
+          "outline": ""
+        },
+        {
+          "id": "q_leader_henan_fu_2a",
+          "title": "押糧",
+          "summary": "崤函道上，黑松寨出手了。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 8,
+            "maxMonth": 0,
+            "flag": "henan_escort",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "押糧途中與黑松寨交鋒（與胡大眼支線交會）。成功則韋元溥給你一紙地契，讓本門在河南府有一處田莊；失敗則賑糧被劫，陝州餓死人，聲望下降。"
+        },
+        {
+          "id": "q_leader_henan_fu_2b",
+          "title": "府尹的難處",
+          "summary": "韋元溥另尋他人，糧被劫了。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 8,
+            "maxMonth": 0,
+            "flag": "henan_declined",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "賑糧被劫，韋元溥被戶部參奏。他托人帶話：「下回本府有難，不必再找你。」若你後來替他追回賑糧，可重修關係，並得知他與聶遠山是少年同窗。"
+        }
+      ]
+    },
+    {
+      "id": "q_leader_hexi_jds",
+      "character": "leader_hexi_jds",
+      "title": "長征健兒",
+      "summary": "河西節度使渾元朗愛才，他想要你門下最能打的弟子。",
+      "beats": [
+        {
+          "id": "q_leader_hexi_jds_1",
+          "title": "涼州大營",
+          "summary": "渾元朗在涼州大營看你的弟子演武。",
+          "playable": true,
+          "trigger": {
+            "minMonth": 9,
+            "maxMonth": 0,
+            "flag": "",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": "liangzhou"
+          },
+          "scene": [
+            {
+              "speaker": "",
+              "portrait": "",
+              "image": "",
+              "text": "涼州城外，赤水軍的大營一眼望不到邊。渾元朗赤著膀子在校場上試槊，見你來了，把槊往地上一插。"
+            },
+            {
+              "speaker": "河西節度使　渾元朗",
+              "portrait": "leader_hexi_jds",
+              "image": "",
+              "text": "崤山來的？讓你的人跟我的健兒走兩趟，我看看手上的繭。"
+            },
+            {
+              "speaker": "河西節度使　渾元朗",
+              "portrait": "leader_hexi_jds",
+              "image": "",
+              "text": "好！河西不缺刀，缺的是握刀的手。你門下這幾個，我要了——餉加倍，三年後還你。"
+            },
+            {
+              "speaker": "{name}",
+              "portrait": "hero",
+              "image": "",
+              "text": "他們是我的同門，不是貨。"
+            },
+            {
+              "speaker": "河西節度使　渾元朗",
+              "portrait": "leader_hexi_jds",
+              "image": "",
+              "text": "哈！那就當交個朋友。吐蕃人打過來的時候，朋友總比貨可靠。"
+            }
+          ],
+          "choices": [
+            {
+              "text": "借兩名弟子入營歷練",
+              "effects": [
+                {
+                  "key": "relation",
+                  "value": 20,
+                  "ref": "hexi_jds"
+                },
+                {
+                  "key": "silver",
+                  "value": 30,
+                  "ref": ""
+                },
+                {
+                  "key": "loyaltyAll",
+                  "value": -2,
+                  "ref": ""
+                }
+              ],
+              "setFlag": "hexi_trainees",
+              "next": "q_leader_hexi_jds_2a",
+              "relation": 10
+            },
+            {
+              "text": "只與他結交，不借人",
+              "effects": [
+                {
+                  "key": "relation",
+                  "value": 10,
+                  "ref": "hexi_jds"
+                }
+              ],
+              "setFlag": "hexi_friend",
+              "next": "q_leader_hexi_jds_2b",
+              "relation": 5
+            }
+          ],
+          "outline": ""
+        },
+        {
+          "id": "q_leader_hexi_jds_2a",
+          "title": "赤水軍",
+          "summary": "弟子在河西歷練歸來。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 18,
+            "maxMonth": 0,
+            "flag": "hexi_trainees",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "歷練的弟子回山，戰鬥技能提升，卻帶回消息：渾元朗暗中派人盯著范陽的阿史德翰。選擇：把殘卷之事告訴渾元朗（得強援，捲入兩鎮之爭）或保持沉默。"
+        },
+        {
+          "id": "q_leader_hexi_jds_2b",
+          "title": "一碗酒",
+          "summary": "渾元朗記得你這個朋友。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 18,
+            "maxMonth": 0,
+            "flag": "hexi_friend",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "吐蕃犯邊時渾元朗來信求援。出兵則與吐蕃結仇、聲望大升；不出兵則交情止於一碗酒。"
+        }
+      ]
+    },
+    {
+      "id": "q_leader_anxi_dhf",
+      "character": "leader_anxi_dhf",
+      "title": "家書",
+      "summary": "四鎮孤懸，安西副大都護裴行遠十年未歸，他托你帶一包家書回長安。",
+      "beats": [
+        {
+          "id": "q_leader_anxi_dhf_1",
+          "title": "龜茲城頭",
+          "summary": "在龜茲見到裴行遠。",
+          "playable": true,
+          "trigger": {
+            "minMonth": 12,
+            "maxMonth": 0,
+            "flag": "",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": "qiuci"
+          },
+          "scene": [
+            {
+              "speaker": "",
+              "portrait": "",
+              "image": "",
+              "text": "龜茲城頭的風裡全是沙。裴行遠站在女牆後，望著東方，袍角補過三回。"
+            },
+            {
+              "speaker": "安西副大都護　裴行遠",
+              "portrait": "leader_anxi_dhf",
+              "image": "",
+              "text": "崤山來的？……崤山。我認得一個從崤山來的人，三十年前。"
+            },
+            {
+              "speaker": "安西副大都護　裴行遠",
+              "portrait": "leader_anxi_dhf",
+              "image": "",
+              "text": "四鎮的戍卒，十年沒見過爹娘。這是三百封家書，驛馬走一回要大半年。"
+            },
+            {
+              "speaker": "安西副大都護　裴行遠",
+              "portrait": "leader_anxi_dhf",
+              "image": "",
+              "text": "你若往東走，替我帶回長安。不白帶，安西都護府欠你一份情。"
+            },
+            {
+              "speaker": "{name}",
+              "portrait": "hero",
+              "image": "",
+              "text": "將軍說的那個崤山來的人，是不是背著一只鐵匣？"
+            }
+          ],
+          "choices": [
+            {
+              "text": "帶上三百封家書東歸",
+              "effects": [
+                {
+                  "key": "relation",
+                  "value": 20,
+                  "ref": "anxi_dhf"
+                },
+                {
+                  "key": "reputation",
+                  "value": 8,
+                  "ref": ""
+                }
+              ],
+              "setFlag": "anxi_letters",
+              "next": "q_leader_anxi_dhf_2a",
+              "relation": 15
+            },
+            {
+              "text": "婉拒，先問清三十年前的事",
+              "effects": [
+                {
+                  "key": "relation",
+                  "value": 5,
+                  "ref": "anxi_dhf"
+                }
+              ],
+              "setFlag": "anxi_asked",
+              "next": "q_leader_anxi_dhf_2b",
+              "relation": 0
+            }
+          ],
+          "outline": ""
+        },
+        {
+          "id": "q_leader_anxi_dhf_2a",
+          "title": "三百封家書",
+          "summary": "家書送到長安，收信的人哭了一整條街。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 18,
+            "maxMonth": 0,
+            "flag": "anxi_letters",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "家書送達，聲望大升；其中一封是寫給獨孤鎮的，信裡提到蕭定遠的舊部仍在安西。與師父支線交會：裴行遠願出面作證。"
+        },
+        {
+          "id": "q_leader_anxi_dhf_2b",
+          "title": "蕭將軍",
+          "summary": "裴行遠說起當年那個親兵。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 15,
+            "maxMonth": 0,
+            "flag": "anxi_asked",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "裴行遠承認自己是蕭定遠的舊部，親眼見過蕭將軍被押走，也懷疑那個背殘卷逃走的親兵就是褚寒山。他請你帶一句話給師父：「安西還有人記得。」"
+        }
+      ]
+    },
+    {
+      "id": "q_leader_fanyang_jds",
+      "character": "leader_fanyang_jds",
+      "title": "胡將",
+      "summary": "范陽節度使張懷遠老了，帳下有一個笑得太多的胡將。",
+      "beats": [
+        {
+          "id": "q_leader_fanyang_jds_1",
+          "title": "幽州帥府",
+          "summary": "張懷遠在帥府設宴款待你。",
+          "playable": true,
+          "trigger": {
+            "minMonth": 10,
+            "maxMonth": 0,
+            "flag": "",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": "youzhou"
+          },
+          "scene": [
+            {
+              "speaker": "",
+              "portrait": "",
+              "image": "",
+              "text": "幽州帥府的宴席上胡漢將領雜坐，胡旋舞轉得人眼花。張懷遠坐在上首，白鬚上沾著酒。"
+            },
+            {
+              "speaker": "范陽節度使　張懷遠",
+              "portrait": "leader_fanyang_jds",
+              "image": "",
+              "text": "江湖人？好！老夫帳下胡漢一家，江湖人也是一家！來，喝！"
+            },
+            {
+              "speaker": "",
+              "portrait": "",
+              "image": "",
+              "text": "一個通六蕃語的年輕胡將在席間穿梭，對誰都笑。張懷遠看著他，眼裡全是慈愛。"
+            },
+            {
+              "speaker": "范陽節度使　張懷遠",
+              "portrait": "leader_fanyang_jds",
+              "image": "",
+              "text": "翰兒孝順，比我親生的還孝順。他說你們門裡有部好兵書？拿來給翰兒看看嘛。"
+            },
+            {
+              "speaker": "{friend}",
+              "portrait": "friend",
+              "image": "",
+              "text": "（低聲）那就是阿史德翰。他笑的時候，眼睛不笑。"
+            }
+          ],
+          "choices": [
+            {
+              "text": "提醒張懷遠提防阿史德翰",
+              "effects": [
+                {
+                  "key": "relation",
+                  "value": -10,
+                  "ref": "fanyang_jds"
+                }
+              ],
+              "setFlag": "fanyang_warned",
+              "next": "q_leader_fanyang_jds_2a",
+              "relation": -5
+            },
+            {
+              "text": "陪笑喝酒，不提兵書",
+              "effects": [
+                {
+                  "key": "relation",
+                  "value": 10,
+                  "ref": "fanyang_jds"
+                },
+                {
+                  "key": "silver",
+                  "value": 20,
+                  "ref": ""
+                }
+              ],
+              "setFlag": "fanyang_feasted",
+              "next": "q_leader_fanyang_jds_2b",
+              "relation": 5
+            }
+          ],
+          "outline": ""
+        },
+        {
+          "id": "q_leader_fanyang_jds_2a",
+          "title": "逆耳",
+          "summary": "張懷遠拍案而起。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 16,
+            "maxMonth": 0,
+            "flag": "fanyang_warned",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "張懷遠大怒，將你逐出幽州；阿史德翰卻在城外追上你，笑著說「多謝提醒」。從此你被阿史德翰盯上；但河西渾元朗聽說此事，對你另眼相看。"
+        },
+        {
+          "id": "q_leader_fanyang_jds_2b",
+          "title": "醉臥",
+          "summary": "宴席之後，阿史德翰來訪。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 14,
+            "maxMonth": 0,
+            "flag": "fanyang_feasted",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "阿史德翰夜訪，開價求殘卷，並暗示他與華嶽封伯陽、黑山屈突烈都有往來。選擇：假意周旋套取情報（與謝家青梅的范陽支線交會），或當場拒絕。"
+        }
+      ]
+    },
+    {
+      "id": "q_leader_shaolin",
+      "character": "leader_shaolin",
+      "title": "苦筍",
+      "summary": "了空方丈請你吃一碗苦筍，說起一個背鐵匣的年輕人。",
+      "beats": [
+        {
+          "id": "q_leader_shaolin_1",
+          "title": "後山竹林",
+          "summary": "在少林後山竹林遇見挖筍的方丈。",
+          "playable": true,
+          "trigger": {
+            "minMonth": 4,
+            "maxMonth": 0,
+            "flag": "",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": "songshan"
+          },
+          "scene": [
+            {
+              "speaker": "",
+              "portrait": "",
+              "image": "",
+              "text": "少室山後的竹林裡，一個老和尚蹲在地上挖筍，袈裟下擺沾滿了泥。直到他抬頭，你才認出是方丈。"
+            },
+            {
+              "speaker": "少林方丈　了空大師",
+              "portrait": "leader_shaolin",
+              "image": "",
+              "text": "苦筍要趁早挖，人要趁早救。施主是崤山來的吧？"
+            },
+            {
+              "speaker": "少林方丈　了空大師",
+              "portrait": "leader_shaolin",
+              "image": "",
+              "text": "四十年前老衲行腳到安西，替一個背著鐵匣的年輕親兵取過一枚箭頭。他忍著痛，一聲不吭。"
+            },
+            {
+              "speaker": "少林方丈　了空大師",
+              "portrait": "leader_shaolin",
+              "image": "",
+              "text": "後來聽說他上了崤山。施主的劍，跟他當年的眼神很像。"
+            },
+            {
+              "speaker": "{name}",
+              "portrait": "hero",
+              "image": "",
+              "text": "大師說的，是家師。"
+            }
+          ],
+          "choices": [
+            {
+              "text": "向方丈請教師父的往事",
+              "effects": [
+                {
+                  "key": "relation",
+                  "value": 10,
+                  "ref": "shaolin"
+                },
+                {
+                  "key": "insightChance",
+                  "value": 0.01,
+                  "ref": ""
+                }
+              ],
+              "setFlag": "shaolin_past",
+              "next": "q_leader_shaolin_2a",
+              "relation": 10
+            },
+            {
+              "text": "請方丈指點武學",
+              "effects": [
+                {
+                  "key": "relation",
+                  "value": 5,
+                  "ref": "shaolin"
+                },
+                {
+                  "key": "lineRank",
+                  "value": 1,
+                  "ref": "neigong"
+                }
+              ],
+              "setFlag": "shaolin_lesson",
+              "next": "q_leader_shaolin_2b",
+              "relation": 5
+            }
+          ],
+          "outline": ""
+        },
+        {
+          "id": "q_leader_shaolin_2a",
+          "title": "箭頭",
+          "summary": "方丈說出師父當年的傷。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 10,
+            "maxMonth": 0,
+            "flag": "shaolin_past",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "方丈說，那枚箭頭是唐軍的制式箭——射傷師父的不是敵人，是追捕他的官軍。與師父支線交會；方丈願在翻案時以少林之名作保。"
+        },
+        {
+          "id": "q_leader_shaolin_2b",
+          "title": "戒律院",
+          "summary": "首座道堅看你打一趟拳，只改兩處。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 8,
+            "maxMonth": 0,
+            "flag": "shaolin_lesson",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "得少林首座指點（觸發「少林首座指點」突破的條件之一）。圓覺從此常來本門切磋（與圓覺支線交會）。"
+        }
+      ]
+    },
+    {
+      "id": "q_leader_louguan",
+      "character": "leader_louguan",
+      "title": "說經台",
+      "summary": "終南山樓觀的老道士不問江湖事，卻知道很多不該知道的事。",
+      "beats": [
+        {
+          "id": "q_leader_louguan_1",
+          "title": "一盞茶",
+          "summary": "在終南山說經台遇見尹太初。",
+          "playable": true,
+          "trigger": {
+            "minMonth": 7,
+            "maxMonth": 0,
+            "flag": "",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": "zhongnan"
+          },
+          "scene": [
+            {
+              "speaker": "",
+              "portrait": "",
+              "image": "",
+              "text": "說經台上雲霧繚繞。一個老道士正在煮茶，水沸三次，他才倒出第一杯。"
+            },
+            {
+              "speaker": "樓觀觀主　尹太初",
+              "portrait": "leader_louguan",
+              "image": "",
+              "text": "你心裡的火太旺，喝杯茶。"
+            },
+            {
+              "speaker": "樓觀觀主　尹太初",
+              "portrait": "leader_louguan",
+              "image": "",
+              "text": "宮裡有人向我要過一種藥，能讓人說真話。我沒給。長生不在丹爐裡，真話也不在。"
+            },
+            {
+              "speaker": "樓觀觀主　尹太初",
+              "portrait": "leader_louguan",
+              "image": "",
+              "text": "要我那藥的人，在找一頁紙。紙上的話，比藥更能讓人說真話。"
+            },
+            {
+              "speaker": "{name}",
+              "portrait": "hero",
+              "image": "",
+              "text": "道長說的是誰？"
+            }
+          ],
+          "choices": [
+            {
+              "text": "靜坐三日，向他請教吐納",
+              "effects": [
+                {
+                  "key": "insightChance",
+                  "value": 0.02,
+                  "ref": ""
+                },
+                {
+                  "key": "relation",
+                  "value": 10,
+                  "ref": "louguan"
+                }
+              ],
+              "setFlag": "louguan_seclusion",
+              "next": "q_leader_louguan_2a",
+              "relation": 10
+            },
+            {
+              "text": "追問向他要藥的人",
+              "effects": [
+                {
+                  "key": "relation",
+                  "value": -5,
+                  "ref": "louguan"
+                }
+              ],
+              "setFlag": "louguan_asked",
+              "next": "q_leader_louguan_2b",
+              "relation": 0
+            }
+          ],
+          "outline": ""
+        },
+        {
+          "id": "q_leader_louguan_2a",
+          "title": "坐忘",
+          "summary": "三日之後，你的劍慢了，也準了。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 12,
+            "maxMonth": 0,
+            "flag": "louguan_seclusion",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "尹太初傳你說經台吐納的要訣（內功上限提升的機緣）。臨別他說：「下回來，帶你師父一起。」"
+        },
+        {
+          "id": "q_leader_louguan_2b",
+          "title": "不該問的",
+          "summary": "尹太初只說了一個字：霍。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 10,
+            "maxMonth": 0,
+            "flag": "louguan_asked",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "尹太初點到為止，從此樓觀對你閉門。但你得到一條線索：霍元昌在找的「一頁紙」與鐵匣有關（與師父支線交會）。"
+        }
+      ]
+    },
+    {
+      "id": "q_leader_wulong",
+      "character": "leader_wulong",
+      "title": "後發先至",
+      "summary": "武當五龍觀的呂元貞，想和你交換劍理。",
+      "beats": [
+        {
+          "id": "q_leader_wulong_1",
+          "title": "茶園",
+          "summary": "在武當山茶園遇見呂元貞。",
+          "playable": true,
+          "trigger": {
+            "minMonth": 6,
+            "maxMonth": 0,
+            "flag": "",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": "wudang"
+          },
+          "scene": [
+            {
+              "speaker": "",
+              "portrait": "",
+              "image": "",
+              "text": "武當山五龍祠後是一片茶園。一個打補丁的中年道人在採茶，動作慢得像在練劍。"
+            },
+            {
+              "speaker": "五龍觀主　呂元貞",
+              "portrait": "leader_wulong",
+              "image": "",
+              "text": "崤山十三劍，貧道久仰。聽說第一劍便是殺招，一劍比一劍快。"
+            },
+            {
+              "speaker": "五龍觀主　呂元貞",
+              "portrait": "leader_wulong",
+              "image": "",
+              "text": "五龍觀的劍正好相反——一劍比一劍慢。快的劍和慢的劍，不知誰先到？"
+            },
+            {
+              "speaker": "{name}",
+              "portrait": "hero",
+              "image": "",
+              "text": "道長想比劍？"
+            },
+            {
+              "speaker": "五龍觀主　呂元貞",
+              "portrait": "leader_wulong",
+              "image": "",
+              "text": "不比，交換。你教我一劍，我教你一劍。茶要等，劍也要等。"
+            }
+          ],
+          "choices": [
+            {
+              "text": "交換劍理",
+              "effects": [
+                {
+                  "key": "relation",
+                  "value": 15,
+                  "ref": "wulong"
+                },
+                {
+                  "key": "lineRank",
+                  "value": 1,
+                  "ref": "sword"
+                }
+              ],
+              "setFlag": "wulong_exchange",
+              "next": "q_leader_wulong_2a",
+              "relation": 10
+            },
+            {
+              "text": "婉辭：本門劍法不外傳",
+              "effects": [
+                {
+                  "key": "relation",
+                  "value": -5,
+                  "ref": "wulong"
+                }
+              ],
+              "setFlag": "wulong_declined",
+              "next": "q_leader_wulong_2b",
+              "relation": 0
+            }
+          ],
+          "outline": ""
+        },
+        {
+          "id": "q_leader_wulong_2a",
+          "title": "龜蛇",
+          "summary": "五龍觀成為本門的同道。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 12,
+            "maxMonth": 0,
+            "flag": "wulong_exchange",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "兩派劍理相通，呂元貞介紹首座弟子張守沖來切磋。日後若封伯陽立劍盟，五龍觀將站在你這邊。"
+        },
+        {
+          "id": "q_leader_wulong_2b",
+          "title": "慢劍",
+          "summary": "呂元貞說，他會等。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 14,
+            "maxMonth": 0,
+            "flag": "wulong_declined",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "呂元貞不以為忤，只說「茶要等」。一年後他再來，帶著五龍觀被華嶽打壓的消息，向你求援。"
+        }
+      ]
+    },
+    {
+      "id": "q_leader_emei",
+      "character": "leader_emei",
+      "title": "金頂",
+      "summary": "峨眉靜玄師太一生在找一個被她救過、又走進黑夜的女孩。",
+      "beats": [
+        {
+          "id": "q_leader_emei_1",
+          "title": "金頂佛光",
+          "summary": "在峨眉金頂見到靜玄師太。",
+          "playable": true,
+          "trigger": {
+            "minMonth": 9,
+            "maxMonth": 0,
+            "flag": "",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": "emei"
+          },
+          "scene": [
+            {
+              "speaker": "",
+              "portrait": "",
+              "image": "",
+              "text": "金頂的雲海翻湧。靜玄師太一身素白劍袍站在崖邊，彷彿雲是她袖子裡吹出來的。"
+            },
+            {
+              "speaker": "峨眉掌門　靜玄師太",
+              "portrait": "leader_emei",
+              "image": "",
+              "text": "峨眉的劍，不是練給男人看的。也不是練給仇人看的——是練給要護的人看的。"
+            },
+            {
+              "speaker": "峨眉掌門　靜玄師太",
+              "portrait": "leader_emei",
+              "image": "",
+              "text": "二十年前我在三峽救過一個女孩，後來她進了夜雨樓。我聽說，你門下有個從夜雨樓出來的。"
+            },
+            {
+              "speaker": "峨眉掌門　靜玄師太",
+              "portrait": "leader_emei",
+              "image": "",
+              "text": "替我帶句話：峨眉的門，一直開著。"
+            },
+            {
+              "speaker": "{name}",
+              "portrait": "hero",
+              "image": "",
+              "text": "師太說的女孩，叫什麼名字？"
+            }
+          ],
+          "choices": [
+            {
+              "text": "答應帶話，並問清來龍去脈",
+              "effects": [
+                {
+                  "key": "relation",
+                  "value": 15,
+                  "ref": "emei"
+                }
+              ],
+              "setFlag": "emei_message",
+              "next": "q_leader_emei_2a",
+              "relation": 10
+            },
+            {
+              "text": "推說門下沒有這樣的人",
+              "effects": [
+                {
+                  "key": "relation",
+                  "value": -10,
+                  "ref": "emei"
+                }
+              ],
+              "setFlag": "emei_denied",
+              "next": "q_leader_emei_2b",
+              "relation": -5
+            }
+          ],
+          "outline": ""
+        },
+        {
+          "id": "q_leader_emei_2a",
+          "title": "帶話",
+          "summary": "師太的話，帶到了。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 15,
+            "maxMonth": 0,
+            "flag": "emei_message",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "沈青聽完沉默良久——那女孩不是她，是她在夜雨樓的師姐。若沈青在門中，她願陪你去找人（與沈青支線交會）；否則師太親自下山。"
+        },
+        {
+          "id": "q_leader_emei_2b",
+          "title": "峨眉的劍",
+          "summary": "師太派弟子來看你。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 12,
+            "maxMonth": 0,
+            "flag": "emei_denied",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "靜玄師太派葉青鸞前來「看看」（與葉青鸞支線交會）。若你待她以誠，峨眉與你結盟。"
+        }
+      ]
+    },
+    {
+      "id": "q_leader_chicheng",
+      "character": "leader_chicheng",
+      "title": "看不見的劍",
+      "summary": "雙目微盲的陸孤雲二十年不下山，他記得崤山兩師兄弟爭位的事。",
+      "beats": [
+        {
+          "id": "q_leader_chicheng_1",
+          "title": "赤城峰",
+          "summary": "在天台山赤城峰拜見陸孤雲。",
+          "playable": true,
+          "trigger": {
+            "minMonth": 10,
+            "maxMonth": 0,
+            "flag": "",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": "tiantai"
+          },
+          "scene": [
+            {
+              "speaker": "",
+              "portrait": "",
+              "image": "",
+              "text": "赤城峰頂的劍閣只有三間屋。一個白髮披肩的老人坐在簷下，竹杖橫在膝上，臉朝著你，眼睛卻沒有焦點。"
+            },
+            {
+              "speaker": "赤城劍閣閣主　陸孤雲",
+              "portrait": "leader_chicheng",
+              "image": "",
+              "text": "崤山的腳步聲。我看不見，所以看得清。你走路像褚寒山，喘氣像聶遠山。"
+            },
+            {
+              "speaker": "赤城劍閣閣主　陸孤雲",
+              "portrait": "leader_chicheng",
+              "image": "",
+              "text": "當年你們老掌門傳位，我在場。他說「遠山心太活」——活的心，會往哪裡去？"
+            },
+            {
+              "speaker": "赤城劍閣閣主　陸孤雲",
+              "portrait": "leader_chicheng",
+              "image": "",
+              "text": "還有一個人，二十年前跟我論劍，劍沒傷我，劍上的毒傷了我。他現在是名門大派的掌門。"
+            },
+            {
+              "speaker": "{name}",
+              "portrait": "hero",
+              "image": "",
+              "text": "前輩說的是……"
+            }
+          ],
+          "choices": [
+            {
+              "text": "向他請教當年傳位的細節",
+              "effects": [
+                {
+                  "key": "relation",
+                  "value": 10,
+                  "ref": "chicheng"
+                },
+                {
+                  "key": "charRelation",
+                  "value": -5,
+                  "ref": "uncle_schemer"
+                }
+              ],
+              "setFlag": "chicheng_succession",
+              "next": "q_leader_chicheng_2a",
+              "relation": 10
+            },
+            {
+              "text": "問他傷目的仇人是誰",
+              "effects": [
+                {
+                  "key": "relation",
+                  "value": 10,
+                  "ref": "chicheng"
+                },
+                {
+                  "key": "charRelation",
+                  "value": -5,
+                  "ref": "elder_villain"
+                }
+              ],
+              "setFlag": "chicheng_enemy",
+              "next": "q_leader_chicheng_2b",
+              "relation": 5
+            }
+          ],
+          "outline": ""
+        },
+        {
+          "id": "q_leader_chicheng_2a",
+          "title": "傳位",
+          "summary": "陸孤雲說出老掌門的遺言全文。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 16,
+            "maxMonth": 0,
+            "flag": "chicheng_succession",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "老掌門遺言的後半句是：「遠山心太活，寒山心太重；重者守門，活者守人。」陸孤雲說，聶遠山只聽到了前半句。與聶遠山支線交會，可在終局時用這句話勸他回頭。"
+        },
+        {
+          "id": "q_leader_chicheng_2b",
+          "title": "毒劍",
+          "summary": "傷他雙目的人，是封伯陽。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 16,
+            "maxMonth": 0,
+            "flag": "chicheng_enemy",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "陸孤雲說出封伯陽之名，並讓關門弟子殷照雪隨你同行（與殷照雪支線交會）。華山論帳時，赤城劍閣將站在你這邊。"
+        }
+      ]
+    },
+    {
+      "id": "q_leader_zhurong",
+      "character": "leader_zhurong",
+      "title": "烈掌",
+      "summary": "南嶽祝融門的鍾離熾脾氣比掌法更烈，他最恨別人看不起南方人。",
+      "beats": [
+        {
+          "id": "q_leader_zhurong_1",
+          "title": "衡山碼頭",
+          "summary": "在潭州碼頭撞見鍾離熾砸場子。",
+          "playable": true,
+          "trigger": {
+            "minMonth": 8,
+            "maxMonth": 0,
+            "flag": "",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": "hengshan"
+          },
+          "scene": [
+            {
+              "speaker": "",
+              "portrait": "",
+              "image": "",
+              "text": "衡山腳下的碼頭亂成一團。一個紅臉大漢一掌拍碎了鹽幫的貨棧門板，木屑飛了一地。"
+            },
+            {
+              "speaker": "祝融門門主　鍾離熾",
+              "portrait": "leader_zhurong",
+              "image": "",
+              "text": "南方人也是人！鹽價一個月漲三回，你們揚州人的心是鹽醃的？"
+            },
+            {
+              "speaker": "揚州鹽幫管事",
+              "portrait": "npc_am01",
+              "image": "",
+              "text": "鍾離門主，祝融門的鹽帳可還欠著呢。"
+            },
+            {
+              "speaker": "祝融門門主　鍾離熾",
+              "portrait": "leader_zhurong",
+              "image": "",
+              "text": "你！——那邊看熱鬧的，北方人？你說，這理在誰那邊？"
+            },
+            {
+              "speaker": "{name}",
+              "portrait": "hero",
+              "image": "",
+              "text": "理在百姓那邊。門主拍碎門板，百姓明天還是買不起鹽。"
+            }
+          ],
+          "choices": [
+            {
+              "text": "替雙方調停，壓下鹽價",
+              "effects": [
+                {
+                  "key": "relation",
+                  "value": 10,
+                  "ref": "zhurong"
+                },
+                {
+                  "key": "relation",
+                  "value": 5,
+                  "ref": "yanbang"
+                },
+                {
+                  "key": "reputation",
+                  "value": 3,
+                  "ref": ""
+                }
+              ],
+              "setFlag": "zhurong_mediated",
+              "next": "q_leader_zhurong_2a",
+              "relation": 10
+            },
+            {
+              "text": "站在鍾離熾這邊",
+              "effects": [
+                {
+                  "key": "relation",
+                  "value": 20,
+                  "ref": "zhurong"
+                },
+                {
+                  "key": "relation",
+                  "value": -15,
+                  "ref": "yanbang"
+                }
+              ],
+              "setFlag": "zhurong_sided",
+              "next": "q_leader_zhurong_2b",
+              "relation": 15
+            }
+          ],
+          "outline": ""
+        },
+        {
+          "id": "q_leader_zhurong_2a",
+          "title": "和事佬",
+          "summary": "鍾離熾嘴上不服，心裡記下了。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 14,
+            "maxMonth": 0,
+            "flag": "zhurong_mediated",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "鍾離熾醉後承認祝融門的糧道握在莫三川手裡。你可替他向鹽幫斡旋，助祝融門脫困；他會把祝融烈掌的一式傳給你。"
+        },
+        {
+          "id": "q_leader_zhurong_2b",
+          "title": "同仇",
+          "summary": "祝融門把你當成自己人。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 14,
+            "maxMonth": 0,
+            "flag": "zhurong_sided",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "鍾離熾與你結為兄弟，揚州鹽幫斷了本門的鹽。若你日後擺平鹽幫，鍾離熾會說「我欠你一座山」——他真的會帶人來替你蓋一座。"
+        }
+      ]
+    },
+    {
+      "id": "q_leader_yeyu",
+      "character": "leader_yeyu",
+      "title": "面具",
+      "summary": "夜雨樓主只收錢，不問因由。可這一次，樓主主動找上了你。",
+      "beats": [
+        {
+          "id": "q_leader_yeyu_1",
+          "title": "雨中立約",
+          "summary": "夜雨樓主在雨夜約你相見。",
+          "playable": true,
+          "trigger": {
+            "minMonth": 8,
+            "maxMonth": 0,
+            "flag": "",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": "luoyang"
+          },
+          "scene": [
+            {
+              "speaker": "",
+              "portrait": "",
+              "image": "",
+              "text": "洛水邊的雨下了一整夜。渡口的船篷下坐著一個戴素白面具的人，聲音低而平，分不清男女。"
+            },
+            {
+              "speaker": "夜雨樓主",
+              "portrait": "leader_yeyu",
+              "image": "",
+              "text": "你要見我？先學會在雨裡站一夜。……你站了。好。"
+            },
+            {
+              "speaker": "夜雨樓主",
+              "portrait": "leader_yeyu",
+              "image": "",
+              "text": "我與你師父有約。約就是約，十年也是約。如今這約，有一半要落在你身上。"
+            },
+            {
+              "speaker": "夜雨樓主",
+              "portrait": "leader_yeyu",
+              "image": "",
+              "text": "我要你替我保管一樣東西，不問是什麼，也不許給任何人看。你肯，我便告訴你師父在哪。"
+            },
+            {
+              "speaker": "{name}",
+              "portrait": "hero",
+              "image": "",
+              "text": "若我不肯呢？"
+            },
+            {
+              "speaker": "夜雨樓主",
+              "portrait": "leader_yeyu",
+              "image": "",
+              "text": "那你就繼續找。夜雨樓不強人所難——只收錢。"
+            }
+          ],
+          "choices": [
+            {
+              "text": "立約，替樓主保管那樣東西",
+              "effects": [
+                {
+                  "key": "relation",
+                  "value": 20,
+                  "ref": "yeyu"
+                },
+                {
+                  "key": "charRelation",
+                  "value": 10,
+                  "ref": "master"
+                }
+              ],
+              "setFlag": "yeyu_pact",
+              "next": "q_leader_yeyu_2a",
+              "relation": 15
+            },
+            {
+              "text": "不立看不見的約",
+              "effects": [
+                {
+                  "key": "relation",
+                  "value": -10,
+                  "ref": "yeyu"
+                }
+              ],
+              "setFlag": "yeyu_refused",
+              "next": "q_leader_yeyu_2b",
+              "relation": -5
+            }
+          ],
+          "outline": ""
+        },
+        {
+          "id": "q_leader_yeyu_2a",
+          "title": "血書",
+          "summary": "你保管的，是半頁染血的紙。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 16,
+            "maxMonth": 0,
+            "flag": "yeyu_pact",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "那東西是蕭定遠血書的一半。若師父支線同時進行，你會在終局時明白樓主的身分：蕭定遠遺孤蕭照雨。守約到底，夜雨樓與你為盟；私自打開，則樓主親自來取回，與你為敵。"
+        },
+        {
+          "id": "q_leader_yeyu_2b",
+          "title": "雨不停",
+          "summary": "夜雨樓的人開始跟著你。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 14,
+            "maxMonth": 0,
+            "flag": "yeyu_refused",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "樓主不再露面，但每到雨夜，總有人在你附近。若你在師父支線中與夜雨樓為敵，此段將演變為刺殺；否則他們會在你最危急時出手一次。"
+        }
+      ]
+    },
+    {
+      "id": "q_leader_nongchao",
+      "character": "leader_nongchao",
+      "title": "八月潮",
+      "summary": "錢塘江口一半的渡船聽錢四娘的，她只聽潮水的。",
+      "beats": [
+        {
+          "id": "q_leader_nongchao_1",
+          "title": "觀潮",
+          "summary": "在錢塘江口遇見錢四娘。",
+          "playable": true,
+          "trigger": {
+            "minMonth": 7,
+            "maxMonth": 0,
+            "flag": "",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": "hangzhou"
+          },
+          "scene": [
+            {
+              "speaker": "",
+              "portrait": "",
+              "image": "",
+              "text": "錢塘江口人山人海，都在等八月的大潮。一個膚色黝黑的女人站在渡船船頭，笑起來露出一顆金牙。"
+            },
+            {
+              "speaker": "錢塘弄潮幫幫主　錢四娘",
+              "portrait": "leader_nongchao",
+              "image": "",
+              "text": "北方來的？上了我的船，命是我的；下了船，命是你自己的。"
+            },
+            {
+              "speaker": "錢塘弄潮幫幫主　錢四娘",
+              "portrait": "leader_nongchao",
+              "image": "",
+              "text": "今年的潮頭，有人出錢讓弄潮兒「失手」——落水的是一個揚州鹽商的兒子。我不幹，可我的人裡有人想幹。"
+            },
+            {
+              "speaker": "錢塘弄潮幫幫主　錢四娘",
+              "portrait": "leader_nongchao",
+              "image": "",
+              "text": "你幫我盯著，潮頭過了，我欠你一條水路。"
+            },
+            {
+              "speaker": "{name}",
+              "portrait": "hero",
+              "image": "",
+              "text": "出錢的是誰？"
+            }
+          ],
+          "choices": [
+            {
+              "text": "答應替她盯潮",
+              "effects": [
+                {
+                  "key": "relation",
+                  "value": 15,
+                  "ref": "nongchao"
+                },
+                {
+                  "key": "relation",
+                  "value": 5,
+                  "ref": "yanbang"
+                }
+              ],
+              "setFlag": "nongchao_watch",
+              "next": "q_leader_nongchao_2a",
+              "relation": 10
+            },
+            {
+              "text": "不涉江湖仇殺",
+              "effects": [
+                {
+                  "key": "relation",
+                  "value": -5,
+                  "ref": "nongchao"
+                }
+              ],
+              "setFlag": "nongchao_declined",
+              "next": "q_leader_nongchao_2b",
+              "relation": 0
+            }
+          ],
+          "outline": ""
+        },
+        {
+          "id": "q_leader_nongchao_2a",
+          "title": "潮頭",
+          "summary": "潮頭下救起一個人。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 10,
+            "maxMonth": 0,
+            "flag": "nongchao_watch",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "你救下鹽商之子，錢四娘與莫三川都欠你人情。出錢的人原來是封伯陽在江南的門客——華嶽派想把手伸進江南水路。"
+        },
+        {
+          "id": "q_leader_nongchao_2b",
+          "title": "錢塘水深",
+          "summary": "鹽商之子落水身亡。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 10,
+            "maxMonth": 0,
+            "flag": "nongchao_declined",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "揚州鹽幫與弄潮幫火併，江南水路斷了三個月。若你日後在江南立派，須在兩幫之間選邊。"
+        }
+      ]
+    },
+    {
+      "id": "q_leader_cuishi",
+      "character": "leader_cuishi",
+      "title": "門第",
+      "summary": "博陵崔氏的宗長客氣得像一堵牆；你要的，是牆上的一扇門。",
+      "beats": [
+        {
+          "id": "q_leader_cuishi_1",
+          "title": "族譜",
+          "summary": "崔元禮在定州崔府接見你。",
+          "playable": true,
+          "trigger": {
+            "minMonth": 8,
+            "maxMonth": 0,
+            "flag": "",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": "dingzhou"
+          },
+          "scene": [
+            {
+              "speaker": "",
+              "portrait": "",
+              "image": "",
+              "text": "崔府的正堂掛著七代先人的畫像。崔元禮端坐其下，手邊放著一卷族譜，坐姿像一方碑。"
+            },
+            {
+              "speaker": "博陵崔氏宗長　崔元禮",
+              "portrait": "leader_cuishi",
+              "image": "",
+              "text": "老夫不與江湖人往來——除非江湖人有禮。你遞的帖子，字寫得不錯。"
+            },
+            {
+              "speaker": "博陵崔氏宗長　崔元禮",
+              "portrait": "leader_cuishi",
+              "image": "",
+              "text": "崔家有個旁支的孩子，叫崔鈺，跑了。若他在你那裡，老夫不怪你。只要你一句實話。"
+            },
+            {
+              "speaker": "博陵崔氏宗長　崔元禮",
+              "portrait": "leader_cuishi",
+              "image": "",
+              "text": "門第不是用來驕人的，是用來守的。守不住門第的孩子，在外頭是要吃苦的。"
+            },
+            {
+              "speaker": "{name}",
+              "portrait": "hero",
+              "image": "",
+              "text": "吃苦，也許正是他想要的。"
+            }
+          ],
+          "choices": [
+            {
+              "text": "據實相告，替崔鈺說情",
+              "effects": [
+                {
+                  "key": "relation",
+                  "value": 15,
+                  "ref": "cuishi"
+                }
+              ],
+              "setFlag": "cuishi_honest",
+              "next": "q_leader_cuishi_2a",
+              "relation": 10
+            },
+            {
+              "text": "推說不知",
+              "effects": [
+                {
+                  "key": "relation",
+                  "value": -10,
+                  "ref": "cuishi"
+                }
+              ],
+              "setFlag": "cuishi_evasive",
+              "next": "q_leader_cuishi_2b",
+              "relation": -5
+            }
+          ],
+          "outline": ""
+        },
+        {
+          "id": "q_leader_cuishi_2a",
+          "title": "一扇門",
+          "summary": "崔元禮開了一扇門。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 12,
+            "maxMonth": 0,
+            "flag": "cuishi_honest",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "崔元禮讚你守禮，准崔鈺留在本門「歷練三年」，並寫信替你在河北士族間引薦（招募候選與聲望上升）。他也透露正替嫡孫崔湛與洛陽謝家議親（與青梅支線、崔湛支線交會）。"
+        },
+        {
+          "id": "q_leader_cuishi_2b",
+          "title": "牆",
+          "summary": "崔家的牆更高了。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 12,
+            "maxMonth": 0,
+            "flag": "cuishi_evasive",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "崔家家將崔猛開始在本門附近出沒。河北士族對你閉門，直到崔湛出面化解。"
+        }
+      ]
+    },
+    {
+      "id": "q_leader_sute",
+      "character": "leader_sute",
+      "title": "駝鈴",
+      "summary": "粟特薩寶安延年的帳簿比朝廷的邸報更早知道天下大事。",
+      "beats": [
+        {
+          "id": "q_leader_sute_1",
+          "title": "西市",
+          "summary": "在長安西市的商棧見到安延年。",
+          "playable": true,
+          "trigger": {
+            "minMonth": 5,
+            "maxMonth": 0,
+            "flag": "",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": "changan"
+          },
+          "scene": [
+            {
+              "speaker": "",
+              "portrait": "",
+              "image": "",
+              "text": "長安西市的商棧裡，駝鈴聲、算盤聲、胡語漢語混成一片。安延年摸著花白的大鬍子，把你從頭看到腳。"
+            },
+            {
+              "speaker": "粟特商團薩寶　安延年",
+              "portrait": "leader_sute",
+              "image": "",
+              "text": "崤山的？康家那丫頭在你那兒，對吧？她算帳比她爹強。"
+            },
+            {
+              "speaker": "粟特商團薩寶　安延年",
+              "portrait": "leader_sute",
+              "image": "",
+              "text": "我有一批絹要運到涼州，路上不太平。你們押一趟，我給三成利。"
+            },
+            {
+              "speaker": "粟特商團薩寶　安延年",
+              "portrait": "leader_sute",
+              "image": "",
+              "text": "帳不會說謊，人會。我只跟守信的人做生意。你守信嗎？"
+            },
+            {
+              "speaker": "{name}",
+              "portrait": "hero",
+              "image": "",
+              "text": "押一趟貨看看，薩寶就知道了。"
+            }
+          ],
+          "choices": [
+            {
+              "text": "接下押貨生意",
+              "effects": [
+                {
+                  "key": "relation",
+                  "value": 15,
+                  "ref": "sute"
+                },
+                {
+                  "key": "silver",
+                  "value": 40,
+                  "ref": ""
+                },
+                {
+                  "key": "lineRank",
+                  "value": 1,
+                  "ref": "commerce"
+                }
+              ],
+              "setFlag": "sute_escort",
+              "next": "q_leader_sute_2a",
+              "relation": 10
+            },
+            {
+              "text": "只買他的消息，不押貨",
+              "effects": [
+                {
+                  "key": "relation",
+                  "value": 5,
+                  "ref": "sute"
+                },
+                {
+                  "key": "silver",
+                  "value": -15,
+                  "ref": ""
+                }
+              ],
+              "setFlag": "sute_intel",
+              "next": "q_leader_sute_2b",
+              "relation": 5
+            }
+          ],
+          "outline": ""
+        },
+        {
+          "id": "q_leader_sute_2a",
+          "title": "涼州道",
+          "summary": "押貨途中，你看見了不該看的貨。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 10,
+            "maxMonth": 0,
+            "flag": "sute_escort",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "駝隊中混著一批無印胡馬，是運往范陽的。選擇：裝作沒看見（得三成利）或追問安延年（他說出商團替阿史德翰販馬，並求你保密；與曹拂延支線交會）。"
+        },
+        {
+          "id": "q_leader_sute_2b",
+          "title": "消息",
+          "summary": "安延年的消息值這個價。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 8,
+            "maxMonth": 0,
+            "flag": "sute_intel",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "安延年告訴你：黑山鐵騎的糧餉從營州來，華嶽派最近在囤糧。之後他會不定期派人送來消息，每次要價不同。"
+        }
+      ]
+    },
+    {
+      "id": "q_leader_yanbang",
+      "character": "leader_yanbang",
+      "title": "白鹽",
+      "summary": "揚州鹽總莫三川和氣生財，斷他財路的人沉運河。",
+      "beats": [
+        {
+          "id": "q_leader_yanbang_1",
+          "title": "瓜洲渡",
+          "summary": "在瓜洲渡口的茶棚見到莫三川。",
+          "playable": true,
+          "trigger": {
+            "minMonth": 7,
+            "maxMonth": 0,
+            "flag": "",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": "yangzhou"
+          },
+          "scene": [
+            {
+              "speaker": "",
+              "portrait": "",
+              "image": "",
+              "text": "瓜洲渡口的茶棚裡，一個圓臉小眼的胖子笑咪咪地請你喝茶。他腰間的舊皮囊裡，裝著一把鹽和一柄短刀。"
+            },
+            {
+              "speaker": "揚州鹽幫鹽總　莫三川",
+              "portrait": "leader_yanbang",
+              "image": "",
+              "text": "朋友，喝茶。茶裡沒有鹽。"
+            },
+            {
+              "speaker": "揚州鹽幫鹽總　莫三川",
+              "portrait": "leader_yanbang",
+              "image": "",
+              "text": "聽說你們在找一個姓霍的大人的把柄。巧了，那位大人在揚州有個私鹽場，帳本在我手裡。"
+            },
+            {
+              "speaker": "揚州鹽幫鹽總　莫三川",
+              "portrait": "leader_yanbang",
+              "image": "",
+              "text": "帳本不賣。不過若{sect}替我辦一件事，我可以讓你看一眼。"
+            },
+            {
+              "speaker": "{name}",
+              "portrait": "hero",
+              "image": "",
+              "text": "什麼事？"
+            }
+          ],
+          "choices": [
+            {
+              "text": "答應替他辦事",
+              "effects": [
+                {
+                  "key": "relation",
+                  "value": 15,
+                  "ref": "yanbang"
+                },
+                {
+                  "key": "silver",
+                  "value": 30,
+                  "ref": ""
+                },
+                {
+                  "key": "reputation",
+                  "value": -3,
+                  "ref": ""
+                }
+              ],
+              "setFlag": "yanbang_deal",
+              "next": "q_leader_yanbang_2a",
+              "relation": 10
+            },
+            {
+              "text": "不與鹽梟交易",
+              "effects": [
+                {
+                  "key": "relation",
+                  "value": -10,
+                  "ref": "yanbang"
+                },
+                {
+                  "key": "reputation",
+                  "value": 2,
+                  "ref": ""
+                }
+              ],
+              "setFlag": "yanbang_refused",
+              "next": "q_leader_yanbang_2b",
+              "relation": -5
+            }
+          ],
+          "outline": ""
+        },
+        {
+          "id": "q_leader_yanbang_2a",
+          "title": "一件事",
+          "summary": "莫三川要你護一船私鹽過江。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 11,
+            "maxMonth": 0,
+            "flag": "yanbang_deal",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "護私鹽過江，與錢塘弄潮幫和官府巡檢交鋒。完成後得看霍元昌私鹽場的帳本——扳倒大璫的第二份證據（與師父、范希仁支線交會）。"
+        },
+        {
+          "id": "q_leader_yanbang_2b",
+          "title": "運河很長",
+          "summary": "莫三川笑著送你出門。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 11,
+            "maxMonth": 0,
+            "flag": "yanbang_refused",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "揚州鹽價對本門翻倍。若杜蘅在門中，她可以替你走一趟揚州（與杜蘅支線交會）。"
+        }
+      ]
+    },
+    {
+      "id": "q_leader_heisong",
+      "character": "leader_heisong",
+      "title": "黑松林",
+      "summary": "崤山腳下的強人胡大眼，師父在時不敢來；如今他又來了。",
+      "beats": [
+        {
+          "id": "q_leader_heisong_1",
+          "title": "攔路",
+          "summary": "胡大眼在崤函道上攔住你。",
+          "playable": true,
+          "trigger": {
+            "minMonth": 4,
+            "maxMonth": 0,
+            "flag": "",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [
+            {
+              "speaker": "",
+              "portrait": "",
+              "image": "",
+              "text": "崤函道的黑松林裡跳出二十幾條漢子。為首的滿臉橫肉，扛著一柄缺了口的開山大斧。"
+            },
+            {
+              "speaker": "黑松寨寨主　胡大眼",
+              "portrait": "leader_heisong",
+              "image": "",
+              "text": "此山是我開，此樹是我栽！……喲，崤山的？褚老頭在的時候，我可沒來過。"
+            },
+            {
+              "speaker": "黑松寨寨主　胡大眼",
+              "portrait": "leader_heisong",
+              "image": "",
+              "text": "褚老頭打斷我兩根肋骨，這帳還沒算。不過我胡大眼講規矩：不劫窮人，不碰女人。你們算窮人嗎？"
+            },
+            {
+              "speaker": "{name}",
+              "portrait": "hero",
+              "image": "",
+              "text": "算。可窮人也不給你買路錢。"
+            },
+            {
+              "speaker": "黑松寨寨主　胡大眼",
+              "portrait": "leader_heisong",
+              "image": "",
+              "text": "好膽！那就照江湖規矩，打一場！"
+            }
+          ],
+          "choices": [
+            {
+              "text": "打一場，贏了讓他立誓不擾鄉里",
+              "effects": [
+                {
+                  "key": "reputation",
+                  "value": 5,
+                  "ref": ""
+                },
+                {
+                  "key": "relation",
+                  "value": -10,
+                  "ref": "heisong"
+                }
+              ],
+              "setFlag": "heisong_beaten",
+              "next": "q_leader_heisong_2a",
+              "relation": 10
+            },
+            {
+              "text": "給他三貫錢，問他背後是誰",
+              "effects": [
+                {
+                  "key": "silver",
+                  "value": -3,
+                  "ref": ""
+                },
+                {
+                  "key": "relation",
+                  "value": 10,
+                  "ref": "heisong"
+                }
+              ],
+              "setFlag": "heisong_bribed",
+              "next": "q_leader_heisong_2b",
+              "relation": 5
+            }
+          ],
+          "outline": ""
+        },
+        {
+          "id": "q_leader_heisong_2a",
+          "title": "立誓",
+          "summary": "胡大眼被打服了。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 8,
+            "maxMonth": 0,
+            "flag": "heisong_beaten",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "胡大眼立誓不擾附近鄉里，卻偷偷告訴你：每月有個挑柴漢給他送銀子，要他盯住本門的動靜（與聶遠山支線交會）。結局：收編黑松寨為山門外圍，或交給河南府領賞。"
+        },
+        {
+          "id": "q_leader_heisong_2b",
+          "title": "銀子",
+          "summary": "三貫錢買來一個名字。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 8,
+            "maxMonth": 0,
+            "flag": "heisong_bribed",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "胡大眼說出挑柴漢的長相，並說那人上個月還問過本門的糧倉在哪。之後黑松寨對你友善，但官府會懷疑你通匪。"
+        }
+      ]
+    },
+    {
+      "id": "q_leader_taihang",
+      "character": "leader_taihang",
+      "title": "血酒",
+      "summary": "太行十八寨收留天下逃丁逃兵；程鐵牛問你，是官，還是人。",
+      "beats": [
+        {
+          "id": "q_leader_taihang_1",
+          "title": "陘道",
+          "summary": "在太行陘道被程鐵牛的人請上山。",
+          "playable": true,
+          "trigger": {
+            "minMonth": 8,
+            "maxMonth": 0,
+            "flag": "",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": "taihang"
+          },
+          "scene": [
+            {
+              "speaker": "",
+              "portrait": "",
+              "image": "",
+              "text": "太行山的陘道窄得只容一騎。你們被一隊蒙面人「請」上了山寨，寨門口站著一個黑臉虯髯的大漢。"
+            },
+            {
+              "speaker": "太行十八寨總瓢把子　程鐵牛",
+              "portrait": "leader_taihang",
+              "image": "",
+              "text": "太行山上沒有官，只有人。你是官，還是人？"
+            },
+            {
+              "speaker": "太行十八寨總瓢把子　程鐵牛",
+              "portrait": "leader_taihang",
+              "image": "",
+              "text": "府兵？我也當過。額上這塊疤，原來烙的是「逃」字。"
+            },
+            {
+              "speaker": "太行十八寨總瓢把子　程鐵牛",
+              "portrait": "leader_taihang",
+              "image": "",
+              "text": "要入夥，先喝了這碗血酒；不入夥，下山的路有十八條，有十七條是死路。"
+            },
+            {
+              "speaker": "{name}",
+              "portrait": "hero",
+              "image": "",
+              "text": "我們不入夥，也不走死路。大哥要什麼，直說。"
+            }
+          ],
+          "choices": [
+            {
+              "text": "喝下血酒，結為兄弟",
+              "effects": [
+                {
+                  "key": "relation",
+                  "value": 25,
+                  "ref": "taihang"
+                },
+                {
+                  "key": "relation",
+                  "value": -10,
+                  "ref": "henan_fu"
+                },
+                {
+                  "key": "relation",
+                  "value": -10,
+                  "ref": "fanyang_jds"
+                }
+              ],
+              "setFlag": "taihang_oath",
+              "next": "q_leader_taihang_2a",
+              "relation": 15
+            },
+            {
+              "text": "以禮相待，只做朋友",
+              "effects": [
+                {
+                  "key": "relation",
+                  "value": 10,
+                  "ref": "taihang"
+                }
+              ],
+              "setFlag": "taihang_friend",
+              "next": "q_leader_taihang_2b",
+              "relation": 5
+            }
+          ],
+          "outline": ""
+        },
+        {
+          "id": "q_leader_taihang_2a",
+          "title": "兄弟",
+          "summary": "太行十八寨把你當自己人。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 14,
+            "maxMonth": 0,
+            "flag": "taihang_oath",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "程鐵牛替你收留逃籍之人（招募候選+1），二寨主穆青槍與林照相認（與林照支線交會）。代價是官府把本門記為通匪之門。"
+        },
+        {
+          "id": "q_leader_taihang_2b",
+          "title": "朋友",
+          "summary": "程鐵牛送你下山，走的是第十八條路。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 14,
+            "maxMonth": 0,
+            "flag": "taihang_friend",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "程鐵牛不強留，只說：「哪天你也逃了，太行有你一碗酒。」日後范陽兵剿太行時，他會向你求援。"
+        }
+      ]
+    },
+    {
+      "id": "q_leader_tubo",
+      "character": "leader_tubo",
+      "title": "石堡城",
+      "summary": "吐蕃大論噶爾·恭頓能引《論語》，也能一刀砍下叛將的頭。他想讀一部兵書。",
+      "beats": [
+        {
+          "id": "q_leader_tubo_1",
+          "title": "城下",
+          "summary": "在石堡城外的互市帳中見到噶爾·恭頓。",
+          "playable": true,
+          "trigger": {
+            "minMonth": 12,
+            "maxMonth": 0,
+            "flag": "",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": "shibao"
+          },
+          "scene": [
+            {
+              "speaker": "",
+              "portrait": "",
+              "image": "",
+              "text": "石堡城外的互市帳篷裡，酥油茶的香氣混著鐵甲的鏽味。一個紫紅臉膛的高原貴人用漢話招呼你坐下。"
+            },
+            {
+              "speaker": "吐蕃大論　噶爾·恭頓",
+              "portrait": "leader_tubo",
+              "image": "",
+              "text": "「有朋自遠方來，不亦樂乎。」漢人的書很好，漢人的話太多。"
+            },
+            {
+              "speaker": "吐蕃大論　噶爾·恭頓",
+              "portrait": "leader_tubo",
+              "image": "",
+              "text": "我聽說中原有部《衛公兵法》，落在一個小門派手裡。黃金、駿馬、雪域的藥材，你開價。"
+            },
+            {
+              "speaker": "吐蕃大論　噶爾·恭頓",
+              "portrait": "leader_tubo",
+              "image": "",
+              "text": "朋友與敵人，只隔一場雪。你想做哪一個？"
+            },
+            {
+              "speaker": "{name}",
+              "portrait": "hero",
+              "image": "",
+              "text": "兵書不在我手裡。就算在，我也不賣給打我家門的人。"
+            }
+          ],
+          "choices": [
+            {
+              "text": "以禮周旋，換取吐蕃的藥材與消息",
+              "effects": [
+                {
+                  "key": "relation",
+                  "value": 15,
+                  "ref": "tubo"
+                },
+                {
+                  "key": "lineRank",
+                  "value": 1,
+                  "ref": "medicine"
+                },
+                {
+                  "key": "relation",
+                  "value": -10,
+                  "ref": "hexi_jds"
+                }
+              ],
+              "setFlag": "tubo_trade",
+              "next": "q_leader_tubo_2a",
+              "relation": 5
+            },
+            {
+              "text": "拂袖而去",
+              "effects": [
+                {
+                  "key": "relation",
+                  "value": -15,
+                  "ref": "tubo"
+                },
+                {
+                  "key": "reputation",
+                  "value": 3,
+                  "ref": ""
+                }
+              ],
+              "setFlag": "tubo_refused",
+              "next": "q_leader_tubo_2b",
+              "relation": -10
+            }
+          ],
+          "outline": ""
+        },
+        {
+          "id": "q_leader_tubo_2a",
+          "title": "雪域藥材",
+          "summary": "吐蕃的藥材換來一個消息。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 18,
+            "maxMonth": 0,
+            "flag": "tubo_trade",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "噶爾·恭頓透露，他在長安收買了替霍元昌跑腿的綠袍內侍馮順；霍元昌的秘密，吐蕃人比唐人還清楚。韓守拙若在隴右，或可藉此贖回其弟（與韓守拙支線交會）。"
+        },
+        {
+          "id": "q_leader_tubo_2b",
+          "title": "一場雪",
+          "summary": "吐蕃的刺客出現在長安。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 18,
+            "maxMonth": 0,
+            "flag": "tubo_refused",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "噶爾·恭頓派人搶奪殘卷的下落，你在長安遭遇吐蕃刺客。擊退後，河西渾元朗對你另眼相看。"
+        }
+      ]
+    },
+    {
+      "id": "q_leader_huihe",
+      "character": "leader_huihe",
+      "title": "風向",
+      "summary": "回紇的藥羅葛·烏蘇能在草原上等一個月，只為等一陣對的風。",
+      "beats": [
+        {
+          "id": "q_leader_huihe_1",
+          "title": "受降城互市",
+          "summary": "在中受降城的絹馬互市見到藥羅葛·烏蘇。",
+          "playable": true,
+          "trigger": {
+            "minMonth": 11,
+            "maxMonth": 0,
+            "flag": "",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": "shouxiang"
+          },
+          "scene": [
+            {
+              "speaker": "",
+              "portrait": "",
+              "image": "",
+              "text": "中受降城外，唐人的絹堆成小山，回紇的馬群一眼望不到邊。一個編著粗辮的漢子親手替你倒了一碗馬奶酒。"
+            },
+            {
+              "speaker": "回紇俟利發　藥羅葛·烏蘇",
+              "portrait": "leader_huihe",
+              "image": "",
+              "text": "草原上的話，說出口就是一支箭。唐人的絹換我們的馬，很公平。"
+            },
+            {
+              "speaker": "回紇俟利發　藥羅葛·烏蘇",
+              "portrait": "leader_huihe",
+              "image": "",
+              "text": "可最近有人用三倍的絹買我的馬，不要文書，只要夜裡交貨。買主說他是范陽來的。"
+            },
+            {
+              "speaker": "回紇俟利發　藥羅葛·烏蘇",
+              "portrait": "leader_huihe",
+              "image": "",
+              "text": "風向變的時候，聰明人先下馬。你說，大唐的風，要變了嗎？"
+            },
+            {
+              "speaker": "{name}",
+              "portrait": "hero",
+              "image": "",
+              "text": "俟利發問我，不如問長安。"
+            }
+          ],
+          "choices": [
+            {
+              "text": "把范陽買馬之事記下，報與朝廷",
+              "effects": [
+                {
+                  "key": "relation",
+                  "value": 10,
+                  "ref": "huihe"
+                },
+                {
+                  "key": "relation",
+                  "value": -10,
+                  "ref": "fanyang_jds"
+                },
+                {
+                  "key": "reputation",
+                  "value": 3,
+                  "ref": ""
+                }
+              ],
+              "setFlag": "huihe_reported",
+              "next": "q_leader_huihe_2a",
+              "relation": 10
+            },
+            {
+              "text": "買一批好馬，不問閒事",
+              "effects": [
+                {
+                  "key": "relation",
+                  "value": 10,
+                  "ref": "huihe"
+                },
+                {
+                  "key": "silver",
+                  "value": -30,
+                  "ref": ""
+                },
+                {
+                  "key": "apMax",
+                  "value": 1,
+                  "ref": ""
+                }
+              ],
+              "setFlag": "huihe_horses",
+              "next": "q_leader_huihe_2b",
+              "relation": 5
+            }
+          ],
+          "outline": ""
+        },
+        {
+          "id": "q_leader_huihe_2a",
+          "title": "箭",
+          "summary": "消息送到長安，石沉大海。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 17,
+            "maxMonth": 0,
+            "flag": "huihe_reported",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "朝廷不理，只有金吾衛獨孤鎮與河西渾元朗暗中記下。藥羅葛·烏蘇說：「那我就等風。」日後天下有變，他會派一支騎兵來問你站在哪邊。"
+        },
+        {
+          "id": "q_leader_huihe_2b",
+          "title": "好馬",
+          "summary": "回紇馬讓你的腳程快了一倍。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 17,
+            "maxMonth": 0,
+            "flag": "huihe_horses",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "得回紇良馬（行動力上限+1）。藥羅葛·烏蘇邀你參加明年的草原賽馬，贏了可得回紇的友誼箭。"
+        }
+      ]
+    },
+    {
+      "id": "q_leader_tuqishi",
+      "character": "leader_tuqishi",
+      "title": "碎葉",
+      "summary": "突騎施可汗骨咄祿·阿悉今日受封、明日劫掠；他最恨被人看輕。",
+      "beats": [
+        {
+          "id": "q_leader_tuqishi_1",
+          "title": "北庭帳外",
+          "summary": "在北庭城外被突騎施騎兵攔下。",
+          "playable": true,
+          "trigger": {
+            "minMonth": 12,
+            "maxMonth": 0,
+            "flag": "",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": "beiting"
+          },
+          "scene": [
+            {
+              "speaker": "",
+              "portrait": "",
+              "image": "",
+              "text": "北庭城外的戈壁上，一隊突騎施騎兵圍住了你們。為首的人頭戴金狼冠，手裡握著一條馬鞭。"
+            },
+            {
+              "speaker": "突騎施可汗　骨咄祿·阿悉",
+              "portrait": "leader_tuqishi",
+              "image": "",
+              "text": "唐人。給我一個理由，不砍你的頭。"
+            },
+            {
+              "speaker": "突騎施可汗　骨咄祿·阿悉",
+              "portrait": "leader_tuqishi",
+              "image": "",
+              "text": "碎葉城外，有個唐兵在我的將軍臉上留了一道疤。那唐兵姓魏，排行第七。你認得嗎？"
+            },
+            {
+              "speaker": "{name}",
+              "portrait": "hero",
+              "image": "",
+              "text": "認得。他現在是我的守門人。"
+            },
+            {
+              "speaker": "突騎施可汗　骨咄祿·阿悉",
+              "portrait": "leader_tuqishi",
+              "image": "",
+              "text": "哈！守門人。突騎施最好的將軍，被一個守門人砍了臉。……有意思。"
+            }
+          ],
+          "choices": [
+            {
+              "text": "提議兩邊比武了結舊怨",
+              "effects": [
+                {
+                  "key": "relation",
+                  "value": 10,
+                  "ref": "tuqishi"
+                },
+                {
+                  "key": "reputation",
+                  "value": 5,
+                  "ref": ""
+                }
+              ],
+              "setFlag": "tuqishi_duel",
+              "next": "q_leader_tuqishi_2a",
+              "relation": 10
+            },
+            {
+              "text": "以絹帛換路，息事寧人",
+              "effects": [
+                {
+                  "key": "relation",
+                  "value": 5,
+                  "ref": "tuqishi"
+                },
+                {
+                  "key": "silver",
+                  "value": -25,
+                  "ref": ""
+                }
+              ],
+              "setFlag": "tuqishi_paid",
+              "next": "q_leader_tuqishi_2b",
+              "relation": 0
+            }
+          ],
+          "outline": ""
+        },
+        {
+          "id": "q_leader_tuqishi_2a",
+          "title": "比武",
+          "summary": "突騎施的疤面將軍與你一戰。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 18,
+            "maxMonth": 0,
+            "flag": "tuqishi_duel",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "比武勝則骨咄祿·阿悉稱你為「西方的朋友」，安西的商路對你敞開；若魏老七在門中，他與疤面將軍會在帳中對飲到天明（與魏老七支線交會）。"
+        },
+        {
+          "id": "q_leader_tuqishi_2b",
+          "title": "絹帛",
+          "summary": "骨咄祿·阿悉收下絹，也收下了你的名字。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 18,
+            "maxMonth": 0,
+            "flag": "tuqishi_paid",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "日後突騎施劫掠安西時，他會放過掛著本門旗號的駝隊——一次。"
+        }
+      ]
+    },
+    {
+      "id": "q_leader_nanzhao",
+      "character": "leader_nanzhao",
+      "title": "洱海",
+      "summary": "南詔的蒙邏閣正在吞併五詔。他歡迎中原的能人，也提防中原的野心。",
+      "beats": [
+        {
+          "id": "q_leader_nanzhao_1",
+          "title": "太和城",
+          "summary": "在太和城見到蒙邏閣。",
+          "playable": true,
+          "trigger": {
+            "minMonth": 11,
+            "maxMonth": 0,
+            "flag": "",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": "taihe"
+          },
+          "scene": [
+            {
+              "speaker": "",
+              "portrait": "",
+              "image": "",
+              "text": "太和城依著蒼山而建，洱海在城下像一面青銅鏡。蒙邏閣裹著紅色包頭，披著虎皮，親自出城迎你。"
+            },
+            {
+              "speaker": "南詔詔主　蒙邏閣",
+              "portrait": "leader_nanzhao",
+              "image": "",
+              "text": "中原人來，我給酒；中原兵來，我給弩。你帶的是人，那就喝酒。"
+            },
+            {
+              "speaker": "南詔詔主　蒙邏閣",
+              "portrait": "leader_nanzhao",
+              "image": "",
+              "text": "劍南的邊將剋扣蠻兵的糧，蠻兵快餓死了。我向朝廷上書三回，回信都說「知道了」。"
+            },
+            {
+              "speaker": "南詔詔主　蒙邏閣",
+              "portrait": "leader_nanzhao",
+              "image": "",
+              "text": "你們江湖人，替我把這封信送到長安，送到一個真正會看的人手上。"
+            },
+            {
+              "speaker": "{name}",
+              "portrait": "hero",
+              "image": "",
+              "text": "詔主信裡寫的，只是糧嗎？"
+            }
+          ],
+          "choices": [
+            {
+              "text": "答應送信",
+              "effects": [
+                {
+                  "key": "relation",
+                  "value": 15,
+                  "ref": "nanzhao"
+                }
+              ],
+              "setFlag": "nanzhao_letter",
+              "next": "q_leader_nanzhao_2a",
+              "relation": 10
+            },
+            {
+              "text": "婉拒，不涉邊事",
+              "effects": [
+                {
+                  "key": "relation",
+                  "value": -5,
+                  "ref": "nanzhao"
+                }
+              ],
+              "setFlag": "nanzhao_declined",
+              "next": "q_leader_nanzhao_2b",
+              "relation": -5
+            }
+          ],
+          "outline": ""
+        },
+        {
+          "id": "q_leader_nanzhao_2a",
+          "title": "一封信",
+          "summary": "信送到了長安。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 19,
+            "maxMonth": 0,
+            "flag": "nanzhao_letter",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "你把信交給宇文嶠或獨孤鎮。信中除了糧，還有劍南邊將與內侍省勾結的證據——又一條指向霍元昌的線。南詔與本門結好，蒼山弩可換。"
+        },
+        {
+          "id": "q_leader_nanzhao_2b",
+          "title": "知道了",
+          "summary": "第四封信，蒙邏閣不寫了。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 19,
+            "maxMonth": 0,
+            "flag": "nanzhao_declined",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "蒙邏閣不再上書。數年後南詔與劍南邊將衝突，西南商路斷絕。若你此時身在劍南，須擇一邊站。"
+        }
+      ]
+    },
+    {
+      "id": "q_prodigy_emei",
+      "character": "prodigy_emei",
+      "title": "峨眉雪",
+      "summary": "峨眉的葉青鸞下山追一個仇人，卻撞上了你。",
+      "beats": [
+        {
+          "id": "q_prodigy_emei_1",
+          "title": "不打不相識",
+          "summary": "葉青鸞把你的弟子當成了強盜。",
+          "playable": true,
+          "trigger": {
+            "minMonth": 6,
+            "maxMonth": 0,
+            "flag": "",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [
+            {
+              "speaker": "",
+              "portrait": "",
+              "image": "",
+              "text": "下山採買的弟子被人用劍逼了回來。逼他們的是個白衣少女，劍尖穩得像釘在空氣裡。"
+            },
+            {
+              "speaker": "峨眉劍宗　葉青鸞",
+              "portrait": "prodigy_emei",
+              "image": "",
+              "text": "我追一個燒船的強盜追到這裡，腳印進了你們山門。你這人，看著倒不像壞人——先打一場再說。"
+            },
+            {
+              "speaker": "{name}",
+              "portrait": "hero",
+              "image": "",
+              "text": "腳印是我師弟的。他上個月才學會穿鞋不踩泥。"
+            },
+            {
+              "speaker": "峨眉劍宗　葉青鸞",
+              "portrait": "prodigy_emei",
+              "image": "",
+              "text": "……那就打完再道歉。師父說我太急，可壞人跑得比我還急。"
+            }
+          ],
+          "choices": [
+            {
+              "text": "陪她打一場，再幫她找人",
+              "effects": [
+                {
+                  "key": "relation",
+                  "value": 10,
+                  "ref": "emei"
+                },
+                {
+                  "key": "reputation",
+                  "value": 2,
+                  "ref": ""
+                }
+              ],
+              "setFlag": "qingluan_spar",
+              "next": "q_prodigy_emei_2a",
+              "relation": 10
+            },
+            {
+              "text": "請她喝茶，先問清仇人是誰",
+              "effects": [
+                {
+                  "key": "relation",
+                  "value": 5,
+                  "ref": "emei"
+                }
+              ],
+              "setFlag": "qingluan_tea",
+              "next": "q_prodigy_emei_2b",
+              "relation": 5
+            }
+          ],
+          "outline": ""
+        },
+        {
+          "id": "q_prodigy_emei_2a",
+          "title": "太行",
+          "summary": "她的仇人在太行山。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 12,
+            "maxMonth": 0,
+            "flag": "qingluan_spar",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "仇人原是太行十八寨的頭目，如今洗手收養孤兒。選擇：助她報仇（與太行結仇）或勸她放下（葉青鸞好感大升，峨眉與你結盟）。"
+        },
+        {
+          "id": "q_prodigy_emei_2b",
+          "title": "峨眉的門",
+          "summary": "葉青鸞留下來住了幾天。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 11,
+            "maxMonth": 0,
+            "flag": "qingluan_tea",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "葉青鸞與門中弟子切磋，臨走留下一套峨眉刺法的心得。日後她可受邀成為本門的客卿。"
+        }
+      ]
+    },
+    {
+      "id": "q_prodigy_shaolin",
+      "character": "prodigy_shaolin",
+      "title": "下山",
+      "summary": "少林小和尚圓覺下山行腳，第一件事是來找你切磋。",
+      "beats": [
+        {
+          "id": "q_prodigy_shaolin_1",
+          "title": "阿彌陀佛",
+          "summary": "圓覺上門求切磋。",
+          "playable": true,
+          "trigger": {
+            "minMonth": 7,
+            "maxMonth": 0,
+            "flag": "",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [
+            {
+              "speaker": "",
+              "portrait": "",
+              "image": "",
+              "text": "山門外站著一個高大的小和尚，光頭剃得發青，九點戒疤，腕上纏著木念珠，一臉歡喜。"
+            },
+            {
+              "speaker": "少林武僧　圓覺",
+              "portrait": "prodigy_shaolin",
+              "image": "",
+              "text": "阿彌陀佛——施主，小僧圓覺，聽說崤山十三劍天下第一快。請賜教！"
+            },
+            {
+              "speaker": "少林武僧　圓覺",
+              "portrait": "prodigy_shaolin",
+              "image": "",
+              "text": "方丈說我拳太滿，心太空，叫我下山看看。我想先看看最快的劍。"
+            },
+            {
+              "speaker": "{name}",
+              "portrait": "hero",
+              "image": "",
+              "text": "看完之後呢？"
+            }
+          ],
+          "choices": [
+            {
+              "text": "與他切磋，留他住幾日",
+              "effects": [
+                {
+                  "key": "relation",
+                  "value": 10,
+                  "ref": "shaolin"
+                },
+                {
+                  "key": "lineRank",
+                  "value": 1,
+                  "ref": "fist"
+                }
+              ],
+              "setFlag": "yuanjue_stay",
+              "next": "q_prodigy_shaolin_2a",
+              "relation": 10
+            },
+            {
+              "text": "切磋一招，送他上路",
+              "effects": [
+                {
+                  "key": "relation",
+                  "value": 5,
+                  "ref": "shaolin"
+                }
+              ],
+              "setFlag": "yuanjue_go",
+              "next": "q_prodigy_shaolin_2b",
+              "relation": 5
+            }
+          ],
+          "outline": ""
+        },
+        {
+          "id": "q_prodigy_shaolin_2a",
+          "title": "拳與心",
+          "summary": "圓覺在你門中住了一個月。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 12,
+            "maxMonth": 0,
+            "flag": "yuanjue_stay",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "圓覺與門中弟子同吃同練，羅小滿與他成了好友。夜雨樓的人暗中來看過他一次——他的身世與蕭家有關（與師父、夜雨樓主支線交會）。"
+        },
+        {
+          "id": "q_prodigy_shaolin_2b",
+          "title": "行腳",
+          "summary": "圓覺在路上惹了麻煩。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 12,
+            "maxMonth": 0,
+            "flag": "yuanjue_go",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "圓覺在黑松林痛打胡大眼，被官府當成逃僧捉拿。你可出面作保（少林好感大升），或讓少林自己來領人。"
+        }
+      ]
+    },
+    {
+      "id": "q_prodigy_cui",
+      "character": "prodigy_cui",
+      "title": "五姓",
+      "summary": "博陵崔氏的嫡孫崔湛奉命來找離家的堂弟，卻一眼看上了你們這個「沒有規矩的地方」。",
+      "beats": [
+        {
+          "id": "q_prodigy_cui_1",
+          "title": "嫡孫",
+          "summary": "崔湛上門找崔鈺。",
+          "playable": true,
+          "trigger": {
+            "minMonth": 9,
+            "maxMonth": 0,
+            "flag": "",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [
+            {
+              "speaker": "",
+              "portrait": "",
+              "image": "",
+              "text": "一乘青幔車停在山門外。下車的年輕人月白圓領袍、金玉帶，腰懸一柄嵌綠松石的長劍，眉目間帶著倦意。"
+            },
+            {
+              "speaker": "博陵崔氏　崔湛",
+              "portrait": "prodigy_cui",
+              "image": "",
+              "text": "博陵崔湛，來找一個不肯回家的堂弟。他在不在，我其實不太在乎。"
+            },
+            {
+              "speaker": "博陵崔氏　崔湛",
+              "portrait": "prodigy_cui",
+              "image": "",
+              "text": "五姓七家？七座好看的籠子。你們這裡的劍，有一股我家沒有的味道——窮的味道，真好。"
+            },
+            {
+              "speaker": "{name}",
+              "portrait": "hero",
+              "image": "",
+              "text": "崔公子是來找人，還是來找劍？"
+            }
+          ],
+          "choices": [
+            {
+              "text": "請他留下比劍論道",
+              "effects": [
+                {
+                  "key": "relation",
+                  "value": 5,
+                  "ref": "cuishi"
+                }
+              ],
+              "setFlag": "cuizhan_stay",
+              "next": "q_prodigy_cui_2a",
+              "relation": 10
+            },
+            {
+              "text": "以禮相送，不留世家子",
+              "effects": [
+                {
+                  "key": "relation",
+                  "value": 5,
+                  "ref": "cuishi"
+                },
+                {
+                  "key": "reputation",
+                  "value": 1,
+                  "ref": ""
+                }
+              ],
+              "setFlag": "cuizhan_sent",
+              "next": "q_prodigy_cui_2b",
+              "relation": 0
+            }
+          ],
+          "outline": ""
+        },
+        {
+          "id": "q_prodigy_cui_2a",
+          "title": "籠子",
+          "summary": "崔湛不想回籠子。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 14,
+            "maxMonth": 0,
+            "flag": "cuizhan_stay",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "崔湛說出家族要他與洛陽謝家議親；他知道對方心裡有人，打算親自攪黃這門親事（與青梅支線交會）。結局：他成為本門的客卿與河北的門路，或被崔家強行帶回。"
+        },
+        {
+          "id": "q_prodigy_cui_2b",
+          "title": "好看的籠子",
+          "summary": "崔湛回了博陵。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 14,
+            "maxMonth": 0,
+            "flag": "cuizhan_sent",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "崔湛回家後寫信給你，請你在謝家議親時「幫個忙」。崔家對你客氣而冷淡。"
+        }
+      ]
+    },
+    {
+      "id": "q_prodigy_chicheng",
+      "character": "prodigy_chicheng",
+      "title": "戰書",
+      "summary": "赤城劍閣的殷照雪給你下了一封戰書：去看看崤山的劍有多直。",
+      "beats": [
+        {
+          "id": "q_prodigy_chicheng_1",
+          "title": "拔劍",
+          "summary": "殷照雪送來戰書。",
+          "playable": true,
+          "trigger": {
+            "minMonth": 9,
+            "maxMonth": 0,
+            "flag": "",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [
+            {
+              "speaker": "",
+              "portrait": "",
+              "image": "",
+              "text": "一封戰書釘在山門的匾額上，釘它的是一枚削尖的竹片。戰書上只有兩個字：「拔劍」。"
+            },
+            {
+              "speaker": "赤城劍閣　殷照雪",
+              "portrait": "prodigy_chicheng",
+              "image": "",
+              "text": "師父說崤山的劍很直。我來看看有多直。"
+            },
+            {
+              "speaker": "{name}",
+              "portrait": "hero",
+              "image": "",
+              "text": "看完之後呢？"
+            },
+            {
+              "speaker": "赤城劍閣　殷照雪",
+              "portrait": "prodigy_chicheng",
+              "image": "",
+              "text": "你的劍有心事。……拔劍。"
+            }
+          ],
+          "choices": [
+            {
+              "text": "應戰",
+              "effects": [
+                {
+                  "key": "reputation",
+                  "value": 6,
+                  "ref": ""
+                },
+                {
+                  "key": "relation",
+                  "value": 10,
+                  "ref": "chicheng"
+                }
+              ],
+              "setFlag": "zhaoxue_duel",
+              "next": "q_prodigy_chicheng_2a",
+              "relation": 10
+            },
+            {
+              "text": "不應戰，請她喝一杯",
+              "effects": [
+                {
+                  "key": "relation",
+                  "value": -5,
+                  "ref": "chicheng"
+                }
+              ],
+              "setFlag": "zhaoxue_declined",
+              "next": "q_prodigy_chicheng_2b",
+              "relation": -5
+            }
+          ],
+          "outline": ""
+        },
+        {
+          "id": "q_prodigy_chicheng_2a",
+          "title": "霞光",
+          "summary": "一戰之後，殷照雪第一次笑了。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 14,
+            "maxMonth": 0,
+            "flag": "zhaoxue_duel",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "無論勝負，殷照雪承認你的劍「很直」，並說出師父真正要她找的人：當年以毒劍傷他雙目的人（與陸孤雲支線交會）。結局：她隨你去華山找封伯陽，或回天台覆命。"
+        },
+        {
+          "id": "q_prodigy_chicheng_2b",
+          "title": "無趣",
+          "summary": "殷照雪說你無趣，轉身走了。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 12,
+            "maxMonth": 0,
+            "flag": "zhaoxue_declined",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "三個月後殷照雪再來，這回她受了傷——她找錯了人，挑戰封伯陽而落敗。你可收留她，赤城劍閣從此欠你一份情。"
+        }
+      ]
+    },
+    {
+      "id": "q_prodigy_sute",
+      "character": "prodigy_sute",
+      "title": "駝鈴少年",
+      "summary": "粟特少年曹拂延對中原門派好奇得要命；他心裡藏著一本不該看的帳。",
+      "beats": [
+        {
+          "id": "q_prodigy_sute_1",
+          "title": "討價還價",
+          "summary": "曹拂延隨駝隊路過山門。",
+          "playable": true,
+          "trigger": {
+            "minMonth": 5,
+            "maxMonth": 0,
+            "flag": "",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [
+            {
+              "speaker": "",
+              "portrait": "",
+              "image": "",
+              "text": "一支駝隊在山下歇腳。一個捲髮少年跳下駱駝，腰間掛著彎刀和算盤，一路小跑上了山門。"
+            },
+            {
+              "speaker": "粟特商團　曹拂延",
+              "portrait": "prodigy_sute",
+              "image": "",
+              "text": "表姐在你們這兒還好嗎？她不會算錯帳吧？我叫曹拂延，安薩寶是我養父。"
+            },
+            {
+              "speaker": "粟特商團　曹拂延",
+              "portrait": "prodigy_sute",
+              "image": "",
+              "text": "中原人說話繞，我們粟特人說話直——直到談價錢。你們的劍，怎麼賣？"
+            },
+            {
+              "speaker": "{name}",
+              "portrait": "hero",
+              "image": "",
+              "text": "不賣。不過可以換。"
+            }
+          ],
+          "choices": [
+            {
+              "text": "跟他換招，交個朋友",
+              "effects": [
+                {
+                  "key": "relation",
+                  "value": 10,
+                  "ref": "sute"
+                },
+                {
+                  "key": "lineRank",
+                  "value": 1,
+                  "ref": "blade"
+                }
+              ],
+              "setFlag": "fuyan_friend",
+              "next": "q_prodigy_sute_2a",
+              "relation": 10
+            },
+            {
+              "text": "跟他談一筆生意",
+              "effects": [
+                {
+                  "key": "relation",
+                  "value": 5,
+                  "ref": "sute"
+                },
+                {
+                  "key": "silver",
+                  "value": 20,
+                  "ref": ""
+                }
+              ],
+              "setFlag": "fuyan_trade",
+              "next": "q_prodigy_sute_2b",
+              "relation": 5
+            }
+          ],
+          "outline": ""
+        },
+        {
+          "id": "q_prodigy_sute_2a",
+          "title": "養父的帳",
+          "summary": "曹拂延說出一件心事。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 11,
+            "maxMonth": 0,
+            "flag": "fuyan_friend",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "曹拂延信任你，說出商團替范陽阿史德翰販馬的事，求你想辦法讓養父脫身（與安延年支線交會）。結局：粟特商團脫離范陽，或曹拂延離家投入本門。"
+        },
+        {
+          "id": "q_prodigy_sute_2b",
+          "title": "生意人",
+          "summary": "曹拂延成了本門在絲路上的眼睛。",
+          "playable": false,
+          "trigger": {
+            "minMonth": 11,
+            "maxMonth": 0,
+            "flag": "fuyan_trade",
+            "notFlag": "",
+            "disaster": "",
+            "response": "",
+            "minRelation": -100,
+            "location": ""
+          },
+          "scene": [],
+          "choices": [],
+          "outline": "曹拂延每次路過都帶來西域的消息與貨物。若康瑟在門中，表姐弟倆合夥開了一間胡商櫃坊（經商收益上升）。"
+        }
+      ]
+    }
+  ]
+}

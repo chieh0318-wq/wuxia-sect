@@ -10,7 +10,7 @@ namespace Wuxia
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         private static void Boot()
         {
-            if (UnityEngine.Object.FindFirstObjectByType<GameBootstrap>() == null)
+            if (UnityEngine.Object.FindAnyObjectByType<GameBootstrap>() == null)
                 new GameObject("GameBootstrap").AddComponent<GameBootstrap>();
         }
     }
@@ -47,7 +47,7 @@ namespace Wuxia
         {
             view = Camera.main;
             if (view == null)
-                view = UnityEngine.Object.FindFirstObjectByType<Camera>();
+                view = UnityEngine.Object.FindAnyObjectByType<Camera>();
             if (view == null)
             {
                 var cameraObject = new GameObject("Main Camera");
@@ -63,7 +63,7 @@ namespace Wuxia
             if (view.GetComponent<CameraController>() == null)
                 view.gameObject.AddComponent<CameraController>();
 
-            if (UnityEngine.Object.FindFirstObjectByType<Light>() == null)
+            if (UnityEngine.Object.FindAnyObjectByType<Light>() == null)
             {
                 var sunObject = new GameObject("Courtyard Sun");
                 sunObject.transform.SetParent(transform, false);
@@ -75,7 +75,7 @@ namespace Wuxia
                 sun.transform.rotation = Quaternion.Euler(48f, -32f, 0f);
             }
 
-            var events = UnityEngine.Object.FindFirstObjectByType<EventSystem>();
+            var events = UnityEngine.Object.FindAnyObjectByType<EventSystem>();
             if (events == null)
             {
                 var eventObject = new GameObject("EventSystem");

@@ -1,7 +1,5 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 using System.Linq;
@@ -49,7 +47,8 @@ namespace Wuxia
                 return;
             }
             BootStep("tutorial", () => tutorial = new TutorialGuide(ui, state));
-            controls.Changed += trigger => tutorial?.Record(trigger);
+            if (controls != null)
+                controls.Changed += trigger => tutorial?.Record(trigger);
             string[] args = Environment.GetCommandLineArgs();
             int capture = Array.IndexOf(args, "-wuxiaCapture");
             if (capture >= 0 && capture + 1 < args.Length)
@@ -127,10 +126,12 @@ namespace Wuxia
                 var sun = sunObject.AddComponent<Light>();
                 sun.type = LightType.Directional;
                 sun.color = new Color(1f, 0.94f, 0.81f);
-                sun.intensity = 1.65f;
+                sun.intensity = 1.35f;
                 RenderSettings.sun = sun;
                 sun.shadows = LightShadows.Soft;
-                sun.transform.rotation = Quaternion.Euler(48f, -32f, 0f);
+                sun.shadowBias = .025f;
+                sun.shadowNormalBias = .22f;
+                sun.transform.rotation = Quaternion.Euler(47f, -37f, 0f);
             }
 
             var events = UnityEngine.Object.FindAnyObjectByType<EventSystem>();
@@ -208,7 +209,6 @@ namespace Wuxia
 
         private void OnDestroy()
         {
-
             ui?.Destroy();
         }
 
@@ -261,7 +261,7 @@ namespace Wuxia
             }
 
             if (recruit != null)
-                grant = tutorial?.Fund(action.cost, extraSilver) ?? "";
+                grant = tutorial?.Fund("recruit", action.cost, extraSilver) ?? "";
             if (!state.CanPay(action.cost, extraSilver))
             {
                 ui.Message("銀兩或糧食不足。");
@@ -335,7 +335,7 @@ namespace Wuxia
                 silver = buildChoice.cost.silver + buildAction.cost.silver,
                 food = buildChoice.cost.food + buildAction.cost.food
             };
-            string grant = tutorial?.Fund(total) ?? "";
+            string grant = tutorial?.Fund("build_any", total) ?? "";
             if (!state.CanPay(total))
             {
                 ui.Message("銀兩或糧食不足。");
@@ -392,6 +392,8 @@ namespace Wuxia
 
         private void EndMonth()
         {
+            if (state == null)
+                return;
             if (choosingBuilding)
                 CancelBuild();
             var report = state.EndMonth();

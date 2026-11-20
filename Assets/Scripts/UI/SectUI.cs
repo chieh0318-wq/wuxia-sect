@@ -7,9 +7,8 @@ namespace Wuxia
 {
     public sealed partial class SectUI
     {
-        private static readonly Color PanelColor = new Color(0.87f, 0.80f, 0.66f, 1f);
         private static readonly Color ButtonColor = new Color(0.43f, 0.20f, 0.15f, 1f);
-        private static readonly Color Ink = new Color(0.20f, 0.15f, 0.10f);
+        private static readonly Color Ink = new Color(.15f, .105f, .075f);
         private readonly RectTransform canvas;
         private readonly RectTransform labels;
         private readonly RectTransform commandList;
@@ -17,14 +16,16 @@ namespace Wuxia
         private readonly RectTransform detailsList;
         private readonly RectTransform modal;
         private readonly RectTransform modalList;
+        private readonly RectTransform modalCard;
         private readonly RectTransform dialogue;
         private readonly Text dialogueText;
+        private readonly Text speakerName;
         private readonly Text date;
         private readonly Text resources;
         private readonly Text toast;
         private readonly Font font;
-        private readonly List<(Transform target, Vector3 offset, Text text)> worldLabels =
-            new List<(Transform, Vector3, Text)>();
+        private readonly List<(Transform target, Vector3 offset, RectTransform tag)> worldLabels = new();
+        private readonly List<Rect> visibleTags = new();
 
         public bool ModalOpen => modal.gameObject.activeSelf;
         public bool DialogueOpen => dialogue.gameObject.activeSelf;
@@ -61,7 +62,8 @@ namespace Wuxia
             Anchor(end, Vector2.right, Vector2.one, new Vector2(-188, 12), new Vector2(-12, -12));
 
             var commands = Panel("Commands", canvas, new Vector2(0, 1), new Vector2(0, 1),
-                new Vector2(18, -590), new Vector2(310, -110));
+                new Vector2(18, -365), new Vector2(310, -110));
+            this.commands = commands;
             commandList = ScrollList(commands, new Vector2(14, 14), new Vector2(-14, -14));
 
             details = Panel("Building details", canvas, Vector2.one, Vector2.one,
@@ -84,19 +86,24 @@ namespace Wuxia
 
             dialogue = Panel("Dialogue", canvas, new Vector2(0.5f, 0), new Vector2(0.5f, 0),
                 new Vector2(-440, 102), new Vector2(440, 246));
-            dialogueText = Label(dialogue, "", 25);
+            speakerName = Label(dialogue, "", 25);
+            speakerName.fontStyle = FontStyle.Bold;
+            Anchor(speakerName.rectTransform, Vector2.zero, Vector2.one, new(23, 80), new(-120, -15));
+            dialogueText = Label(dialogue, "", 24);
             Anchor(dialogueText.rectTransform, Vector2.zero, Vector2.one,
-                new Vector2(20, 14), new Vector2(-120, -14));
+                new Vector2(23, 14), new Vector2(-120, -62));
             var closeDialogue = Button(dialogue, "關閉", CloseDialogue);
             Anchor(closeDialogue, Vector2.one, Vector2.one, new Vector2(-112, -65), new Vector2(-14, -14));
             CloseDialogue();
 
             modal = Panel("Modal blocker", canvas, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero);
-            modal.GetComponent<Image>().color = new Color(0, 0, 0, 0.6f);
-            var card = Panel("Report", modal, Vector2.one * 0.5f, Vector2.one * 0.5f,
-                new Vector2(-350, -235), new Vector2(350, 235));
-            modalList = ScrollList(card, new Vector2(22, 82), new Vector2(-22, -22));
-            modalButtons = Rect("Report actions", card);
+            var backdrop = modal.GetComponent<Image>();
+            backdrop.sprite = null;
+            backdrop.type = Image.Type.Simple;
+            backdrop.color = new Color(.08f, .055f, .034f, .40f);
+            modalCard = Panel("Report", modal, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero);
+            modalList = ScrollList(modalCard, new Vector2(26, 82), new Vector2(-26, -22));
+            modalButtons = Rect("Report actions", modalCard);
             Anchor(modalButtons, Vector2.zero, Vector2.right, new Vector2(22, 18), new Vector2(-22, 68));
             var actions = modalButtons.gameObject.AddComponent<HorizontalLayoutGroup>();
             actions.spacing = 16;
@@ -115,6 +122,7 @@ namespace Wuxia
         public void ShowCommands(string title, IEnumerable<(string label, Action run)> commands)
         {
             Clear(commandList);
+            SetCommandsPanelHeight(title == "建造" ? 480 : 255);
             AddLine(commandList, title, 28);
             targets.Remove("cmd_build");
             targets.Remove("cmd_recruit");
@@ -127,6 +135,8 @@ namespace Wuxia
                 index++;
             }
         }
+
+        private void SetCommandsPanelHeight(float height) => commands.offsetMin = new Vector2(18, -110 - height);
 
         public void ShowBuilding(BuildingData building, IEnumerable<(string label, Action run)> actions)
         {
@@ -151,6 +161,10 @@ namespace Wuxia
             AddLine(modalList, title, 30);
             foreach (string line in lines)
                 AddLine(modalList, line);
+            Vector2 center = dismissible ? Vector2.one * .5f : new Vector2(.5f, .24f);
+            Vector2 extent = dismissible ? new Vector2(352, 185) : new Vector2(420, 103);
+            Anchor(modalCard, center, center, -extent, extent);
+            modal.GetComponent<Image>().color = new Color(.08f, .055f, .034f, dismissible ? .38f : .21f);
             modalDismissible = dismissible;
             modalClosed = closed;
             foreach (var action in buttons ?? new[] { ("確定", (Action)(() => CloseModal())) })
@@ -161,7 +175,8 @@ namespace Wuxia
 
         public void ShowDialogue(DiscipleData disciple, string line)
         {
-            dialogueText.text = $"{disciple.name}　{disciple.title}／{disciple.trait}\n{line}";
+            speakerName.text = $"{disciple.name}　{disciple.title}／{disciple.trait}";
+            dialogueText.text = line;
             dialogue.gameObject.SetActive(true);
         }
 
@@ -179,7 +194,13 @@ namespace Wuxia
             callback?.Invoke();
         }
         public void CloseDialogue() => dialogue.gameObject.SetActive(false);
-        public void Destroy() => UnityEngine.Object.Destroy(canvas.gameObject);
+        public void Destroy()
+        {
+            if (canvas)
+                UnityEngine.Object.Destroy(canvas.gameObject);
+            UnityEngine.Object.Destroy(paper);
+            UnityEngine.Object.Destroy(paperTexture);
+        }
 
         public void Message(string message)
         {
@@ -189,24 +210,40 @@ namespace Wuxia
 
         public void AddWorldLabel(Transform target, Vector3 offset, string name)
         {
-            var label = Label(labels, name, 18, TextAnchor.MiddleCenter);
-            label.rectTransform.sizeDelta = new Vector2(Mathf.Max(64, name.Length * 18 + 12), 26);
-            var backing = label.gameObject.AddComponent<Outline>();
-            backing.effectColor = new Color(.91f, .84f, .69f);
-            backing.effectDistance = new Vector2(1.5f, 1.5f);
-            worldLabels.Add((target, offset, label));
+            var tag = Panel("Name tag", labels, Vector2.one * .5f, Vector2.one * .5f,
+                Vector2.zero, Vector2.zero, false);
+            tag.sizeDelta = new Vector2(Mathf.Max(66, name.Length * 17 + 16), 29);
+            Fill(Label(tag, name, 16, TextAnchor.MiddleCenter).rectTransform, 3);
+            worldLabels.Add((target, offset, tag));
         }
 
         public void PositionLabels(Camera camera)
         {
             Camera projection = Canvas.renderMode == RenderMode.ScreenSpaceCamera ? camera : null;
+            visibleTags.Clear();
             foreach (var entry in worldLabels)
             {
                 Vector3 screen = camera.WorldToScreenPoint(entry.target.position + entry.offset);
-                bool visible = screen.z > 0 && screen.z < 56 && camera.pixelRect.Contains(screen);
-                entry.text.gameObject.SetActive(visible);
-                if (visible && RectTransformUtility.ScreenPointToLocalPointInRectangle(labels, screen, projection, out var point))
-                    entry.text.rectTransform.anchoredPosition = point;
+                bool visible = screen.z > 0 && screen.z < (entry.offset.y < 2f ? 39 : 57) &&
+                    camera.pixelRect.Contains(screen);
+                if (visible)
+                {
+                    float scale = Canvas.scaleFactor;
+                    var rect = new Rect((Vector2)screen - entry.tag.sizeDelta * scale * .5f, entry.tag.sizeDelta * scale);
+                    foreach (var other in visibleTags)
+                        if (rect.Overlaps(other))
+                        {
+                            visible = false;
+                            break;
+                        }
+                    if (visible)
+                    {
+                        visibleTags.Add(rect);
+                        RectTransformUtility.ScreenPointToLocalPointInRectangle(labels, screen, projection, out var local);
+                        entry.tag.anchoredPosition = local;
+                    }
+                }
+                entry.tag.gameObject.SetActive(visible);
             }
         }
 
@@ -226,6 +263,7 @@ namespace Wuxia
             Anchor(content, Vector2.up, Vector2.one, Vector2.zero, Vector2.zero);
             content.pivot = new Vector2(0.5f, 1);
             var stack = content.gameObject.AddComponent<VerticalLayoutGroup>();
+            stack.padding = new RectOffset(0, 0, 0, 8);
             stack.spacing = 9;
             stack.childControlWidth = true;
             stack.childControlHeight = true;
@@ -248,9 +286,15 @@ namespace Wuxia
         {
             var rect = Panel(text, parent, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero);
             var image = rect.GetComponent<Image>();
+            image.sprite = null;
+            image.type = Image.Type.Simple;
             image.color = ButtonColor;
             var button = rect.gameObject.AddComponent<Button>();
             button.targetGraphic = image;
+            var colors = button.colors;
+            colors.highlightedColor = new Color(1, .86f, .75f);
+            colors.pressedColor = new Color(.72f, .63f, .56f);
+            button.colors = colors;
             button.onClick.AddListener(() => action());
             rect.gameObject.AddComponent<LayoutElement>().preferredHeight = 53;
             var label = Label(rect, text, 22, TextAnchor.MiddleCenter);
@@ -281,17 +325,16 @@ namespace Wuxia
             parent.anchoredPosition = Vector2.zero;
         }
 
-        private static RectTransform Panel(string name, RectTransform parent, Vector2 a, Vector2 b,
+        private RectTransform Panel(string name, RectTransform parent, Vector2 a, Vector2 b,
             Vector2 min, Vector2 max, bool blocksClicks = true)
         {
             var rect = Rect(name, parent);
             Anchor(rect, a, b, min, max);
             var image = rect.gameObject.AddComponent<Image>();
-            image.color = PanelColor;
+            image.sprite = Paper();
+            image.type = Image.Type.Sliced;
+            image.color = Color.white;
             image.raycastTarget = blocksClicks;
-            var frame = rect.gameObject.AddComponent<Outline>();
-            frame.effectColor = new Color(.24f, .14f, .09f, .95f);
-            frame.effectDistance = new Vector2(3, -3);
             return rect;
         }
 

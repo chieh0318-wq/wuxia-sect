@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using UnityEngine;
 
 namespace Wuxia
@@ -39,6 +40,11 @@ namespace Wuxia
             this.state = state;
             string path = Path.Combine(Application.streamingAssetsPath, "Data", "tutorial.json");
             data = JsonUtility.FromJson<TutorialData>(File.ReadAllText(path));
+            if (data?.intro == null || data.intro.Any(line => line == null) ||
+                data.titles == null || data.titles.Length != 2 || data.titles.Any(string.IsNullOrWhiteSpace) ||
+                data.steps == null || data.steps.Any(step => step == null || string.IsNullOrWhiteSpace(step.trigger)) ||
+                data.reward == null)
+                throw new InvalidDataException("Tutorial data is incomplete.");
             ShowIntro();
         }
 
@@ -107,9 +113,9 @@ namespace Wuxia
             ui.HideObjective();
         }
 
-        internal string Fund(Cost cost, int extraSilver = 0)
+        internal string Fund(string trigger, Cost cost, int extraSilver = 0)
         {
-            if (!Active)
+            if (!Active || actions.Contains((trigger, "")))
                 return "";
             var grant = new Yield
             {

@@ -10,7 +10,7 @@
     { "id": "zoom", "title": "拉近視角", "objective": "調整遠近，看看院中的建築。", "hint": "將游標移入庭院，再轉動滾輪。", "trigger": "camera_zoom", "target": "", "highlight": "" },
     { "id": "hall", "title": "拜謁祖師", "objective": "選取北側的祖師殿，查看可用指令。", "hint": "左鍵點選朱印下方的祖師殿。", "trigger": "click_building", "target": "hall", "highlight": "building:hall" },
     { "id": "disciple", "title": "問候弟子", "objective": "和院中一位弟子交談。", "hint": "左鍵點選走動中的弟子。", "trigger": "talk_disciple", "target": "", "highlight": "" },
-    { "id": "build", "title": "擴建院落", "objective": "在院中空地建造一棟建築。", "hint": "選左側興建建築，再選建築與綠色空地。", "trigger": "build_any", "target": "", "highlight": "ui:cmd_build" },
+    { "id": "build", "title": "擴建院落", "objective": "在院中空地建造一棟建築。", "hint": "選左側「興建屋舍」，再選建築與綠色空地。", "trigger": "build_any", "target": "", "highlight": "ui:cmd_build" },
     { "id": "recruit", "title": "開門收徒", "objective": "為{sect}招收一位新弟子。", "hint": "選左側指令中的招收弟子。", "trigger": "recruit", "target": "", "highlight": "ui:cmd_recruit" },
     { "id": "month", "title": "月底結算", "objective": "結束本月，結算門中收支。", "hint": "選右上方「結束本月」。", "trigger": "end_month", "target": "", "highlight": "ui:end_month" },
     { "id": "report", "title": "查閱月報", "objective": "查看本月收支與門中結餘。", "hint": "讀完後，選「確定」關閉月報。", "trigger": "read_report", "target": "", "highlight": "" }

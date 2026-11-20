@@ -11,6 +11,12 @@ namespace Wuxia
         private IEnumerator Capture(string directory)
         {
             yield return new WaitForSecondsRealtime(2);
+            if (tutorial == null)
+            {
+                Debug.LogError("[Capture] Tutorial failed to initialize.");
+                Application.Quit(1);
+                yield break;
+            }
             Directory.CreateDirectory(directory);
             const int width = 1920, height = 1080;
             var target = new RenderTexture(width, height, 24);
@@ -26,25 +32,28 @@ namespace Wuxia
                 canvas.worldCamera = view;
                 canvas.planeDistance = view.nearClipPlane + .1f;
 
-                SaveShot("01_courtyard_overview.png");
+                yield return null;
+                if (!SaveShot("01_courtyard_overview.png"))
+                    yield break;
                 tutorial.ChooseForCapture();
                 tutorial.Record("camera_move");
                 tutorial.Record("camera_zoom");
-                SaveShot("02_tutorial_hud.png");
+                yield return null;
+                if (!SaveShot("02_tutorial_hud.png"))
+                    yield break;
 
-                controls.Frame(new Vector2(0, 8.6f), 15.0f);
-                SaveShot("03_closeup.png");
+                controls.Frame(new Vector2(0, 7.1f), 16.8f);
+                yield return null;
+                if (!SaveShot("03_closeup.png"))
+                    yield break;
 
-                ShowBuilding(System.Array.Find(state.Buildings, building => building?.id == "hall"));
+                var hall = System.Array.Find(state.Buildings, building => building?.id == "hall");
+                tutorial.Record("click_building", hall.id);
                 Speak(state.Disciples[0]);
-                ShowBuilding(System.Array.Find(state.Buildings, building => building?.id == "hall"));
-                SaveShot("04_building_panel.png");
-                Application.Quit();
-            }
-            catch (System.Exception error)
-            {
-                Debug.LogError($"[Capture] {error}");
-                Application.Quit(1);
+                ShowBuilding(hall);
+                yield return null;
+                if (SaveShot("04_building_panel.png"))
+                    Application.Quit();
             }
             finally
             {
@@ -56,7 +65,22 @@ namespace Wuxia
                 Destroy(target);
             }
 
-            void SaveShot(string file)
+            bool SaveShot(string file)
+            {
+                try
+                {
+                    WritePng(file);
+                    return true;
+                }
+                catch (System.Exception error)
+                {
+                    Debug.LogError($"[Capture] {error}");
+                    Application.Quit(1);
+                    return false;
+                }
+            }
+
+            void WritePng(string file)
             {
                 Canvas.ForceUpdateCanvases();
                 ui.PositionLabels(view);

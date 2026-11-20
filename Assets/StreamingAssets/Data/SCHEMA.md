@@ -1,6 +1,6 @@
 # 門派資料格式
 
-四份 JSON 檔以 UTF-8 儲存。每份最外層皆為物件。ID 需在同一份檔案中唯一，跨檔引用區分大小寫。資源、年份、月份與年齡使用整數，座標與尺寸可用小數。
+五份 JSON 檔以 UTF-8 儲存。每份最外層皆為物件。ID 需在同一份檔案中唯一，跨檔引用區分大小寫。資源、年份、月份與年齡使用整數，座標與尺寸可用小數。
 
 - `buildings.json` 的 `buildings` 陣列包含 `id`、`name`、`description`、`color`（`#RRGGBB`）、`size`（依序為寬、高、深）、`cost`、`upkeep`（每月銀兩）、`income`、`unique`、`startBuilt`、`actions`（指令 ID 陣列）。唯一建築只能有一棟。開局先依 `start.json` 擺放，再將尚未擺放的開局建築依序填入空地。
 - `actions.json` 的 `actions` 陣列包含 `id`、`name`、`description`、`type`、`cost`、`effect`。類型為 `generic`、`recruit` 或 `build`。招收另計 `recruitCost`。建造指令的成本、效果和建築成本在選定空地後一併結算。左側使用第一個建造指令和第一個招收指令。

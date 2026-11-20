@@ -42,7 +42,7 @@ Kenney published the OGG files below under [CC0 1.0](https://creativecommons.org
 
 ## Map data (public domain)
 
-`Assets/Art/Map/world_map.jpg` is an original rendering by Codex B, made with `tools/build_world_map.py`. It uses Natural Earth 1:50m Land, Lakes, and Rivers + Lake Centerlines. Natural Earth data is in the public domain. See [Physical vectors](https://www.naturalearthdata.com/downloads/50m-physical-vectors/) and the [terms of use](https://www.naturalearthdata.com/about/terms-of-use/). Node positions and roads in `worldmap.json` were authored for this project.
+`Assets/Art/Map/world_map.jpg` is an original rendering by Codex B with terrain and parchment refinements by Codex D. The `tools/build_world_map.py` source uses public-domain Natural Earth 1:50m Land, Lakes, Rivers + Lake Centerlines, and Shaded Relief. Node positions and roads in `worldmap.json` were authored for this project. [Physical vectors](https://www.naturalearthdata.com/downloads/50m-physical-vectors/) · [Shaded relief](https://www.naturalearthdata.com/downloads/50m-raster-data/50m-shaded-relief/) · [Terms of use](https://www.naturalearthdata.com/about/terms-of-use/)
 
 ## Textures (CC0)
 

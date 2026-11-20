@@ -77,7 +77,7 @@ namespace Wuxia
             GameState saved = GameState.LoadSave(data);
             if (saved == null)
             {
-                ui.ShowModal("讀取存檔", new[] { "存檔無法讀取。" }, closed: ShowTitle);
+                ui.ShowModal("讀取存檔", new[] { "存檔已損毀或版本不符，無法讀取。" }, closed: ShowTitle);
                 return;
             }
             EnterCourtyard(saved, false);

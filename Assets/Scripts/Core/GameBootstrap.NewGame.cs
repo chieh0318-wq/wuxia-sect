@@ -85,7 +85,7 @@ namespace Wuxia
         internal void Begin()
         {
             AudioManager.Music("prologue");
-            ui.ShowCreation("首徒稱謂", new[] { "你是師父最早收入門下的弟子。" },
+            ui.ShowCreation("首徒稱謂", new[] { "你是師父最早收入門下的弟子。師弟師妹們該怎麼稱呼你？" },
                 null, ChooseAppearance);
             ui.CreationGrid(2, 1, 540);
             ui.CreationIdentity("大師兄", "hero_m1", "男", () => ChooseGender("男"));
@@ -238,7 +238,7 @@ namespace Wuxia
             if (visible.Length > 0)
                 ui.CreationGrid(3, (visible.Length + 2) / 3, 154);
             else
-                ui.CreationChoice("本次未抽到此類天賦", "", null, null);
+                ui.CreationChoice("這一輪沒有抽到這類天賦", "", null, null);
             foreach (var option in visible)
                 ShowPick(option, RarityLabel(option.rarity), talents.budget, talents.maxPicks, ShowTalents);
             // Both skill families, reflecting rank/cap effects of the talents picked so far.
@@ -284,12 +284,12 @@ namespace Wuxia
                 {
                     "silver" => "銀兩", "food" => "糧食", "reputation" => "聲望", "apMax" => "行動力上限",
                     "recruitPoolSize" => "招徒人選", "recruitCostPct" => "招徒費用", "buildCostPct" => "建造費用",
-                    "trainBonusPct" => "修習進度", "insightChance" => "感悟機率", "str" => "武力", "agi" => "身法",
+                    "trainBonusPct" => "修習進度", "insightChance" => "頓悟機率", "str" => "武力", "agi" => "身法",
                     "con" => "根骨", "wit" => "悟性", "cha" => "魅力", "loyaltyAll" => "弟子忠誠",
                     "relation" => "勢力關係", "followers" => "追隨弟子", "cap" => "技能上限",
                     "rank" or "lineRank" => "技能階位", _ => ""
                 };
-                if (effect.key == "noGraveInjury") return "免受重傷與致命傷";
+                if (effect.key == "noGraveInjury") return "不會重傷，也不致殞命";
                 if (caption.Length == 0) return "";
                 if (effect.key is "rank" or "lineRank" or "cap")
                 {

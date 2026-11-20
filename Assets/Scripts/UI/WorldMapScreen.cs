@@ -148,7 +148,7 @@ namespace Wuxia
             card = MapUi.Rect(frame,"Map card",1113,96,426,680);
             var footer = MapUi.Kit(frame,"Map status bar",12,808,1576,82,"Wood",false);
             status = MapUi.Text(footer,"",22,6,1530,38,22,MapUi.Paper,TextAnchor.MiddleLeft,"Narration");
-            MapUi.Text(footer,"滾輪縮放　右鍵拖曳／WASD 移圖",
+            MapUi.Text(footer,"滾輪縮放　右鍵或中鍵拖曳　WASD 平移",
                 22,44,630,30,17,MapUi.Gold);
             var legend = MapUi.Kit(footer,"Legend paper tag",750,13,805,55,"Paper",false);
             MapUi.Text(legend,"◎ 京城　● 州城　◇ 門派　◆ 關隘　▲ 名山　行 隊伍",
@@ -370,7 +370,7 @@ namespace Wuxia
             var factions = data.Factions.Where(f => f.Controls(node.id)).ToArray();
             MapUi.Text(panel,"勢力　"+(factions.Length == 0 ? "—" : string.Join("、",factions.Select(f => f.Label))),20,266,386,60,19,MapUi.Ink);
             var route = data.Route(host.PartyNode,node.id);
-            string message = node.id == host.PartyNode ? "隊伍在此" : route == null ? "尚無可行路線" : $"{route.Days} 日　行動力 {route.Ap}";
+            string message = node.id == host.PartyNode ? "隊伍就在此地" : route == null ? "沒有可通的道路" : $"路程 {route.Days} 日　行動力 {route.Ap}";
             MapUi.Text(panel,message,20,345,386,39,24,MapUi.Ink);
             if (route == null) return;
             MapUi.Text(panel,string.Join(" → ",route.Nodes.Select(data.NodeLabel)),20,393,386,154,19,MapUi.Ink,TextAnchor.UpperLeft);
@@ -507,7 +507,7 @@ namespace Wuxia
             host.AdvanceDays(route.Days);
             foreach (var button in cardActions) button.interactable = false;
             UpdateAp();
-            status.text = "隊伍正在路上……";
+            status.text = "一行人正在趕路……";
             AudioManager.Play("departure");
             StartCoroutine(Animate(route,destination));
         }

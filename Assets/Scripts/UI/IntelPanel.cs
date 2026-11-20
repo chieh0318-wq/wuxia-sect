@@ -75,7 +75,7 @@ namespace Wuxia
             bar.targetGraphic = handle.GetComponent<Image>();
             scroll.verticalScrollbar = bar;
             scroll.verticalScrollbarVisibility = ScrollRect.ScrollbarVisibility.AutoHide;
-            MapUi.Text(root,"點選欄名排序　點選勢力定位其據點",31,834,1340,37,20,MapUi.Ink);
+            MapUi.Text(root,"點選欄名即可排序；點選勢力，地圖便會標出其據點",31,834,1340,37,20,MapUi.Ink);
             Close();
         }
 
@@ -134,7 +134,7 @@ namespace Wuxia
             var matching = data.Factions.Where(f => InType(f) && (relation == 0 || RelationOf(f) == Relations[relation]));
             var grouped = matching.OrderBy(IsPrivate);
             var sorted = (descending ? grouped.ThenByDescending(Key) : grouped.ThenBy(Key)).ThenBy(f=>f.Label).ToArray();
-            count.text = $"{sorted.Length} 股勢力";
+            count.text = $"共 {sorted.Length} 股勢力";
             rows.sizeDelta = new Vector2(1475,Mathf.Max(592,sorted.Length*48));
             for (int i=0;i<sorted.Length;i++) DrawRow(sorted[i],i);
             if (sorted.Length == 0)

@@ -20,7 +20,7 @@ namespace Wuxia
             var rank = RankSystem.Martial(lines, weaponDelta: weaponDelta);
             float multiplier = RankSystem.Multiplier(rank);
             int[] effective = attrs?.Select(value => Mathf.RoundToInt(value * multiplier)).ToArray();
-            var body = Label(profile, $"武學　{RankSystem.Format(rank, RankSystem.Martial(lines, true))}　×{multiplier:0.##}\n{Attributes(attrs)}\n實效　{Attributes(effective)}", 25);
+            var body = Label(profile, $"武學　{RankSystem.Format(rank, RankSystem.Martial(lines, true))}　×{multiplier:0.##}\n{Attributes(attrs)}\n實戰　{Attributes(effective)}", 25);
             body.color = Color.Lerp(RankSystem.Color(rank), Ink, .35f);
             Anchor(body.rectTransform, Vector2.zero, Vector2.one, new(132, 16), new(-16, -16));
             SkillColumns(lines);

@@ -69,7 +69,7 @@ namespace Wuxia
             {
                 bool tutorialFunds = tutorial?.CanFund("recruit") == true;
                 bool affordable = (state.ActionPoints >= method.apCost && state.Silver >= method.silverCost) || tutorialFunds;
-                string reason = affordable ? "" : "　資源不足";
+                string reason = affordable ? "" : "　行動力或銀兩不足";
                 ui.CreationChoice($"{method.name}　行動力 {method.apCost}／銀 {method.silverCost}{reason}",
                     method.desc, null, affordable ? () => Visit(method) : null);
             }
@@ -167,14 +167,14 @@ namespace Wuxia
         private int RecruitPrice(Candidate candidate) => Mathf.Max(0,
             Mathf.RoundToInt(candidate.silverCost * (1 + state.Story.recruitCostPct / 100f)));
 
-        private const string Recruited = "已收為弟子 ✓";
+        private const string Recruited = "已收入門下";
 
         private string RecruitRestriction(Candidate candidate)
         {
             if (state.Disciples.Contains(candidate))
                 return Recruited;
             if (accepted >= Recruitment.maxAcceptPerVisit)
-                return "本次招收名額已滿";
+                return "這一趟收徒名額已滿";
             int beds = state.Buildings.Count(building => building != null && building.actions.Contains("lodge")) * 4;
             if (beds > 0 && state.Disciples.Count >= beds && tutorial?.CanFund("recruit") != true)
                 return "床位已滿";
@@ -203,7 +203,7 @@ namespace Wuxia
                     FillCandidates();
                 }));
             ui.ShowCreation(activeMethod.name,
-                new[] { $"銀兩 {state.Silver}　已收徒 {accepted}／{Recruitment.maxAcceptPerVisit}　人選 {recruitPage + 1}／{pages} 頁" }, buttons, null);
+                new[] { $"銀兩 {state.Silver}　已收徒 {accepted}／{Recruitment.maxAcceptPerVisit}　第 {recruitPage + 1}／{pages} 頁" }, buttons, null);
             var catalog = RecruitTalents.talents ?? Array.Empty<CreationOption>();
             foreach (var candidate in candidates.Skip(recruitPage * pageSize).Take(pageSize))
             {

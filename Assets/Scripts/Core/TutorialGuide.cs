@@ -59,8 +59,8 @@ namespace Wuxia
             steps.Insert(buildStep + 1, new TutorialStep
             {
                 id = "action_points", title = "清點行動力",
-                objective = "查看本月還能辦多少事。",
-                hint = "將游標移到上方行動力，查看上限來源。",
+                objective = "看看本月還能辦幾件事。",
+                hint = "將游標移到上方的行動力，看看上限從何而來。",
                 trigger = "inspect_ap", target = "", highlight = "ui:ap"
             });
             data.steps = steps.ToArray();

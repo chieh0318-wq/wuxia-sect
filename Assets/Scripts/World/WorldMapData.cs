@@ -98,6 +98,13 @@ namespace Wuxia
         };
         public Color Tint => ColorUtility.TryParseHtmlString(color, out var tint) ? tint : new Color(.47f,.26f,.16f);
         public bool Controls(string node) => seat == node || (territory?.Contains(node) ?? false);
+        public string WeaponLabel => leaderWeapon switch
+        {
+            "weapon_monk_staff" => "禪杖",
+            "weapon_pozhen_shuo" => "破陣槊",
+            string id when id.StartsWith("weapon_", StringComparison.Ordinal) => "已裝備",
+            _ => leaderWeapon
+        };
         public string Arts => string.Join("、", martialArts ?? Array.Empty<string>());
     }
     internal sealed class MapRoute

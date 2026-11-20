@@ -358,7 +358,7 @@ namespace Wuxia
             MapUi.Text(panel,$"首領　{faction.leader ?? "—"}",20,149,386,32,22,MapUi.Ink);
             MapUi.Text(panel,RankFormat.Format(faction.leaderRank,faction.leaderCap),20,183,386,30,24,RankFormat.Color(faction.leaderRank));
             if (!string.IsNullOrEmpty(faction.leaderWeapon))
-                MapUi.Text(panel,"神兵　"+faction.leaderWeapon,155,183,249,30,19,MapUi.Red);
+                MapUi.Text(panel,"神兵　"+faction.WeaponLabel,155,183,249,30,19,MapUi.Red);
             MapUi.Text(panel,$"聲望 {faction.reputation}　弟子 {faction.disciples}　銀兩 {faction.money}",20,229,386,39,19,MapUi.Ink);
             MapUi.Text(panel,"絕學　"+faction.Arts,20,276,386,54,19,MapUi.Ink,TextAnchor.UpperLeft);
             MapUi.Text(panel,faction.desc ?? "",20,337,386,104,19,MapUi.Ink,TextAnchor.UpperLeft);

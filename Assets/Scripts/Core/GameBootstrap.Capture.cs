@@ -49,6 +49,7 @@ namespace Wuxia
                     ("01_title.png", () => { }),
                     ("18_gender.png", () => { ui.CloseTitle(); creation.Begin(); }),
                     ("02_appearance.png", () => { ui.CloseTitle(); creation.CaptureAppearance(); }),
+                    ("02b_appearance_female.png", creation.CaptureFemaleAppearance),
                     ("03_talents.png", creation.CaptureTalents),
                     ("13_skills.png", creation.CaptureSkills),
                     ("14_attributes.png", creation.CaptureAttributes),
@@ -101,7 +102,14 @@ namespace Wuxia
                         if (special != null) ReviewCandidate(special);
                     }),
                     ("11_options_audio.png", ui.ShowAudioOptions),
-                    ("12_protagonist_panel.png", ShowProtagonist)
+                    ("12_protagonist_panel.png", ShowProtagonist),
+                    ("26_characters_panel.png", ShowCharacterDirectory),
+                    ("27_character_detail.png", () =>
+                    {
+                        var person = StoryCharacters.FirstOrDefault(entry => entry.id == state.FriendId)
+                            ?? StoryCharacters.FirstOrDefault();
+                        if (person != null) ShowCharacterDetail(person, ShowCharacterDirectory);
+                    })
                 };
 
                 foreach (var step in steps)
@@ -110,6 +118,12 @@ namespace Wuxia
                     yield return new WaitForSecondsRealtime(step.filename == "04_prologue_beat.png" ? 2.8f : .15f);
                     if (!SaveShot(step.filename))
                         yield break;
+                }
+                if (CaptureQuestline())
+                {
+                    yield return new WaitForSecondsRealtime(2.8f);
+                    if (!SaveShot("28_questline_beat.png")) yield break;
+                    ui.CloseStoryBeat();
                 }
                 bool shotsOk = true;
                 ui.CloseModal(force: true);
@@ -160,6 +174,35 @@ namespace Wuxia
                 Debug.Log($"[Capture] wrote {path}");
             }
         }
+        private bool CaptureQuestline()
+        {
+            var fresh = new GameState(data);
+            new NewGameFlow(ui, fresh, _ => { }).CaptureSkipPrologue();
+            var seen = new System.Collections.Generic.List<(Questline line, QuestBeat beat)>();
+            for (int month = 1; month <= 3; month++)
+            {
+                fresh.EvaluateQuestlines();
+                var quest = fresh.PendingQuest();
+                if (quest.beat != null)
+                {
+                    seen.Add(quest);
+                    Debug.Log($"[Capture] Early quest month {month}: {quest.line.character}/{quest.beat.id}");
+                    fresh.CompleteQuest(quest.line, quest.beat, quest.beat.choices?.FirstOrDefault());
+                }
+                if (month < 3) fresh.EndMonth();
+            }
+            var sample = seen.FirstOrDefault(quest => quest.beat.scene.Any(
+                part => part?.portrait?.Contains("__") == true));
+            if (sample.beat == null) sample = seen.FirstOrDefault();
+            if (sample.beat == null)
+            {
+                Debug.LogWarning("[Capture] 28_questline_beat skipped. No playable beat triggered in months 1–3.");
+                return false;
+            }
+            PlayQuest(sample.line, sample.beat, preferExpression: true);
+            return true;
+        }
+
         private bool VerifyCapturedGame(string directory)
         {
             string path = Path.Combine(directory, "capture-check-" + System.Guid.NewGuid().ToString("N") + ".json");

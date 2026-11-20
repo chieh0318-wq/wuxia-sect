@@ -54,6 +54,7 @@ namespace Wuxia
 
         internal void CaptureAppearance() => ChooseGender("男");
         internal void CaptureFemaleAppearance() => ChooseGender("女");
+        internal void CaptureSkipPrologue() => SkipStory();
         /// <summary>Capture: six offered talents with two picked, plus both skill families underneath.</summary>
         internal void CaptureTalents()
         {

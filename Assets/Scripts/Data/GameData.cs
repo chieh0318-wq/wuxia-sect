@@ -53,6 +53,7 @@ namespace Wuxia
         public string[] talents;
         public string origin, blurb, personality;
         public Aptitude aptitude;
+        public CharacterLook look;
     }
 
     [Serializable] public class SlotData

@@ -36,6 +36,7 @@ namespace Wuxia
         private void Awake()
         {
             BootStep("scene", ConfigureScene);
+            AudioManager.Initialize(); // M2-B audio
             BootStep("HUD", () => ui = new SectUI(EndMonth));
             BootStep("data", () => data = GameData.Load());
             if (ui == null || data == null)
@@ -84,6 +85,8 @@ namespace Wuxia
             }
             if (controls != null)
                 controls.enabled = true;
+            AudioManager.Music("courtyard");
+            ui.ShowMapButtons(ToggleWorldMap, () => ToggleWorldMap(true));
             if (startTutorial)
                 BootStep("tutorial", () => tutorial = new TutorialGuide(ui, state));
         }
@@ -110,8 +113,26 @@ namespace Wuxia
                 if (state.Buildings[index] != null)
                     world.PlaceBuilding(index, state.Buildings[index]);
             }
+            world.SpawnDisciple(ProtagonistFigure());
             foreach (var disciple in state.Disciples)
                 world.SpawnDisciple(disciple);
+        }
+
+        private const string ProtagonistFigureId = "hero";
+
+        /// <summary>A courtyard stand-in for the protagonist, wearing the look chosen at creation.</summary>
+        private DiscipleData ProtagonistFigure()
+        {
+            var hero = state.Protagonist;
+            var look = hero.look != null && !string.IsNullOrEmpty(hero.look.hairStyle) ? hero.look :
+                M2Data.Load<CharacterCatalog>("characters").protagonistLooks?.FirstOrDefault(entry => entry.id == hero.lookId);
+            look ??= CharacterFactory.ForRecruit(hero.gender, hero.title);
+            look.role = hero.title;
+            return new DiscipleData
+            {
+                id = ProtagonistFigureId, name = hero.name, gender = hero.gender, title = hero.title,
+                portrait = hero.portrait ?? hero.lookId, look = look
+            };
         }
 
         private void ConfigureScene()
@@ -197,6 +218,7 @@ namespace Wuxia
             }
             if (ui == null || view == null || !courtyardReady)
                 return;
+            if (HandleWorldMapInput()) return; // M2-B map input
             ui.PositionLabels(view);
             ui.PositionHighlight(tutorial?.Highlight, view, world);
             if (Input.GetKeyDown(KeyCode.Escape))
@@ -248,7 +270,10 @@ namespace Wuxia
                 }
                 if (!choosingBuilding && world.TryGetDisciple(hit.collider, out var disciple))
                 {
-                    Speak(disciple);
+                    if (disciple.id == ProtagonistFigureId)
+                        ShowProtagonist();
+                    else
+                        Speak(disciple);
                     return;
                 }
             }
@@ -341,6 +366,8 @@ namespace Wuxia
                 _ => ""
             };
             state.Apply(action.effect);
+            if (action.effect.silver > 0)
+                AudioManager.Play("coin");
             if (action.id == "medicine")
                 state.RecoverInjuries();
             if (action.id == "council" && state.BuildingLevel("council") >= 2)
@@ -417,6 +444,7 @@ namespace Wuxia
             state.Apply(buildAction.effect);
             state.Buildings[index] = buildChoice;
             world.PlaceBuilding(index, buildChoice);
+            PlayBuildAudio(); // M2-B placement and immediate M1 completion
             string result = $"{buildChoice.name}已落成。{Changes(buildAction.effect)}";
             CancelBuild();
             ui.Refresh(state);
@@ -506,6 +534,7 @@ namespace Wuxia
             ShowCommands();
             if (openBuilding != null && ui.BuildingOpen)
                 ShowBuilding(openBuilding);
+            AudioManager.Play("month");
             ui.Refresh(state);
             tutorial?.Record("end_month");
             if (!state.Save())

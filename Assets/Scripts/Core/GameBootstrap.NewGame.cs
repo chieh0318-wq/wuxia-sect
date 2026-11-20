@@ -66,6 +66,7 @@ namespace Wuxia
 
         internal void Begin()
         {
+            AudioManager.Music("prologue");
             ui.ShowCreation("首徒稱謂", new[] { "你是師父最早收入門下的弟子。" },
                 new[] { ("大師兄", (Action)(() => ChooseGender("男"))), ("大師姐", (Action)(() => ChooseGender("女"))) },
                 ChooseAppearance);
@@ -99,6 +100,7 @@ namespace Wuxia
                 }).ToArray();
             look ??= looks[0];
             hero.lookId = look.id;
+            hero.look = look;
             hero.portrait = string.IsNullOrEmpty(look.portrait) ? look.id : look.portrait;
             ui.ShowCreation("形貌與姓名", new[] { hero.title }, null, ChooseBackground, ChooseBackground);
             ui.CreationName(hero.name, value => hero.name = string.IsNullOrWhiteSpace(value) ? SuggestedName() : value.Trim(), SuggestedName);
@@ -364,8 +366,9 @@ namespace Wuxia
                 var beat = beats[index++];
                 var friend = Friend();
                 string friendId = state.Protagonist.gender == "女" ? "friend_m" : "friend_f";
+                // Story characters always use their own portrait id (never a recruit/fallback image).
                 string portrait = beat.portrait == "hero" ? state.Protagonist.portrait ?? state.Protagonist.lookId :
-                    beat.portrait == "friend" ? friend?.portrait ?? friendId : beat.portrait;
+                    beat.portrait == "friend" ? friendId : beat.portrait;
                 if (!string.IsNullOrEmpty(beat.image))
                     currentCg = beat.image;
                 ui.ShowStoryBeat(FormatStory(beat.speaker), FormatStory(beat.text), currentCg, portrait,

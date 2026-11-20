@@ -88,6 +88,7 @@ namespace Wuxia
             return true;
         }
         public string Date => $"開元{(Year == 1 ? "元" : ChineseNumber(Year))}年 {Months[Month - 1]}";
+        public string DateWithDay => Day <= 1 ? Date : $"{Date}{(Day <= 10 ? "初" : "")}{ChineseNumber(Day)}";
 
         public GameState(GameData data)
         {
@@ -173,6 +174,7 @@ namespace Wuxia
                 report.Lines.Add("銀兩不敷，拖欠工錢，聲望下降 1。");
             }
 
+            Story.day = 1;
             if (++Month > 12)
             {
                 Month = 1;

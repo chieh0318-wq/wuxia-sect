@@ -102,6 +102,8 @@ namespace Wuxia
                     special.lines = RankSystem.Seed(special.lines, special.rank, special.cap, "B");
                     var personality = Recruitment.personalities?.FirstOrDefault(entry => entry.name == special.personality);
                     special.loyalty = Mathf.Clamp(50 + (personality?.loyalty ?? 0) + state.Story.loyaltyBonus, 0, 100);
+                    if (special.look == null || string.IsNullOrEmpty(special.look.hairStyle))
+                        special.look = CharacterFactory.ForRecruit(special.gender, special.title ?? "入門弟子");
                     candidates[count - 1] = special;
                 }
             }
@@ -141,7 +143,8 @@ namespace Wuxia
                 loyalty = Mathf.Clamp(50 + (personality?.loyalty ?? 0) + state.Story.loyaltyBonus, 0, 100),
                 attrs = Enumerable.Range(0, 5).Select(_ => Mathf.Clamp(Random.Range(2, 7) + method.quality, 1, 10)).ToArray(),
                 aptitude = new Aptitude { bone = Random.Range(1, 11), insight = Random.Range(1, 11) },
-                lines = lines, talents = talents, silverCost = Mathf.Max(0, state.Data.Start.recruitCost + method.quality)
+                lines = lines, talents = talents, silverCost = Mathf.Max(0, state.Data.Start.recruitCost + method.quality),
+                look = CharacterFactory.ForRecruit(gender, "入門弟子")
             };
         }
 
@@ -226,6 +229,7 @@ namespace Wuxia
             candidate.trait ??= candidate.personality;
             state.Disciples.Add(candidate);
             world.SpawnDisciple(candidate);
+            AudioManager.Play("recruit");
             if (candidate.story != null)
             {
                 state.ApplyEffects(candidate.story.acceptEffects);

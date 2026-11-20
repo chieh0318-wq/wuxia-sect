@@ -108,7 +108,7 @@ namespace Wuxia
 
             var help = Panel("Controls", canvas, Vector2.zero, Vector2.zero,
                 new Vector2(18, 18), new Vector2(570, 106), false);
-            Fill(Label(help, "WASD／方向鍵移動　右鍵／中鍵拖曳\n滾輪縮放　左鍵選取　Esc／右鍵取消建造",
+            Fill(Label(help, "WASD／方向鍵移動　右鍵／中鍵拖曳　滾輪縮放\n左鍵選取　M 江湖地圖　Esc 取消建造／設定",
                 22, TextAnchor.MiddleLeft).rectTransform, 12);
 
             var toastPanel = Panel("Messages", canvas, new Vector2(0.5f, 0), new Vector2(0.5f, 0),
@@ -173,7 +173,7 @@ namespace Wuxia
 
         public void Refresh(GameState state)
         {
-            date.text = state.Date;
+            date.text = state.DateWithDay;
             apHud.Set(state.ActionPoints, state.ApMax, state.ApDescription);
             resourceLabels[0].text = $"銀兩 {state.Silver}";
             resourceLabels[1].text = $"糧食 {state.Food}";
@@ -197,6 +197,26 @@ namespace Wuxia
                     targets[index == 0 ? "cmd_build" : "cmd_recruit"] = rect;
                 index++;
             }
+        }
+
+        private RectTransform mapButtons;
+
+        /// <summary>Bottom-right wood plaque with the world map (M) and intel overview shortcuts.</summary>
+        internal void ShowMapButtons(Action openMap, Action openIntel)
+        {
+            if (mapButtons != null)
+                return;
+            mapButtons = Panel("江湖", canvas, Vector2.right, Vector2.right, new(-470, 18), new(-18, 92));
+            UiKit.Skin(mapButtons.GetComponent<Image>(), "Wood");
+            var row = mapButtons.gameObject.AddComponent<HorizontalLayoutGroup>();
+            row.padding = new RectOffset(12, 12, 10, 10);
+            row.spacing = 12;
+            row.childControlWidth = row.childControlHeight = true;
+            row.childForceExpandWidth = row.childForceExpandHeight = true;
+            var mapButton = Button(mapButtons, "江湖地圖　M", openMap);
+            var intelButton = Button(mapButtons, "情報總覽", openIntel);
+            targets["map"] = mapButton;
+            targets["intel"] = intelButton;
         }
 
         private void SetCommandsPanelHeight(float height) => commands.offsetMin = new Vector2(18, -110 - height);

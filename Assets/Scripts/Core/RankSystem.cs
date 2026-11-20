@@ -50,6 +50,11 @@ namespace Wuxia
         internal static int Index(string tier) => Math.Max(0, Array.IndexOf(Tiers, tier));
         internal static string At(int index) => Tiers[Mathf.Clamp(index, 0, Tiers.Length - 1)];
         public static string Format(string rank, string cap) => $"{At(Index(rank))} / {At(Index(cap))}";
+        /// <summary>Tier order, or -1 for a missing/unknown tier (used for sorting intel).</summary>
+        internal static int Order(string tier) => Array.IndexOf(Tiers, tier);
+        /// <summary>Like <see cref="Format"/> but shows "?" for missing data instead of defaulting to C.</summary>
+        internal static string FormatKnown(string rank, string cap) =>
+            $"{(Order(rank) < 0 ? "?" : rank)} / {(Order(cap) < 0 ? "?" : cap)}";
         public static Color Color(string tier)
         {
             var configured = Catalog.tiers?.FirstOrDefault(entry => entry.id == tier)?.color;

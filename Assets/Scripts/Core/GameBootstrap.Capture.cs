@@ -1,5 +1,6 @@
 using System.Collections;
 using System.IO;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
@@ -8,8 +9,11 @@ namespace Wuxia
 {
     public sealed partial class GameBootstrap
     {
+        private bool capturing;
+
         private IEnumerator Capture(string directory)
         {
+            capturing = true;
             yield return new WaitForSecondsRealtime(2);
             Directory.CreateDirectory(directory);
             int width = 1920, height = 1080;
@@ -52,7 +56,15 @@ namespace Wuxia
                     {
                         ui.CloseStoryBeat();
                         ui.CloseModal(force: true);
-                        EnterCourtyard(new GameState(data), true);
+                        // Same defaults as skipping the prologue: first starting site, chosen look.
+                        var next = new GameState(data);
+                        var site = M2Data.Load<PrologueData>("prologue").locations?.FirstOrDefault();
+                        if (site != null)
+                        {
+                            next.Story.locationId = site.id;
+                            next.Story.mapNode = site.node;
+                        }
+                        EnterCourtyard(next, true);
                         controls.enabled = false;
                         tutorial?.ChooseForCapture();
                         tutorial?.Record("camera_move");
@@ -84,6 +96,11 @@ namespace Wuxia
                     if (!SaveShot(step.filename))
                         yield break;
                 }
+                bool shotsOk = true;
+                ui.CloseModal(force: true);
+                yield return CaptureM2(file => shotsOk &= SaveShot(file));
+                if (!shotsOk)
+                    yield break;
                 Application.Quit(VerifyCapturedGame(directory) ? 0 : 1);
             }
             finally

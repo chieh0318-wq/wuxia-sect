@@ -11,16 +11,19 @@ namespace Wuxia
         private Vector3 destination;
 
         private Transform body;
+        private CharacterMotion motion; // M2-B pose hook
         public void Initialize(List<Vector3> waypoints, Transform figure)
         {
             entrances = waypoints;
             body = figure;
+            motion = figure.GetComponent<CharacterMotion>();
             destination = transform.position;
             pause = UnityEngine.Random.Range(0.5f, 2.5f);
         }
 
         private void Update()
         {
+            if (motion != null) motion.Walking = pause <= 0 && (destination - transform.position).sqrMagnitude >= .0025f;
             if (pause > 0)
             {
                 pause -= Time.deltaTime;

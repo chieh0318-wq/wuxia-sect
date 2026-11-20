@@ -65,11 +65,14 @@ namespace Wuxia
         public int martialTraining, trainingMonths, lastTrainingMonth, injury;
         public string weapon;
         public string[] breakthroughs = Array.Empty<string>();
+        public CharacterLook look;
     }
 
     [Serializable] public sealed class StoryProgress
     {
-        public string disasterId, responseId, locationId, mapNode, delegateId;
+        public string disasterId, responseId, locationId, mapNode, delegateId, partyNode;
+        public int day = 1;
+        public string[] knownFactions = Array.Empty<string>();
         public StoryValue[] buildingLevels = Array.Empty<StoryValue>();
         public int apBonus, loyaltyBonus, recruitPoolSize, recruitCostPct, buildCostPct, trainBonusPct;
         public float insightChance;

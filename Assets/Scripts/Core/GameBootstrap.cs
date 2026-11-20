@@ -1,4 +1,9 @@
+using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -15,7 +20,7 @@ namespace Wuxia
         }
     }
 
-    public sealed class GameBootstrap : MonoBehaviour
+    public sealed partial class GameBootstrap : MonoBehaviour
     {
         private GameState state;
         private SectUI ui;
@@ -24,12 +29,49 @@ namespace Wuxia
         private ActionData buildAction;
         private BuildingData buildChoice;
         private bool choosingBuilding;
+        private TutorialGuide tutorial;
+        private CameraController controls;
+        private bool courtyardReady;
 
         private void Awake()
         {
-            state = new GameState(GameData.Load());
-            ConfigureScene();
-            ui = new SectUI(EndMonth);
+            BootStep("scene", ConfigureScene);
+            BootStep("HUD", () => ui = new SectUI(EndMonth));
+            BootStep("data", () => state = new GameState(GameData.Load()));
+            if (ui == null || state == null)
+                return;
+            ShowCommands();
+            ui.Refresh(state);
+            courtyardReady = BootStep("courtyard", BuildCourtyard);
+            if (!courtyardReady)
+            {
+                ui.Message("庭院載入失敗，請查閱遊戲記錄。");
+                return;
+            }
+            BootStep("tutorial", () => tutorial = new TutorialGuide(ui, state));
+            controls.Changed += trigger => tutorial?.Record(trigger);
+            string[] args = Environment.GetCommandLineArgs();
+            int capture = Array.IndexOf(args, "-wuxiaCapture");
+            if (capture >= 0 && capture + 1 < args.Length)
+                StartCoroutine(Capture(args[capture + 1]));
+        }
+
+        private static bool BootStep(string name, Action action)
+        {
+            try
+            {
+                action();
+                return true;
+            }
+            catch (Exception error)
+            {
+                Debug.LogError($"[Boot] {name} failed: {error}");
+                return false;
+            }
+        }
+
+        private void BuildCourtyard()
+        {
             world = new Courtyard(transform, ui, state.Data.Start.slots);
             for (int index = 0; index < state.Buildings.Length; index++)
             {
@@ -38,9 +80,6 @@ namespace Wuxia
             }
             foreach (var disciple in state.Disciples)
                 world.SpawnDisciple(disciple);
-
-            ShowCommands();
-            ui.Refresh(state);
         }
 
         private void ConfigureScene()
@@ -57,11 +96,29 @@ namespace Wuxia
             }
 
             view.clearFlags = CameraClearFlags.SolidColor;
-            view.backgroundColor = new Color(0.48f, 0.47f, 0.40f);
+            view.backgroundColor = new Color(.54f, .58f, .54f);
             view.orthographic = false;
             view.fieldOfView = 54f;
-            if (view.GetComponent<CameraController>() == null)
-                view.gameObject.AddComponent<CameraController>();
+            view.allowHDR = true;
+            controls = view.GetComponent<CameraController>();
+            if (controls == null)
+                controls = view.gameObject.AddComponent<CameraController>();
+            var cameraData = view.GetUniversalAdditionalCameraData();
+            cameraData.renderPostProcessing = true;
+            cameraData.antialiasing = AntialiasingMode.FastApproximateAntialiasing;
+
+            RenderSettings.ambientMode = AmbientMode.Trilight;
+            RenderSettings.ambientSkyColor = new Color(.55f, .60f, .67f);
+            RenderSettings.ambientEquatorColor = new Color(.45f, .43f, .36f);
+            RenderSettings.ambientGroundColor = new Color(.25f, .23f, .19f);
+            RenderSettings.fog = true;
+            RenderSettings.fogMode = FogMode.Linear;
+            RenderSettings.fogStartDistance = 43;
+            RenderSettings.fogEndDistance = 116;
+            RenderSettings.fogColor = view.backgroundColor;
+            var volume = gameObject.AddComponent<Volume>();
+            volume.isGlobal = true;
+            volume.sharedProfile = Resources.Load<VolumeProfile>("CourtyardVolume");
 
             if (UnityEngine.Object.FindAnyObjectByType<Light>() == null)
             {
@@ -70,7 +127,8 @@ namespace Wuxia
                 var sun = sunObject.AddComponent<Light>();
                 sun.type = LightType.Directional;
                 sun.color = new Color(1f, 0.94f, 0.81f);
-                sun.intensity = 1.25f;
+                sun.intensity = 1.65f;
+                RenderSettings.sun = sun;
                 sun.shadows = LightShadows.Soft;
                 sun.transform.rotation = Quaternion.Euler(48f, -32f, 0f);
             }
@@ -88,7 +146,10 @@ namespace Wuxia
 
         private void LateUpdate()
         {
+            if (ui == null || view == null || !courtyardReady)
+                return;
             ui.PositionLabels(view);
+            ui.PositionHighlight(tutorial?.Highlight, view, world);
             if (Input.GetKeyDown(KeyCode.Escape))
             {
                 if (ui.ModalOpen)
@@ -127,7 +188,10 @@ namespace Wuxia
                     if (buildChoice != null)
                         PlaceBuilding(index);
                     else if (state.Buildings[index] != null)
+                    {
                         ShowBuilding(state.Buildings[index]);
+                        tutorial?.Record("click_building", state.Buildings[index].id);
+                    }
                     else
                         ui.CloseBuilding();
                     return;
@@ -144,7 +208,7 @@ namespace Wuxia
 
         private void OnDestroy()
         {
-            world?.DestroyMaterials();
+
             ui?.Destroy();
         }
 
@@ -177,16 +241,13 @@ namespace Wuxia
         {
             if (action.type == "build")
             {
-                BeginBuild(action);
+                if (courtyardReady)
+                    BeginBuild(action);
                 return;
             }
 
             int extraSilver = action.type == "recruit" ? state.Data.Start.recruitCost : 0;
-            if (!state.CanPay(action.cost, extraSilver))
-            {
-                ui.Message("銀兩或糧食不足。");
-                return;
-            }
+            string grant = "";
 
             DiscipleData recruit = null;
             if (action.type == "recruit")
@@ -199,12 +260,20 @@ namespace Wuxia
                 }
             }
 
+            if (recruit != null)
+                grant = tutorial?.Fund(action.cost, extraSilver) ?? "";
+            if (!state.CanPay(action.cost, extraSilver))
+            {
+                ui.Message("銀兩或糧食不足。");
+                return;
+            }
+
             state.Pay(action.cost, extraSilver);
             state.Apply(action.effect);
             if (recruit != null)
             {
                 state.Disciples.Add(recruit);
-                world.SpawnDisciple(recruit);
+                world?.SpawnDisciple(recruit);
             }
             ui.Refresh(state);
             string message = $"{action.name}完成。{Changes(action.effect)}";
@@ -212,7 +281,9 @@ namespace Wuxia
                 message = $"{recruit.name}已加入{state.Data.Start.sectName}。{Changes(action.effect)}";
             if (action.id == "lodge")
                 message = $"已安頓弟子。{HousingInfo()}　{Changes(action.effect)}".TrimEnd();
-            ui.Message(message);
+            ui.Message(grant + message);
+            if (recruit != null)
+                tutorial?.Record("recruit");
         }
 
         private void BeginBuild(ActionData action)
@@ -264,6 +335,7 @@ namespace Wuxia
                 silver = buildChoice.cost.silver + buildAction.cost.silver,
                 food = buildChoice.cost.food + buildAction.cost.food
             };
+            string grant = tutorial?.Fund(total) ?? "";
             if (!state.CanPay(total))
             {
                 ui.Message("銀兩或糧食不足。");
@@ -277,7 +349,8 @@ namespace Wuxia
             string result = $"{buildChoice.name}已落成。{Changes(buildAction.effect)}";
             CancelBuild();
             ui.Refresh(state);
-            ui.Message(result);
+            ui.Message(grant + result);
+            tutorial?.Record("build_any");
         }
 
         private void CancelBuild()
@@ -298,6 +371,7 @@ namespace Wuxia
             string text = lines.Length == 0 ? "請吩咐。" :
                 lines[UnityEngine.Random.Range(0, lines.Length)];
             ui.ShowDialogue(disciple, text);
+            tutorial?.Record("talk_disciple");
         }
 
         private void ShowSect()
@@ -322,7 +396,8 @@ namespace Wuxia
                 CancelBuild();
             var report = state.EndMonth();
             ui.Refresh(state);
-            ui.ShowModal("門派月報", report.Lines);
+            tutorial?.Record("end_month");
+            ui.ShowModal("門派月報", report.Lines, closed: () => tutorial?.Record("read_report"));
         }
 
         private string ActionLabel(ActionData action)
@@ -335,7 +410,7 @@ namespace Wuxia
         private static string CostText(int silver, int food) =>
             food == 0 ? $"銀 {silver}" : $"銀 {silver}／糧 {food}";
 
-        private static string Changes(Yield effect)
+        internal static string Changes(Yield effect)
         {
             var changes = new List<string>();
             if (effect.silver != 0) changes.Add($"銀兩 {effect.silver:+0;-0}");

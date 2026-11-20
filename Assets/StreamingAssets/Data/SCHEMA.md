@@ -10,3 +10,6 @@
 `cost` 包含非負整數 `silver`、`food`。`income` 和 `effect` 包含整數 `silver`、`food`、`reputation`。沒有變動時填 0。
 
 目前每棟提供 `lodge` 指令的建築計入四個床位，會顯示於「安頓弟子」結果與門派摘要。
+
+- `tutorial.json` 包含 `intro`（含 `speaker`、`text` 的對話陣列）、`choosePrompt`、`titles`、`steps`、`completeText`、`reward`。每個步驟有 `id`、`title`、`objective`、`hint`、`trigger`、`target`、`highlight`。可在文字中使用 `{title}` 與 `{sect}`。
+- 引導事件為 `camera_move`、`camera_zoom`、`click_building`（以 `target` 指定建築 ID）、`talk_disciple`、`build_any`、`recruit`、`end_month`、`read_report`。提示可留空，或以 `building:<id>` 或 `ui:<key>` 指定。支援的介面鍵為 `cmd_build`、`cmd_recruit`、`end_month`。

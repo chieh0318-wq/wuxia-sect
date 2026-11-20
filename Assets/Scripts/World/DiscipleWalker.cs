@@ -10,9 +10,11 @@ namespace Wuxia
         private float pause;
         private Vector3 destination;
 
-        public void Initialize(List<Vector3> waypoints)
+        private Transform body;
+        public void Initialize(List<Vector3> waypoints, Transform figure)
         {
             entrances = waypoints;
+            body = figure;
             destination = transform.position;
             pause = UnityEngine.Random.Range(0.5f, 2.5f);
         }
@@ -22,6 +24,7 @@ namespace Wuxia
             if (pause > 0)
             {
                 pause -= Time.deltaTime;
+                body.localPosition = Vector3.zero;
                 return;
             }
 
@@ -37,6 +40,7 @@ namespace Wuxia
                 return;
             }
 
+            body.localPosition = Vector3.up * (Mathf.Sin(Time.time * 13) * .025f);
             transform.rotation = Quaternion.LookRotation(difference);
             transform.position = Vector3.MoveTowards(transform.position, destination, 2.15f * Time.deltaTime);
         }

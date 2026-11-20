@@ -5,14 +5,17 @@ namespace Wuxia
 {
     public sealed class CameraController : MonoBehaviour
     {
-        private const float Pitch = 60f;
-        private Vector2 focus;
-        private float height = 28f;
+        private const float Pitch = 53f;
+        internal event System.Action<string> Changed;
+        private Vector2 focus = new(0, 1.8f);
+        private float height = 40f;
         private Vector3 lastMouse;
         private bool dragging;
 
         private void Update()
         {
+            Vector2 previousFocus = focus;
+            float previousHeight = height;
             Vector2 keys = Vector2.zero;
             if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow)) keys.x--;
             if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow)) keys.x++;
@@ -34,9 +37,20 @@ namespace Wuxia
             focus.x = Mathf.Clamp(focus.x, -20f, 20f);
             focus.y = Mathf.Clamp(focus.y, -20f, 20f);
             PositionCamera();
+            if (focus != previousFocus)
+                Changed?.Invoke("camera_move");
+            if (height != previousHeight)
+                Changed?.Invoke("camera_zoom");
         }
 
         private void Awake() => PositionCamera();
+
+        internal void Frame(Vector2 point, float altitude)
+        {
+            focus = point;
+            height = altitude;
+            PositionCamera();
+        }
 
         private void PositionCamera()
         {

@@ -8,12 +8,14 @@ namespace Wuxia
         private readonly Transform root;
         private readonly SectUI ui;
         private readonly SlotData[] slots;
-        private readonly Renderer[] tiles;
-        private readonly Dictionary<Collider, int> slotTargets = new Dictionary<Collider, int>();
-        private readonly Dictionary<Collider, DiscipleData> discipleTargets = new Dictionary<Collider, DiscipleData>();
-        private readonly Dictionary<Color, Material> materials = new Dictionary<Color, Material>();
-        private readonly List<Vector3> entrances = new List<Vector3>();
-        private Material primitiveMaterial;
+        private readonly Renderer[] plots;
+        private readonly Dictionary<Collider, int> slotTargets = new();
+        private readonly Dictionary<Collider, DiscipleData> discipleTargets = new();
+        private readonly Dictionary<string, Material> surfaces = new();
+        private readonly List<Vector3> entrances = new();
+        private readonly Dictionary<string, (Transform root, float height)> landmarks = new();
+        private readonly TangBuildingFactory halls;
+        private readonly MaterialPropertyBlock paint = new();
 
         public Courtyard(Transform parent, SectUI ui, SlotData[] slots)
         {
@@ -21,156 +23,246 @@ namespace Wuxia
             root.SetParent(parent, false);
             this.ui = ui;
             this.slots = slots;
-            tiles = new Renderer[slots.Length];
+            plots = new Renderer[slots.Length];
+            halls = new TangBuildingFactory(this);
+            foreach (string name in new[] { "Solid", "Tile", "Paving", "Earth", "Plaster", "Timber", "Grass" })
+                surfaces.Add(name, Resources.Load<Material>("Materials/" + name));
 
-            var ground = Primitive("Ground", PrimitiveType.Plane, new Vector3(0, -0.05f, 0),
-                new Vector3(8, 1, 8), Tint("#807557"), root);
-            ground.GetComponent<Collider>().enabled = false;
-
-            Color path = Tint("#BCA480");
+            Part("Outer meadow", PrimitiveType.Plane, root, new(0, -.09f, 0), new(18, 1, 18),
+                Tint("#C1C5AB"), "Grass", new(75, 75));
+            Part("Courtyard earth", PrimitiveType.Plane, root, new(0, -.055f, 0), new(4.2f, 1, 4.2f),
+                Tint("#D2BC9B"), "Earth", new(19, 19));
             foreach (float lane in new[] { -14f, -4f, 6f, 14f })
-                Cube("Stone path", new Vector3(0, -0.02f, lane), new Vector3(41, 0.08f, 1.35f), path, root);
-            Cube("Main path", new Vector3(5, -0.02f, 0), new Vector3(1.5f, 0.08f, 42), path, root);
+                Path(0, lane, 40, 1.4f);
+            Path(5, 0, 2.8f, 48);
+            Path(0, 9.5f, 12, 5.1f);
 
-            Color wall = Tint("#807064");
-            Wall(0, 21, 42, 0.8f, wall);
-            Wall(-21, 0, 0.8f, 42, wall);
-            Wall(21, 0, 0.8f, 42, wall);
-            Wall(-11.5f, -21, 19, 0.8f, wall);
-            Wall(11.5f, -21, 19, 0.8f, wall);
+            Wall(0, 21, 42, .55f);
+            Wall(-21, 0, .55f, 42);
+            Wall(21, 0, .55f, 42);
+            Wall(-9.7f, -21, 22.6f, .55f);
+            Wall(17.1f, -21, 7.8f, .55f);
+            var gate = new GameObject("South mountain gate").transform;
+            gate.SetParent(root, false);
+            gate.localPosition = new Vector3(5, 0, -21);
+            halls.Build(gate, "gate", 5.35f, 2.25f, 2.6f);
+
             for (int index = 0; index < slots.Length; index++)
             {
-                var tile = Cube("Building plot", new Vector3(slots[index].x, 0.035f, slots[index].z),
-                    new Vector3(6.4f, 0.07f, 5.8f), Tint("#A99A76"), root);
+                float x = slots[index].x, z = slots[index].z;
+                var outline = new GameObject("Building plot").transform;
+                outline.SetParent(root, false);
+                for (int side = -1; side <= 1; side += 2)
+                {
+                    Part("Foundation edge", PrimitiveType.Cube, outline, new(x + side * 3.1f, .045f, z),
+                        new(.17f, .09f, 5.8f), Tint("#8C8573"), "Paving");
+                    Part("Foundation edge", PrimitiveType.Cube, outline, new(x, .045f, z + side * 2.9f),
+                        new(6.3f, .09f, .17f), Tint("#8C8573"), "Paving");
+                }
+                var tile = Part("Plot selection", PrimitiveType.Cube, outline, new(x, .011f, z),
+                    new(6.1f, .015f, 5.65f), Tint("#688752"));
                 var collider = tile.GetComponent<Collider>();
                 collider.enabled = true;
                 slotTargets.Add(collider, index);
-                tiles[index] = tile.GetComponent<Renderer>();
+                plots[index] = tile.GetComponent<Renderer>();
+                plots[index].enabled = false;
             }
+
+            var random = new System.Random(18);
+            for (int i = 0; i < 58; i++)
+            {
+                float x = (float)random.NextDouble() * 97 - 48;
+                float z = (float)random.NextDouble() * 89 - 36;
+                if (Mathf.Abs(x) < 23 && Mathf.Abs(z) < 23 || Mathf.Abs(x - 5) < 4 && z < -21)
+                    continue;
+                Tree(x, z, Mathf.Lerp(.65f, 1.6f, (float)random.NextDouble()), i % 3 == 0);
+                if (i % 4 == 0)
+                    Part("Weathered rock", PrimitiveType.Sphere, root, new(x + 2, .12f, z - 1), new(1.45f, .76f, 1.1f), Tint("#777B66"), "Paving");
+            }
+            Tree(-18.5f, 17.5f, 1.25f, true);
+            Tree(18, 18, 1.15f, false);
+            Tree(-18.4f, -18, 1.15f, false);
+
+            foreach (float x in new[] { 2.7f, 7.3f })
+            {
+                Part("Lantern pedestal", PrimitiveType.Cube, root, new(x, .35f, -17), new(.38f, .7f, .38f), Tint("#8A8674"));
+                Part("Stone lantern", PrimitiveType.Cube, root, new(x, .77f, -17), new(.55f, .23f, .55f), Tint("#BAB19E"));
+                Part("Lantern cap", PrimitiveType.Cube, root, new(x, .94f, -17), new(.65f, .12f, .65f), Tint("#8A8674"));
+                Part("Banner pole", PrimitiveType.Cylinder, root, new(x, 1.48f, -20), new(.08f, 1.48f, .08f), Tint("#44382D"));
+                Part("Sect banner", PrimitiveType.Cube, root, new(x + .28f, 2.18f, -20), new(.6f, .97f, .045f), Tint("#82463C"));
+            }
+            StaticBatchingUtility.Combine(root.gameObject);
         }
 
         public bool TryGetSlot(Collider target, out int index) => slotTargets.TryGetValue(target, out index);
-
-        public void DestroyMaterials()
-        {
-            foreach (var material in materials.Values)
-                UnityEngine.Object.Destroy(material);
-        }
-
-        public bool TryGetDisciple(Collider target, out DiscipleData disciple) =>
-            discipleTargets.TryGetValue(target, out disciple);
-
+        public bool TryGetDisciple(Collider target, out DiscipleData disciple) => discipleTargets.TryGetValue(target, out disciple);
+        public bool TryGetLandmark(string id, out (Transform root, float height) landmark) => landmarks.TryGetValue(id, out landmark);
         public void HighlightPlots(bool active)
         {
-            var material = MaterialFor(Tint(active ? "#76AF62" : "#A99A76"));
-            foreach (var tile in tiles)
-                tile.sharedMaterial = material;
+            foreach (var plot in plots)
+                plot.enabled = active;
         }
 
         public void PlaceBuilding(int index, BuildingData data)
         {
-            var plot = tiles[index].gameObject;
-            plot.SetActive(false);
+            plots[index].transform.parent.gameObject.SetActive(false);
             var building = new GameObject(data.name).transform;
             building.SetParent(root, false);
-            building.position = new Vector3(slots[index].x, 0, slots[index].z);
-
-            float width = data.size[0], height = data.size[1], depth = data.size[2];
-            Color color = Tint(data.color);
-            Vector3 position = building.position;
-            var foundation = Cube("Foundation", position + Vector3.up * 0.13f,
-                new Vector3(width + 0.35f, 0.26f, depth + 0.35f), Tint("#A69B87"), building);
-            RegisterBuilding(foundation, index);
-            var baseBlock = Cube("Walls", position + Vector3.up * (0.26f + height / 2),
-                new Vector3(width, height, depth), color, building);
-            RegisterBuilding(baseBlock, index);
-
-            for (int tier = 0; tier < 3; tier++)
+            building.localPosition = new Vector3(slots[index].x, 0, slots[index].z);
+            float w = data.size[0], h = data.size[1], d = data.size[2];
+            float labelHeight;
+            if (data.id == "yard")
             {
-                var roof = Cube("Roof", position + Vector3.up * (height + 0.39f + tier * 0.21f),
-                    new Vector3(width + 0.8f - width * 0.12f * tier, 0.24f,
-                        (depth + 0.8f) * (1f - tier * 0.24f)), Tint("#453D3A"), building);
-                RegisterBuilding(roof, index);
+                Part("Packed earth training ground", PrimitiveType.Cube, building, new(0, .035f, 0),
+                    new(w, .14f, d), Tint("#CCB69C"), "Earth", new(3, 3));
+                halls.Rack(building, -w * .30f, d * .29f);
+                for (int i = 0; i < 3; i++)
+                {
+                    float x = -.25f + i * 1.05f;
+                    Part("Wooden dummy", PrimitiveType.Cylinder, building, new(x, .78f, d * .24f),
+                        new(.28f, .72f, .28f), Tint("#79583C"), "Timber");
+                    Part("Training dummy arm", PrimitiveType.Cube, building, new(x, 1.08f, d * .24f),
+                        new(.66f, .14f, .16f), Tint("#79583C"), "Timber");
+                }
+                labelHeight = 1.6f;
             }
-
-            var door = Cube("Door", position + new Vector3(0, height * 0.38f + 0.26f, -depth / 2 - 0.05f),
-                new Vector3(width * 0.22f, height * 0.72f, 0.12f), Tint("#523D32"), building);
-            RegisterBuilding(door, index);
-            entrances.Add(position + Vector3.back * (depth / 2 + 1.2f));
-            ui.AddWorldLabel(building, Vector3.up * (height + 1.15f), data.name);
+            else
+                labelHeight = halls.Build(building, data.id, w, h, d);
+            foreach (var collider in building.GetComponentsInChildren<Collider>())
+            {
+                collider.enabled = true;
+                slotTargets.Add(collider, index);
+            }
+            landmarks[data.id] = (building, labelHeight);
+            entrances.Add(building.position + Vector3.back * (d / 2 + 1.25f));
+            ui.AddWorldLabel(building, Vector3.up * labelHeight, data.name);
+            StaticBatchingUtility.Combine(building.gameObject);
         }
 
         public void SpawnDisciple(DiscipleData data)
         {
-            var person = new GameObject(data.name);
-            person.transform.SetParent(root, false);
-            person.transform.position = entrances.Count == 0 ? new Vector3(0, 0, -16) :
-                entrances[UnityEngine.Random.Range(0, entrances.Count)] +
-                new Vector3(UnityEngine.Random.Range(-0.55f, 0.55f), 0, 0);
-
-            var robe = Primitive("Robe", PrimitiveType.Capsule, person.transform.position + Vector3.up * 0.58f,
-                new Vector3(0.57f, 0.56f, 0.57f), Tint(data.robeColor), person.transform);
-            var head = Primitive("Head", PrimitiveType.Sphere, person.transform.position + Vector3.up * 1.22f,
-                Vector3.one * 0.4f, Tint("#D5A57D"), person.transform);
-            var hair = Primitive("Hair", PrimitiveType.Sphere,
-                person.transform.position + new Vector3(0, 1.36f, -0.035f),
-                new Vector3(0.33f, 0.2f, 0.34f), Tint("#45352C"), person.transform);
-            foreach (var part in new[] { robe, head, hair })
+            var person = new GameObject(data.name).transform;
+            person.SetParent(root, false);
+            person.position = entrances.Count == 0 ? new Vector3(0, 0, -16) :
+                entrances[Random.Range(0, entrances.Count)] + Vector3.right * Random.Range(-.55f, .55f);
+            var body = new GameObject("Robed figure").transform;
+            body.SetParent(person, false);
+            Color robe = Color.Lerp(Tint(data.robeColor), Tint("#777369"), .37f);
+            Color skin = Tint("#C39572"), hair = Tint("#302A25");
+            Part("Upper robe", PrimitiveType.Capsule, body, new(0, .99f, 0), new(.43f, .29f, .30f), robe);
+            var skirt = new GameObject("Flared robe", typeof(MeshFilter), typeof(MeshRenderer));
+            skirt.transform.SetParent(body, false);
+            skirt.GetComponent<MeshFilter>().sharedMesh = SkirtMesh();
+            Paint(skirt.GetComponent<Renderer>(), "Solid", robe);
+            Part("Sash", PrimitiveType.Cylinder, body, new(0, .77f, 0), new(.35f, .047f, .31f), Tint("#4F4038"));
+            Part("Head", PrimitiveType.Sphere, body, new(0, 1.34f, .018f), new(.26f, .32f, .25f), skin);
+            Part("Hair", PrimitiveType.Sphere, body, new(0, 1.42f, -.033f), new(.28f, .22f, .24f), hair);
+            Part("Topknot", PrimitiveType.Sphere, body, new(0, 1.57f, -.047f), new(.13f, .14f, .13f), hair);
+            for (int side = -1; side <= 1; side += 2)
             {
-                var collider = part.GetComponent<Collider>();
-                collider.enabled = true;
-                discipleTargets.Add(collider, data);
+                var sleeve = Part("Sleeve", PrimitiveType.Capsule, body, new(side * .245f, .96f, 0),
+                    new(.19f, .26f, .23f), robe);
+                sleeve.transform.localRotation = Quaternion.Euler(0, 0, side * 15);
+                Part("Hand", PrimitiveType.Sphere, body, new(side * .28f, .745f, 0), new(.09f, .13f, .10f), skin);
+                Part("Cloth shoe", PrimitiveType.Sphere, body, new(side * .11f, .08f, .06f), new(.14f, .13f, .27f), hair);
             }
-
-            person.AddComponent<DiscipleWalker>().Initialize(entrances);
-            ui.AddWorldLabel(person.transform, Vector3.up * 1.72f, data.name);
+            var hit = person.gameObject.AddComponent<CapsuleCollider>();
+            hit.center = Vector3.up * .8f;
+            hit.radius = .37f;
+            hit.height = 1.65f;
+            discipleTargets.Add(hit, data);
+            person.gameObject.AddComponent<DiscipleWalker>().Initialize(entrances, body);
+            ui.AddWorldLabel(person, Vector3.up * 1.82f, data.name);
         }
 
-        private void RegisterBuilding(GameObject piece, int index)
+        private Mesh skirtMesh;
+        private Mesh SkirtMesh()
         {
-            var collider = piece.GetComponent<Collider>();
-            collider.enabled = true;
-            slotTargets.Add(collider, index);
+            if (skirtMesh != null)
+                return skirtMesh;
+            const int sides = 16;
+            var vertices = new Vector3[sides * 2];
+            var triangles = new int[sides * 6];
+            for (int i = 0; i < sides; i++)
+            {
+                float angle = i * 2 * Mathf.PI / sides;
+                var outward = new Vector3(Mathf.Cos(angle), 0, Mathf.Sin(angle));
+                vertices[i] = outward * .29f + Vector3.up * .13f;
+                vertices[i + sides] = outward * .17f + Vector3.up * .82f;
+                int next = (i + 1) % sides, index = i * 6;
+                triangles[index] = i;
+                triangles[index + 1] = i + sides;
+                triangles[index + 2] = next;
+                triangles[index + 3] = next;
+                triangles[index + 4] = i + sides;
+                triangles[index + 5] = next + sides;
+            }
+            skirtMesh = new Mesh { name = "Flared cloth", vertices = vertices, triangles = triangles };
+            skirtMesh.RecalculateNormals();
+            return skirtMesh;
         }
 
-        private void Wall(float x, float z, float width, float depth, Color color)
+        private void Path(float x, float z, float w, float d)
         {
-            Cube("Perimeter wall", new Vector3(x, 0.75f, z), new Vector3(width, 1.5f, depth), color, root);
-            Cube("Wall coping", new Vector3(x, 1.53f, z),
-                new Vector3(width + 0.18f, 0.16f, depth + 0.18f), Tint("#554841"), root);
+            Part("Stone paving edge", PrimitiveType.Cube, root, new(x, -.009f, z), new(w + .19f, .06f, d + .19f), Tint("#7D796B"));
+            Part("Stone paving", PrimitiveType.Cube, root, new(x, .018f, z), new(w, .06f, d),
+                Tint("#D0C6B1"), "Paving", new(w / 2.2f, d / 2.2f));
         }
 
-        private GameObject Cube(string name, Vector3 position, Vector3 size, Color color, Transform parent) =>
-            Primitive(name, PrimitiveType.Cube, position, size, color, parent);
+        private void Wall(float x, float z, float w, float d)
+        {
+            var wall = new GameObject("Plastered perimeter wall").transform;
+            wall.SetParent(root, false);
+            wall.localPosition = new(x, 0, z);
+            Part("Stone footing", PrimitiveType.Cube, wall, new(0, .18f, 0), new(w + .13f, .36f, d + .13f), Tint("#888475"), "Paving");
+            Part("Whitewashed wall", PrimitiveType.Cube, wall, new(0, .96f, 0), new(w, 1.56f, d),
+                Tint("#C4B49A"), "Plaster", new(Mathf.Max(w, d) / 2f, 1));
+            halls.Roof(wall, w + .24f, d + .24f, 1.73f, .18f, true);
+        }
 
-        private GameObject Primitive(string name, PrimitiveType type, Vector3 position, Vector3 size,
-            Color color, Transform parent)
+        private void Tree(float x, float z, float size, bool broadleaf)
+        {
+            Part("Tree trunk", PrimitiveType.Cylinder, root, new(x, 1.64f * size, z),
+                new Vector3(.27f, 1.65f, .30f) * size, Tint("#554638"), "Timber");
+            for (int i = 0; i < 7; i++)
+            {
+                float angle = i * 2.4f;
+                float spread = (1.38f - i * .14f) * size;
+                float height = (2.25f + i * .35f) * size;
+                Color leaves = Color.Lerp(Tint("#425445"), Tint("#849066"), i / 8f);
+                Part("Tree foliage", PrimitiveType.Sphere, root,
+                    new(x + Mathf.Cos(angle) * spread, height, z + Mathf.Sin(angle) * spread),
+                    new Vector3(2.4f - i * .19f, broadleaf ? 1.63f : .82f, 1.92f - i * .16f) * size, leaves, "Grass");
+            }
+        }
+
+        internal GameObject Part(string name, PrimitiveType type, Transform parent, Vector3 position,
+            Vector3 size, Color color, string surface = "Solid", Vector2 tiling = default)
         {
             var piece = GameObject.CreatePrimitive(type);
             piece.name = name;
             piece.transform.SetParent(parent, false);
-            piece.transform.position = position;
+            piece.transform.localPosition = position;
             piece.transform.localScale = size;
-            var renderer = piece.GetComponent<Renderer>();
-            if (primitiveMaterial == null)
-                primitiveMaterial = renderer.sharedMaterial;
-            renderer.sharedMaterial = MaterialFor(color);
+            Paint(piece.GetComponent<Renderer>(), surface, color, tiling);
             piece.GetComponent<Collider>().enabled = false;
             return piece;
         }
 
-        private Material MaterialFor(Color color)
+        internal void Paint(Renderer renderer, string surface, Color color, Vector2 tiling = default)
         {
-            if (!materials.TryGetValue(color, out var material))
+            renderer.sharedMaterial = surfaces[surface];
+            paint.Clear();
+            paint.SetColor("_BaseColor", color);
+            if (tiling != default)
             {
-                material = new Material(primitiveMaterial) { color = color };
-                materials.Add(color, material);
+                paint.SetVector("_BaseMap_ST", new Vector4(tiling.x, tiling.y, 0, 0));
+                paint.SetVector("_BumpMap_ST", new Vector4(tiling.x, tiling.y, 0, 0));
             }
-            return material;
+            renderer.SetPropertyBlock(paint);
         }
 
-        private static Color Tint(string hex) =>
-            !string.IsNullOrEmpty(hex) && ColorUtility.TryParseHtmlString(hex, out var color) ? color :
-                new Color(0.55f, 0.52f, 0.44f);
+        internal static Color Tint(string hex) =>
+            ColorUtility.TryParseHtmlString(hex, out var color) ? color : new Color(.55f, .52f, .44f);
     }
 }

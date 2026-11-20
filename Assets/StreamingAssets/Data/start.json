@@ -1,11 +1,11 @@
 {
-  "sectName": "青嵐派",
+  "sectName": "崤山劍門",
   "year": 1,
   "month": 1,
-  "silver": 80,
-  "food": 28,
-  "reputation": 4,
-  "recruitCost": 14,
+  "silver": 64,
+  "food": 42,
+  "reputation": 5,
+  "recruitCost": 12,
   "foodPerDisciple": 1,
   "slots": [
     {
@@ -35,7 +35,8 @@
     },
     {
       "x": 10,
-      "z": 0
+      "z": 0,
+      "buildingId": "quarters"
     },
     {
       "x": -10,

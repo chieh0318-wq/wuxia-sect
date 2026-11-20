@@ -2,8 +2,8 @@
   "buildings": [
     {
       "id": "hall",
-      "name": "大殿",
-      "description": "供奉祖師、商議門務的大殿。",
+      "name": "祖師殿",
+      "description": "供奉開山祖師的牌位，門中大事都在香案前議定。偶有山民上香，添些香火錢。",
       "color": "#AC6650",
       "size": [
         6,
@@ -11,12 +11,12 @@
         5
       ],
       "cost": {
-        "silver": 45,
+        "silver": 60,
         "food": 0
       },
-      "upkeep": 2,
+      "upkeep": 3,
       "income": {
-        "silver": 8,
+        "silver": 4,
         "food": 0,
         "reputation": 1
       },
@@ -29,8 +29,8 @@
     },
     {
       "id": "yard",
-      "name": "練武場",
-      "description": "晨昏列隊操練的校場。",
+      "name": "演武場",
+      "description": "夯土鋪沙的校場，晨昏兩課的刀劍拳腳都在這裡。地上的腳印一年比一年深。",
       "color": "#AF9060",
       "size": [
         5,
@@ -38,10 +38,10 @@
         4
       ],
       "cost": {
-        "silver": 28,
+        "silver": 30,
         "food": 0
       },
-      "upkeep": 1,
+      "upkeep": 2,
       "income": {
         "silver": 0,
         "food": 0,
@@ -56,18 +56,18 @@
     {
       "id": "library",
       "name": "藏經閣",
-      "description": "收藏拳譜、劍訣與前輩手記。",
+      "description": "收藏拳譜、劍訣與歷代前輩手記。樓上有幾箱舊書，連師父也說不清是誰留下的。",
       "color": "#6B7F80",
       "size": [
         4,
-        2.5,
+        2.8,
         4
       ],
       "cost": {
-        "silver": 34,
+        "silver": 40,
         "food": 0
       },
-      "upkeep": 1,
+      "upkeep": 2,
       "income": {
         "silver": 0,
         "food": 0,
@@ -81,8 +81,8 @@
     },
     {
       "id": "quarters",
-      "name": "廂房",
-      "description": "供弟子夜宿與歇息。",
+      "name": "弟子廂房",
+      "description": "一排通鋪木床，每間可睡四人。冬冷夏熱，總算是個安身之處。",
       "color": "#83725D",
       "size": [
         5,
@@ -90,7 +90,7 @@
         3.5
       ],
       "cost": {
-        "silver": 22,
+        "silver": 20,
         "food": 0
       },
       "upkeep": 1,
@@ -107,8 +107,8 @@
     },
     {
       "id": "infirmary",
-      "name": "藥房",
-      "description": "備有傷藥，也收購附近山民採來的藥草。",
+      "name": "藥廬",
+      "description": "簷下曬滿藥草，備有金創藥與跌打酒。山民來求醫，也會留下幾文藥錢。",
       "color": "#66846D",
       "size": [
         4,
@@ -116,12 +116,12 @@
         3.5
       ],
       "cost": {
-        "silver": 26,
+        "silver": 32,
         "food": 0
       },
-      "upkeep": 1,
+      "upkeep": 2,
       "income": {
-        "silver": 0,
+        "silver": 2,
         "food": 0,
         "reputation": 0
       },
@@ -134,7 +134,7 @@
     {
       "id": "kitchen",
       "name": "伙房",
-      "description": "架灶備飯，每月增加糧食。",
+      "description": "兩口大灶、一缸醃菜。開伙房、闢菜畦、自己磨麵，每月能多出不少口糧。",
       "color": "#B58047",
       "size": [
         4,
@@ -142,13 +142,13 @@
         3.5
       ],
       "cost": {
-        "silver": 24,
+        "silver": 22,
         "food": 0
       },
       "upkeep": 1,
       "income": {
         "silver": 0,
-        "food": 6,
+        "food": 8,
         "reputation": 0
       },
       "unique": false,
@@ -158,7 +158,7 @@
     {
       "id": "smithy",
       "name": "兵器坊",
-      "description": "替鄉里打製器具，每月賺取銀兩。",
+      "description": "替山下鄉里打鋤頭、釘馬蹄鐵，也替弟子磨刀。叮噹聲裡，銀錢慢慢進門。",
       "color": "#796D7E",
       "size": [
         4.5,
@@ -166,16 +166,40 @@
         3.5
       ],
       "cost": {
-        "silver": 32,
+        "silver": 34,
         "food": 0
       },
       "upkeep": 2,
       "income": {
-        "silver": 9,
+        "silver": 10,
         "food": 0,
         "reputation": 0
       },
       "unique": false,
+      "startBuilt": false,
+      "actions": []
+    },
+    {
+      "id": "teahouse",
+      "name": "山門茶寮",
+      "description": "在山門外搭座茶棚，賣粗茶給往來崤函道的行旅與胡商，順便打聽些江湖消息。",
+      "color": "#8F7A4E",
+      "size": [
+        4.5,
+        1.6,
+        3.5
+      ],
+      "cost": {
+        "silver": 28,
+        "food": 0
+      },
+      "upkeep": 1,
+      "income": {
+        "silver": 5,
+        "food": 0,
+        "reputation": 1
+      },
+      "unique": true,
       "startBuilt": false,
       "actions": []
     }

@@ -2,8 +2,8 @@
   "actions": [
     {
       "id": "build",
-      "name": "建造",
-      "description": "選擇圖樣，再於院中選一塊空地。",
+      "name": "興建屋舍",
+      "description": "挑選屋舍圖樣，再於院中擇一塊空地動工。",
       "type": "build",
       "cost": {
         "silver": 0,
@@ -18,11 +18,11 @@
     {
       "id": "recruit",
       "name": "招收弟子",
-      "description": "延請一位尚未入門的弟子。",
+      "description": "備一桌拜師茶飯，延請一位有意入門的人。束脩銀兩另計。",
       "type": "recruit",
       "cost": {
         "silver": 0,
-        "food": 0
+        "food": 2
       },
       "effect": {
         "silver": 0,
@@ -32,12 +32,12 @@
     },
     {
       "id": "council",
-      "name": "召開月會",
-      "description": "用茶飯款待弟子，商議本月門務。",
+      "name": "召集議事",
+      "description": "備些茶飯，召集弟子到香案前商議門務、分派差事。",
       "type": "generic",
       "cost": {
         "silver": 0,
-        "food": 1
+        "food": 2
       },
       "effect": {
         "silver": 0,
@@ -47,12 +47,12 @@
     },
     {
       "id": "train",
-      "name": "操練弟子",
-      "description": "添備伙食，讓弟子操練刀劍與步法。",
+      "name": "督促操練",
+      "description": "加餐添菜，讓弟子多練一個時辰的刀劍與步法。",
       "type": "generic",
       "cost": {
         "silver": 0,
-        "food": 2
+        "food": 3
       },
       "effect": {
         "silver": 0,
@@ -62,11 +62,11 @@
     },
     {
       "id": "study",
-      "name": "研讀秘籍",
-      "description": "備置燈油與紙墨，抄錄拳譜。",
+      "name": "研讀拳譜",
+      "description": "購置燈油紙墨，夜裡抄錄拳譜、參詳前輩手記。",
       "type": "generic",
       "cost": {
-        "silver": 2,
+        "silver": 3,
         "food": 0
       },
       "effect": {
@@ -78,7 +78,7 @@
     {
       "id": "lodge",
       "name": "安頓弟子",
-      "description": "整備床鋪，為弟子安排住處。",
+      "description": "整理通鋪被褥，清點廂房還容得下幾人。",
       "type": "generic",
       "cost": {
         "silver": 0,
@@ -92,8 +92,8 @@
     },
     {
       "id": "medicine",
-      "name": "煉製藥材",
-      "description": "購入藥草，為弟子及附近鄉民備藥。",
+      "name": "施藥義診",
+      "description": "配製金創藥與跌打酒，替弟子和山下鄉民義診。",
       "type": "generic",
       "cost": {
         "silver": 4,

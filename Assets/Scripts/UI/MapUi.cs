@@ -65,7 +65,7 @@ namespace Wuxia
             text.verticalOverflow = VerticalWrapMode.Truncate;
             // Paragraphs (upper-left) keep their size and wrap; single-line labels shrink to fit their slot.
             text.resizeTextForBestFit = alignment != TextAnchor.UpperLeft;
-            text.resizeTextMinSize = Mathf.Min(13,size);
+            text.resizeTextMinSize = Mathf.Min(15,size);
             text.resizeTextMaxSize = size;
             return text;
         }

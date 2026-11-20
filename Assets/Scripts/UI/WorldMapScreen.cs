@@ -20,7 +20,7 @@ namespace Wuxia
         private Text ap, status;
         private IntelPanel intel;
         private readonly List<(MapNode node, Text label, Vector2 point)> labels = new();
-        private readonly List<(RectTransform flag, Vector2 point)> flags = new();
+        private readonly List<(RectTransform flag, Vector2 point, int seatOrder)> flags = new();
         private readonly List<Button> cardActions = new();
         private Vector2 pan, lastMouse;
         private float zoom = MinZoom;
@@ -131,7 +131,7 @@ namespace Wuxia
                     var flag = MapUi.Button(map,"",0,0,17,19,() => FocusFaction(faction),Color.clear);
                     var rect = (RectTransform)flag.transform;
                     rect.pivot = new Vector2(.5f,1);
-                    flags.Add((rect,p + new Vector2(n*18,-29)));
+                    flags.Add((rect,p,n));
                     MapUi.Panel(rect,"Pole",2,0,2,19,MapUi.Ink).GetComponent<Image>().raycastTarget = false;
                     MapUi.Panel(rect,"Banner",4,1,12,11,faction.Tint).GetComponent<Image>().raycastTarget = false;
                     MapUi.Panel(rect,"Trim",4,10,12,2,MapUi.Paper).GetComponent<Image>().raycastTarget = false;
@@ -148,8 +148,11 @@ namespace Wuxia
             card = MapUi.Rect(frame,"Map card",1113,96,426,680);
             var footer = MapUi.Kit(frame,"Map status bar",12,808,1576,82,"Wood",false);
             status = MapUi.Text(footer,"",22,6,1530,38,22,MapUi.Paper,TextAnchor.MiddleLeft,"Narration");
-            MapUi.Text(footer,"滾輪縮放　右鍵拖曳／WASD 移圖　點地名看路程　點旗幟看勢力　◎ 京城　● 州城　◇ 門派　◆ 關隘　▲ 名山　行 隊伍",
-                22,44,1530,30,17,MapUi.Gold);
+            MapUi.Text(footer,"滾輪縮放　右鍵拖曳／WASD 移圖",
+                22,44,630,30,17,MapUi.Gold);
+            var legend = MapUi.Kit(footer,"Legend paper tag",750,13,805,55,"Paper",false);
+            MapUi.Text(legend,"◎ 京城　● 州城　◇ 門派　◆ 關隘　▲ 名山　行 隊伍",
+                16,0,773,55,17,MapUi.Ink,TextAnchor.MiddleCenter);
             if (data.Nodes.Count == 0) status.text = "地圖資料尚未載入。";
             intel = new IntelPanel(frame,data,FocusFaction);
             ApplyView();
@@ -209,12 +212,16 @@ namespace Wuxia
                 "sect" => "◇", "mountain" => "▲", "outpost" => "▪", _ => "·"
             };
             var button = MapUi.Button(map,"",p.x-8,p.y-8,16,16,() => ShowNode(node),Color.clear,14);
-            MapUi.Text(button.transform,marker,0,0,16,16,major ? 16 : 13,MapUi.Ink,TextAnchor.MiddleCenter);
+            MapUi.Text(button.transform,marker,0,0,16,16,major ? 16 : 15,MapUi.Ink,TextAnchor.MiddleCenter);
             var label = MapUi.Text(map,node.Label,0,0,150,24,major ? 18 : 15,MapUi.Ink);
             if (major) label.fontStyle = FontStyle.Bold;
             var shadow = label.gameObject.AddComponent<Shadow>();
             shadow.effectColor = new Color(1,.92f,.75f,.73f);
             shadow.effectDistance = new Vector2(0,-.8f);
+            label.raycastTarget = true;
+            var labelButton = label.gameObject.AddComponent<Button>();
+            labelButton.transition = Selectable.Transition.None;
+            labelButton.onClick.AddListener(() => { UiSfx.Play("click"); ShowNode(node); });
             labels.Add((node,label,p));
         }
 
@@ -267,14 +274,23 @@ namespace Wuxia
             party.localScale = Vector3.one/zoom;
             focusMarker.localScale = Vector3.one/zoom;
             Vector2 offset = new((ViewWidth-MapWidth*zoom)/2+pan.x,(ViewHeight-MapHeight*zoom)/2-pan.y);
-            foreach (var (flag,point) in flags)
-            {
-                flag.localScale = Vector3.one/zoom;
-                flag.anchoredPosition = new Vector2(point.x,-point.y-9*(1-1/zoom));
-                occupied.Add(new Rect(point*zoom + offset - new Vector2(9,-9*(zoom-1)),new Vector2(18,19)));
-            }
             if (party.gameObject.activeSelf && data.Nodes.TryGetValue(host?.PartyNode ?? "",out var partyNode))
                 occupied.Add(new Rect(Position(partyNode)*zoom + offset + new Vector2(-30.5f,3.5f),new Vector2(23,23)));
+            foreach (var (flag,point,seatOrder) in flags)
+            {
+                flag.localScale = Vector3.one/zoom;
+                Vector2 marker = point*zoom + offset;
+                Vector2 position = new(seatOrder % 3 * 20, -32 - seatOrder / 3 * 22);
+                var bounds = new Rect(marker + position - new Vector2(10, 1), new Vector2(20, 21));
+                while (occupied.Any(other => other.Overlaps(bounds)))
+                {
+                    position.y -= 22;
+                    bounds.y -= 22;
+                }
+                Vector2 local = point + position/zoom;
+                flag.anchoredPosition = new Vector2(local.x,-local.y);
+                occupied.Add(bounds);
+            }
             foreach (var (node,label,point) in labels.OrderBy(entry => entry.node.id == host?.PartyNode ? -1 : LabelPriority(entry.node)))
             {
                 var rect = label.rectTransform;

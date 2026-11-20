@@ -53,7 +53,7 @@ namespace Wuxia
                 var button = MapUi.Button(root,"",x,174,Widths[i]-2,47,() => Sort(index));
                 heading[i] = MapUi.Text(button.transform,Headers[i],10,0,Widths[i]-40,47,19,MapUi.Paper);
                 // Sort glyphs are outside the font subsets, so they get their own (OS-fallback) text.
-                arrows[i] = MapUi.Text(button.transform,"▼▲",Widths[i]-34,0,26,47,15,MapUi.Gold,TextAnchor.MiddleCenter);
+                arrows[i] = MapUi.Text(button.transform,"▼▲",Widths[i]-34,0,26,47,17,MapUi.Gold,TextAnchor.MiddleCenter);
                 x+=Widths[i];
             }
             var viewport = MapUi.Panel(root,"Faction rows",30,223,1475,592,new Color(.87f,.80f,.66f,.55f));
@@ -162,8 +162,11 @@ namespace Wuxia
             float x=0;
             for (int i=0;i<values.Length;i++)
             {
+                if (i > 0)
+                    MapUi.Panel(rect,"Ledger column rule",x-2,0,1,46,new Color(.36f,.27f,.18f,.16f))
+                        .GetComponent<Image>().raycastTarget = false;
                 Color color = MapUi.Ink;
-                if (i == 3 && known) color=RankSystem.Color(faction.leaderRank);
+                if (i == 3 && known) color=Color.Lerp(RankSystem.Color(faction.leaderRank),MapUi.Ink,.30f);
                 if (i == 8 && faction.stance == "hostile") color=MapUi.Red;
                 if (i == 8 && faction.stance == "friendly") color=new Color(.20f,.39f,.28f);
                 MapUi.Text(rect,values[i],x+8,0,Widths[i]-18,46,20,color);

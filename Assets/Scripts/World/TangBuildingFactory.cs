@@ -9,7 +9,7 @@ namespace Wuxia
         private static readonly Color Red = Courtyard.Tint("#8E3B2E");
         private static readonly Color Wood = Courtyard.Tint("#645044");
         private static readonly Color Whitewash = Courtyard.Tint("#EBDFC5");
-        private static readonly Color Clay = Courtyard.Tint("#A0A19D");
+        private static readonly Color Clay = Courtyard.Tint("#656765");
 
         internal TangBuildingFactory(Courtyard world) => this.world = world;
 
@@ -33,7 +33,18 @@ namespace Wuxia
             if (upper)
             {
                 eave += rise * .45f + height * .46f;
-                Storey(root, width * .67f, depth * .56f, eave - height * .58f, height * .58f, 3, false);
+                float upperFloor = eave - height * .58f;
+                Storey(root, width * .67f, depth * .56f, upperFloor, height * .58f, 3, false);
+                if (style == "library")
+                {
+                    Box(root, "Pavilion balcony", 0, upperFloor + .16f, -depth * .31f,
+                        width * .74f, .13f, .64f, Wood, "Timber");
+                    Box(root, "Pavilion balustrade", 0, upperFloor + .55f, -depth * .36f,
+                        width * .74f, .11f, .14f, Red);
+                    for (int post = -3; post <= 3; post++)
+                        Box(root, "Balustrade post", post * width * .116f, upperFloor + .34f,
+                            -depth * .36f, .08f, .4f, .11f, Wood);
+                }
                 Roof(root, width * .75f + .8f, depth * .67f + .65f, eave, rise * .83f, false);
                 rise *= .83f;
             }
@@ -43,8 +54,21 @@ namespace Wuxia
                 Box(root, "Masonry chimney", width * .29f, eave + .5f, depth * .19f, .65f, 1.75f, .62f, Stone, "Paving");
                 Box(root, "Chimney cap", width * .29f, eave + 1.4f, depth * .19f, .83f, .14f, .81f, Clay);
             }
-            if (style == "infirmary" || style == "forge" || style == "smithy")
-                Rack(root, width * .32f, -depth / 2 - .75f);
+            if (style == "infirmary")
+            {
+                float x = width * .31f, z = -depth / 2 - .76f;
+                Rack(root, x, z);
+                for (int bundle = -2; bundle <= 2; bundle++)
+                    Part(root, "Drying herbs", PrimitiveType.Sphere, x + bundle * .21f, .94f, z,
+                        .14f, .32f, .14f, Courtyard.Tint("#777D4A"));
+            }
+            if (style == "smithy")
+            {
+                float z = -depth / 2 - .78f;
+                Rack(root, width * .31f, z);
+                Box(root, "Anvil stump", -width * .32f, .27f, z, .47f, .54f, .44f, Wood, "Timber");
+                Box(root, "Anvil", -width * .32f, .65f, z, .69f, .23f, .32f, Clay);
+            }
             return eave + rise + .35f;
         }
 
@@ -79,7 +103,7 @@ namespace Wuxia
                             panelWidth, .053f, .05f, Red);
                 }
             }
-            Box(root, "Eave soffit", 0, floor + h, 0, w + .72f, .12f, d + .72f, Wood, "Timber");
+            Box(root, "Eave soffit", 0, floor + h - .092f, 0, w + .72f, .12f, d + .72f, Wood, "Timber");
         }
 
         internal void Roof(Transform root, float width, float depth, float eave, float rise, bool gabled)

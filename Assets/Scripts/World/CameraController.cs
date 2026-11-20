@@ -7,8 +7,8 @@ namespace Wuxia
     {
         private const float Pitch = 53f;
         internal event System.Action<string> Changed;
-        private Vector2 focus = new(0, 1.8f);
-        private float height = 40f;
+        private Vector2 focus = new(1.1f, -1.5f);
+        private float height = 43f;
         private Vector3 lastMouse;
         private bool dragging;
 

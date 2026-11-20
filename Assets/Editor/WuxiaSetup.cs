@@ -18,6 +18,10 @@ namespace Wuxia.EditorTools
 
             var renderer = LoadOrCreate("Assets/Settings/CourtyardRenderer.asset",
                 ScriptableObject.CreateInstance<UniversalRendererData>);
+            renderer.postProcessData = AssetDatabase.LoadAssetAtPath<PostProcessData>(
+                "Packages/com.unity.render-pipelines.universal/Runtime/Data/PostProcessData.asset");
+            if (!renderer.postProcessData)
+                throw new InvalidOperationException("URP post-processing resources could not be loaded.");
             if (!renderer.rendererFeatures.Exists(feature => feature && feature.name == "Courtyard SSAO"))
             {
                 var type = typeof(UniversalRenderPipelineAsset).Assembly.GetType(
@@ -33,6 +37,13 @@ namespace Wuxia.EditorTools
                 map.GetArrayElementAtIndex(map.arraySize - 1).longValue = localId;
                 serialized.ApplyModifiedPropertiesWithoutUndo();
             }
+
+            var occlusion = renderer.rendererFeatures.Find(feature => feature && feature.name == "Courtyard SSAO");
+            var ao = new SerializedObject(occlusion).FindProperty("m_Settings");
+            ao.FindPropertyRelative("Intensity").floatValue = 1.25f;
+            ao.FindPropertyRelative("Radius").floatValue = .12f;
+            ao.FindPropertyRelative("Downsample").boolValue = true;
+            ao.serializedObject.ApplyModifiedPropertiesWithoutUndo();
 
             var pipeline = LoadOrCreate("Assets/Settings/CourtyardPipeline.asset",
                 () => UniversalRenderPipelineAsset.Create(renderer));
@@ -56,7 +67,8 @@ namespace Wuxia.EditorTools
             Component<Tonemapping>(profile).mode.Override(TonemappingMode.ACES);
             Component<Bloom>(profile).intensity.Override(0.12f);
             var grade = Component<ColorAdjustments>(profile);
-            grade.saturation.Override(-8);
+            grade.saturation.Override(-10);
+            grade.postExposure.Override(.27f);
             grade.colorFilter.Override(new Color(1f, 0.97f, 0.93f));
             Component<Vignette>(profile).intensity.Override(0.13f);
 
@@ -72,6 +84,23 @@ namespace Wuxia.EditorTools
                 ApplyTexture(material, surface, "_BumpMap", "normal");
                 if (material.GetTexture("_BumpMap"))
                     material.EnableKeyword("_NORMALMAP");
+                EditorUtility.SetDirty(material);
+            }
+            foreach (string surface in new[] { "Fir", "Broadleaf" })
+            {
+                var material = LoadOrCreate($"Assets/Resources/Materials/{surface}.mat", () => new Material(shader));
+                material.SetFloat("_Smoothness", .09f);
+                material.SetFloat("_Cull", (float)CullMode.Off);
+                material.SetFloat("_AlphaClip", 1);
+                material.SetFloat("_Cutoff", .38f);
+                material.EnableKeyword("_ALPHATEST_ON");
+                material.renderQueue = (int)RenderQueue.AlphaTest;
+                material.SetOverrideTag("RenderType", "TransparentCutout");
+                string path = $"Assets/Art/PolyHaven/Foliage/{surface}.png";
+                var atlas = AssetDatabase.LoadAssetAtPath<Texture2D>(path);
+                if (!atlas)
+                    throw new InvalidOperationException($"Missing foliage atlas at {path}");
+                material.SetTexture("_BaseMap", atlas);
                 EditorUtility.SetDirty(material);
             }
             EditorUtility.SetDirty(renderer);

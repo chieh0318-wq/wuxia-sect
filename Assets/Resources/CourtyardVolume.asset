@@ -81,8 +81,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.ColorAdjustments
   active: 1
   postExposure:
-    m_OverrideState: 0
-    m_Value: 0
+    m_OverrideState: 1
+    m_Value: 0.27
   contrast:
     m_OverrideState: 0
     m_Value: 0
@@ -94,7 +94,7 @@ MonoBehaviour:
     m_Value: 0
   saturation:
     m_OverrideState: 1
-    m_Value: -8
+    m_Value: -10
 --- !u!114 &8028487241018088345
 MonoBehaviour:
   m_ObjectHideFlags: 3

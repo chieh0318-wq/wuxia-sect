@@ -25,13 +25,12 @@ namespace Wuxia
             this.slots = slots;
             plots = new Renderer[slots.Length];
             halls = new TangBuildingFactory(this);
-            foreach (string name in new[] { "Solid", "Tile", "Paving", "Earth", "Plaster", "Timber", "Grass" })
+            foreach (string name in new[] { "Solid", "Tile", "Paving", "Earth", "Plaster", "Timber", "Grass", "Fir", "Broadleaf" })
                 surfaces.Add(name, Resources.Load<Material>("Materials/" + name));
 
-            Part("Outer meadow", PrimitiveType.Plane, root, new(0, -.09f, 0), new(18, 1, 18),
-                Tint("#C1C5AB"), "Grass", new(75, 75));
+            BuildMeadow();
             Part("Courtyard earth", PrimitiveType.Plane, root, new(0, -.055f, 0), new(4.2f, 1, 4.2f),
-                Tint("#D2BC9B"), "Earth", new(19, 19));
+                Tint("#ACA693"), "Earth", new(19, 19));
             foreach (float lane in new[] { -14f, -4f, 6f, 14f })
                 Path(0, lane, 40, 1.4f);
             Path(5, 0, 2.8f, 48);
@@ -77,7 +76,9 @@ namespace Wuxia
                     continue;
                 Tree(x, z, Mathf.Lerp(.65f, 1.6f, (float)random.NextDouble()), i % 3 == 0);
                 if (i % 4 == 0)
-                    Part("Weathered rock", PrimitiveType.Sphere, root, new(x + 2, .12f, z - 1), new(1.45f, .76f, 1.1f), Tint("#777B66"), "Paving");
+                    Part("Weathered rock", PrimitiveType.Sphere, root,
+                        new(x + 2, MeadowHeight(x + 2, z - 1) + .12f, z - 1),
+                        new(1.45f, .76f, 1.1f), Tint("#777B66"), "Paving");
             }
             Tree(-18.5f, 17.5f, 1.25f, true);
             Tree(18, 18, 1.15f, false);
@@ -91,6 +92,8 @@ namespace Wuxia
                 Part("Banner pole", PrimitiveType.Cylinder, root, new(x, 1.48f, -20), new(.08f, 1.48f, .08f), Tint("#44382D"));
                 Part("Sect banner", PrimitiveType.Cube, root, new(x + .28f, 2.18f, -20), new(.6f, .97f, .045f), Tint("#82463C"));
             }
+            Part("Water vat", PrimitiveType.Cylinder, root, new(8.5f, .35f, -16.6f), new(.91f, .35f, .91f), Tint("#554A42"), "Timber");
+            Part("Water surface", PrimitiveType.Cylinder, root, new(8.5f, .705f, -16.6f), new(.72f, .012f, .72f), Tint("#56675E"));
             StaticBatchingUtility.Combine(root.gameObject);
         }
 
@@ -114,7 +117,7 @@ namespace Wuxia
             if (data.id == "yard")
             {
                 Part("Packed earth training ground", PrimitiveType.Cube, building, new(0, .035f, 0),
-                    new(w, .14f, d), Tint("#CCB69C"), "Earth", new(3, 3));
+                    new(w, .14f, d), Tint("#9F9580"), "Earth", new(3, 3));
                 halls.Rack(building, -w * .30f, d * .29f);
                 for (int i = 0; i < 3; i++)
                 {
@@ -143,8 +146,9 @@ namespace Wuxia
         {
             var person = new GameObject(data.name).transform;
             person.SetParent(root, false);
+            int order = discipleTargets.Count;
             person.position = entrances.Count == 0 ? new Vector3(0, 0, -16) :
-                entrances[Random.Range(0, entrances.Count)] + Vector3.right * Random.Range(-.55f, .55f);
+                entrances[order % entrances.Count] + Vector3.right * (order % 2 == 0 ? -.45f : .45f);
             var body = new GameObject("Robed figure").transform;
             body.SetParent(person, false);
             Color robe = Color.Lerp(Tint(data.robeColor), Tint("#777369"), .37f);
@@ -217,23 +221,61 @@ namespace Wuxia
             Part("Stone footing", PrimitiveType.Cube, wall, new(0, .18f, 0), new(w + .13f, .36f, d + .13f), Tint("#888475"), "Paving");
             Part("Whitewashed wall", PrimitiveType.Cube, wall, new(0, .96f, 0), new(w, 1.56f, d),
                 Tint("#C4B49A"), "Plaster", new(Mathf.Max(w, d) / 2f, 1));
-            halls.Roof(wall, w + .24f, d + .24f, 1.73f, .18f, true);
+            var coping = new GameObject("Tile coping").transform;
+            coping.SetParent(wall, false);
+            if (d > w)
+                coping.localRotation = Quaternion.Euler(0, 90, 0);
+            halls.Roof(coping, Mathf.Max(w, d) + .24f, Mathf.Min(w, d) + .24f, 1.73f, .18f, true);
+        }
+
+        private void BuildMeadow()
+        {
+            const int cells = 72;
+            int side = cells + 1;
+            var points = new Vector3[side * side];
+            var uv = new Vector2[points.Length];
+            var faces = new int[cells * cells * 6];
+            int index = 0;
+            for (int z = 0; z < side; z++)
+            for (int x = 0; x < side; x++)
+            {
+                float worldX = (x - cells * .5f) * 2.5f, worldZ = (z - cells * .5f) * 2.5f;
+                int p = x + z * side;
+                points[p] = new Vector3(worldX, MeadowHeight(worldX, worldZ), worldZ);
+                uv[p] = new Vector2(worldX, worldZ) / 2.4f;
+                if (x == cells || z == cells)
+                    continue;
+                faces[index++] = p;
+                faces[index++] = p + side;
+                faces[index++] = p + 1;
+                faces[index++] = p + 1;
+                faces[index++] = p + side;
+                faces[index++] = p + side + 1;
+            }
+            var mesh = new Mesh { name = "Undulating grassland", vertices = points, uv = uv, triangles = faces };
+            mesh.RecalculateNormals();
+            mesh.RecalculateTangents();
+            var meadow = new GameObject("Outer meadow", typeof(MeshFilter), typeof(MeshRenderer));
+            meadow.transform.SetParent(root, false);
+            meadow.GetComponent<MeshFilter>().sharedMesh = mesh;
+            Paint(meadow.GetComponent<MeshRenderer>(), "Grass", Tint("#ABC6B3"));
+        }
+
+        private static float MeadowHeight(float x, float z)
+        {
+            float margin = Mathf.Max(Mathf.Abs(x), Mathf.Abs(z));
+            float outside = Mathf.SmoothStep(0, 1, Mathf.InverseLerp(22, 46, margin));
+            if (z < -21)
+                outside *= Mathf.InverseLerp(2, 8, Mathf.Abs(x - 5));
+            return -.09f + outside * (Mathf.PerlinNoise(x * .075f + 12, z * .075f + 17) - .37f) * 2.1f;
         }
 
         private void Tree(float x, float z, float size, bool broadleaf)
         {
-            Part("Tree trunk", PrimitiveType.Cylinder, root, new(x, 1.64f * size, z),
+            float baseHeight = MeadowHeight(x, z);
+            Part("Tree trunk", PrimitiveType.Cylinder, root, new(x, baseHeight + 1.64f * size, z),
                 new Vector3(.27f, 1.65f, .30f) * size, Tint("#554638"), "Timber");
-            for (int i = 0; i < 7; i++)
-            {
-                float angle = i * 2.4f;
-                float spread = (1.38f - i * .14f) * size;
-                float height = (2.25f + i * .35f) * size;
-                Color leaves = Color.Lerp(Tint("#425445"), Tint("#849066"), i / 8f);
-                Part("Tree foliage", PrimitiveType.Sphere, root,
-                    new(x + Mathf.Cos(angle) * spread, height, z + Mathf.Sin(angle) * spread),
-                    new Vector3(2.4f - i * .19f, broadleaf ? 1.63f : .82f, 1.92f - i * .16f) * size, leaves, "Grass");
-            }
+            Vegetation.Build(this, root, new Vector3(x, baseHeight, z), size, broadleaf);
         }
 
         internal GameObject Part(string name, PrimitiveType type, Transform parent, Vector3 position,

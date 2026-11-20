@@ -8,7 +8,7 @@ namespace Wuxia
     public sealed partial class SectUI
     {
         // Title, a two-line objective at 24px and a three-line hint at 20px above the skip button.
-        private const float ObjectiveHeight = 255;
+        private const float ObjectiveHeight = 199;
         private readonly Dictionary<string, RectTransform> targets = new();
         private readonly Vector3[] highlightCorners = new Vector3[4];
         private RectTransform modalButtons;
@@ -29,9 +29,9 @@ namespace Wuxia
             objectiveTitle = Label(objective, "", 28);
             Anchor(objectiveTitle.rectTransform, Vector2.zero, Vector2.one, new(20, ObjectiveHeight - 52), new(-20, -16));
             objectiveBody = Label(objective, "", 24);
-            Anchor(objectiveBody.rectTransform, Vector2.zero, Vector2.one, new(20, ObjectiveHeight - 126), new(-20, -58));
+            Anchor(objectiveBody.rectTransform, Vector2.zero, Vector2.one, new(20, ObjectiveHeight - 89), new(-20, -58));
             objectiveHint = Label(objective, "", 20);
-            Anchor(objectiveHint.rectTransform, Vector2.zero, Vector2.one, new(20, 49), new(-20, -128));
+            Anchor(objectiveHint.rectTransform, Vector2.zero, Vector2.one, new(20, 49), new(-20, -94));
             var skip = Button(objective, "略過引導", () => onSkip?.Invoke());
             Anchor(skip, Vector2.zero, Vector2.zero, new(20, 11), new(157, 45));
 
@@ -105,7 +105,7 @@ namespace Wuxia
         {
             pulse.gameObject.SetActive(false);
             landmarkMarker.gameObject.SetActive(false);
-            float top = details.gameObject.activeSelf ? -686 : -110;
+            float top = details.gameObject.activeSelf ? -126 - details.rect.height : -110;
             Anchor(objective, Vector2.one, Vector2.one, new Vector2(-442, top - ObjectiveHeight), new Vector2(-18, top));
             if (ModalOpen)
                 modal.SetAsLastSibling();

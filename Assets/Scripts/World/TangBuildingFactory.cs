@@ -158,15 +158,26 @@ namespace Wuxia
             var shell = new GameObject("Tiled roof", typeof(MeshFilter), typeof(MeshRenderer));
             shell.transform.SetParent(root, false);
             shell.GetComponent<MeshFilter>().sharedMesh = mesh;
-            world.Paint(shell.GetComponent<Renderer>(), "Tile", Clay);
+            float tone = Mathf.PerlinNoise(root.localPosition.x * .21f + 3, root.localPosition.z * .27f + 5);
+            Color roof = Color.Lerp(Courtyard.Tint("#686D72"), Courtyard.Tint("#888179"), tone);
+            world.Paint(shell.GetComponent<Renderer>(), "Tile", roof);
+            Color trim = Courtyard.Tint("#77736B");
+            foreach (int side in new[] { -1, 1 })
+            {
+                Box(root, "Eave tile course", 0, eave + rise * .025f, side * halfDepth,
+                    width * .94f, .085f, .13f, trim, "Tile");
+                if (!gabled)
+                    Box(root, "Hip edge trim", side * halfWidth, eave + rise * .025f, 0,
+                        .13f, .085f, depth * .92f, trim, "Tile");
+            }
             var hit = shell.AddComponent<MeshCollider>();
             hit.sharedMesh = mesh;
             hit.enabled = false;
-            Box(root, "Ridge cap", 0, eave + rise, 0, ridgeHalf * 2 + .34f, .19f, .24f, Clay);
+            Box(root, "Ridge cap", 0, eave + rise, 0, ridgeHalf * 2 + .34f, .19f, .24f, trim);
             foreach (int end in new[] { -1, 1 })
             {
                 var finial = Part(root, "Ridge finial", PrimitiveType.Sphere, end * ridgeHalf, eave + rise + .13f,
-                    0, .43f, .53f, .25f, Clay);
+                    0, .43f, .53f, .25f, trim);
                 finial.transform.localRotation = Quaternion.Euler(0, 0, -end * 31);
             }
         }

@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Wuxia
 {
-    public sealed class Courtyard
+    public sealed partial class Courtyard
     {
         private readonly Transform root;
         private readonly SectUI ui;
@@ -29,11 +29,11 @@ namespace Wuxia
                 surfaces.Add(name, Resources.Load<Material>("Materials/" + name));
 
             BuildMeadow();
-            Part("Courtyard earth", PrimitiveType.Plane, root, new(0, -.055f, 0), new(4.2f, 1, 4.2f),
-                Tint("#ACA693"), "Earth", new(19, 19));
+            BuildPackedEarth();
+            BuildMountainRidges();
             foreach (float lane in new[] { -14f, -4f, 6f, 14f })
                 Path(0, lane, 40, 1.4f);
-            Path(5, 0, 2.8f, 48);
+            Path(5, 0, 2.8f, 48, true);
             Path(0, 9.5f, 12, 5.1f);
 
             Wall(0, 21, 42, .55f);
@@ -53,10 +53,10 @@ namespace Wuxia
                 outline.SetParent(root, false);
                 for (int side = -1; side <= 1; side += 2)
                 {
-                    Part("Foundation edge", PrimitiveType.Cube, outline, new(x + side * 3.1f, .045f, z),
-                        new(.17f, .09f, 5.8f), Tint("#8C8573"), "Paving");
-                    Part("Foundation edge", PrimitiveType.Cube, outline, new(x, .045f, z + side * 2.9f),
-                        new(6.3f, .09f, .17f), Tint("#8C8573"), "Paving");
+                    Part("Foundation edge", PrimitiveType.Cube, outline, new(x + side * 3.1f, -.021f, z),
+                        new(.14f, .055f, 5.8f), Tint("#77736D"));
+                    Part("Foundation edge", PrimitiveType.Cube, outline, new(x, -.021f, z + side * 2.9f),
+                        new(6.3f, .055f, .14f), Tint("#77736D"));
                 }
                 var tile = Part("Plot selection", PrimitiveType.Cube, outline, new(x, .011f, z),
                     new(6.1f, .015f, 5.65f), Tint("#688752"));
@@ -68,7 +68,7 @@ namespace Wuxia
             }
 
             var random = new System.Random(18);
-            for (int i = 0; i < 58; i++)
+            for (int i = 0; i < 76; i++)
             {
                 float x = (float)random.NextDouble() * 97 - 48;
                 float z = (float)random.NextDouble() * 89 - 36;
@@ -78,8 +78,9 @@ namespace Wuxia
                 if (i % 4 == 0)
                     Part("Weathered rock", PrimitiveType.Sphere, root,
                         new(x + 2, MeadowHeight(x + 2, z - 1) + .12f, z - 1),
-                        new(1.45f, .76f, 1.1f), Tint("#777B66"), "Paving");
+                        new(1.45f, .76f, 1.1f), Tint("#777A79"), "Paving");
             }
+            PlantWallBases(random);
             Tree(-18.5f, 17.5f, 1.25f, true);
             Tree(18, 18, 1.15f, false);
             Tree(-18.4f, -18, 1.15f, false);
@@ -116,8 +117,10 @@ namespace Wuxia
             float labelHeight;
             if (data.id == "yard")
             {
-                Part("Packed earth training ground", PrimitiveType.Cube, building, new(0, .035f, 0),
-                    new(w, .14f, d), Tint("#9F9580"), "Earth", new(3, 3));
+                var trainingGround = Part("Packed earth training ground", PrimitiveType.Cube, building, new(0, .035f, 0),
+                    new(w, .14f, d), Color.white);
+                PaintEarth(trainingGround.GetComponent<Renderer>(), new Vector4(.17f, .16f, .37f, .21f),
+                    Tint("#ACA49A"));
                 halls.Rack(building, -w * .30f, d * .29f);
                 for (int i = 0; i < 3; i++)
                 {
@@ -151,6 +154,11 @@ namespace Wuxia
                 entrances[order % entrances.Count] + Vector3.right * (order % 2 == 0 ? -.45f : .45f);
             var body = new GameObject("Robed figure").transform;
             body.SetParent(person, false);
+            const float figureScale = 1.42f;
+            body.localScale = Vector3.one * figureScale;
+            var contact = Part("Ground contact shadow", PrimitiveType.Sphere, person, new(0, .055f, 0),
+                new(.68f, .025f, .44f), Tint("#58554D"));
+            contact.GetComponent<Renderer>().shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
             Color robe = Color.Lerp(Tint(data.robeColor), Tint("#777369"), .37f);
             Color skin = Tint("#C39572"), hair = Tint("#302A25");
             Part("Upper robe", PrimitiveType.Capsule, body, new(0, .99f, 0), new(.43f, .29f, .30f), robe);
@@ -171,12 +179,12 @@ namespace Wuxia
                 Part("Cloth shoe", PrimitiveType.Sphere, body, new(side * .11f, .08f, .06f), new(.14f, .13f, .27f), hair);
             }
             var hit = person.gameObject.AddComponent<CapsuleCollider>();
-            hit.center = Vector3.up * .8f;
-            hit.radius = .37f;
-            hit.height = 1.65f;
+            hit.center = Vector3.up * (.8f * figureScale);
+            hit.radius = .37f * figureScale;
+            hit.height = 1.65f * figureScale;
             discipleTargets.Add(hit, data);
             person.gameObject.AddComponent<DiscipleWalker>().Initialize(entrances, body);
-            ui.AddWorldLabel(person, Vector3.up * 1.82f, data.name);
+            ui.AddWorldLabel(person, Vector3.up * (1.82f * figureScale), data.name, false);
         }
 
         private Mesh skirtMesh;
@@ -206,11 +214,13 @@ namespace Wuxia
             return skirtMesh;
         }
 
-        private void Path(float x, float z, float w, float d)
+        private void Path(float x, float z, float w, float d, bool raised = false)
         {
-            Part("Stone paving edge", PrimitiveType.Cube, root, new(x, -.009f, z), new(w + .19f, .06f, d + .19f), Tint("#7D796B"));
-            Part("Stone paving", PrimitiveType.Cube, root, new(x, .018f, z), new(w, .06f, d),
-                Tint("#D0C6B1"), "Paving", new(w / 2.2f, d / 2.2f));
+            float height = raised ? .12f : .027f;
+            Part("Stone curb", PrimitiveType.Cube, root, new(x, height - .064f, z),
+                new(w + .25f, .13f, d + .25f), Tint("#99988E"));
+            Part("Stone paving", PrimitiveType.Cube, root, new(x, height, z), new(w, .045f, d),
+                Tint("#B9B8B1"), "Paving", new(w / 2.2f, d / 2.2f));
         }
 
         private void Wall(float x, float z, float w, float d)
@@ -258,7 +268,7 @@ namespace Wuxia
             var meadow = new GameObject("Outer meadow", typeof(MeshFilter), typeof(MeshRenderer));
             meadow.transform.SetParent(root, false);
             meadow.GetComponent<MeshFilter>().sharedMesh = mesh;
-            Paint(meadow.GetComponent<MeshRenderer>(), "Grass", Tint("#ABC6B3"));
+            Paint(meadow.GetComponent<MeshRenderer>(), "Grass", Tint("#8AA9AC"));
         }
 
         private static float MeadowHeight(float x, float z)
@@ -267,7 +277,9 @@ namespace Wuxia
             float outside = Mathf.SmoothStep(0, 1, Mathf.InverseLerp(22, 46, margin));
             if (z < -21)
                 outside *= Mathf.InverseLerp(2, 8, Mathf.Abs(x - 5));
-            return -.09f + outside * (Mathf.PerlinNoise(x * .075f + 12, z * .075f + 17) - .37f) * 2.1f;
+            float valley = 23 * Mathf.SmoothStep(0, 1, Mathf.InverseLerp(23, 49, z))
+                + Mathf.Max(0, z - 43) * 1.2f;
+            return -.09f - valley + outside * (Mathf.PerlinNoise(x * .075f + 12, z * .075f + 17) - .45f) * 4.8f;
         }
 
         private void Tree(float x, float z, float size, bool broadleaf)

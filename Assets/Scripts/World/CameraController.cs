@@ -5,10 +5,10 @@ namespace Wuxia
 {
     public sealed class CameraController : MonoBehaviour
     {
-        private const float Pitch = 53f;
+        private const float Pitch = 50f;
         internal event System.Action<string> Changed;
-        private Vector2 focus = new(1.1f, -1.5f);
-        private float height = 43f;
+        private Vector2 focus = new(1.1f, -2.5f);
+        private float height = 37.5f;
         private Vector3 lastMouse;
         private bool dragging;
 

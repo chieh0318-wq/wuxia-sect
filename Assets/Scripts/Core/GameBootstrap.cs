@@ -95,7 +95,14 @@ namespace Wuxia
             }
 
             view.clearFlags = CameraClearFlags.SolidColor;
-            view.backgroundColor = new Color(.54f, .58f, .54f);
+            view.backgroundColor = new Color(.66f, .73f, .77f);
+            var skyShader = Resources.Load<Shader>("MountainSky");
+            if (skyShader != null)
+            {
+                mountainSky = new Material(skyShader);
+                RenderSettings.skybox = mountainSky;
+                view.clearFlags = CameraClearFlags.Skybox;
+            }
             view.orthographic = false;
             view.fieldOfView = 54f;
             view.allowHDR = true;
@@ -108,12 +115,12 @@ namespace Wuxia
 
             RenderSettings.ambientMode = AmbientMode.Trilight;
             RenderSettings.ambientSkyColor = new Color(.55f, .60f, .67f);
-            RenderSettings.ambientEquatorColor = new Color(.45f, .43f, .36f);
-            RenderSettings.ambientGroundColor = new Color(.25f, .23f, .19f);
+            RenderSettings.ambientEquatorColor = new Color(.45f, .50f, .57f);
+            RenderSettings.ambientGroundColor = new Color(.31f, .32f, .34f);
             RenderSettings.fog = true;
             RenderSettings.fogMode = FogMode.Linear;
-            RenderSettings.fogStartDistance = 43;
-            RenderSettings.fogEndDistance = 116;
+            RenderSettings.fogStartDistance = 55;
+            RenderSettings.fogEndDistance = 190;
             RenderSettings.fogColor = view.backgroundColor;
             var volume = gameObject.AddComponent<Volume>();
             volume.isGlobal = true;
@@ -129,6 +136,7 @@ namespace Wuxia
                 sun.intensity = 1.35f;
                 RenderSettings.sun = sun;
                 sun.shadows = LightShadows.Soft;
+                sun.shadowStrength = .78f;
                 sun.shadowBias = .025f;
                 sun.shadowNormalBias = .22f;
                 sun.transform.rotation = Quaternion.Euler(47f, -37f, 0f);
@@ -207,9 +215,13 @@ namespace Wuxia
             ui.CloseBuilding();
         }
 
+        private Material mountainSky;
+
         private void OnDestroy()
         {
             ui?.Destroy();
+            world?.Destroy();
+            Destroy(mountainSky);
         }
 
         private void ShowCommands()

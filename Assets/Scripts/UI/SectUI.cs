@@ -147,6 +147,10 @@ namespace Wuxia
             foreach (var action in actions)
                 Button(detailsList, action.label, action.run);
             details.gameObject.SetActive(true);
+            LayoutRebuilder.ForceRebuildLayoutImmediate(detailsList);
+            float height = Mathf.Clamp(LayoutUtility.GetPreferredHeight(detailsList) + 86, 155, 555);
+            Anchor(details, Vector2.one, Vector2.one, new Vector2(-390, -110 - height), new Vector2(-18, -110));
+            detailsList.anchoredPosition = Vector2.zero;
         }
 
         public void ShowModal(string title, IEnumerable<string> lines,
@@ -208,12 +212,15 @@ namespace Wuxia
             toast.transform.parent.gameObject.SetActive(!string.IsNullOrEmpty(message));
         }
 
-        public void AddWorldLabel(Transform target, Vector3 offset, string name)
+        public void AddWorldLabel(Transform target, Vector3 offset, string name, bool building = true)
         {
             var tag = Panel("Name tag", labels, Vector2.one * .5f, Vector2.one * .5f,
                 Vector2.zero, Vector2.zero, false);
-            tag.sizeDelta = new Vector2(Mathf.Max(66, name.Length * 17 + 16), 29);
-            Fill(Label(tag, name, 16, TextAnchor.MiddleCenter).rectTransform, 3);
+            int size = building ? 22 : 16;
+            tag.sizeDelta = new Vector2(Mathf.Max(66, name.Length * (size + 1) + 16), size + 13);
+            var ink = Label(tag, name, size, TextAnchor.MiddleCenter);
+            ink.color = new Color(.17f, .105f, .065f);
+            Fill(ink.rectTransform, 3);
             worldLabels.Add((target, offset, tag));
         }
 
@@ -224,7 +231,7 @@ namespace Wuxia
             foreach (var entry in worldLabels)
             {
                 Vector3 screen = camera.WorldToScreenPoint(entry.target.position + entry.offset);
-                bool visible = screen.z > 0 && screen.z < (entry.offset.y < 2f ? 39 : 57) &&
+                bool visible = screen.z > 0 && screen.z < (entry.offset.y < 2.7f ? 39 : 57) &&
                     camera.pixelRect.Contains(screen);
                 if (visible)
                 {

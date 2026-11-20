@@ -56,7 +56,7 @@ namespace Wuxia
             crown.transform.localPosition = position;
             crown.transform.localScale = Vector3.one * size;
             crown.GetComponent<MeshFilter>().sharedMesh = mesh;
-            world.Paint(crown.GetComponent<MeshRenderer>(), broadleaf ? "Broadleaf" : "Fir", Courtyard.Tint("#C8D1B7"));
+            world.Paint(crown.GetComponent<MeshRenderer>(), broadleaf ? "Broadleaf" : "Fir", Courtyard.Tint(broadleaf ? "#A6C1AB" : "#9DBAB5"));
 
             void AddSpray(Vector3 start, Vector3 across, Vector3 extension, float halfWidth)
             {

@@ -15,8 +15,8 @@ data = ROOT / "Assets/StreamingAssets/Data/worldmap.json"
 bounds = json.loads(data.read_text(encoding="utf-8-sig")).get("bounds", {}) if data.exists() else {}
 west, east = bounds.get("lonMin", 70), bounds.get("lonMax", 136)
 south, north = bounds.get("latMin", 15), bounds.get("latMax", 55)
-cache = ROOT / ".natural-earth"
-cache.mkdir(exist_ok=True)
+cache = ROOT / "Library" / ".natural-earth"
+cache.mkdir(parents=True, exist_ok=True)
 
 def shapes(name):
     filename = "ne_50m_" + name

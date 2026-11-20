@@ -18,7 +18,20 @@ namespace Wuxia
                 yield break;
             }
             Directory.CreateDirectory(directory);
-            const int width = 1920, height = 1080;
+            int width = 1920, height = 1080;
+            string[] args = System.Environment.GetCommandLineArgs();
+            int option = System.Array.IndexOf(args, "-wuxiaCaptureRes");
+            if (option >= 0 && option + 1 < args.Length)
+            {
+                string[] dimensions = args[option + 1].Split('x');
+                if (dimensions.Length == 2 && int.TryParse(dimensions[0], out int w) &&
+                    int.TryParse(dimensions[1], out int h) && w > 0 && h > 0 &&
+                    w <= SystemInfo.maxTextureSize && h <= SystemInfo.maxTextureSize)
+                {
+                    width = w;
+                    height = h;
+                }
+            }
             var target = new RenderTexture(width, height, 24);
             var pixels = new Texture2D(width, height, TextureFormat.RGB24, false);
             var canvas = ui.Canvas;

@@ -11,6 +11,7 @@ namespace Wuxia
         private float height = 37.5f;
         private Vector3 lastMouse;
         private bool dragging;
+        private bool dragBlocked;
 
         private void Update()
         {
@@ -25,14 +26,17 @@ namespace Wuxia
 
             Vector3 mouse = Input.mousePosition;
             bool held = Input.GetMouseButton(1) || Input.GetMouseButton(2);
-            if (held && dragging)
+            bool overUi = EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
+            if (held && !dragging)
+                dragBlocked = overUi;
+            if (held && dragging && !dragBlocked)
             {
                 Vector3 delta = mouse - lastMouse;
                 focus -= new Vector2(delta.x, delta.y) * (height / Mathf.Max(1, Screen.height));
             }
             dragging = held;
             lastMouse = mouse;
-            if (EventSystem.current == null || !EventSystem.current.IsPointerOverGameObject())
+            if (!overUi && !(held && dragBlocked))
                 height = Mathf.Clamp(height - Input.mouseScrollDelta.y * 2.6f, 12f, 46f);
             focus.x = Mathf.Clamp(focus.x, -20f, 20f);
             focus.y = Mathf.Clamp(focus.y, -20f, 20f);

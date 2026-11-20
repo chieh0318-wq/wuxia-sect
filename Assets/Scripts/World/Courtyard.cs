@@ -152,32 +152,11 @@ namespace Wuxia
             int order = discipleTargets.Count;
             person.position = entrances.Count == 0 ? new Vector3(0, 0, -16) :
                 entrances[order % entrances.Count] + Vector3.right * (order % 2 == 0 ? -.45f : .45f);
-            var body = new GameObject("Robed figure").transform;
+            // M2-B: refined figure, preserving the root collider and walker.
+            var body = CharacterFactory.Build(CharacterFactory.ForDisciple(data, order)).transform;
             body.SetParent(person, false);
             const float figureScale = 1.42f;
-            body.localScale = Vector3.one * figureScale;
-            var contact = Part("Ground contact shadow", PrimitiveType.Sphere, person, new(0, .055f, 0),
-                new(.68f, .025f, .44f), Tint("#58554D"));
-            contact.GetComponent<Renderer>().shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
-            Color robe = Color.Lerp(Tint(data.robeColor), Tint("#777369"), .37f);
-            Color skin = Tint("#C39572"), hair = Tint("#302A25");
-            Part("Upper robe", PrimitiveType.Capsule, body, new(0, .99f, 0), new(.43f, .29f, .30f), robe);
-            var skirt = new GameObject("Flared robe", typeof(MeshFilter), typeof(MeshRenderer));
-            skirt.transform.SetParent(body, false);
-            skirt.GetComponent<MeshFilter>().sharedMesh = SkirtMesh();
-            Paint(skirt.GetComponent<Renderer>(), "Solid", robe);
-            Part("Sash", PrimitiveType.Cylinder, body, new(0, .77f, 0), new(.35f, .047f, .31f), Tint("#4F4038"));
-            Part("Head", PrimitiveType.Sphere, body, new(0, 1.34f, .018f), new(.26f, .32f, .25f), skin);
-            Part("Hair", PrimitiveType.Sphere, body, new(0, 1.42f, -.033f), new(.28f, .22f, .24f), hair);
-            Part("Topknot", PrimitiveType.Sphere, body, new(0, 1.57f, -.047f), new(.13f, .14f, .13f), hair);
-            for (int side = -1; side <= 1; side += 2)
-            {
-                var sleeve = Part("Sleeve", PrimitiveType.Capsule, body, new(side * .245f, .96f, 0),
-                    new(.19f, .26f, .23f), robe);
-                sleeve.transform.localRotation = Quaternion.Euler(0, 0, side * 15);
-                Part("Hand", PrimitiveType.Sphere, body, new(side * .28f, .745f, 0), new(.09f, .13f, .10f), skin);
-                Part("Cloth shoe", PrimitiveType.Sphere, body, new(side * .11f, .08f, .06f), new(.14f, .13f, .27f), hair);
-            }
+            body.localScale *= figureScale;
             var hit = person.gameObject.AddComponent<CapsuleCollider>();
             hit.center = Vector3.up * (.8f * figureScale);
             hit.radius = .37f * figureScale;
@@ -185,33 +164,6 @@ namespace Wuxia
             discipleTargets.Add(hit, data);
             person.gameObject.AddComponent<DiscipleWalker>().Initialize(entrances, body);
             ui.AddWorldLabel(person, Vector3.up * (1.82f * figureScale), data.name, false);
-        }
-
-        private Mesh skirtMesh;
-        private Mesh SkirtMesh()
-        {
-            if (skirtMesh != null)
-                return skirtMesh;
-            const int sides = 16;
-            var vertices = new Vector3[sides * 2];
-            var triangles = new int[sides * 6];
-            for (int i = 0; i < sides; i++)
-            {
-                float angle = i * 2 * Mathf.PI / sides;
-                var outward = new Vector3(Mathf.Cos(angle), 0, Mathf.Sin(angle));
-                vertices[i] = outward * .29f + Vector3.up * .13f;
-                vertices[i + sides] = outward * .17f + Vector3.up * .82f;
-                int next = (i + 1) % sides, index = i * 6;
-                triangles[index] = i;
-                triangles[index + 1] = i + sides;
-                triangles[index + 2] = next;
-                triangles[index + 3] = next;
-                triangles[index + 4] = i + sides;
-                triangles[index + 5] = next + sides;
-            }
-            skirtMesh = new Mesh { name = "Flared cloth", vertices = vertices, triangles = triangles };
-            skirtMesh.RecalculateNormals();
-            return skirtMesh;
         }
 
         private void Path(float x, float z, float w, float d, bool raised = false)

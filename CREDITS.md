@@ -64,5 +64,15 @@ Portraits and story CG generated for this project by Grok Bot (AI-generated). Th
 ## Interface and characters
 
 - The ink UI kit in `Assets/Art/UI/Resources/InkUi/` was generated in the editor for this project by `Assets/Editor/InkUiGenerator.cs`. Its look was informed by references, but it contains no third-party images.
-- Codex B built the Tang-robed character meshes and poses procedurally (`Assets/Scripts/World/CharacterFactory.cs`). They use the project's URP solid material.
+- Codex B built the procedural fallback character meshes and poses (`Assets/Scripts/World/CharacterFactory.cs`). They use the project's URP solid material.
 - The courtyard buildings, terrain and vegetation placement are procedural code written for this project.
+
+## 3D characters
+
+Quaternius released all three Standard packs under CC0 1.0. Licence files accompany the imported assets in `Assets/ThirdParty/Quaternius/`. [CC0 1.0 Universal](https://creativecommons.org/publicdomain/zero/1.0/)
+
+- Universal Base Characters provides the rigged adults, face textures and hairstyles. [Quaternius](https://quaternius.com/packs/universalbasecharacters.html)
+- Universal Animation Library provides the humanoid idle and walk loops. [Quaternius](https://quaternius.com/packs/universalanimationlibrary.html)
+- Modular Character Outfits – Fantasy provides the peasant trousers and footwear. [Quaternius](https://quaternius.com/packs/modularcharacteroutfitsfantasy.html)
+
+The Tang outer garments and hair ornaments were made for this project.

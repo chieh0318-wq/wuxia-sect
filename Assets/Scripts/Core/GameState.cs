@@ -23,6 +23,18 @@ namespace Wuxia
         public int Silver { get; private set; }
         public int Food { get; private set; }
         public int Reputation { get; private set; }
+        public int ActionPoints { get; private set; }
+        public int ApMax => Data.Ap.baseMax;
+
+        public bool TrySpendAp(int cost, string reason)
+        {
+            if (cost < 0)
+                throw new System.ArgumentOutOfRangeException(nameof(cost), reason);
+            if (cost > ActionPoints)
+                return false;
+            ActionPoints -= cost;
+            return true;
+        }
         public string Date => $"開元{(Year == 1 ? "元" : ChineseNumber(Year))}年 {Months[Month - 1]}";
 
         public GameState(GameData data)
@@ -33,6 +45,7 @@ namespace Wuxia
             Silver = data.Start.silver;
             Food = data.Start.food;
             Reputation = data.Start.reputation;
+            ActionPoints = ApMax;
             Disciples = data.Disciples.Where(d => d.startInSect).ToList();
             Buildings = new BuildingData[data.Start.slots.Length];
             for (int index = 0; index < Buildings.Length; index++)
@@ -109,6 +122,8 @@ namespace Wuxia
                 Month = 1;
                 Year++;
             }
+            ActionPoints = ApMax;
+            report.Lines.Add($"行動力已恢復 {ActionPoints}／{ApMax}。");
             report.Lines.Add($"本月結餘　銀兩 {Silver}、糧食 {Food}、聲望 {Reputation}");
             return report;
         }

@@ -113,6 +113,8 @@ namespace Wuxia
             ui.HideObjective();
         }
 
+        internal bool CanFund(string trigger) => Active && !actions.Contains((trigger, ""));
+
         internal string Fund(string trigger, Cost cost, int extraSilver = 0)
         {
             if (!Active || actions.Contains((trigger, "")))

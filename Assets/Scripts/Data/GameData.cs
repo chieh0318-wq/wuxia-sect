@@ -20,9 +20,22 @@ namespace Wuxia
         public string[] actions;
     }
 
+    [Serializable] public class ApSource
+    {
+        public string id, type, @ref, desc;
+        public int threshold, value;
+    }
+
+    [Serializable] public class ApData
+    {
+        public int baseMax = 4;
+        public ApSource[] sources;
+    }
+
     [Serializable] public class ActionData
     {
         public string id, name, description, type;
+        public int apCost;
         public Cost cost;
         public Yield effect;
     }
@@ -63,9 +76,11 @@ namespace Wuxia
         public readonly DiscipleData[] Disciples;
         public readonly string[] GeneralLines;
         public readonly StartData Start;
+        public readonly ApData Ap;
 
         private GameData()
         {
+            Ap = Read<ApData>("ap.json", file => file.baseMax > 0) ?? new ApData();
             var buildings = Read<BuildingFile>("buildings.json", file => ValidIds(file.buildings, b => b.id) &&
                 file.buildings.All(b => HasText(b.name) && b.size != null && b.size.Length == 3 &&
                     b.size.All(n => n > 0 && !float.IsInfinity(n)) && ValidCost(b.cost) && b.upkeep >= 0 &&
@@ -80,12 +95,12 @@ namespace Wuxia
                     income = new Yield { food = 4 }, actions = Array.Empty<string>() }
             };
             var actions = Read<ActionFile>("actions.json", file => ValidIds(file.actions, a => a.id) &&
-                file.actions.All(a => HasText(a.name) && ValidCost(a.cost) && a.effect != null &&
+                file.actions.All(a => HasText(a.name) && ValidCost(a.cost) && a.apCost >= 0 && a.effect != null &&
                     (a.type == "generic" || a.type == "recruit" || a.type == "build")));
             Actions = actions?.actions ?? new[]
             {
-                new ActionData { id = "build", name = "建造", type = "build", cost = new Cost(), effect = new Yield() },
-                new ActionData { id = "recruit", name = "招收弟子", type = "recruit", cost = new Cost(), effect = new Yield() }
+                new ActionData { id = "build", name = "建造", type = "build", apCost = 2, cost = new Cost(), effect = new Yield() },
+                new ActionData { id = "recruit", name = "招收弟子", type = "recruit", apCost = 1, cost = new Cost(), effect = new Yield() }
             };
             var disciples = Read<DiscipleFile>("disciples.json", file => ValidIds(file.disciples, d => d.id) &&
                 file.disciples.All(d => HasText(d.name)));

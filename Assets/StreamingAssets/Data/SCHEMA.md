@@ -13,3 +13,4 @@
 
 - `tutorial.json` 包含 `intro`（含 `speaker`、`text` 的對話陣列）、`choosePrompt`、`titles`、`steps`、`completeText`、`reward`。每個步驟有 `id`、`title`、`objective`、`hint`、`trigger`、`target`、`highlight`。可在文字中使用 `{title}` 與 `{sect}`。
 - 引導事件為 `camera_move`、`camera_zoom`、`click_building`（以 `target` 指定建築 ID）、`talk_disciple`、`build_any`、`recruit`、`end_month`、`read_report`。提示可留空，或以 `building:<id>` 或 `ui:<key>` 指定。支援的介面鍵為 `cmd_build`、`cmd_recruit`、`end_month`。
+`actions.json` 的每個指令可設非負整數 `apCost`（預設 0），成功執行時才扣除。建造在選定空地後結算。`ap.json` 的 `baseMax` 是每月補滿的行動力基礎上限，預設 4。

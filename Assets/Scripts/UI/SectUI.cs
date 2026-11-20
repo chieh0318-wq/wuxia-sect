@@ -113,10 +113,12 @@ namespace Wuxia
             CreateObjective();
         }
 
+        public bool BuildingOpen => details.gameObject.activeSelf;
+
         public void Refresh(GameState state)
         {
             date.text = state.Date;
-            resources.text = $"銀兩 {state.Silver}　糧食 {state.Food}　聲望 {state.Reputation}　弟子 {state.Disciples.Count}";
+            resources.text = $"銀兩 {state.Silver}　糧食 {state.Food}　聲望 {state.Reputation}　弟子 {state.Disciples.Count}　行動力 {state.ActionPoints}／{state.ApMax}";
         }
 
         public void ShowCommands(string title, IEnumerable<(string label, Action run)> commands)
@@ -130,6 +132,7 @@ namespace Wuxia
             foreach (var command in commands)
             {
                 var rect = Button(commandList, command.label, command.run);
+                rect.GetComponent<Button>().interactable = command.run != null;
                 if (title == "指令" && index < 2)
                     targets[index == 0 ? "cmd_build" : "cmd_recruit"] = rect;
                 index++;
@@ -145,7 +148,7 @@ namespace Wuxia
             AddLine(detailsList, "等級 1");
             AddLine(detailsList, building.description);
             foreach (var action in actions)
-                Button(detailsList, action.label, action.run);
+                Button(detailsList, action.label, action.run).GetComponent<Button>().interactable = action.run != null;
             details.gameObject.SetActive(true);
             LayoutRebuilder.ForceRebuildLayoutImmediate(detailsList);
             float height = Mathf.Clamp(LayoutUtility.GetPreferredHeight(detailsList) + 86, 155, 555);
@@ -302,7 +305,7 @@ namespace Wuxia
             colors.highlightedColor = new Color(1, .86f, .75f);
             colors.pressedColor = new Color(.72f, .63f, .56f);
             button.colors = colors;
-            button.onClick.AddListener(() => action());
+            button.onClick.AddListener(() => action?.Invoke());
             rect.gameObject.AddComponent<LayoutElement>().preferredHeight = 53;
             var label = Label(rect, text, 22, TextAnchor.MiddleCenter);
             label.color = new Color(.98f, .92f, .81f);

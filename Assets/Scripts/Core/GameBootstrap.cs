@@ -30,6 +30,7 @@ namespace Wuxia
         private TutorialGuide tutorial;
         private CameraController controls;
         private bool courtyardReady;
+        private BuildingData openBuilding;
 
         private void Awake()
         {
@@ -231,7 +232,7 @@ namespace Wuxia
             {
                 var action = state.Data.Actions.FirstOrDefault(entry => entry.type == type);
                 if (action != null)
-                    commands.Add((ActionLabel(action), () => RunAction(action)));
+                    commands.Add((ActionLabel(action), CanUseAp(action) ? () => RunAction(action) : null));
             }
             commands.Add(("查看門派", ShowSect));
             ui.ShowCommands("指令", commands);
@@ -239,18 +240,21 @@ namespace Wuxia
 
         private void ShowBuilding(BuildingData building)
         {
+            openBuilding = building;
             var actions = new List<(string, System.Action)>();
             foreach (string id in building.actions)
             {
                 var action = state.Data.Actions.FirstOrDefault(entry => entry.id == id);
                 if (action != null)
-                    actions.Add((ActionLabel(action), () => RunAction(action)));
+                    actions.Add((ActionLabel(action), CanUseAp(action) ? () => RunAction(action) : null));
             }
             ui.ShowBuilding(building, actions);
         }
 
         private void RunAction(ActionData action)
         {
+            if (!CanUseAp(action))
+                return;
             if (action.type == "build")
             {
                 if (courtyardReady)
@@ -280,6 +284,8 @@ namespace Wuxia
                 return;
             }
 
+            if (!SpendActionAp(action))
+                return;
             state.Pay(action.cost, extraSilver);
             state.Apply(action.effect);
             if (recruit != null)
@@ -288,6 +294,9 @@ namespace Wuxia
                 world?.SpawnDisciple(recruit);
             }
             ui.Refresh(state);
+            ShowCommands();
+            if (openBuilding != null && ui.BuildingOpen)
+                ShowBuilding(openBuilding);
             string message = $"{action.name}完成。{Changes(action.effect)}";
             if (recruit != null)
                 message = $"{recruit.name}已加入{state.Data.Start.sectName}。{Changes(action.effect)}";
@@ -354,6 +363,8 @@ namespace Wuxia
                 return;
             }
 
+            if (!SpendActionAp(buildAction))
+                return;
             state.Pay(total);
             state.Apply(buildAction.effect);
             state.Buildings[index] = buildChoice;
@@ -409,16 +420,35 @@ namespace Wuxia
             if (choosingBuilding)
                 CancelBuild();
             var report = state.EndMonth();
+            ShowCommands();
+            if (openBuilding != null && ui.BuildingOpen)
+                ShowBuilding(openBuilding);
             ui.Refresh(state);
             tutorial?.Record("end_month");
             ui.ShowModal("門派月報", report.Lines, closed: () => tutorial?.Record("read_report"));
         }
 
+        private bool TutorialApGrant(ActionData action)
+        {
+            string trigger = action.type == "build" ? "build_any" : action.type;
+            return tutorial?.CanFund(trigger) == true && (trigger == "build_any" || trigger == "recruit");
+        }
+
+        private bool CanUseAp(ActionData action) => state.ActionPoints >= action.apCost || TutorialApGrant(action);
+
+        private bool SpendActionAp(ActionData action)
+        {
+            if (state.TrySpendAp(action.apCost, action.id))
+                return true;
+            return TutorialApGrant(action) && state.TrySpendAp(state.ActionPoints, action.id);
+        }
+
         private string ActionLabel(ActionData action)
         {
             int silver = action.cost.silver + (action.type == "recruit" ? state.Data.Start.recruitCost : 0);
-            return silver == 0 && action.cost.food == 0 ? action.name :
-                $"{action.name}　{CostText(silver, action.cost.food)}";
+            string resources = silver == 0 && action.cost.food == 0 ? "" : $"　{CostText(silver, action.cost.food)}";
+            string reason = CanUseAp(action) ? "" : "（行動力不足）";
+            return $"{action.name}　行動力 {action.apCost}{resources}{reason}";
         }
 
         private static string CostText(int silver, int food) =>

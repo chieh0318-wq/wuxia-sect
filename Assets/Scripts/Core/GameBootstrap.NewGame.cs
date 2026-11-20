@@ -483,11 +483,10 @@ namespace Wuxia
             {
                 if (index >= (beats?.Length ?? 0)) { next(); return; }
                 var beat = beats[index++];
-                var friend = Friend();
                 string friendId = state.Protagonist.gender == "女" ? "friend_m" : "friend_f";
                 // Story characters always use their own portrait id (never a recruit/fallback image).
                 string portrait = beat.portrait == "hero" ? state.Protagonist.portrait ?? state.Protagonist.lookId :
-                    beat.portrait == "friend" ? friendId : beat.portrait;
+                    PortraitService.StoryId(beat.portrait, friendId == "friend_m" ? "男" : "女");
                 if (!string.IsNullOrEmpty(beat.image))
                     currentCg = beat.image;
                 ui.ShowStoryBeat(FormatStory(beat.speaker), FormatStory(beat.text), currentCg, portrait,

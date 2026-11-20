@@ -93,6 +93,13 @@ namespace Wuxia
                 }
                 state.Disciples.Clear();
                 state.Disciples.AddRange(snapshot.disciples.Select(CloneDisciple));
+                bool migratePortraits = state.Story.usedPortraits?.Length > 0 != true;
+                state.Story.usedPortraits ??= Array.Empty<StoryValue>();
+                foreach (var disciple in state.Disciples)
+                {
+                    if (migratePortraits) PortraitPool.Track(state.Story, disciple.portrait);
+                    state.EnsurePortrait(disciple);
+                }
                 state.ActionPoints = Mathf.Clamp(snapshot.actionPoints, 0, state.ApMax);
                 return state;
             }

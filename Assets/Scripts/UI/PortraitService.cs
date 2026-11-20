@@ -6,16 +6,31 @@ namespace Wuxia
     public static class PortraitService
     {
         private static Texture2D silhouette;
+        private static readonly System.Collections.Generic.HashSet<string> missingStoryPortraits = new();
+
+        internal static string StoryId(string id, string friendGender)
+        {
+            if (id == "friend" || id?.StartsWith("friend__", StringComparison.Ordinal) == true)
+                return (friendGender == "男" ? "friend_m" : "friend_f") + id.Substring("friend".Length);
+            return id;
+        }
+
+        internal static Texture2D FindPortrait(string id) =>
+            string.IsNullOrWhiteSpace(id) ? null : FindTexture("portraits", id);
 
         public static Texture2D Resolve(string id, string gender = null, bool required = false)
         {
-            var portrait = string.IsNullOrEmpty(id) ? null : FindTexture("portraits", id);
+            id = StoryId(id, gender);
+            var portrait = FindPortrait(id);
+            int expression = id?.IndexOf("__", StringComparison.Ordinal) ?? -1;
+            if (portrait == null && expression > 0)
+                portrait = FindPortrait(id.Substring(0, expression));
             if (portrait != null)
                 return portrait;
             if (required)
             {
-                Debug.LogError($"Missing required story portrait: {id}");
-                return null;
+                if (missingStoryPortraits.Add(id))
+                    Debug.LogWarning($"Missing story portrait: {id}");
             }
             return FindTexture("portraits", gender == "女" ? "fallback_f" : "fallback_m")
                 ?? (silhouette ??= CreateSilhouette());

@@ -109,6 +109,8 @@ namespace Wuxia
                     candidates[count - 1] = special;
                 }
             }
+            foreach (var candidate in candidates)
+                state.EnsurePortrait(candidate);
             ui.Refresh(state);
             ShowCommands();
             ShowCandidates();
@@ -140,7 +142,6 @@ namespace Wuxia
                 name = name,
                 gender = gender, age = Random.Range(12, 31), title = "入門弟子",
                 origin = origin?.name ?? "山下鄉里", blurb = (Pick(origin?.blurbs) ?? "聞訊來到山門，願在宗門習藝。").Replace("{name}", name),
-                portrait = $"recruit_{(female ? "f" : "m")}{Random.Range(1, 5)}",
                 personality = personality?.name ?? "沉著", trait = personality?.name ?? "沉著",
                 loyalty = Mathf.Clamp(50 + (personality?.loyalty ?? 0) + state.Story.loyaltyBonus, 0, 100),
                 attrs = Enumerable.Range(0, 5).Select(_ => Mathf.Clamp(Random.Range(2, 7) + method.quality, 1, 10)).ToArray(),

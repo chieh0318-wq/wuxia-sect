@@ -76,6 +76,7 @@ namespace Wuxia
         public StoryValue[] buildingLevels = Array.Empty<StoryValue>();
         public int apBonus, loyaltyBonus, recruitPoolSize, recruitCostPct, buildCostPct, trainBonusPct;
         public float insightChance;
+        public StoryValue[] usedPortraits = Array.Empty<StoryValue>();
         public StoryValue[] relations = Array.Empty<StoryValue>(), flags = Array.Empty<StoryValue>();
     }
 

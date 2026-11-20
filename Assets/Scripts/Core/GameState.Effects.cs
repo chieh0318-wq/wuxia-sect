@@ -58,6 +58,7 @@ namespace Wuxia
                             {
                                 member = CloneDisciple(seed);
                                 member.loyalty = Mathf.Clamp(member.loyalty + Story.loyaltyBonus, 0, 100);
+                                EnsurePortrait(member);
                                 Disciples.Add(member);
                             }
                         }
@@ -66,6 +67,12 @@ namespace Wuxia
                 }
             }
             ActionPoints = Mathf.Min(ActionPoints, ApMax);
+        }
+
+        internal void EnsurePortrait(DiscipleData person)
+        {
+            if (string.IsNullOrEmpty(person.portrait) && PortraitService.FindPortrait(person.id) == null)
+                person.portrait = PortraitPool.Assign(Story, person);
         }
 
         public void RefillAp() => ActionPoints = ApMax;

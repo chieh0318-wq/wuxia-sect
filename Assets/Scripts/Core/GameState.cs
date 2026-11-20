@@ -101,6 +101,7 @@ namespace Wuxia
             Protagonist.lines = RankSystem.Seed(null, RankSystem.Catalog.protagonistPath?.defaultRank ?? "A",
                 RankSystem.Catalog.protagonistPath?.defaultCap ?? "S", "B");
             Disciples = data.Disciples.Where(d => d.startInSect).Select(CloneDisciple).ToList();
+            foreach (var disciple in Disciples) EnsurePortrait(disciple);
             Buildings = new BuildingData[data.Start.slots.Length];
             for (int index = 0; index < Buildings.Length; index++)
             {

@@ -6,6 +6,23 @@ namespace Wuxia
     internal static class UiKit
     {
         private static Texture2D backdrop;
+        private static Texture2D vignette;
+
+        internal static Texture2D Vignette()
+        {
+            if (vignette != null) return vignette;
+            const int size = 64;
+            vignette = new Texture2D(size, size, TextureFormat.RGBA32, false) { wrapMode = TextureWrapMode.Clamp };
+            for (int y = 0; y < size; y++)
+            for (int x = 0; x < size; x++)
+            {
+                var offset = new Vector2(x, y) / (size - 1) * 2 - Vector2.one;
+                float shade = Mathf.SmoothStep(0, .86f, Mathf.InverseLerp(.46f, 1.25f, offset.magnitude));
+                vignette.SetPixel(x, y, new Color(.025f, .035f, .04f, shade));
+            }
+            vignette.Apply(false, true);
+            return vignette;
+        }
 
         internal static Texture2D Backdrop()
         {

@@ -9,6 +9,9 @@ namespace Wuxia
     public sealed partial class SectUI
     {
         private RectTransform storyScreen, creationGrid;
+        private RectTransform creationBackdrop, creationPlaque, creationSummary;
+        private readonly ScrollRect[] artScrolls = new ScrollRect[2];
+        private float creationListWidth;
         private Text storyText;
         private RawImage storyArt, previousStoryArt;
         private Action storyNext;
@@ -21,24 +24,112 @@ namespace Wuxia
         internal void ShowCreation(string heading, IEnumerable<string> lines,
             IEnumerable<(string, Action)> choices, Action skip, Action next = null)
         {
+            var backdrop = storyScreen != null ? storyArt.texture as Texture2D : null;
             CloseStoryBeat();
             recruitGrid = creationGrid = null;
             var buttons = choices?.ToList() ?? new List<(string, Action)>();
             if (next != null) buttons.Add(("繼續", next));
             if (skip != null) buttons.Add(("略過", skip));
-            ShowModal(heading, lines.Where(line => !string.IsNullOrWhiteSpace(line)), buttons.ToArray(), dismissible: false);
-            Anchor(modalCard, new(.5f, .5f), new(.5f, .5f), new(-540, -400), new(540, 400));
-            modal.GetComponent<Image>().color = new Color(.08f, .15f, .16f);
+            ShowModal("", lines.Where(line => !string.IsNullOrWhiteSpace(line)), buttons.ToArray(), dismissible: false);
+            Anchor(modalCard, new(.07f, .07f), new(.93f, .93f), Vector2.zero, Vector2.zero);
+            creationListWidth = modalCard.rect.width - 72;
+            Anchor((RectTransform)modalList.parent, Vector2.zero, Vector2.one,
+                new(36, 88), new(-36, -112));
+            creationBackdrop = Rect("Menu illustration", modal);
+            creationBackdrop.SetAsFirstSibling();
+            Fill(creationBackdrop);
+            AddImage(creationBackdrop, backdrop ?? PortraitService.Story("title_bg") ?? UiKit.Backdrop()).color =
+                new Color(.56f, .54f, .51f);
+            var vignette = Rect("Ink vignette", creationBackdrop);
+            Fill(vignette);
+            AddImage(vignette, UiKit.Vignette());
+            creationPlaque = Panel("Scroll title", modalCard, new(.5f, 1), new(.5f, 1),
+                new(-275, -89), new(275, -17));
+            UiKit.Skin(creationPlaque.GetComponent<Image>(), "Plaque");
+            var title = Label(creationPlaque, heading, 35, TextAnchor.MiddleCenter);
+            title.color = new Color(.98f, .89f, .72f);
+            Fill(title.rectTransform, 10);
+            Stamp(creationPlaque, heading[0].ToString(), 48);
+            var divider = Rect("Ink rule", creationPlaque);
+            Anchor(divider, Vector2.zero, Vector2.right, new(-190, -13), new(190, -6));
+            var rule = divider.gameObject.AddComponent<Image>();
+            rule.sprite = UiKit.Sprite("Divider");
+            rule.raycastTarget = false;
             modalList.anchoredPosition = Vector2.zero;
         }
 
-        internal void ModalPortrait(string id, string gender)
+        private void ResetCreationLayout()
         {
-            var row = CreationRow("肖像", 128);
+            foreach (var decoration in new[] { creationBackdrop, creationPlaque, creationSummary })
+            {
+                if (decoration == null) continue;
+                decoration.gameObject.SetActive(false);
+                UnityEngine.Object.Destroy(decoration.gameObject);
+            }
+            Anchor((RectTransform)modalList.parent, Vector2.zero, Vector2.one, new(26, 82), new(-26, -22));
+        }
+
+        internal void CreationSummary(IEnumerable<string> lines)
+        {
+            const int width = 344;
+            creationListWidth -= width + 20;
+            Anchor((RectTransform)modalList.parent, Vector2.zero, Vector2.one,
+                new(36, 88), new(-36 - width - 20, -112));
+            creationSummary = Panel("天賦總覽", modalCard, Vector2.right, Vector2.one,
+                new(-36 - width, 88), new(-36, -112));
+            var ledger = ScrollList(creationSummary, new(22, 16), new(-22, -16));
+            AddLine(ledger, "天賦總覽", 28);
+            foreach (string line in lines)
+                AddLine(ledger, line, 21);
+        }
+
+        internal void CreationTabs(IEnumerable<(string label, bool active, Action run)> filters)
+        {
+            var row = CreationRow("稀有度", 48);
+            var layout = row.gameObject.AddComponent<HorizontalLayoutGroup>();
+            layout.spacing = 10;
+            layout.childControlWidth = layout.childControlHeight = true;
+            foreach (var (label, active, run) in filters)
+                UiKit.Skin(Button(row, label, run).GetComponent<Image>(), active ? "Selected" : "Wood");
+        }
+
+        internal Vector2 ArtsScrollPosition => new(
+            artScrolls[0] == null ? 1 : artScrolls[0].verticalNormalizedPosition,
+            artScrolls[1] == null ? 1 : artScrolls[1].verticalNormalizedPosition);
+
+        private void Stamp(RectTransform parent, string glyph, int size)
+        {
+            var seal = Panel("Seal", parent, Vector2.one, Vector2.one,
+                new(-size - 12, -size - 12), new(-12, -12));
+            UiKit.Skin(seal.GetComponent<Image>(), "Seal");
+            seal.GetComponent<Image>().raycastTarget = false;
+            var ink = Label(seal, glyph, size / 2, TextAnchor.MiddleCenter);
+            ink.color = new Color(1, .88f, .71f);
+            Fill(ink.rectTransform);
+        }
+
+        internal void ModalPortrait(string id, string gender, bool fullScreen = false)
+        {
+            var row = CreationRow("肖像", fullScreen ? 382 : 128);
             var image = Rect("Speaker", row);
-            Anchor(image, new(.5f, 0), new(.5f, 1), new(-45, 4), new(45, -4));
+            float halfWidth = fullScreen ? 144 : 45;
+            Anchor(image, new(.5f, 0), new(.5f, 1), new(-halfWidth, 4), new(halfWidth, -4));
             AddImage(image, PortraitService.Resolve(id, gender));
-            Anchor(modalCard, new(.5f, .25f), new(.5f, .25f), new(-448, -180), new(448, 180));
+            if (!fullScreen)
+                Anchor(modalCard, new(.5f, .25f), new(.5f, .25f), new(-448, -180), new(448, 180));
+        }
+
+        internal void CreationIdentity(string title, string portraitId, string gender, Action choose)
+        {
+            var card = Button(creationGrid, title, choose);
+            UiKit.Skin(card.GetComponent<Image>(), "Wood");
+            var portrait = Rect("Portrait", card);
+            Anchor(portrait, new(.5f, 0), new(.5f, 1), new(-177, 78), new(177, -22));
+            AddImage(portrait, PortraitService.Resolve(portraitId, gender));
+            var caption = card.GetComponentInChildren<Text>();
+            caption.fontSize = 30;
+            caption.resizeTextMaxSize = 30;
+            Anchor(caption.rectTransform, Vector2.zero, Vector2.right, new(16, 15), new(-16, 71));
         }
 
         internal void CreationGrid(int columns, int rows, float cellHeight)
@@ -46,45 +137,110 @@ namespace Wuxia
             const float gap = 12;
             creationGrid = CreationRow("選項", rows * cellHeight + (rows - 1) * gap);
             var grid = creationGrid.gameObject.AddComponent<GridLayoutGroup>();
-            grid.cellSize = new Vector2((1028 - (columns - 1) * gap) / columns, cellHeight);
+            grid.cellSize = new Vector2((creationListWidth - (columns - 1) * gap) / columns, cellHeight);
             grid.spacing = Vector2.one * gap;
             grid.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
             grid.constraintCount = columns;
         }
 
-        internal void CreationChoice(string label, string description, string image, Action run, string rarity = null)
+        internal void CreationArts(CreationOption[] combat, CreationOption[] production,
+            Vector2 scrollPosition, Action<CreationOption> draw)
+        {
+            var row = CreationRow("可習技藝", 285);
+            AddFamily(combat, 0);
+            AddFamily(production, 1);
+            creationGrid = null;
+            Canvas.ForceUpdateCanvases();
+            for (int column = 0; column < artScrolls.Length; column++)
+                artScrolls[column].verticalNormalizedPosition = Mathf.Clamp01(scrollPosition[column]);
+
+            void AddFamily(CreationOption[] arts, int column)
+            {
+                var pane = Panel("技藝", row, new(column * .5f, 0), new((column + 1) * .5f, 1),
+                    new(5, 0), new(-5, 0));
+                creationGrid = ScrollList(pane, new(13, 14), new(-31, -14));
+                var scroll = creationGrid.parent.GetComponent<ScrollRect>();
+                artScrolls[column] = scroll;
+                foreach (var art in arts) draw(art);
+                var track = Rect("Scroll track", pane);
+                Anchor(track, Vector2.right, Vector2.one, new(-21, 14), new(-10, -14));
+                track.gameObject.AddComponent<Image>().color = new Color(.36f, .27f, .18f, .24f);
+                var slide = Rect("Scroll travel area", track);
+                Fill(slide);
+                var thumb = Rect("Scroll grip", slide);
+                Fill(thumb);
+                var grip = thumb.gameObject.AddComponent<Image>();
+                grip.color = new Color(.56f, .26f, .19f);
+                var bar = track.gameObject.AddComponent<Scrollbar>();
+                bar.direction = Scrollbar.Direction.BottomToTop;
+                bar.targetGraphic = grip;
+                bar.handleRect = thumb;
+                scroll.verticalScrollbar = bar;
+                scroll.verticalScrollbarVisibility = ScrollRect.ScrollbarVisibility.AutoHide;
+            }
+        }
+
+        internal void CreationChoice(string label, string description, string image, Action run,
+            string rarity = null, bool picked = false, int? cost = null, bool banner = false)
         {
             var item = Button(creationGrid == null ? modalList : creationGrid, label, run);
             item.GetComponent<Button>().interactable = run != null;
             var layout = item.GetComponent<LayoutElement>();
             var caption = item.GetComponentInChildren<Text>();
             var art = string.IsNullOrEmpty(image) ? null : PortraitService.Story(image);
-            layout.preferredHeight = art == null ? 108 : 140;
+            layout.preferredHeight = art == null ? 124 : 164;
             var frame = item.GetComponent<Image>();
-            UiKit.Skin(frame, rarity == "legendary" ? "Selected" : "Wood");
+            UiKit.Skin(frame, picked ? "Selected" : "Wood");
             frame.color = rarity switch
             {
-                "legendary" => Color.white,
+                "legendary" => new Color(1, .78f, .59f),
                 "rare" => new Color(1, .87f, .64f),
                 _ => new Color(.93f, .92f, .87f)
             };
-            int left = art == null ? 16 : creationGrid == null ? 200 : 166;
+            bool hasBanner = art != null && banner;
+            int left = art == null || hasBanner ? 16 : creationGrid == null ? 200 : 196;
+            int top = hasBanner ? 198 : 0;
             caption.alignment = TextAnchor.MiddleLeft;
-            Anchor(caption.rectTransform, Vector2.up, Vector2.one, new(left, -40), new(-16, -6));
+            caption.resizeTextMinSize = 20;
+            Anchor(caption.rectTransform, Vector2.up, Vector2.one, new(left, -44 - top),
+                new(cost.HasValue ? -120 : -16, -6 - top));
+            if (cost.HasValue)
+            {
+                var badge = Label(item, $"{cost} 點", 20, TextAnchor.MiddleCenter);
+                badge.color = new Color(1, .84f, .55f);
+                Anchor(badge.rectTransform, Vector2.one, Vector2.one, new(-112, -43), new(-52, -7));
+            }
+            if (picked)
+            {
+                Stamp(item, "選", 36);
+                var glow = item.gameObject.AddComponent<Outline>();
+                glow.effectColor = new Color(.89f, .66f, .31f, .75f);
+                glow.effectDistance = new Vector2(2, 2);
+            }
             var body = Label(item, description ?? "", 20);
             body.color = new Color(.96f, .89f, .75f);
-            body.resizeTextForBestFit = true;
-            body.resizeTextMinSize = 16;
-            body.resizeTextMaxSize = 20;
-            Anchor(body.rectTransform, Vector2.zero, Vector2.one, new(left, 6), new(-16, -42));
+            body.resizeTextForBestFit = false;
+            Anchor(body.rectTransform, Vector2.zero, Vector2.one, new(left, 8), new(-16, -46 - top));
             if (art != null)
             {
                 var thumbnail = Rect("Choice illustration", item);
-                Anchor(thumbnail, Vector2.zero, Vector2.up, new(8, 10), new(left - 12, -10));
                 var raw = AddImage(thumbnail, art);
-                float boxAspect = creationGrid == null ? 1.55f : .85f;
-                float crop = Mathf.Min(1, boxAspect / (art.width / (float)art.height));
-                raw.uvRect = new Rect((1 - crop) / 2, 0, crop, 1);
+                var grid = creationGrid == null ? null : creationGrid.GetComponent<GridLayoutGroup>();
+                float artAspect = art.width / (float)art.height;
+                if (hasBanner)
+                {
+                    Anchor(thumbnail, Vector2.up, Vector2.one, new(10, -194), new(-10, -10));
+                    float width = grid == null ? creationListWidth : grid.cellSize.x;
+                    float crop = Mathf.Min(1, artAspect * 184 / (width - 20));
+                    raw.uvRect = new Rect(0, (1 - crop) / 2, 1, crop);
+                }
+                else
+                {
+                    Anchor(thumbnail, Vector2.zero, Vector2.up, new(8, 10), new(left - 12, -10));
+                    float height = (grid == null ? layout.preferredHeight : grid.cellSize.y) - 20;
+                    float crop = Mathf.Min(1, (left - 20) / (height * artAspect));
+                    raw.uvRect = new Rect((1 - crop) / 2, 0, crop, 1);
+                }
             }
         }
 
@@ -105,17 +261,20 @@ namespace Wuxia
 
         internal void CreationPortraits(CharacterLook[] looks, CharacterLook selected, Action<CharacterLook> choose)
         {
-            var row = CreationRow("形貌", 344);
+            var row = CreationRow("形貌", 495);
             for (int index = 0; index < looks.Length; index++)
             {
                 var look = looks[index];
-                var card = Button(row, (look == selected ? "◆ " : "") + look.label, () => choose(look));
+                var card = Button(row, look.label, () => choose(look));
                 Anchor(card, new(index * .22f, 0), new((index + 1) * .22f, 1), new(8, 8), new(-8, -8));
+                UiKit.Skin(card.GetComponent<Image>(), look == selected ? "Selected" : "Wood");
                 var caption = card.GetComponentInChildren<Text>();
                 Anchor(caption.rectTransform, Vector2.zero, Vector2.right, new(8, 4), new(-8, 44));
                 var art = Rect("Portrait", card);
-                Anchor(art, new(.5f, 0), new(.5f, 1), new(-82, 48), new(82, -12));
-                AddImage(art, PortraitService.Resolve(string.IsNullOrEmpty(look.portrait) ? look.id : look.portrait, look.gender));
+                Anchor(art, Vector2.zero, Vector2.one, new(16, 52), new(-16, -16));
+                var portrait = AddImage(art, PortraitService.Resolve(string.IsNullOrEmpty(look.portrait) ? look.id : look.portrait, look.gender));
+                portrait.uvRect = new Rect(.05f, 0, .90f, 1);
+                if (look == selected) Stamp(card, "選", 43);
             }
             var preview = Rect("形貌預覽", row);
             Anchor(preview, new(.66f, 0), Vector2.one, new(12, 8), new(-8, -8));
@@ -125,15 +284,23 @@ namespace Wuxia
                 AddLine(modalList, selected.desc, 23);
         }
 
-        internal void CreationAttribute(string name, int current, Action less, Action more)
+        internal void CreationAttribute(string name, int current, int maximum, Action less, Action more)
         {
-            var row = CreationRow(name, 54);
-            var caption = Label(row, $"{name}　{current}", 26, TextAnchor.MiddleLeft);
-            Fill(caption.rectTransform, 8);
-            var minus = Button(row, "−", less);
-            var plus = Button(row, "＋", more);
-            Anchor(minus, Vector2.right, Vector2.one, new(-156, 2), new(-88, -2));
-            Anchor(plus, Vector2.right, Vector2.one, new(-76, 2), new(-8, -2));
+            var row = CreationRow(name, 87);
+            var meter = Panel(name, row, new(.15f, 0), new(.85f, 1), Vector2.zero, Vector2.zero);
+            var caption = Label(meter, $"{name}　{current}", 26, TextAnchor.MiddleLeft);
+            Anchor(caption.rectTransform, Vector2.zero, Vector2.up, new(23, 8), new(178, -8));
+            var track = Rect("Attribute track", meter);
+            Anchor(track, new(.18f, .5f), new(.80f, .5f), new(0, -6), new(-10, 6));
+            track.gameObject.AddComponent<Image>().color = new Color(.36f, .27f, .18f, .24f);
+            var fill = Rect("Attribute value", track);
+            Anchor(fill, Vector2.zero, new(Mathf.Clamp01(current / (float)Mathf.Max(1, maximum)), 1),
+                Vector2.zero, Vector2.zero);
+            fill.gameObject.AddComponent<Image>().color = new Color(.26f, .44f, .36f);
+            var minus = Button(meter, "−", less);
+            var plus = Button(meter, "＋", more);
+            Anchor(minus, Vector2.right, Vector2.one, new(-170, 14), new(-102, -14));
+            Anchor(plus, Vector2.right, Vector2.one, new(-90, 14), new(-22, -14));
             minus.GetComponent<Button>().interactable = less != null;
             plus.GetComponent<Button>().interactable = more != null;
         }

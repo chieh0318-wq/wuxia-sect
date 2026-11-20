@@ -239,13 +239,15 @@ namespace Wuxia
         public void ShowModal(string title, IEnumerable<string> lines,
             IEnumerable<(string label, Action run)> buttons = null, bool dismissible = true, Action closed = null)
         {
+            ResetCreationLayout();
             Clear(modalList);
             foreach (Transform child in modalButtons)
             {
                 child.gameObject.SetActive(false);
                 UnityEngine.Object.Destroy(child.gameObject);
             }
-            AddLine(modalList, title, 30);
+            if (!string.IsNullOrEmpty(title))
+                AddLine(modalList, title, 30);
             foreach (string line in lines)
                 AddLine(modalList, line);
             Vector2 center = dismissible ? Vector2.one * .5f : new Vector2(.5f, .24f);
@@ -495,7 +497,7 @@ namespace Wuxia
             var label = Label(rect, text, 22, TextAnchor.MiddleCenter);
             label.color = new Color(.98f, .92f, .81f);
             label.resizeTextForBestFit = true;
-            label.resizeTextMinSize = 14;
+            label.resizeTextMinSize = 15;
             label.resizeTextMaxSize = 22;
             Fill(label.rectTransform, 4);
             return rect;
@@ -510,7 +512,7 @@ namespace Wuxia
             text.color = Ink;
             text.raycastTarget = false;
             text.resizeTextForBestFit = true;
-            text.resizeTextMinSize = Mathf.Min(14, size);
+            text.resizeTextMinSize = Mathf.Min(15, size);
             text.resizeTextMaxSize = size;
             text.text = content;
             return text;

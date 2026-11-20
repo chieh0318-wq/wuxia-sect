@@ -44,6 +44,7 @@ namespace Wuxia
         private TalentCatalog recruitTalents;
         private TalentCatalog RecruitTalents => recruitTalents ??= M2Data.Load<TalentCatalog>("talents");
         private Candidate[] candidates;
+        private int recruitPage;
         private RecruitMethod activeMethod;
         private int accepted;
         private ActionData recruitmentAction;
@@ -91,6 +92,7 @@ namespace Wuxia
 
         private void FillCandidates()
         {
+            recruitPage = 0;
             int count = Mathf.Clamp(activeMethod.poolSize + state.Story.recruitPoolSize, 3, 5);
             candidates = Enumerable.Range(0, count).Select(_ => RollCandidate(activeMethod)).ToArray();
             if (activeMethod.id != "public" && Recruitment.specials?.Length > 0 && Random.value < activeMethod.rareChance)
@@ -167,6 +169,8 @@ namespace Wuxia
 
         private string RecruitRestriction(Candidate candidate)
         {
+            if (state.Disciples.Contains(candidate))
+                return "已收為弟子 ✓";
             if (accepted >= Recruitment.maxAcceptPerVisit)
                 return "本次招收名額已滿";
             int beds = state.Buildings.Count(building => building != null && building.actions.Contains("lodge")) * 4;
@@ -179,20 +183,27 @@ namespace Wuxia
 
         private void ShowCandidates()
         {
+            const int pageSize = 3;
+            int pages = Mathf.Max(1, (candidates.Length + pageSize - 1) / pageSize);
             var buttons = new System.Collections.Generic.List<(string, Action)>
             {
                 ("返回", () => ui.CloseModal(force: true)),
                 ("謝絕餘下人選", () => { candidates = null; ShowCommands(); ui.CloseModal(force: true); })
             };
+            if (recruitPage > 0)
+                buttons.Add(("前一頁", () => { recruitPage--; ShowCandidates(); }));
+            if (recruitPage + 1 < pages)
+                buttons.Add(("下一頁", () => { recruitPage++; ShowCandidates(); }));
             if (accepted < Recruitment.maxAcceptPerVisit && state.Silver >= Recruitment.refreshSilver)
                 buttons.Add(($"再尋訪　銀 {Recruitment.refreshSilver}", () =>
                 {
                     state.Pay(new Cost { silver = Recruitment.refreshSilver });
                     FillCandidates();
                 }));
-            ui.ShowCreation(activeMethod.name, new[] { $"銀兩 {state.Silver}　已收徒 {accepted}／{Recruitment.maxAcceptPerVisit}" }, buttons, null);
+            ui.ShowCreation(activeMethod.name,
+                new[] { $"銀兩 {state.Silver}　已收徒 {accepted}／{Recruitment.maxAcceptPerVisit}　人選 {recruitPage + 1}／{pages} 頁" }, buttons, null);
             var catalog = RecruitTalents.talents ?? Array.Empty<CreationOption>();
-            foreach (var candidate in candidates)
+            foreach (var candidate in candidates.Skip(recruitPage * pageSize).Take(pageSize))
             {
                 string reason = RecruitRestriction(candidate);
                 ui.RecruitCard(candidate, catalog, RecruitPrice(candidate), reason,
@@ -207,11 +218,12 @@ namespace Wuxia
                 AcceptCandidate(candidate);
                 return;
             }
-            ui.ShowCreation(candidate.name, new[] { candidate.story.prompt }, new[]
-            {
-                (candidate.story.acceptText ?? "收為弟子", (Action)(() => AcceptCandidate(candidate))),
-                (candidate.story.rejectText ?? "婉拒", (Action)ShowCandidates)
-            }, null);
+            ui.ShowCreation(candidate.name, new[] { candidate.story.prompt },
+                new[] { ("返回人選", (Action)ShowCandidates) }, null);
+            ui.ModalPortrait(candidate.portrait, candidate.gender, fullScreen: true);
+            ui.CreationGrid(2, 1, 190);
+            ui.CreationChoice("收為弟子", candidate.story.acceptText, null, () => AcceptCandidate(candidate));
+            ui.CreationChoice("婉拒", candidate.story.rejectText, null, ShowCandidates);
         }
 
         private void AcceptCandidate(Candidate candidate)
@@ -237,7 +249,6 @@ namespace Wuxia
                     state.ApplyEffects(new[] { new GameEffect { key = "flag", @ref = candidate.story.risk, value = 1 } });
             }
             accepted++;
-            candidates = candidates.Where(entry => entry != candidate).ToArray();
             tutorial?.Record("recruit");
             ui.Refresh(state);
             ShowCommands();

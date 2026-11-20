@@ -73,13 +73,23 @@ namespace Wuxia
         }
         internal void CaptureDisaster() => ChooseDisaster();
         internal void CaptureLocation() => ChooseLocation();
+        internal void CaptureBackground() => ChooseBackground();
+        internal void CaptureSkills() => CompleteTalents();
+        internal void CaptureAttributes() => CompleteSkills();
+        internal void CaptureResponse()
+        {
+            if (story.disasters?.FirstOrDefault() is StoryDisaster disaster)
+                ChooseResponse(disaster);
+        }
 
         internal void Begin()
         {
             AudioManager.Music("prologue");
             ui.ShowCreation("首徒稱謂", new[] { "你是師父最早收入門下的弟子。" },
-                new[] { ("大師兄", (Action)(() => ChooseGender("男"))), ("大師姐", (Action)(() => ChooseGender("女"))) },
-                ChooseAppearance);
+                null, ChooseAppearance);
+            ui.CreationGrid(2, 1, 540);
+            ui.CreationIdentity("大師兄", "hero_m1", "男", () => ChooseGender("男"));
+            ui.CreationIdentity("大師姐", "hero_f1", "女", () => ChooseGender("女"));
         }
 
         private void ChooseGender(string gender)
@@ -126,6 +136,8 @@ namespace Wuxia
             var options = characters.backgrounds ?? Array.Empty<CreationOption>();
             background ??= options.FirstOrDefault();
             ui.ShowCreation("出身", Array.Empty<string>(), null, StartTalents, StartTalents);
+            if (options.Length > 0)
+                ui.CreationGrid(2, (options.Length + 1) / 2, 208);
             foreach (var option in options)
             {
                 ui.CreationChoice((option == background ? "◆ " : "") + option.name,
@@ -140,6 +152,7 @@ namespace Wuxia
         private void StartTalents()
         {
             selected.Clear();
+            talentFilter = "";
             RollTalents();
             ShowTalents();
         }
@@ -160,6 +173,8 @@ namespace Wuxia
             offered = draw.ToArray();
         }
 
+        private string talentFilter = "";
+
         private void ShowTalents()
         {
             var actions = new List<(string, Action)>
@@ -175,11 +190,33 @@ namespace Wuxia
             };
             if (rerolls > 0)
                 actions.Add(($"重抽 {rerolls}", () => { rerolls--; selected.Clear(); RollTalents(); ShowTalents(); }));
-            ui.ShowCreation("天賦", new[] { $"餘點 {talents.budget - Spent}　已選 {selected.Count}／{talents.maxPicks}" },
-                actions, CompleteTalents, CompleteTalents);
-            if (offered.Length > 0)
-                ui.CreationGrid(3, (offered.Length + 2) / 3, 136);
-            foreach (var option in offered.OrderBy(x => x.rarity == "legendary" ? 0 : x.rarity == "rare" ? 1 : 2))
+            ui.ShowCreation("天賦", Array.Empty<string>(), actions, CompleteTalents, CompleteTalents);
+            var summary = new List<string>
+            {
+                $"餘點　{talents.budget - Spent}／{talents.budget}",
+                $"已選　{selected.Count}／{talents.maxPicks}"
+            };
+            summary.AddRange(selected.Select(option => $"{option.name}　{option.cost} 點"));
+            summary.Add("屬性變化");
+            string[] keys = { "str", "agi", "con", "wit", "cha" };
+            string[] names = { "武力", "身法", "根骨", "悟性", "魅力" };
+            var effects = selected.SelectMany(option => option.effects ?? Array.Empty<GameEffect>()).ToArray();
+            for (int i = 0; i < keys.Length; i++)
+            {
+                float delta = effects.Where(effect => effect?.key == keys[i]).Sum(effect => effect.value);
+                summary.Add($"{names[i]}　{delta:+0;-0;0}");
+            }
+            ui.CreationSummary(summary);
+            ui.CreationTabs(new[] { "", "common", "rare", "legendary" }.Select(key =>
+                (key.Length == 0 ? "全部" : RarityLabel(key), key == talentFilter,
+                    (Action)(() => { talentFilter = key; ShowTalents(); }))));
+            var visible = offered.Where(option => talentFilter.Length == 0 || option.rarity == talentFilter)
+                .OrderBy(option => option.rarity == "legendary" ? 0 : option.rarity == "rare" ? 1 : 2).ToArray();
+            if (visible.Length > 0)
+                ui.CreationGrid(3, (visible.Length + 2) / 3, 154);
+            else
+                ui.CreationChoice("本次未抽到此類天賦", "", null, null);
+            foreach (var option in visible)
                 ShowPick(option, RarityLabel(option.rarity), talents.budget, talents.maxPicks, ShowTalents);
             // Both skill families, reflecting rank/cap effects of the talents picked so far.
             ui.SkillColumns(PreviewLines(selected));
@@ -207,13 +244,13 @@ namespace Wuxia
         {
             bool picked = selected.Contains(option);
             bool available = picked ? Spent - option.cost <= budget : CanPick(option, budget, limit);
-            string label = $"{(picked ? "◆ " : "")}{option.name}　{group}　{option.cost} 點";
+            string label = $"{option.name}　{group}";
             ui.CreationChoice(label, Describe(option), null, available ? () =>
             {
                 if (picked) selected.Remove(option);
                 else selected.Add(option);
                 redraw();
-            } : null, option.rarity);
+            } : null, option.rarity, picked, option.cost);
         }
 
         private static string Describe(CreationOption option)
@@ -257,15 +294,23 @@ namespace Wuxia
         }
 
         private void ShowSkills()
+            => ShowSkills(Vector2.one);
+
+        private void ShowSkills(Vector2 scrollPosition)
         {
             ui.ShowCreation("戰鬥技能與生產技能", new[] { $"餘點 {skills.budget - Spent}" }, null,
                 CompleteSkills, CompleteSkills);
-            var preview = RankSystem.Seed(state.Protagonist.lines, null, null, "B");
+            var preview = PreviewLines((talents.talents ?? Array.Empty<CreationOption>())
+                .Where(option => state.Protagonist.talents.Contains(option.id)));
             foreach (var art in selected)
                 RankSystem.Learn(preview, art);
             ui.SkillColumns(preview);
-            foreach (var option in (skills.skills ?? Array.Empty<CreationOption>()).Where(option => option != null))
-                ShowPick(option, RankSystem.Categories.FirstOrDefault(category => category.id == option.category)?.name, skills.budget, int.MaxValue, ShowSkills);
+            var arts = (skills.skills ?? Array.Empty<CreationOption>()).Where(option => option != null).ToArray();
+            var combat = arts.Where(art => RankSystem.IsCombat(art.category)).ToArray();
+            var production = arts.Where(art => !RankSystem.IsCombat(art.category)).ToArray();
+            ui.CreationArts(combat, production, scrollPosition, option =>
+                ShowPick(option, RankSystem.Categories.FirstOrDefault(category => category.id == option.category)?.name,
+                    skills.budget, int.MaxValue, () => ShowSkills(ui.ArtsScrollPosition)));
         }
 
         private void CompleteSkills()
@@ -277,11 +322,11 @@ namespace Wuxia
 
         private void ShowAttributes()
         {
-            ui.ShowCreation("屬性", new[] { $"餘點 {freeAttributes}　{state.Protagonist.name}", SectUI.Attributes(state.Protagonist.attrs) }, null, StartStory, StartStory);
+            ui.ShowCreation("屬性", new[] { $"餘點 {freeAttributes}　{state.Protagonist.name}" }, null, StartStory, StartStory);
             for (int index = 0; index < AttributeNames.Length; index++)
             {
                 int slot = index;
-                ui.CreationAttribute(AttributeNames[slot], state.Protagonist.attrs[slot],
+                ui.CreationAttribute(AttributeNames[slot], state.Protagonist.attrs[slot], characters.attrMax,
                     allocated[slot] > 0 ? () => ChangeAttribute(slot, -1) : null,
                     freeAttributes > 0 && state.Protagonist.attrs[slot] < characters.attrMax
                         ? () => ChangeAttribute(slot, 1) : null);
@@ -312,7 +357,7 @@ namespace Wuxia
             var options = story.disasters ?? Array.Empty<StoryDisaster>();
             if (options.Length == 0) { ChooseLocation(); return; }
             ui.ShowCreation("門派之變", new[] { FormatStory(story.disasterPrompt) }, null, SkipStory);
-            ui.CreationGrid(2, (options.Length + 1) / 2, 208);
+            ui.CreationGrid(2, (options.Length + 1) / 2, 262);
             foreach (var option in options)
                 ui.CreationChoice(option.name, FormatStory(option.summary), option.image, () =>
                 {
@@ -327,13 +372,16 @@ namespace Wuxia
             var options = disaster.responses ?? Array.Empty<StoryResponse>();
             if (options.Length == 0) { ChooseLocation(); return; }
             ui.ShowCreation("去留之策", new[] { FormatStory(disaster.responsePrompt) }, null, SkipStory);
-            ui.CreationGrid(2, (options.Length + 1) / 2, 208);
+            ui.CreationGrid(3, (options.Length + 2) / 3, 376);
             foreach (var option in options)
-                ui.CreationChoice(option.name, FormatStory(option.summary), option.image, () =>
+                ui.CreationChoice(option.name, FormatStory(option.summary),
+                    string.IsNullOrEmpty(option.image)
+                        ? option.beats?.FirstOrDefault(beat => !string.IsNullOrEmpty(beat.image))?.image
+                        : option.image, () =>
                 {
                     SetResponse(option);
                     Play(option.beats, ChooseLocation, SkipStory);
-                });
+                }, banner: true);
         }
 
         private void SetResponse(StoryResponse option)
@@ -347,7 +395,7 @@ namespace Wuxia
             var options = story.locations ?? Array.Empty<StoryLocation>();
             if (options.Length == 0) { Play(story.closingBeats, Finish, Finish); return; }
             ui.ShowCreation("立足之地", new[] { FormatStory(story.locationPrompt) }, null, SkipStory);
-            ui.CreationGrid(2, (options.Length + 1) / 2, 164);
+            ui.CreationGrid(2, (options.Length + 1) / 2, 192);
             foreach (var option in options)
                 // Text-only cards: the sites share one illustration, and the full width keeps bonus text from clipping.
                 ui.CreationChoice($"{option.name}　{option.region}", $"{option.resources}\n{option.desc}\n{option.bonusText}", null, () =>

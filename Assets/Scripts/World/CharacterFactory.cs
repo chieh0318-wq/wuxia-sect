@@ -8,7 +8,7 @@ namespace Wuxia
     public static class CharacterFactory
     {
         private static readonly Dictionary<string, Mesh> meshes = new();
-        private static Material solid;
+        private static Material solid, cloth;
         private static Mesh sphere, cube;
         private static readonly (float y,float x,float z)[] JacketProfile =
         {
@@ -83,6 +83,8 @@ namespace Wuxia
         {
             look ??= new CharacterLook();
             if (solid == null) solid = Resources.Load<Material>("Materials/Solid");
+            if (cloth == null && Resources.Load<Shader>("FigureCloth") is Shader fabric)
+                cloth = new Material(fabric);
             if (sphere == null) sphere = Resources.GetBuiltinResource<Mesh>("New-Sphere.fbx");
             if (cube == null) cube = Resources.GetBuiltinResource<Mesh>("Cube.fbx");
             var body = new GameObject("Tang-robed figure");
@@ -99,7 +101,9 @@ namespace Wuxia
             var skirt = Revolve("Pleated ankle-length robe", root, robe, .075f,
                 (.15f,.245f,.174f),(.32f,.219f,.154f),(.65f,.181f,.132f),(1.00f,.149f,.104f));
             Revolve("Woven sash", root, sash, 0, (.925f,.169f,.126f),(.99f,.164f,.122f),(1.015f,.161f,.118f));
-            Ribbon("Crossed collar",torso,lining,.031f,
+            Ribbon("Collar shadow",torso,robe * .63f,.053f,
+                new(.064f,1.385f),new(.044f,1.319f),new(-.013f,1.231f),new(-.082f,1.133f));
+            Ribbon("Crossed collar",torso,lining,.033f,
                 new(.064f,1.385f),new(.044f,1.319f),new(-.013f,1.231f),new(-.082f,1.133f));
             Ribbon("Inner collar",torso,Color.Lerp(lining,robe,.2f),.029f,
                 new(-.065f,1.385f),new(-.049f,1.317f),new(-.009f,1.234f));
@@ -107,14 +111,20 @@ namespace Wuxia
             Strip("Sash tail", root, sash, new(.095f,.977f,.118f), new(.076f,.75f,.129f), .028f);
             Orb("Neck", torso, skin, new(0,1.405f,.006f), new(.104f,.144f,.104f));
             Orb("Face", torso, skin, new(0,1.532f,.018f), new(.184f,.232f,.171f));
-            Orb("Hair cap", torso, ink, new(0,1.590f,-.020f), new(.197f,.172f,.181f));
-            Orb("Nose", torso, skin, new(0,1.524f,.1f), new(.028f,.048f,.029f));
-            Orb("Mouth", torso, Color.Lerp(skin,ink,.30f), new(0,1.485f,.096f), new(.038f,.006f,.008f));
+            Orb("Hair cap", torso, ink, new(0,1.601f,-.018f), new(.194f,.164f,.214f));
+            Orb("Swept hairline", torso, ink, new(-.018f,1.614f,.060f), new(.145f,.066f,.093f));
+            Orb("Nose bridge", torso, Color.Lerp(skin,ink,.13f), new(0,1.537f,.103f), new(.024f,.048f,.025f));
+            Orb("Nose tip", torso, skin, new(0,1.521f,.111f), new(.029f,.021f,.026f));
+            Orb("Mouth", torso, Color.Lerp(skin,ink,.46f), new(0,1.486f,.102f), new(.039f,.006f,.009f));
             for (int side = -1; side <= 1; side += 2)
             {
                 Orb("Ear", torso, skin, new(side*.090f,1.532f,.018f), new(.029f,.046f,.031f));
-                Orb("Eye", torso, ink, new(side*.036f,1.55f,.098f), new(.026f,.008f,.009f));
-                Orb("Brow", torso, ink, new(side*.036f,1.568f,.096f), new(.034f,.007f,.009f));
+                Orb("Eye socket", torso, Color.Lerp(skin,ink,.30f), new(side*.037f,1.551f,.096f), new(.036f,.016f,.013f));
+                Orb("Eye", torso, ink, new(side*.037f,1.551f,.102f), new(.024f,.008f,.009f));
+                Orb("Brow", torso, ink, new(side*.037f,1.570f,.100f), new(.033f,.007f,.009f))
+                    .localRotation = Quaternion.Euler(0, -side * 22, side * 9);
+                Orb("Temple lock", torso, ink, new(side*.079f,1.577f,.054f), new(.032f,.090f,.037f))
+                    .localRotation = Quaternion.Euler(0, 0, side * -12);
             }
             Hair(torso, look, ink, sash);
             if (look.role == "師父")
@@ -126,11 +136,16 @@ namespace Wuxia
             {
                 var arm = Joint(root, new(side*.165f,1.321f,0));
                 arm.localRotation = Quaternion.Euler(0,0,side*13);
-                Revolve("Wide sleeve", arm, robe, .025f,
-                    (-.415f,.10f,.082f),(-.33f,.107f,.092f),(-.17f,.084f,.076f),(-.035f,.074f,.063f),(.040f,.032f,.034f));
+                Revolve("Wide sleeve", arm, robe, .055f,
+                    (-.505f,.099f,.079f),(-.46f,.124f,.107f),(-.36f,.119f,.104f),
+                    (-.22f,.089f,.083f),(-.065f,.076f,.067f),(.040f,.036f,.037f));
                 Revolve("Sleeve facing", arm, lining, 0,
-                    (-.427f,.107f,.088f),(-.397f,.112f,.093f));
-                Orb("Hand", arm, skin, new(0,-.443f,.022f), new(.072f,.102f,.055f));
+                    (-.510f,.102f,.082f),(-.482f,.115f,.097f));
+                Orb("Sleeve opening", arm, robe * .50f, new(0,-.503f,0), new(.197f,.025f,.156f));
+                Orb("Hand", arm, skin, new(0,-.526f,.025f), new(.064f,.083f,.043f));
+                Orb("Fingers", arm, Color.Lerp(skin,ink,.08f), new(side*.004f,-.558f,.032f), new(.051f,.048f,.031f));
+                Orb("Thumb", arm, skin, new(-side*.028f,-.527f,.044f), new(.019f,.044f,.022f))
+                    .localRotation = Quaternion.Euler(0, 0, side * 18);
                 var leg = Joint(root, new(side*.096f,.73f,0));
                 Orb("Trousers", leg, sash, new(0,-.35f,0), new(.13f,.67f,.13f));
                 Orb("Cloth boot", leg, ink, new(0,-.660f,.047f), new(.126f,.140f,.244f));
@@ -204,11 +219,12 @@ namespace Wuxia
             return part.transform;
         }
 
-        private static void Orb(string name, Transform parent, Color color, Vector3 point, Vector3 size)
+        private static Transform Orb(string name, Transform parent, Color color, Vector3 point, Vector3 size)
         {
             var part = Piece(name,parent,sphere,color);
             part.localPosition = point;
             part.localScale = size;
+            return part;
         }
 
         private static void Strip(string name, Transform parent, Color color, Vector3 a, Vector3 b, float width)
@@ -231,8 +247,9 @@ namespace Wuxia
                 {
                     int segment = Mathf.Min(i/subdivisions,line.Length-2);
                     Vector2 p = Vector2.Lerp(line[segment],line[segment+1],(i-segment*subdivisions)/(float)subdivisions);
-                    vertices[i*2] = CollarPoint(p.x-width*.5f,p.y);
-                    vertices[i*2+1] = CollarPoint(p.x+width*.5f,p.y);
+                    float lift = name == "Crossed collar" ? .004f : 0;
+                    vertices[i*2] = CollarPoint(p.x-width*.5f,p.y) + Vector3.forward * lift;
+                    vertices[i*2+1] = CollarPoint(p.x+width*.5f,p.y) + Vector3.forward * lift;
                     if (i == samples-1) continue;
                     int v=i*2, t=i*6;
                     indices[t]=v; indices[t+1]=v+2; indices[t+2]=v+1;
@@ -265,6 +282,7 @@ namespace Wuxia
             {
                 const int sides = 32;
                 var points = new Vector3[rings.Length * sides];
+                var vertexColors = new Color32[points.Length];
                 var indices = new int[(rings.Length-1)*sides*6];
                 for (int row=0; row<rings.Length; row++)
                 for (int side=0; side<sides; side++)
@@ -274,6 +292,10 @@ namespace Wuxia
                     var ring = rings[row];
                     int index = row*sides+side;
                     points[index] = new Vector3(Mathf.Cos(angle)*ring.x*fold,ring.y,Mathf.Sin(angle)*ring.z*fold);
+                    float crease = (1 - Mathf.Cos(angle*8)) * .5f;
+                    float seam = row == 0 ? .09f : 0;
+                    byte shade = (byte)(255 * (1 - seam - crease * folds * 2));
+                    vertexColors[index] = new Color32(shade, shade, shade, 255);
                     if (row == rings.Length-1) continue;
                     int next = row*sides+(side+1)%sides;
                     int offset = index*6;
@@ -284,11 +306,13 @@ namespace Wuxia
                     indices[offset+4] = index+sides;
                     indices[offset+5] = next+sides;
                 }
-                mesh = new Mesh { name = name, vertices = points, triangles = indices };
+                mesh = new Mesh { name = name, vertices = points, triangles = indices, colors32 = vertexColors };
                 mesh.RecalculateNormals();
                 meshes.Add(name,mesh);
             }
-            return Piece(name,parent,mesh,color);
+            var piece = Piece(name,parent,mesh,color);
+            if (cloth != null) piece.GetComponent<MeshRenderer>().sharedMaterial = cloth;
+            return piece;
         }
     }
 

@@ -33,10 +33,23 @@ namespace Wuxia
             cameraView.orthographic = true;
             cameraView.orthographicSize = 1;
             cameraView.farClipPlane = 10;
-            target = new RenderTexture(310, 328, 24);
+            AddLight("Soft key", new Vector3(-1.1f, 2.6f, 1.4f), new Color(1, .89f, .73f), 2.3f);
+            AddLight("Cool rim", new Vector3(.8f, 1.8f, -.8f), new Color(.66f, .83f, 1), 2.0f);
+            target = new RenderTexture(540, 480, 24);
             cameraView.targetTexture = target;
             output.texture = target;
             Render();
+        }
+
+        private void AddLight(string name, Vector3 position, Color color, float intensity)
+        {
+            var lamp = new GameObject(name).AddComponent<Light>();
+            lamp.transform.SetParent(stage.transform, false);
+            lamp.transform.localPosition = position;
+            lamp.type = LightType.Point;
+            lamp.color = color;
+            lamp.intensity = intensity;
+            lamp.range = 4;
         }
 
         private void LateUpdate()

@@ -11,28 +11,23 @@ namespace Wuxia
         private Vector3 destination;
 
         private Transform body;
-        private CharacterMotion motion;
-        private HumanoidMotion humanoid;
+        private Vector3 restingPosition;
         private const float WalkSpeed = 2.15f;
         public void Initialize(List<Vector3> waypoints, Transform figure)
         {
             entrances = waypoints;
             body = figure;
-            motion = figure.GetComponent<CharacterMotion>();
-            humanoid = figure.GetComponent<HumanoidMotion>();
+            restingPosition = body.localPosition;
             destination = transform.position;
             pause = UnityEngine.Random.Range(0.5f, 2.5f);
         }
 
         private void Update()
         {
-            bool moving = pause <= 0 && (destination - transform.position).sqrMagnitude >= .0025f;
-            if (motion != null) motion.Walking = moving;
-            if (humanoid != null) humanoid.WalkingSpeed = moving ? WalkSpeed / body.lossyScale.y : 0;
             if (pause > 0)
             {
                 pause -= Time.deltaTime;
-                body.localPosition = Vector3.zero;
+                body.localPosition = restingPosition;
                 return;
             }
 
@@ -48,8 +43,7 @@ namespace Wuxia
                 return;
             }
 
-            if (motion != null) body.localPosition = Vector3.up * (Mathf.Sin(Time.time * 13) * .025f);
-            transform.rotation = Quaternion.LookRotation(difference);
+            body.localPosition = restingPosition + Vector3.up * (Mathf.Sin(Time.time * 13) * .022f);
             transform.position = Vector3.MoveTowards(transform.position, destination, WalkSpeed * Time.deltaTime);
         }
 

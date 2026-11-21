@@ -143,7 +143,7 @@ namespace Wuxia
             return new DiscipleData
             {
                 id = ProtagonistFigureId, name = hero.name, gender = hero.gender, title = hero.title,
-                portrait = hero.portrait ?? hero.lookId, look = look, age = hero.age
+                portrait = PortraitService.IdOrDefault(hero.portrait, hero.lookId), look = look, age = hero.age
             };
         }
 
@@ -524,7 +524,8 @@ namespace Wuxia
             bool delegateRole = state.Story.delegateId == disciple.id;
             bool senior = disciple.age >= 20 && disciple.startInSect;
             ui.ShowCharacter(disciple.name, delegateRole ? "代掌門" : disciple.title, disciple.gender,
-                disciple.portrait ?? disciple.id, disciple.attrs, disciple.lines, state.WeaponRankDelta(disciple.weapon),
+                PortraitService.IdOrDefault(disciple.portrait, disciple.id), disciple.attrs, disciple.lines,
+                disciple.weapon, state.WeaponRankDelta(disciple.weapon),
                 senior ? (delegateRole ? "解除代掌門" : "委任代掌門", () =>
                 {
                     state.ToggleDelegate(disciple);
@@ -536,8 +537,8 @@ namespace Wuxia
         private void ShowProtagonist()
         {
             var hero = state.Protagonist;
-            ui.ShowCharacter(hero.name, hero.title, hero.gender, hero.portrait ?? hero.lookId, hero.attrs, hero.lines,
-                state.WeaponRankDelta(hero.weapon));
+            ui.ShowCharacter(hero.name, hero.title, hero.gender, PortraitService.IdOrDefault(hero.portrait, hero.lookId), hero.attrs, hero.lines,
+                hero.weapon, state.WeaponRankDelta(hero.weapon));
         }
 
         private void ShowSect()

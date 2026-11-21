@@ -6,6 +6,7 @@ namespace Wuxia
     public sealed class CameraController : MonoBehaviour
     {
         private const float Pitch = 50f;
+        internal static readonly Quaternion CourtyardRotation = Quaternion.Euler(Pitch, 0, 0);
         internal event System.Action<string> Changed;
         private Vector2 focus = new(1.1f, -2.5f);
         private float height = 37.5f;
@@ -60,7 +61,7 @@ namespace Wuxia
         {
             float setback = height / Mathf.Tan(Pitch * Mathf.Deg2Rad);
             transform.SetPositionAndRotation(new Vector3(focus.x, height, focus.y - setback),
-                Quaternion.Euler(Pitch, 0, 0));
+                CourtyardRotation);
         }
     }
 }

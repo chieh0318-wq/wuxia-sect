@@ -8,21 +8,19 @@ namespace Wuxia
     public sealed partial class SectUI
     {
         internal void ShowCharacter(string name, string title, string gender, string portrait, int[] attrs,
-            SkillLine[] lines, int weaponDelta, (string, Action)? extra = null)
+            SkillLine[] lines, string weapon, int weaponDelta, (string, Action)? extra = null)
         {
             var close = ("關閉", (Action)(() => CloseModal()));
             ShowModal(name, new[] { title }, extra.HasValue ? new[] { extra.Value, close } : new[] { close });
             Anchor(modalCard, new(.5f, .5f), new(.5f, .5f), new(-480, -344), new(480, 344));
-            var profile = CreationRow("人物", 144);
-            var art = Rect("Portrait", profile);
-            Anchor(art, Vector2.zero, Vector2.up, new(8, 8), new(110, -8));
-            AddImage(art, PortraitService.Resolve(portrait, gender));
+            CharacterEquipment(portrait, gender, weapon);
+            var profile = CreationRow("人物", 112);
             var rank = RankSystem.Martial(lines, weaponDelta: weaponDelta);
             float multiplier = RankSystem.Multiplier(rank);
             int[] effective = attrs?.Select(value => Mathf.RoundToInt(value * multiplier)).ToArray();
             var body = Label(profile, $"武學　{RankSystem.Format(rank, RankSystem.Martial(lines, true))}　×{multiplier:0.##}\n{Attributes(attrs)}\n實戰　{Attributes(effective)}", 25);
             body.color = Color.Lerp(RankSystem.Color(rank), Ink, .35f);
-            Anchor(body.rectTransform, Vector2.zero, Vector2.one, new(132, 16), new(-16, -16));
+            Anchor(body.rectTransform, Vector2.zero, Vector2.one, new(12, 8), new(-12, -8));
             SkillColumns(lines);
         }
 

@@ -15,6 +15,9 @@ namespace Wuxia
             return id;
         }
 
+        internal static string IdOrDefault(string portrait, string fallback) =>
+            string.IsNullOrWhiteSpace(portrait) ? fallback : portrait;
+
         internal static Texture2D FindPortrait(string id) =>
             string.IsNullOrWhiteSpace(id) ? null : FindTexture("portraits", id);
 

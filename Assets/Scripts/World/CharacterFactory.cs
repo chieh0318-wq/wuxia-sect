@@ -108,6 +108,80 @@ namespace Wuxia
 
         public static GameObject Build(CharacterLook look) => CharacterModelFactory.Build(look);
 
+        private const float StandeeWidth = 1.62f;
+        private const float StandeeHeight = StandeeWidth * 4 / 3;
+        private static readonly Dictionary<Texture2D, Sprite> standeePortraits = new();
+        private static Sprite standeeBacking, standeeShadow;
+
+        internal static Vector3 StandeeLabelOffset => Vector3.up * .18f +
+            CameraController.CourtyardRotation * (Vector3.up * (StandeeHeight + .18f));
+
+        internal static Transform BuildStandee(DiscipleData data, Transform parent, out Collider hit)
+        {
+            var texture = PortraitService.Resolve(PortraitService.IdOrDefault(data.portrait, data.id), data.gender);
+            if (!standeePortraits.TryGetValue(texture, out var portrait))
+            {
+                portrait = StandeeSprite(texture);
+                standeePortraits.Add(texture, portrait);
+            }
+            standeeBacking ??= StandeeSprite(Texture2D.whiteTexture);
+            standeeShadow ??= CreateStandeeShadow();
+
+            var card = new GameObject("Ink-wash standee").transform;
+            card.SetParent(parent, false);
+            card.localPosition = Vector3.up * .18f;
+            card.rotation = CameraController.CourtyardRotation;
+            card.gameObject.AddComponent<UnityEngine.Rendering.SortingGroup>();
+
+            float width = Mathf.Min(StandeeWidth, StandeeHeight * texture.width / texture.height);
+            float height = width * texture.height / texture.width;
+            var center = Vector3.up * (StandeeHeight * .5f);
+            AddStandeeLayer(card, "Ink border", standeeBacking, center,
+                new(StandeeWidth + .08f, StandeeHeight + .08f), new(.19f, .15f, .12f), 0);
+            AddStandeeLayer(card, "Portrait", portrait, center, new(width, height), Color.white, 1);
+
+            var box = card.gameObject.AddComponent<BoxCollider>();
+            box.center = center;
+            box.size = new Vector3(StandeeWidth + .12f, StandeeHeight + .12f, .12f);
+            hit = box;
+            var shadow = AddStandeeLayer(parent, "Soft ground shadow", standeeShadow, Vector3.up * .16f,
+                new(2.05f, 1.28f), new(.15f, .11f, .08f, .62f), -1);
+            shadow.localRotation = Quaternion.Euler(90, 0, 0);
+            return card;
+        }
+
+        private static Sprite StandeeSprite(Texture2D texture) => Sprite.Create(texture,
+            new Rect(0, 0, texture.width, texture.height), new Vector2(.5f, .5f),
+            texture.height, 0, SpriteMeshType.FullRect);
+
+        private static Transform AddStandeeLayer(Transform parent, string name, Sprite sprite, Vector3 position,
+            Vector2 size, Color color, int order)
+        {
+            var layer = new GameObject(name).AddComponent<SpriteRenderer>();
+            layer.transform.SetParent(parent, false);
+            layer.transform.localPosition = position;
+            layer.transform.localScale = new Vector3(size.x / sprite.bounds.size.x, size.y / sprite.bounds.size.y, 1);
+            layer.sprite = sprite;
+            layer.color = color;
+            layer.sortingOrder = order;
+            return layer.transform;
+        }
+
+        private static Sprite CreateStandeeShadow()
+        {
+            const int size = 48;
+            var texture = new Texture2D(size, size, TextureFormat.RGBA32, false) { wrapMode = TextureWrapMode.Clamp };
+            for (int y = 0; y < size; y++)
+            for (int x = 0; x < size; x++)
+            {
+                var point = new Vector2(x + .5f, y + .5f) * (2f / size) - Vector2.one;
+                float alpha = 1 - Mathf.SmoothStep(.06f, 1, point.magnitude);
+                texture.SetPixel(x, y, new Color(1, 1, 1, alpha));
+            }
+            texture.Apply(false, true);
+            return StandeeSprite(texture);
+        }
+
         internal static GameObject BuildFallback(CharacterLook look)
         {
             look ??= new CharacterLook();

@@ -153,18 +153,10 @@ namespace Wuxia
             int order = discipleTargets.Count;
             person.position = entrances.Count == 0 ? new Vector3(0, 0, -16) :
                 entrances[order % entrances.Count] + Vector3.right * (order % 2 == 0 ? -.45f : .45f);
-            // M2-B: refined figure, preserving the root collider and walker.
-            var body = CharacterFactory.Build(CharacterFactory.ForDisciple(data, order)).transform;
-            body.SetParent(person, false);
-            const float figureScale = 1.42f;
-            body.localScale *= figureScale;
-            var hit = person.gameObject.AddComponent<CapsuleCollider>();
-            hit.center = Vector3.up * (.8f * figureScale);
-            hit.radius = .37f * figureScale;
-            hit.height = 1.65f * figureScale;
+            var card = CharacterFactory.BuildStandee(data, person, out var hit);
             discipleTargets.Add(hit, data);
-            person.gameObject.AddComponent<DiscipleWalker>().Initialize(entrances, body);
-            ui.AddWorldLabel(person, Vector3.up * (1.82f * figureScale), data.name, false);
+            person.gameObject.AddComponent<DiscipleWalker>().Initialize(entrances, card);
+            ui.AddWorldLabel(person, CharacterFactory.StandeeLabelOffset, data.name, false);
         }
 
         internal void RemoveDisciple(DiscipleData disciple)
@@ -172,9 +164,10 @@ namespace Wuxia
             var hit = discipleTargets.FirstOrDefault(entry => entry.Value == disciple).Key;
             if (hit == null) return;
             discipleTargets.Remove(hit);
-            ui.RemoveWorldLabel(hit.transform);
-            hit.gameObject.SetActive(false);
-            UnityEngine.Object.Destroy(hit.gameObject);
+            var person = hit.transform.parent;
+            ui.RemoveWorldLabel(person);
+            person.gameObject.SetActive(false);
+            UnityEngine.Object.Destroy(person.gameObject);
         }
 
         private void Path(float x, float z, float w, float d, bool raised = false)

@@ -72,20 +72,21 @@ namespace Wuxia
             yield return null;
             capture("23_characters_closeup.png");
             foreach (var figure in figures) Destroy(figure);
+            Destroy(bounce.gameObject);
+
+            // Use the same fixed angle as gameplay, with the walkers passing through the frame.
+            controls.Frame(new Vector2(0, -9.9f), 9.4f);
+            view.fieldOfView = 45;
             for (int i = 0; i < walkers.Length; i++)
             {
                 var walker = walkers[i];
                 walker.gameObject.SetActive(true);
-                Vector3 start = new Vector3((i % 4 - 1.5f) * 1.55f, 0, -9.5f - i / 4 * 3.4f);
-                walker.WalkForCapture(start, start + new Vector3(1.8f, 0, 6f));
+                Vector3 start = new Vector3((i % 4 - 1.5f) * 2.25f, 0, -12.5f + i / 4 * 3.4f);
+                walker.WalkForCapture(start, start + new Vector3(.65f, 0, 3f));
             }
-            view.transform.position = new Vector3(-.2f, 2.22f, -3.2f);
-            view.transform.LookAt(new Vector3(.42f, 1.22f, -9.2f));
-            view.fieldOfView = 45;
-            yield return new WaitForSecondsRealtime(.52f);
-            capture("25_courtyard_people.png");
-            Destroy(bounce.gameObject);
+            yield return new WaitForSecondsRealtime(.35f);
             ui.Canvas.enabled = true;
+            capture("25_courtyard_people.png");
         }
     }
 }

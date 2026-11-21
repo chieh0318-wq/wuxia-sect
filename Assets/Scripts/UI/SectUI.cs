@@ -77,18 +77,24 @@ namespace Wuxia
                 Anchor(value.rectTransform, Vector2.zero, Vector2.one, new(36, 0), new(-6, 0));
                 resourceLabels[index] = value;
             }
-            var ap = Panel("行動力", top, new(.70f, 0), new(.70f, 1), new(16, 8), new(288, -8));
+            var ap = Panel("行動力", top, new(.70f, 0), new(.70f, 1), new(0, 8), new(242, -8));
             UiKit.Skin(ap.GetComponent<Image>(), "Wood");
             apDisplay = Label(ap, "", 24, TextAnchor.MiddleCenter);
             apDisplay.color = lightInk;
-            Fill(apDisplay.rectTransform, 8);
+            Anchor(apDisplay.rectTransform, Vector2.zero, Vector2.one, new(12, 18), new(-12, -5));
             apHud = ap.gameObject.AddComponent<ApHud>();
             var apSources = Panel("行動力來源", ap, Vector2.zero, Vector2.right, new(-38, -134), new(38, -4), false);
             UiKit.Skin(apSources.GetComponent<Image>(), "Wood");
             var sourceList = Label(apSources, "", 20, TextAnchor.MiddleLeft);
             sourceList.color = lightInk;
             Fill(sourceList.rectTransform, 14);
-            apHud.Initialize(apDisplay, sourceList);
+            var apTrack = Rect("本月行動力", ap);
+            Anchor(apTrack, Vector2.zero, Vector2.right, new(19, 10), new(-19, 15));
+            apTrack.gameObject.AddComponent<Image>().color = new Color(.91f, .83f, .69f, .26f);
+            var apFill = Rect("剩餘行動力", apTrack);
+            Fill(apFill);
+            apFill.gameObject.AddComponent<Image>().color = new Color(.88f, .67f, .35f);
+            apHud.Initialize(apDisplay, sourceList, apFill);
             targets["ap"] = ap;
             var end = Button(top, "結束本月", endMonth);
             targets["end_month"] = end;
@@ -107,8 +113,8 @@ namespace Wuxia
             CloseBuilding();
 
             var help = Panel("Controls", canvas, Vector2.zero, Vector2.zero,
-                new Vector2(18, 18), new Vector2(570, 106), false);
-            Fill(Label(help, "WASD／方向鍵移動　右鍵／中鍵拖曳　滾輪縮放\n左鍵選取　M 江湖地圖　Esc 取消建造／設定",
+                new Vector2(18, 18), new Vector2(550, 88), false);
+            Fill(Label(help, "左鍵查看院中建築與弟子\nWASD 移動　滾輪縮放",
                 22, TextAnchor.MiddleLeft).rectTransform, 12);
 
             var toastPanel = Panel("Messages", canvas, new Vector2(0.5f, 0), new Vector2(0.5f, 0),
@@ -185,7 +191,7 @@ namespace Wuxia
         {
             Clear(commandList);
             SetCommandsPanelHeight(title == "建造" ? 480 : 381);
-            AddLine(commandList, title, 28);
+            AddLine(commandList, title == "指令" ? "門派事務" : title, 28);
             targets.Remove("cmd_build");
             targets.Remove("cmd_recruit");
             int index = 0;
@@ -195,6 +201,8 @@ namespace Wuxia
                 rect.GetComponent<Button>().interactable = command.run != null;
                 if (title == "指令" && index < 2)
                     targets[index == 0 ? "cmd_build" : "cmd_recruit"] = rect;
+                else if (title == "指令")
+                    UiKit.Skin(rect.GetComponent<Image>(), "Wood");
                 index++;
             }
         }
@@ -202,11 +210,11 @@ namespace Wuxia
         private RectTransform mapButtons;
 
         /// <summary>Bottom-right wood plaque with the world map (M) and intel overview shortcuts.</summary>
-        internal void ShowMapButtons(Action openMap, Action openIntel, Action openCharacters)
+        internal void ShowMapButtons(Action openMap, Action openIntel, Action openCharacters, Action openSystem)
         {
             if (mapButtons != null)
                 return;
-            mapButtons = Panel("江湖", canvas, Vector2.right, Vector2.right, new(-640, 18), new(-18, 92));
+            mapButtons = Panel("江湖", canvas, Vector2.right, Vector2.right, new(-826, 18), new(-18, 92));
             UiKit.Skin(mapButtons.GetComponent<Image>(), "Wood");
             var row = mapButtons.gameObject.AddComponent<HorizontalLayoutGroup>();
             row.padding = new RectOffset(12, 12, 10, 10);
@@ -214,8 +222,10 @@ namespace Wuxia
             row.childControlWidth = row.childControlHeight = true;
             row.childForceExpandWidth = row.childForceExpandHeight = true;
             var mapButton = Button(mapButtons, "江湖地圖　M", openMap);
-            var intelButton = Button(mapButtons, "情報總覽", openIntel);
+            var intelButton = Button(mapButtons, "情報", openIntel);
             Button(mapButtons, "江湖人物　C", openCharacters);
+            UiKit.Skin(mapButton.GetComponent<Image>(), "Wood");
+            UiKit.Skin(Button(mapButtons, "系統　Esc", openSystem).GetComponent<Image>(), "Wood");
             targets["map"] = mapButton;
             targets["intel"] = intelButton;
         }
@@ -290,7 +300,7 @@ namespace Wuxia
             AddTitleButton("新遊戲", start, 192);
             AddTitleButton("繼續", resume, 264);
             AddTitleButton("設定", ShowAudioOptions, 336);
-            AddTitleButton("離開", Application.Quit, 408);
+            AddTitleButton("退出遊戲", () => ConfirmExit(CloseModalFromMenu), 408);
 
             void AddTitleButton(string text, Action run, float bottom)
             {
@@ -309,11 +319,25 @@ namespace Wuxia
             titleScreen = null;
         }
 
-        public void ShowAudioOptions()
+        private void CloseModalFromMenu() => CloseModal();
+
+        internal void ShowSystemMenu() => ShowAudioOptions(true);
+
+        public void ShowAudioOptions() => ShowAudioOptions(false);
+
+        private void ShowAudioOptions(bool system)
         {
-            ShowModal("設定", Array.Empty<string>());
-            Anchor(modalCard, Vector2.one * .5f, Vector2.one * .5f, new(-352, -224), new(352, 224));
-            Anchor((RectTransform)modalList.parent, Vector2.zero, Vector2.one, new(26, 82), new(-26, -22));
+            ShowModal(system ? "系統選單" : "音量設定", Array.Empty<string>(), system
+                ? new (string, Action)[] { ("繼續遊戲", CloseModalFromMenu), ("退出遊戲", () => ConfirmExit(ShowSystemMenu)) }
+                : null);
+            Anchor(modalCard, Vector2.one * .5f, Vector2.one * .5f, new(-352, -234), new(352, 234));
+            Anchor((RectTransform)modalList.parent, Vector2.zero, Vector2.one, new(30, 82), new(-30, -26));
+            if (system)
+            {
+                AddLine(modalList, "音量", 24);
+                foreach (Transform action in modalButtons)
+                    if (action.gameObject.activeSelf && action.name == "繼續遊戲") UiKit.Skin(action.GetComponent<Image>(), "Wood");
+            }
             AddVolume("主音量", GameAudioPrefs.MasterVolume, value => GameAudioPrefs.Master = value);
             AddVolume("音樂", GameAudioPrefs.Music, value => GameAudioPrefs.Music = value);
             AddVolume("音效", GameAudioPrefs.Sfx, value => GameAudioPrefs.Sfx = value);
@@ -324,7 +348,7 @@ namespace Wuxia
                 Button(modalList, GameAudioPrefs.Muted ? "取消靜音" : "靜音", () =>
                 {
                     GameAudioPrefs.Muted = !GameAudioPrefs.Muted;
-                    ShowAudioOptions();
+                    ShowAudioOptions(system);
                 });
             }
 
@@ -357,6 +381,34 @@ namespace Wuxia
                 });
                 void SetCaption(float current) => label.text = $"{caption} {current:P0}";
             }
+        }
+
+        internal void ConfirmExit(Action cancel)
+        {
+            ShowModal("退出遊戲", new[] { "確定要離開江湖？尚未儲存的進度將會遺失。" },
+                new (string, Action)[] { ("取消", CloseModalFromMenu), ("確認退出", QuitGame) }, closed: cancel);
+            Anchor(modalCard, Vector2.one * .5f, Vector2.one * .5f, new(-338, -146), new(338, 146));
+            foreach (Transform action in modalButtons)
+                if (action.gameObject.activeSelf && action.name == "取消") UiKit.Skin(action.GetComponent<Image>(), "Wood");
+        }
+
+        internal bool ActivateMenuAction(string label)
+        {
+            foreach (Transform action in modalButtons)
+            {
+                if (!action.gameObject.activeInHierarchy || action.name != label) continue;
+                action.GetComponent<Button>().onClick.Invoke();
+                return true;
+            }
+            return false;
+        }
+
+        private static void QuitGame()
+        {
+            Application.Quit();
+#if UNITY_EDITOR
+            UnityEditor.EditorApplication.isPlaying = false;
+#endif
         }
 
         public void ShowDialogue(DiscipleData disciple, string line, Action inspect = null)

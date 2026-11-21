@@ -34,6 +34,18 @@ namespace Wuxia
             yield return null;
             capture("22_intel_overview.png");
 
+            map.CapturePeopleIntel();
+            yield return null;
+            capture("32_intel_martial_artists.png");
+
+            if (faction != null)
+            {
+                map.CloseIntel();
+                map.CaptureStronghold(faction);
+                yield return null;
+                capture("31_stronghold.png");
+            }
+
             // Exercise scouting and travel on a throwaway state so the real capture state stays untouched.
             var check = new GameState(data);
             check.Story.mapNode = state.Story.mapNode;

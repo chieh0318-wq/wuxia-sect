@@ -103,7 +103,7 @@ namespace Wuxia
                     var special = JsonUtility.FromJson<Candidate>(JsonUtility.ToJson(Pick(unseen)));
                     special.lines = RankSystem.Seed(special.lines, special.rank, special.cap, "B");
                     var personality = Recruitment.personalities?.FirstOrDefault(entry => entry.name == special.personality);
-                    special.loyalty = Mathf.Clamp(50 + (personality?.loyalty ?? 0) + state.Story.loyaltyBonus, 0, 100);
+                    special.loyalty = Mathf.Clamp(50 + (personality?.loyalty ?? 0) + state.Story.loyaltyBonus + 2 * state.AttributeBonus("cha"), 0, 100);
                     if (special.look == null || string.IsNullOrEmpty(special.look.hairStyle))
                         special.look = CharacterFactory.ForRecruit(special.gender, special.title ?? "入門弟子");
                     candidates[count - 1] = special;
@@ -143,7 +143,7 @@ namespace Wuxia
                 gender = gender, age = Random.Range(12, 31), title = "入門弟子",
                 origin = origin?.name ?? "山下鄉里", blurb = (Pick(origin?.blurbs) ?? "聞訊來到山門，願在宗門習藝。").Replace("{name}", name),
                 personality = personality?.name ?? "沉著", trait = personality?.name ?? "沉著",
-                loyalty = Mathf.Clamp(50 + (personality?.loyalty ?? 0) + state.Story.loyaltyBonus, 0, 100),
+                loyalty = Mathf.Clamp(50 + (personality?.loyalty ?? 0) + state.Story.loyaltyBonus + 2 * state.AttributeBonus("cha"), 0, 100),
                 attrs = Enumerable.Range(0, 5).Select(_ => Mathf.Clamp(Random.Range(2, 7) + method.quality, 1, 10)).ToArray(),
                 aptitude = new Aptitude { bone = Random.Range(1, 11), insight = Random.Range(1, 11) },
                 lines = lines, talents = talents, silverCost = Mathf.Max(0, state.Data.Start.recruitCost + method.quality),

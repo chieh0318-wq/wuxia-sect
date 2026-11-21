@@ -42,7 +42,7 @@ namespace Wuxia
     }
     [Serializable] internal sealed class CharacterCatalog
     {
-        public int attrBase = 3, attrMax = 10, attrPoints = 8;
+        public int attrBase = 3, attrMax = 10, attrPoints = 16;
         public CharacterLook[] protagonistLooks;
         public NameSuggestions[] nameSuggestions;
         public CreationOption[] backgrounds;

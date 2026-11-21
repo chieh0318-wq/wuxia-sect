@@ -98,7 +98,7 @@ namespace Wuxia
             if (controls != null)
                 controls.enabled = true;
             AudioManager.Music("courtyard");
-            ui.ShowMapButtons(ToggleWorldMap, () => ToggleWorldMap(true), ShowCharacterDirectory);
+            ui.ShowMapButtons(ToggleWorldMap, () => ToggleWorldMap(true), ShowCharacterDirectory, OpenSystemMenu);
             if (startTutorial)
                 BootStep("tutorial", () => tutorial = new TutorialGuide(ui, state));
         }
@@ -219,6 +219,14 @@ namespace Wuxia
                 events.gameObject.AddComponent<StandaloneInputModule>();
         }
 
+        private void OpenSystemMenu()
+        {
+            if (choosingBuilding) CancelBuild();
+            ui.CloseDialogue();
+            ui.CloseBuilding();
+            ui.ShowSystemMenu();
+        }
+
         private void LateUpdate()
         {
             if (!courtyardReady && ui != null)
@@ -262,9 +270,7 @@ namespace Wuxia
                     CancelBuild();
                 else
                 {
-                    ui.CloseDialogue();
-                    ui.CloseBuilding();
-                    ui.ShowAudioOptions();
+                    OpenSystemMenu();
                 }
                 return;
             }
@@ -395,7 +401,7 @@ namespace Wuxia
             string breakthrough = action.id switch
             {
                 "train" => state.TrainMartial(),
-                "explore" => state.TryBreakthrough("qiyu_cliff_cave", state.Story.insightChance),
+                "explore" => state.TryBreakthrough("qiyu_cliff_cave", state.Story.insightChance + .01f * state.AttributeBonus("agi")),
                 _ => ""
             };
             state.Apply(action.effect);

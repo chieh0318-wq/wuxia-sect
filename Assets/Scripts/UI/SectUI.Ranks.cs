@@ -14,13 +14,23 @@ namespace Wuxia
             ShowModal(name, new[] { title }, extra.HasValue ? new[] { extra.Value, close } : new[] { close });
             Anchor(modalCard, new(.5f, .5f), new(.5f, .5f), new(-480, -344), new(480, 344));
             CharacterEquipment(portrait, gender, weapon);
-            var profile = CreationRow("人物", 112);
+            var profile = CreationRow("人物", 110);
             var rank = RankSystem.Martial(lines, weaponDelta: weaponDelta);
             float multiplier = RankSystem.Multiplier(rank);
-            int[] effective = attrs?.Select(value => Mathf.RoundToInt(value * multiplier)).ToArray();
-            var body = Label(profile, $"武學　{RankSystem.Format(rank, RankSystem.Martial(lines, true))}　×{multiplier:0.##}\n{Attributes(attrs)}\n實戰　{Attributes(effective)}", 25);
-            body.color = Color.Lerp(RankSystem.Color(rank), Ink, .35f);
-            Anchor(body.rectTransform, Vector2.zero, Vector2.one, new(12, 8), new(-12, -8));
+            var rankLabel = Label(profile, "武學  " + RankSystem.Format(rank, RankSystem.Martial(lines, true)), 28);
+            rankLabel.color = Color.Lerp(RankSystem.Color(rank), Ink, .35f);
+            Anchor(rankLabel.rectTransform, Vector2.up, Vector2.one, new(12, -39), new(-12, 0));
+            string[] names = { "武力", "身法", "根骨", "悟性", "魅力" };
+            for (int i = 0; i < names.Length && i < (attrs?.Length ?? 0); i++)
+            {
+                var stat = Panel(names[i], profile, new(i / 5f, 0), new((i + 1) / 5f, 1),
+                    new(4, 0), new(-4, -41));
+                UiKit.Skin(stat.GetComponent<Image>(), "Wood");
+                var value = Label(stat, $"{names[i]}　{attrs[i]}\n實戰　{Mathf.RoundToInt(attrs[i] * multiplier)}",
+                    20, TextAnchor.MiddleCenter);
+                value.color = UiKit.WarmPaper;
+                Fill(value.rectTransform, 4);
+            }
             SkillColumns(lines);
         }
 

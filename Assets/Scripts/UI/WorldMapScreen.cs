@@ -20,16 +20,17 @@ namespace Wuxia
         private Text ap, status;
         private IntelPanel intel;
         private readonly List<(MapNode node, Text label, Vector2 point)> labels = new();
+        private readonly List<RectTransform> nodeMarkers = new();
         private readonly List<(RectTransform flag, Vector2 point, int seatOrder)> flags = new();
         private readonly List<Button> cardActions = new();
         private Vector2 pan, lastMouse;
         private float zoom = MinZoom;
         private bool traveling;
         private string selected;
-        private Sprite halo;
-        private Texture2D haloTexture;
+        private Texture2D territoryTexture;
         private bool changingScreen, dragFromMap;
         private RectTransform focusMarker;
+        private Vector2 focusedPoint;
         private HashSet<string> seats;
         public bool IsOpen => canvas != null && canvas.gameObject.activeSelf;
         internal Canvas CaptureCanvas => canvas;
@@ -54,7 +55,7 @@ namespace Wuxia
             SyncParty();
             UpdateAp();
             CenterOn(host.PartyNode);
-            if (!traveling) status.text = $"隊伍駐於{data.NodeLabel(host.PartyNode)}。點選地名查看路程，點選旗幟查看勢力。";
+            if (!traveling) status.text = $"隊伍駐於{data.NodeLabel(host.PartyNode)}。點選城寨查看守備與路線，點選旗幟查看勢力。";
             ApplyView();
             AudioManager.Music("map");
         }
@@ -74,8 +75,7 @@ namespace Wuxia
         {
             StopAllCoroutines();
             if (canvas != null) Destroy(canvas.gameObject);
-            Destroy(halo);
-            Destroy(haloTexture);
+            Destroy(territoryTexture);
         }
 
         private void Build()
@@ -97,9 +97,9 @@ namespace Wuxia
             frame.anchorMin = frame.anchorMax = frame.pivot = new Vector2(.5f,.5f);
             frame.anchoredPosition = Vector2.zero;
             var top = MapUi.Kit(frame,"Map top bar",12,8,1576,64,"Wood");
-            MapUi.Text(top,"江湖大地圖",26,4,330,56,34,MapUi.Paper);
+            MapUi.Text(top,"江湖地圖",26,4,330,56,34,MapUi.Paper);
             ap = MapUi.Text(top,"",470,8,560,48,22,MapUi.Paper,TextAnchor.MiddleRight,"Numbers");
-            MapUi.Button(top,"情報總覽",1060,10,150,44,OpenIntel,MapUi.Red);
+            MapUi.Button(top,"情報",1060,10,150,44,OpenIntel,MapUi.Red);
             MapUi.Button(top,"全圖",1220,10,96,44,() => { zoom = MinZoom; pan = Vector2.zero; ApplyView(); });
             MapUi.Button(top,"返回宗門　M",1326,10,232,44,Close,MapUi.Red);
             MapUi.Kit(frame,"Map border",14,71,ViewWidth+20,ViewHeight+12,"Wood",false);
@@ -114,11 +114,21 @@ namespace Wuxia
             var washes = MapUi.Rect(map,"Territory washes",0,0,MapWidth,MapHeight);
             var roads = MapUi.Rect(map,"Post roads",0,0,MapWidth,MapHeight);
             routeLayer = MapUi.Rect(map,"Travel route",0,0,MapWidth,MapHeight);
-            foreach (var faction in data.Factions)
-                foreach (string id in (faction.territory ?? Array.Empty<string>()).Append(faction.seat).Distinct())
-                    if (data.Nodes.TryGetValue(id ?? "",out var node)) AddWash(washes,Position(node),faction.Tint);
+            DrawTerritories(washes);
+            foreach (var region in data.Nodes.Values.GroupBy(node => node.region).Where(group => group.Count() >= 3))
+            {
+                var points = region.Select(Position).ToArray();
+                Vector2 center = new(points.Average(point => point.x), points.Average(point => point.y));
+                MapUi.Text(washes, region.Key, center.x - 76, center.y - 48, 152, 24, 17,
+                    new Color(.28f, .25f, .19f, .8f), TextAnchor.MiddleCenter, "Names");
+            }
             foreach (var road in data.Roads)
-                Line(roads,Position(data.Nodes[road.a]),Position(data.Nodes[road.b]),new Color(.28f,.21f,.14f,.42f),1.25f,true);
+            {
+                var a = Position(data.Nodes[road.a]);
+                var b = Position(data.Nodes[road.b]);
+                Line(roads, a, b, new Color(.28f, .21f, .14f, .55f), 2.4f, false);
+                Line(roads, a, b, new Color(.98f, .88f, .67f, .86f), 1.1f, true);
+            }
             foreach (var node in data.Nodes.Values) AddNode(node);
             foreach (var group in data.Factions.GroupBy(f => f.seat))
             {
@@ -151,7 +161,7 @@ namespace Wuxia
             MapUi.Text(footer,"滾輪縮放　右鍵或中鍵拖曳　WASD 平移",
                 22,44,630,30,17,MapUi.Gold);
             var legend = MapUi.Kit(footer,"Legend paper tag",750,13,805,55,"Paper",false);
-            MapUi.Text(legend,"◎ 京城　● 州城　◇ 門派　◆ 關隘　▲ 名山　行 隊伍",
+            MapUi.Text(legend,"方印 城鎮　菱印 門派關隘　色框 勢力疆界　行 隊伍",
                 16,0,773,55,17,MapUi.Ink,TextAnchor.MiddleCenter);
             if (data.Nodes.Count == 0) status.text = "地圖資料尚未載入。";
             intel = new IntelPanel(frame,data,FocusFaction);
@@ -164,27 +174,49 @@ namespace Wuxia
             return new Vector2(uv.x*MapWidth,(1-uv.y)*MapHeight);
         }
 
-        private void AddWash(Transform root,Vector2 p,Color color)
+        private void DrawTerritories(Transform parent)
         {
-            if (halo == null)
+            const int width = 595, height = 360;
+            var claims = data.Nodes.Values.Select(node => (node, faction: data.Controllers(node).FirstOrDefault()))
+                .Where(entry => entry.faction != null)
+                .Select(entry => (point: Position(entry.node) / 2, entry.faction,
+                    radius: entry.node.type is "capital" or "city" ? 34f : 25f)).ToArray();
+            var ownership = new MapFaction[width * height];
+            for (int y = 0; y < height; y++)
+            for (int x = 0; x < width; x++)
             {
-                haloTexture = new Texture2D(64,64,TextureFormat.RGBA32,false);
-                var pixels = new Color[4096];
-                for (int y=0; y<64; y++)
-                for (int x=0; x<64; x++)
+                float limit = .91f + .18f * Mathf.PerlinNoise(x * .073f, y * .073f);
+                foreach (var claim in claims)
                 {
-                    float t = Mathf.Clamp01(1 - Vector2.Distance(new Vector2(x,y),new Vector2(31.5f,31.5f))/31.5f);
-                    pixels[y*64+x] = new Color(1,1,1,t*t);
+                    float score = (claim.point - new Vector2(x, y)).sqrMagnitude / (claim.radius * claim.radius);
+                    if (score > limit) continue;
+                    limit = score;
+                    ownership[y * width + x] = claim.faction;
                 }
-                haloTexture.SetPixels(pixels);
-                haloTexture.Apply();
-                halo = Sprite.Create(haloTexture,new Rect(0,0,64,64),Vector2.one*.5f);
             }
-            var wash = MapUi.Rect(root,"Faction wash",p.x-54,p.y-54,108,108).gameObject.AddComponent<Image>();
-            wash.sprite = halo;
-            color.a = .65f;
-            wash.color = color;
-            wash.raycastTarget = false;
+
+            var pixels = new Color32[ownership.Length];
+            for (int y = 1; y < height - 1; y++)
+            for (int x = 1; x < width - 1; x++)
+            {
+                int i = y * width + x;
+                var faction = ownership[i];
+                if (faction == null) continue;
+                bool border = faction != ownership[i - 1] || faction != ownership[i + 1]
+                    || faction != ownership[i - width] || faction != ownership[i + width];
+                Color tint = faction.Tint;
+                tint.a = border ? .83f : .31f;
+                pixels[(height - 1 - y) * width + x] = tint;
+            }
+            territoryTexture = new Texture2D(width, height, TextureFormat.RGBA32, false)
+            {
+                name = "勢力疆界", wrapMode = TextureWrapMode.Clamp
+            };
+            territoryTexture.SetPixels32(pixels);
+            territoryTexture.Apply(false, true);
+            var overlay = MapUi.Rect(parent, "勢力疆界", 0, 0, MapWidth, MapHeight).gameObject.AddComponent<RawImage>();
+            overlay.texture = territoryTexture;
+            overlay.raycastTarget = false;
         }
 
         private static void Line(Transform root,Vector2 a,Vector2 b,Color color,float width,bool dashed)
@@ -206,13 +238,19 @@ namespace Wuxia
         {
             Vector2 p = Position(node);
             bool major = node.type is "capital" or "city" or "sect";
-            string marker = node.type switch
-            {
-                "capital" => "◎", "city" => "●", "town" => "•", "pass" => "◆",
-                "sect" => "◇", "mountain" => "▲", "outpost" => "▪", _ => "·"
-            };
-            var button = MapUi.Button(map,"",p.x-8,p.y-8,16,16,() => ShowNode(node),Color.clear,14);
-            MapUi.Text(button.transform,marker,0,0,16,16,major ? 16 : 15,MapUi.Ink,TextAnchor.MiddleCenter);
+            var button = MapUi.Button(map, "", p.x, p.y, 20, 20, () => ShowNode(node), Color.clear);
+            var marker = (RectTransform)button.transform;
+            marker.pivot = new Vector2(.5f, .5f);
+            nodeMarkers.Add(marker);
+            int dotSize = node.type == "capital" ? 13 : major ? 10 : 6;
+            var dot = MapUi.Panel(marker, "據點標記", (20 - dotSize) / 2f, (20 - dotSize) / 2f,
+                dotSize, dotSize, MapUi.Ink);
+            dot.pivot = new Vector2(.5f, .5f);
+            dot.anchoredPosition = new Vector2(10, -10);
+            if (node.type is "sect" or "pass") dot.localRotation = Quaternion.Euler(0, 0, 45);
+            dot.GetComponent<Image>().raycastTarget = false;
+            var inner = MapUi.Panel(dot, "據點標色", 2, 2, dotSize - 4, dotSize - 4, MapUi.Paper);
+            inner.GetComponent<Image>().raycastTarget = false;
             var label = MapUi.Text(map,node.Label,0,0,150,24,major ? 18 : 15,MapUi.Ink);
             if (major) label.fontStyle = FontStyle.Bold;
             var shadow = label.gameObject.AddComponent<Shadow>();
@@ -285,8 +323,10 @@ namespace Wuxia
         private void LayoutLabels()
         {
             var occupied = new List<Rect>();
+            foreach (var marker in nodeMarkers) marker.localScale = Vector3.one / zoom;
             party.localScale = Vector3.one/zoom;
             focusMarker.localScale = Vector3.one/zoom;
+            focusMarker.anchoredPosition = new Vector2(focusedPoint.x - 18 / zoom, -focusedPoint.y + 18 / zoom);
             Vector2 offset = new((ViewWidth-MapWidth*zoom)/2+pan.x,(ViewHeight-MapHeight*zoom)/2-pan.y);
             if (party.gameObject.activeSelf && data.Nodes.TryGetValue(host?.PartyNode ?? "",out var partyNode))
                 occupied.Add(new Rect(Position(partyNode)*zoom + offset + new Vector2(-30.5f,3.5f),new Vector2(23,23)));
@@ -313,7 +353,7 @@ namespace Wuxia
                 rect.sizeDelta = new Vector2(width,24);
                 Vector2 marker = point*zoom+offset;
                 Vector2[] candidates = {
-                    new(9,-11),new(-width-9,-11),new(-width/2,5),new(-width/2,-34)
+                    new(11,-11),new(-width-11,-11),new(-width/2,5),new(-width/2,-34)
                 };
                 bool shown = false;
                 if (LabelPriority(node) < 3 || seats.Contains(node.id) || zoom >= 1.42f || node.id == host?.PartyNode)
@@ -366,14 +406,37 @@ namespace Wuxia
         {
             if (traveling) return;
             var panel = Card(node.Label,node.region ?? "");
-            MapUi.Text(panel,node.desc ?? "",20,110,386,150,21,MapUi.Ink,TextAnchor.UpperLeft);
-            var factions = data.Factions.Where(f => f.Controls(node.id)).ToArray();
-            MapUi.Text(panel,"勢力　"+(factions.Length == 0 ? "—" : string.Join("、",factions.Select(f => f.Label))),20,266,386,60,19,MapUi.Ink);
-            var route = data.Route(host.PartyNode,node.id);
-            string message = node.id == host.PartyNode ? "隊伍就在此地" : route == null ? "沒有可通的道路" : $"路程 {route.Days} 日　行動力 {route.Ap}";
-            MapUi.Text(panel,message,20,345,386,39,24,MapUi.Ink);
+            FocusMarker(node);
+            var factions = data.Controllers(node).ToArray();
+            var faction = factions.FirstOrDefault();
+            bool known = faction != null && host.IsFactionKnown(faction.id);
+            if (faction != null)
+            {
+                MapUi.Portrait(panel, known ? PortraitService.Resolve(faction.PortraitId) : null, 20, 119, 102, 136);
+                MapUi.Text(panel, "控制勢力", 139, 115, 265, 25, 16, MapUi.Red);
+                MapUi.Text(panel, faction.Label, 139, 140, 265, 34, 27, MapUi.Ink);
+                MapUi.Text(panel, known ? faction.leader ?? "首領不詳" : "首領尚待打探", 139, 177, 265, 28, 20, MapUi.Ink);
+                MapUi.Text(panel, known ? $"勢力人數　{faction.disciples:N0}" : "兵力尚待打探", 139, 207, 265, 28, 19, MapUi.Jade);
+            }
+            else
+                MapUi.Text(panel, "此地沒有已知的控制勢力", 20, 119, 386, 35, 21, MapUi.Jade);
+            if (factions.Length > 1)
+                MapUi.Text(panel, "另有勢力活動　" + string.Join("、", factions.Skip(1).Select(f => f.Label)),
+                    20, 262, 386, 36, 17, MapUi.Ink);
+            int descriptionY = faction == null ? 167 : 305;
+            MapUi.Text(panel, node.desc ?? "", 20, descriptionY, 386, 90, 19, MapUi.Ink, TextAnchor.UpperLeft);
+            var roads = data.Connections(node);
+            MapUi.Text(panel, "相通驛路", 20, 398, 386, 27, 19, MapUi.Red);
+            MapUi.Text(panel, roads.Count == 0 ? "沒有相連道路" :
+                string.Join("、", roads.Select(road => data.NodeLabel(road.Other(node.id))).Distinct()),
+                20, 429, 386, 63, 17, MapUi.Ink, TextAnchor.UpperLeft);
+            var route = data.Route(host.PartyNode, node.id);
+            string message = node.id == host.PartyNode ? "隊伍就在此地" : route == null ? "沒有可通的道路" :
+                $"預計路程　{route.Days} 日　　行動力 {route.Ap}";
+            MapUi.Text(panel, message, 20, 506, 386, 34, 22, MapUi.Jade);
             if (route == null) return;
-            MapUi.Text(panel,string.Join(" → ",route.Nodes.Select(data.NodeLabel)),20,393,386,154,19,MapUi.Ink,TextAnchor.UpperLeft);
+            MapUi.Text(panel, string.Join(" → ",route.Nodes.Select(data.NodeLabel)), 20, 541, 386, 58, 16,
+                MapUi.Ink, TextAnchor.UpperLeft);
             for (int i=1;i<route.Nodes.Count;i++)
                 Line(routeLayer,Position(data.Nodes[route.Nodes[i-1]]),Position(data.Nodes[route.Nodes[i]]),MapUi.Red,3,false);
             var confirm = MapUi.Button(panel,"確認啟程",20,599,386,48,() => StartTravel(route,node.id),MapUi.Red);
@@ -395,7 +458,7 @@ namespace Wuxia
             MapUi.Text(panel,"關係　"+faction.RelationWith(shift),20,105,384,32,21,stance);
             if (!known)
             {
-                MapUi.Text(panel,"情報不足　　最強者 ???",20,166,386,48,23,MapUi.Ink);
+                MapUi.Text(panel,"尚待打探首領與兵力",20,166,386,48,23,MapUi.Ink);
                 var scout = MapUi.Button(panel,"派人打探　行動力 1",20,599,386,48,() =>
                 {
                     if (!host.TrySpendAp(1,"scout:"+faction.id)) return;
@@ -463,7 +526,15 @@ namespace Wuxia
         }
 
         internal void OpenIntelOverview() => OpenIntel();
-        internal void CaptureIntel() { OpenIntel(); intel.CaptureSelection(); }
+        internal void CaptureIntel() => OpenIntel();
+        internal void CapturePeopleIntel() => intel.CapturePeopleTab();
+
+        internal void CaptureStronghold(MapFaction faction)
+        {
+            CenterOn(faction.seat);
+            ApplyView();
+            ShowNode(data.Nodes[faction.seat]);
+        }
 
         internal void FocusFaction(MapFaction faction)
         {
@@ -478,11 +549,14 @@ namespace Wuxia
             }
             ShowFaction(faction);
             if (data.Nodes.TryGetValue(faction.seat ?? "",out var focused))
-            {
-                Vector2 p = Position(focused);
-                focusMarker.anchoredPosition = new Vector2(p.x-18/zoom,-p.y+18/zoom);
-                focusMarker.gameObject.SetActive(true);
-            }
+                FocusMarker(focused);
+        }
+
+        private void FocusMarker(MapNode node)
+        {
+            focusedPoint = Position(node);
+            focusMarker.anchoredPosition = new Vector2(focusedPoint.x - 18 / zoom, -focusedPoint.y + 18 / zoom);
+            focusMarker.gameObject.SetActive(true);
         }
 
         private void CenterOn(string id)

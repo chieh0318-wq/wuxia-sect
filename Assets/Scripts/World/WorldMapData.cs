@@ -83,6 +83,14 @@ namespace Wuxia
             "merchant" => "商幫", "bandit" => "山寨", "foreign" => "外邦", _ => "其他"
         };
         public Color Tint => ColorUtility.TryParseHtmlString(color, out var tint) ? tint : new Color(.47f,.26f,.16f);
+        public string PortraitId => string.IsNullOrWhiteSpace(leaderId)
+            ? id switch
+            {
+                "huayue" => "elder_villain", "funiu" => "rival_head", "heishan" => "warlord",
+                _ => "leader_" + id
+            }
+            : leaderId;
+
         public bool Controls(string node) => seat == node || (territory?.Contains(node) ?? false);
         public string WeaponLabel
         {
@@ -150,6 +158,14 @@ namespace Wuxia
             try { return File.Exists(path) ? JsonUtility.FromJson<T>(File.ReadAllText(path)) : null; }
             catch (Exception error) { Debug.LogWarning($"[WorldMap] {name}: {error.Message}"); return null; }
         }
+
+        public IEnumerable<MapNode> Holdings(MapFaction faction) =>
+            Nodes.Values.Where(node => faction.Controls(node.id));
+
+        public IEnumerable<MapFaction> Controllers(MapNode node) => Factions.Where(faction => faction.Controls(node.id))
+            .OrderByDescending(faction => faction.seat == node.id).ThenByDescending(faction => faction.disciples);
+
+        public IReadOnlyList<MapRoad> Connections(MapNode node) => connected[node.id];
 
         public string NodeLabel(string id) => Nodes.TryGetValue(id ?? "",out var node) ? node.Label : "—";
 

@@ -29,8 +29,10 @@ namespace Wuxia
             recruitGrid = creationGrid = null;
             var buttons = choices?.ToList() ?? new List<(string, Action)>();
             if (next != null) buttons.Add(("繼續", next));
-            if (skip != null) buttons.Add(("略過", skip));
+            if (skip != null && skip != next) buttons.Add(("略過", skip));
             ShowModal("", lines.Where(line => !string.IsNullOrWhiteSpace(line)), buttons.ToArray(), dismissible: false);
+            foreach (Transform action in modalButtons)
+                if (action.name != "繼續") UiKit.Skin(action.GetComponent<Image>(), "Wood");
             Anchor(modalCard, new(.07f, .07f), new(.93f, .93f), Vector2.zero, Vector2.zero);
             creationListWidth = modalCard.rect.width - 72;
             Anchor((RectTransform)modalList.parent, Vector2.zero, Vector2.one,
@@ -266,7 +268,7 @@ namespace Wuxia
 
         internal void UpdateAppearance() => appearanceInput?.Invoke();
 
-        internal void CreationPortraits(CharacterLook[] looks, CharacterLook selected, int page,
+        internal void CreationPortraits(CharacterLook[] looks, CharacterLook selected, string characterTitle, int page,
             Action<int> changePage, Action<CharacterLook> choose)
         {
             const int pageSize = 10;
@@ -291,23 +293,37 @@ namespace Wuxia
                 AddImage(art, LookPortrait(look));
                 if (look == selected) Stamp(card, "選", 32);
             }
-            var indicator = Label(grid, $"第 {page + 1}／{pages} 頁", 22, TextAnchor.MiddleCenter);
-            Anchor(indicator.rectTransform, new(.33f, 1), new(.67f, 1), new(0, -39), Vector2.zero);
-            PageButton("‹", -1, .06f);
-            PageButton("›", 1, .76f);
+            if (pages > 1)
+            {
+                var indicator = Label(grid, $"第 {page + 1}／{pages} 頁", 22, TextAnchor.MiddleCenter);
+                Anchor(indicator.rectTransform, new(.33f, 1), new(.67f, 1), new(0, -39), Vector2.zero);
+                PageButton("‹", -1, .06f);
+                PageButton("›", 1, .76f);
+            }
+            else
+            {
+                var heading = Label(grid, "選擇肖像", 25, TextAnchor.MiddleLeft);
+                Anchor(heading.rectTransform, Vector2.up, Vector2.one, new(4, -39), Vector2.zero);
+            }
 
-            var sheet = Panel("形貌預覽", row, new(.55f, 0), Vector2.one,
-                new(8, 22), new(-5, 0));
-            var portrait = Rect("選定肖像", sheet);
-            Anchor(portrait, Vector2.zero, Vector2.up, new(18, 88), new(273, -50));
+            var sheet = Panel("水墨肖像", row, new(.55f, 0), Vector2.one,
+                new(8, 14), new(-5, 0));
+            var portraitFrame = Panel("裱框", sheet, new(0, .5f), new(0, .5f),
+                new(16, -190), new(302, 190));
+            UiKit.Skin(portraitFrame.GetComponent<Image>(), "Wood");
+            var portrait = Rect("選定肖像", portraitFrame);
+            Fill(portrait, 5);
             AddImage(portrait, LookPortrait(selected));
-            var preview = Rect("立體預覽", sheet);
-            Anchor(preview, new(.48f, 0), Vector2.one, new(12, 74), new(-8, -38));
-            preview.gameObject.AddComponent<CharacterPreview>().Initialize(selected, AddImage(preview, null));
-            var title = Label(sheet, selected.label, 27, TextAnchor.MiddleCenter);
-            Anchor(title.rectTransform, Vector2.up, new(.48f, 1), new(12, -48), new(-8, -5));
-            var detail = Label(sheet, selected.desc ?? "", 21, TextAnchor.MiddleLeft);
-            Anchor(detail.rectTransform, Vector2.zero, Vector2.right, new(18, 8), new(-18, 77));
+            var title = Label(sheet, characterTitle, 32, TextAnchor.MiddleLeft);
+            Anchor(title.rectTransform, Vector2.up, Vector2.one, new(322, -127), new(-20, -70));
+            var style = Panel("形貌風格", sheet, Vector2.up, Vector2.one,
+                new(320, -176), new(-24, -135));
+            UiKit.Skin(style.GetComponent<Image>(), "Wood");
+            var styleLabel = Label(style, selected.label, 22, TextAnchor.MiddleCenter);
+            styleLabel.color = MapUi.Paper;
+            Fill(styleLabel.rectTransform, 5);
+            var detail = Label(sheet, selected.desc ?? "", 22, TextAnchor.UpperLeft);
+            Anchor(detail.rectTransform, Vector2.zero, Vector2.one, new(322, 34), new(-22, -199));
 
             appearanceInput = () =>
             {
@@ -341,14 +357,18 @@ namespace Wuxia
         private static Texture2D LookPortrait(CharacterLook look) =>
             PortraitService.Resolve(string.IsNullOrEmpty(look.portrait) ? look.id : look.portrait, look.gender);
 
-        internal void CreationAttribute(string name, int current, int maximum, Action less, Action more)
+        internal void CreationAttribute(string name, string description, int current, int maximum, Action less, Action more)
         {
             var row = CreationRow(name, 87);
-            var meter = Panel(name, row, new(.15f, 0), new(.85f, 1), Vector2.zero, Vector2.zero);
-            var caption = Label(meter, $"{name}　{current}", 26, TextAnchor.MiddleLeft);
-            Anchor(caption.rectTransform, Vector2.zero, Vector2.up, new(23, 8), new(178, -8));
+            var meter = Panel(name, row, new(.06f, 0), new(.94f, 1), Vector2.zero, Vector2.zero);
+            var caption = Label(meter, name, 26, TextAnchor.MiddleLeft);
+            Anchor(caption.rectTransform, Vector2.up, Vector2.up, new(22, -45), new(140, -6));
+            var benefit = Label(meter, description, 21, TextAnchor.MiddleLeft);
+            Anchor(benefit.rectTransform, Vector2.zero, Vector2.right, new(22, 7), new(-240, 38));
+            var value = Label(meter, current.ToString(), 26, TextAnchor.MiddleCenter);
+            Anchor(value.rectTransform, Vector2.right, Vector2.one, new(-102, 14), new(-72, -14));
             var track = Rect("Attribute track", meter);
-            Anchor(track, new(.18f, .5f), new(.80f, .5f), new(0, -6), new(-10, 6));
+            Anchor(track, new(0, .68f), new(1, .68f), new(144, -4), new(-240, 4));
             track.gameObject.AddComponent<Image>().color = new Color(.36f, .27f, .18f, .24f);
             var fill = Rect("Attribute value", track);
             Anchor(fill, Vector2.zero, new(Mathf.Clamp01(current / (float)Mathf.Max(1, maximum)), 1),
@@ -356,8 +376,8 @@ namespace Wuxia
             fill.gameObject.AddComponent<Image>().color = new Color(.26f, .44f, .36f);
             var minus = Button(meter, "−", less);
             var plus = Button(meter, "＋", more);
-            Anchor(minus, Vector2.right, Vector2.one, new(-170, 14), new(-102, -14));
-            Anchor(plus, Vector2.right, Vector2.one, new(-90, 14), new(-22, -14));
+            Anchor(minus, Vector2.right, Vector2.one, new(-166, 19), new(-110, -19));
+            Anchor(plus, Vector2.right, Vector2.one, new(-64, 19), new(-8, -19));
             minus.GetComponent<Button>().interactable = less != null;
             plus.GetComponent<Button>().interactable = more != null;
         }

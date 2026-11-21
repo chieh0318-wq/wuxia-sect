@@ -12,11 +12,11 @@ namespace Wuxia
     internal static class MapUi
     {
         internal static readonly Color Ink = new(.19f,.17f,.14f);
-        internal static readonly Color Paper = new(.93f,.86f,.73f);
+        internal static readonly Color Paper = UiKit.WarmPaper;
         internal static readonly Color Wood = new(.21f,.25f,.23f);
         internal static readonly Color Red = new(.61f,.24f,.17f);
         internal static readonly Color Gold = new(.78f,.65f,.44f);
-        internal static readonly Color Jade = new(.20f,.39f,.28f);
+        internal static readonly Color Jade = UiKit.JadeInk;
         private static Font font;
 
         internal static RectTransform Rect(Transform parent,string name,float x,float y,float w,float h)
@@ -68,6 +68,20 @@ namespace Wuxia
             text.resizeTextMinSize = Mathf.Min(15,size);
             text.resizeTextMaxSize = size;
             return text;
+        }
+
+        internal static void Portrait(Transform parent, Texture2D texture, float x, float y, float width, float height)
+        {
+            var border = Panel(parent, "肖像裱框", x, y, width, height, Ink);
+            border.GetComponent<Image>().raycastTarget = false;
+            var image = Rect(border, "肖像", 4, 4, width - 8, height - 8).gameObject.AddComponent<RawImage>();
+            image.texture = texture;
+            image.color = texture == null ? new Color(.51f, .45f, .35f) : Color.white;
+            image.raycastTarget = false;
+            if (texture == null) return;
+            float crop = (width - 8) * texture.height / ((height - 8) * texture.width);
+            image.uvRect = crop <= 1 ? new Rect((1 - crop) / 2, 0, crop, 1)
+                : new Rect(0, (1 - 1 / crop) / 2, 1, 1 / crop);
         }
 
         internal static Button Button(Transform parent,string label,float x,float y,float w,float h,Action action,

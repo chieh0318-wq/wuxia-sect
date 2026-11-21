@@ -5,6 +5,9 @@ namespace Wuxia
 {
     internal static class UiKit
     {
+        internal static readonly Color WarmPaper = new(.93f, .86f, .73f);
+        internal static readonly Color JadeInk = new(.20f, .39f, .28f);
+
         private static Texture2D backdrop;
         private static Texture2D vignette;
 

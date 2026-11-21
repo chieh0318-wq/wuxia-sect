@@ -42,6 +42,15 @@ namespace Wuxia
         private GameEffect[] talentEffects = Array.Empty<GameEffect>(), skillEffects = Array.Empty<GameEffect>();
         private static readonly string[] AttributeNames = { "武力", "身法", "根骨", "悟性", "魅力" };
 
+        private static readonly string[] AttributeBenefits =
+        {
+            "每高於 3 點一點，自己的武學修習進度提高 5%。",
+            "每高於 3 點一點，探索遇見山洞奇遇的機率提高 1 個百分點。",
+            "每高於 3 點兩點，療傷時自己多恢復 1 點傷勢。",
+            "每高於 3 點一點，你與弟子的武學修習多 5% 進度。",
+            "每高於 3 點一點，新入門弟子的初始忠誠多 2 點。"
+        };
+
         internal NewGameFlow(SectUI ui, GameState state, Action<GameState> done)
         {
             this.ui = ui;
@@ -134,7 +143,7 @@ namespace Wuxia
             ui.CreationName(hero.name, value => hero.name = string.IsNullOrWhiteSpace(value) ? SuggestedName() : value.Trim(), SuggestedName);
             ui.CreationTabs(new[] { "男", "女" }.Select(gender =>
                 (gender, gender == hero.gender, (Action)(() => ChooseGender(gender)))));
-            ui.CreationPortraits(looks, look, appearancePage, page =>
+            ui.CreationPortraits(looks, look, hero.title, appearancePage, page =>
             {
                 appearancePage = page;
                 ChooseAppearance();
@@ -369,14 +378,14 @@ namespace Wuxia
                     Restore(skills.skills, state.Protagonist.skills);
                     ShowSkills();
                 }),
-                ("免費重抽", RollAttributes)
+                ("隨機分配", RollAttributes)
             };
-            ui.ShowCreation("屬性", new[] { $"餘點 {freeAttributes}　{state.Protagonist.name}" },
+            ui.ShowCreation("屬性", new[] { $"可分配點數　{freeAttributes}／{characters.attrPoints}" },
                 actions, StartStory, StartStory);
             for (int index = 0; index < AttributeNames.Length; index++)
             {
                 int slot = index;
-                ui.CreationAttribute(AttributeNames[slot], state.Protagonist.attrs[slot], characters.attrMax,
+                ui.CreationAttribute(AttributeNames[slot], AttributeBenefits[slot], state.Protagonist.attrs[slot], characters.attrMax,
                     allocated[slot] > 0 ? () => ChangeAttribute(slot, -1) : null,
                     freeAttributes > 0 && state.Protagonist.attrs[slot] < characters.attrMax
                         ? () => ChangeAttribute(slot, 1) : null);

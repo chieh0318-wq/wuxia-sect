@@ -41,8 +41,8 @@ namespace Wuxia
             var line = RankSystem.BestCombat(hero.lines);
             if (line == null)
                 return "";
-            float experience = Mathf.Max(.1f, 1 + Story.trainBonusPct / 100f) * ProductionMultiplier("teaching");
-            TrainLine(line, experience);
+            float experience = Mathf.Max(.1f, 1 + Story.trainBonusPct / 100f) * ProductionMultiplier("teaching") * (1 + .05f * AttributeBonus("wit"));
+            TrainLine(line, experience * (1 + .05f * AttributeBonus("str")));
             foreach (var disciple in Disciples.Where(member => member.id != Story.delegateId))
                 TrainLine(RankSystem.BestCombat(disciple.lines), experience);
 
@@ -125,7 +125,7 @@ namespace Wuxia
         internal void RecoverInjuries()
         {
             int amount = Mathf.Max(1, Mathf.RoundToInt(ProductionMultiplier("medicine")));
-            Protagonist.injury = Mathf.Max(0, Protagonist.injury - amount);
+            Protagonist.injury = Mathf.Max(0, Protagonist.injury - amount - AttributeBonus("con") / 2);
             foreach (var member in Disciples)
                 member.injury = Mathf.Max(0, member.injury - amount);
         }

@@ -50,6 +50,8 @@ namespace Wuxia
             }
         }
 
+        internal int AttributeBonus(string id) => System.Math.Max(0, AttributeValue(id) - 3);
+
         private int AttributeValue(string id)
         {
             int index = System.Array.IndexOf(new[] { "str", "agi", "con", "wit", "cha" }, id);

@@ -13,19 +13,11 @@ namespace Wuxia
             (M2Data.Load<CharacterCatalog>("characters").storyCharacters ?? Array.Empty<StoryCharacter>())
             .Where(person => person != null && !string.IsNullOrEmpty(person.id)).ToArray();
 
-        private static string LeaderId(MapFaction faction) => string.IsNullOrWhiteSpace(faction.leaderId)
-            ? faction.id switch
-            {
-                "huayue" => "elder_villain", "funiu" => "rival_head", "heishan" => "warlord",
-                _ => "leader_" + faction.id
-            }
-            : faction.leaderId;
-
         private StoryCharacter FactionLeader(MapFaction faction) => StoryCharacters.FirstOrDefault(person =>
-            person.id == LeaderId(faction)) ?? new StoryCharacter
+            person.id == faction.PortraitId) ?? new StoryCharacter
             {
-                id = LeaderId(faction), name = faction.leader ?? faction.Label, title = "掌門",
-                faction = faction.id, portrait = LeaderId(faction), rank = faction.leaderRank,
+                id = faction.PortraitId, name = faction.leader ?? faction.Label, title = "掌門",
+                faction = faction.id, portrait = faction.PortraitId, rank = faction.leaderRank,
                 cap = faction.leaderCap, lines = faction.leaderLines?.Where(line => line != null)
                     .Select(line => new SkillLine { id = line.id, rank = line.rank, cap = line.cap }).ToArray()
             };
@@ -75,8 +67,8 @@ namespace Wuxia
             var visible = characters.Where(person =>
             {
                 var faction = factions.FirstOrDefault(entry => entry.id == person.faction || entry.name == person.faction ||
-                    LeaderId(entry) == person.id);
-                bool leader = faction != null && LeaderId(faction) == person.id;
+                    entry.PortraitId == person.id);
+                bool leader = faction != null && faction.PortraitId == person.id;
                 if (leader && !state.IsFactionKnown(faction.id)) return false;
                 if (person.id is "friend_m" or "friend_f" && person.id != state.FriendId) return false;
                 return filter switch
@@ -98,7 +90,7 @@ namespace Wuxia
         private void ShowCharacterDetail(StoryCharacter person, Action back)
         {
             var faction = WorldMapData.Load().Factions.FirstOrDefault(entry =>
-                entry.id == person.faction || LeaderId(entry) == person.id);
+                entry.id == person.faction || entry.PortraitId == person.id);
             var quests = state.Questlines.Where(line => line.id == person.questline ||
                 state.CharacterId(line.character) == person.id).ToArray();
             ui.ShowCharacterProfile(person, faction?.Label ?? person.faction, state.CharacterRelation(person.id),

@@ -110,6 +110,8 @@ namespace Wuxia
                         if (special != null) ReviewCandidate(special);
                     }),
                     ("11_options_audio.png", ui.ShowAudioOptions),
+                    ("29_system_menu.png", ui.ShowSystemMenu),
+                    ("30_exit_confirmation.png", () => ui.ConfirmExit(ui.ShowSystemMenu)),
                     ("12_protagonist_panel.png", ShowProtagonist),
                     ("26_characters_panel.png", ShowCharacterDirectory),
                     ("27_character_detail.png", () =>
@@ -126,6 +128,13 @@ namespace Wuxia
                     yield return new WaitForSecondsRealtime(step.filename == "04_prologue_beat.png" ? 2.8f : .15f);
                     if (!SaveShot(step.filename))
                         yield break;
+                    if (step.filename == "30_exit_confirmation.png" &&
+                        (!ui.ActivateMenuAction("取消") || !ui.ActivateMenuAction("繼續遊戲") || ui.ModalOpen))
+                    {
+                        Debug.LogError("[Capture] Exit cancellation did not return to the system menu.");
+                        Application.Quit(1);
+                        yield break;
+                    }
                     if (step.filename == "27_character_detail.png" && !ui.VerifyCharacterProfileScroll())
                     {
                         Debug.LogError("[Capture] Character profile wheel did not reach the bottom.");
@@ -144,7 +153,19 @@ namespace Wuxia
                 yield return CaptureM2(file => shotsOk &= SaveShot(file));
                 if (!shotsOk)
                     yield break;
-                Application.Quit(VerifyCapturedGame(directory) ? 0 : 1);
+                if (!VerifyCapturedGame(directory))
+                {
+                    Application.Quit(1);
+                    yield break;
+                }
+                ui.ConfirmExit(ui.ShowSystemMenu);
+                if (!ui.ActivateMenuAction("確認退出"))
+                {
+                    Debug.LogError("[Capture] Exit confirmation action was unavailable.");
+                    Application.Quit(1);
+                }
+                else
+                    Debug.Log("[Capture] System-menu cancellation and normal exit exercised.");
             }
             finally
             {

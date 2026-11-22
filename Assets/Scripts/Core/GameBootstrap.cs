@@ -35,6 +35,15 @@ namespace Wuxia
 
         private void Awake()
         {
+            string[] args = Environment.GetCommandLineArgs();
+            int capture = Array.IndexOf(args, "-wuxiaCapture");
+            if (!Application.isBatchMode && capture < 0)
+            {
+                int sysW = Display.main != null && Display.main.systemWidth >= 1600 ? Display.main.systemWidth : 1920;
+                int sysH = Display.main != null && Display.main.systemHeight >= 900 ? Display.main.systemHeight : 1080;
+                if (Screen.width < 1600 || Screen.height < 900)
+                    Screen.SetResolution(sysW, sysH, FullScreenMode.FullScreenWindow);
+            }
             BootStep("scene", ConfigureScene);
             AudioManager.Initialize(); // M2-B audio
             BootStep("HUD", () => ui = new SectUI(EndMonth));
@@ -48,8 +57,6 @@ namespace Wuxia
             }
             ui.ApInspected += () => tutorial?.Record("inspect_ap");
             ShowTitle();
-            string[] args = Environment.GetCommandLineArgs();
-            int capture = Array.IndexOf(args, "-wuxiaCapture");
             if (capture >= 0 && capture + 1 < args.Length)
                 StartCoroutine(Capture(args[capture + 1]));
             // Smoke tests: "-wuxiaQuitAfter 20" exits cleanly after N seconds so no process has to be killed.

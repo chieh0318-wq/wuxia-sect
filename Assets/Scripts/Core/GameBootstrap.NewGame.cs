@@ -94,7 +94,7 @@ namespace Wuxia
 
         internal void Begin()
         {
-            AudioManager.Music("prologue");
+            AudioManager.Music("creation");
             ui.ShowCreation("首徒稱謂", new[] { "你是師父最早收入門下的弟子。師弟師妹們該怎麼稱呼你？" },
                 null, ChooseAppearance);
             ui.CreationGrid(2, 1, 540);
@@ -483,6 +483,7 @@ namespace Wuxia
                          .Where(option => option != null && state.Protagonist.skills.Contains(option.id)))
                 RankSystem.Learn(state.Protagonist.lines, art);
             state.ApplyEffects(skillEffects);
+            AudioManager.Music("courtyard_night");
             Play(story.openingBeats, ChooseDisaster, SkipStory);
         }
 
@@ -497,6 +498,7 @@ namespace Wuxia
                 {
                     state.Story.disasterId = option.id;
                     state.ApplyEffects(option.effects);
+                    AudioManager.Music("disaster_" + option.id);
                     Play(option.beats, () => ChooseResponse(option), SkipStory);
                 });
         }
@@ -514,8 +516,34 @@ namespace Wuxia
                         : option.image, () =>
                 {
                     SetResponse(option);
-                    Play(option.beats, ChooseLocation, SkipStory);
+                    if (option.id == "independent")
+                    {
+                        Play(option.beats, ChooseLocation, SkipStory);
+                    }
+                    else
+                    {
+                        AssignShelterLocation(disaster?.id, option.id);
+                        Play(option.beats, () => Play(story.closingBeats, Finish, Finish), SkipStory);
+                    }
                 }, banner: true);
+        }
+
+        private void AssignShelterLocation(string disasterId, string responseId)
+        {
+            string node = (disasterId, responseId) switch
+            {
+                ("treasure", "submit") => "shanzhou",
+                ("treasure", "ally") => "huashan",
+                ("court", "submit") => "luoyang",
+                ("court", "ally") => "shaolin",
+                ("betrayal", "submit") => "funiu",
+                ("betrayal", "ally") => "huashan",
+                ("plague", "submit") => "luoyang",
+                ("plague", "ally") => "liangzhou",
+                _ => "huashan"
+            };
+            state.Story.locationId = $"shelter_{disasterId}_{responseId}";
+            state.Story.mapNode = node;
         }
 
         private void SetResponse(StoryResponse option)
@@ -526,6 +554,7 @@ namespace Wuxia
 
         private void ChooseLocation()
         {
+            AudioManager.Music("map_campaign");
             var options = story.locations ?? Array.Empty<StoryLocation>();
             if (options.Length == 0) { Play(story.closingBeats, Finish, Finish); return; }
             ui.ShowCreation("立足之地", new[] { FormatStory(story.locationPrompt) }, null, SkipStory);

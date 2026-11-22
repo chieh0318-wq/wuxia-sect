@@ -119,7 +119,7 @@ namespace Wuxia
                 string portrait = part.portrait == "hero" ? hero.portrait ?? hero.lookId :
                     PortraitService.StoryId(part.portrait, state.FriendId == "friend_m" ? "男" : "女");
                 ui.ShowStoryBeat(FormatQuestText(part.speaker), FormatQuestText(part.text), art, portrait,
-                    part.portrait != "hero", ShowNext, ShowChoices, "前往抉擇");
+                    part.portrait != "hero", ShowNext, ShowChoices, "前往抉擇", part.text);
             }
 
             void ShowChoices()

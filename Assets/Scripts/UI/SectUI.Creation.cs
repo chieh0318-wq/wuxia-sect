@@ -6,6 +6,16 @@ using UnityEngine.UI;
 
 namespace Wuxia
 {
+    /// <summary>Snapshot of the hero-in-progress shown on the creation summary card.</summary>
+    internal sealed class CreationSheet
+    {
+        public string name, title, portrait, gender, background, picksHeading;
+        public int[] attrs;
+        public SkillLine[] lines;
+        public readonly List<(string label, int left, int total)> budgets = new();
+        public readonly List<string> picks = new();
+    }
+
     public sealed partial class SectUI
     {
         private RectTransform storyScreen, creationGrid;
@@ -74,18 +84,167 @@ namespace Wuxia
             Anchor((RectTransform)modalList.parent, Vector2.zero, Vector2.one, new(26, 82), new(-26, -22));
         }
 
-        internal void CreationSummary(IEnumerable<string> lines)
+        private static readonly Color CardText = new(.96f, .89f, .75f);
+        private static readonly Color CardMuted = new(.80f, .70f, .55f);
+        private static readonly Color CardGold = new(.93f, .74f, .42f);
+        private static readonly Color CardLow = new(.95f, .58f, .48f);
+
+        /// <summary>Live character summary card docked on the right of every creation step.</summary>
+        internal void CreationSummary(CreationSheet sheet)
         {
-            const int width = 344;
+            const int width = 372;
             creationListWidth -= width + 20;
             Anchor((RectTransform)modalList.parent, Vector2.zero, Vector2.one,
                 new(36, 88), new(-36 - width - 20, -112));
-            creationSummary = Panel("天賦總覽", modalCard, Vector2.right, Vector2.one,
+            creationSummary = Panel("角色總覽", modalCard, Vector2.right, Vector2.one,
                 new(-36 - width, 88), new(-36, -112));
-            var ledger = ScrollList(creationSummary, new(22, 16), new(-22, -16));
-            AddLine(ledger, "天賦總覽", 28);
-            foreach (string line in lines)
-                AddLine(ledger, line, 21);
+            UiKit.Skin(creationSummary.GetComponent<Image>(), "Wood");
+            var card = creationSummary;
+
+            var frame = Rect("肖像", card);
+            Anchor(frame, Vector2.up, Vector2.up, new(18, -152), new(126, -16));
+            frame.gameObject.AddComponent<Image>().color = new Color(.12f, .09f, .07f);
+            var face = Rect("Face", frame);
+            Fill(face, 3);
+            var texture = PortraitService.Resolve(sheet.portrait, sheet.gender);
+            var raw = AddImage(face, texture);
+            if (texture != null)
+            {
+                float crop = 102f * texture.height / (130f * texture.width);
+                raw.uvRect = crop <= 1 ? new Rect((1 - crop) / 2, 0, crop, 1) : new Rect(0, (1 - 1 / crop) / 2, 1, 1 / crop);
+            }
+            CardLabel(sheet.name ?? "", 30, CardText, 140, -16, -14, -54).font = UiKit.Font("Names", font, sheet.name ?? "");
+            CardLabel(sheet.title ?? "", 21, CardGold, 140, -58, -14, -86);
+            CardLabel(string.IsNullOrEmpty(sheet.background) ? "出身未定" : "出身　" + sheet.background, 19, CardMuted,
+                140, -90, -14, -150, TextAnchor.UpperLeft);
+
+            float y = -166;
+            foreach (var (label, left, total) in sheet.budgets)
+            {
+                CardLabel(label, 19, CardMuted, 18, y, -150, y - 24);
+                CardLabel($"剩 {left}／{total}", 20, left > 0 ? CardGold : CardText, 160, y, -18, y - 24, TextAnchor.MiddleRight);
+                CardBar(card, 18, y - 28, -18, 7, total <= 0 ? 0 : left / (float)total, CardGold);
+                y -= 42;
+            }
+
+            y -= 4;
+            CardHeading("屬性", y);
+            y -= 32;
+            var attrs = AttributeSystem.Normalize(sheet.attrs);
+            for (int index = 0; index < AttributeSystem.Count; index++)
+            {
+                CardLabel(AttributeSystem.Names[index], 18, CardText, 18, y, -290, y - 24);
+                CardBar(card, 80, y - 9, -62, 8, attrs[index] / (float)AttributeSystem.Max,
+                    Color.Lerp(AttributeSystem.Tints[index], Color.white, .25f));
+                CardLabel(attrs[index].ToString(), 19, attrs[index] > AttributeSystem.Base ? CardGold :
+                    attrs[index] < AttributeSystem.Base ? CardLow : CardText, 310, y, -18, y - 24, TextAnchor.MiddleRight);
+                y -= 26;
+            }
+
+            y -= 8;
+            CardHeading("武學與體魄", y);
+            y -= 32;
+            var stats = AttributeSystem.Derive(attrs, sheet.lines);
+            var cells = new[]
+            {
+                ("攻擊", stats.Attack.ToString()), ("先手", stats.Speed.ToString()),
+                ("氣血", stats.MaxHp.ToString()), ("內力", stats.MaxQi.ToString()),
+                ("閃避", $"{stats.Dodge:P0}"), ("奇遇", $"{stats.Fortune:P0}")
+            };
+            for (int index = 0; index < cells.Length; index++)
+            {
+                int column = index % 2;
+                float rowY = y - index / 2 * 28;
+                var cell = Rect(cells[index].Item1, card);
+                Anchor(cell, new(column * .5f, 1), new((column + 1) * .5f, 1),
+                    new(column == 0 ? 18 : 8, rowY - 24), new(column == 0 ? -8 : -18, rowY));
+                var name = Label(cell, cells[index].Item1, 18, TextAnchor.MiddleLeft);
+                name.color = CardMuted;
+                Fill(name.rectTransform);
+                var value = Label(cell, cells[index].Item2, 20, TextAnchor.MiddleRight);
+                value.color = CardText;
+                value.font = UiKit.Font("Numbers", font, value.text);
+                Fill(value.rectTransform);
+            }
+            y -= 3 * 28 + 8;
+
+            CardHeading(sheet.picksHeading ?? "已選", y);
+            y -= 32;
+            var picks = CardLabel(sheet.picks.Count == 0 ? "尚未選擇" : string.Join("　", sheet.picks), 18,
+                sheet.picks.Count == 0 ? CardMuted : CardText, 18, y, -18, 0, TextAnchor.UpperLeft);
+            Anchor(picks.rectTransform, Vector2.zero, Vector2.one, new(18, 14), new(-18, y));
+            picks.horizontalOverflow = HorizontalWrapMode.Wrap;
+            picks.resizeTextMinSize = 13;
+
+            void CardHeading(string text, float top)
+            {
+                CardLabel(text, 21, CardGold, 18, top, -18, top - 26);
+                var rule = Rect("Rule", card);
+                Anchor(rule, Vector2.up, Vector2.one, new(18, top - 29), new(-18, top - 28));
+                var ink = rule.gameObject.AddComponent<Image>();
+                ink.color = new Color(.93f, .74f, .42f, .35f);
+                ink.raycastTarget = false;
+            }
+
+            // left/right are offsets from the card's left/right edges; top/bottom are offsets from its top edge.
+            Text CardLabel(string text, int size, Color color, float left, float top, float right, float bottom,
+                TextAnchor alignment = TextAnchor.MiddleLeft)
+            {
+                var label = Label(card, text, size, alignment);
+                label.color = color;
+                Anchor(label.rectTransform, Vector2.up, Vector2.one, new(left, bottom), new(right, top));
+                return label;
+            }
+        }
+
+        /// <summary>Horizontal meter anchored to the top of <paramref name="parent"/> (right offset is from the right edge).</summary>
+        private static void CardBar(RectTransform parent, float left, float top, float right, float height, float fill, Color color)
+        {
+            var track = Rect("Meter", parent);
+            Anchor(track, Vector2.up, Vector2.one, new(left, top - height), new(right, top));
+            var back = track.gameObject.AddComponent<Image>();
+            back.color = new Color(0, 0, 0, .35f);
+            back.raycastTarget = false;
+            var bar = Rect("Meter fill", track);
+            Anchor(bar, Vector2.zero, new(Mathf.Clamp01(fill), 1), Vector2.zero, Vector2.zero);
+            var ink = bar.gameObject.AddComponent<Image>();
+            ink.color = color;
+            ink.raycastTarget = false;
+        }
+
+        /// <summary>Compact 7×2 grid of skill-line tiles: name, rank / potential cap and a tier meter.</summary>
+        internal void SkillTiles(SkillLine[] lines)
+        {
+            var families = new[] { "combat", "production" };
+            var row = CreationRow("技能一覽", 2 * 66 + 8);
+            for (int family = 0; family < families.Length; family++)
+            {
+                var categories = RankSystem.Categories.Where(category => category.family == families[family]).Take(7).ToArray();
+                for (int index = 0; index < categories.Length; index++)
+                {
+                    var category = categories[index];
+                    var line = Array.Find(lines ?? Array.Empty<SkillLine>(), entry => entry?.id == category.id);
+                    var tile = Panel(category.name, row, new(index / 7f, 1), new((index + 1) / 7f, 1),
+                        new(3, -66 - family * 74), new(-3, -family * 74), false);
+                    UiKit.Skin(tile.GetComponent<Image>(), "Wood");
+                    var name = Label(tile, category.name, 18, TextAnchor.MiddleLeft);
+                    name.color = family == 0 ? new Color(.98f, .80f, .66f) : new Color(.78f, .90f, .78f);
+                    Anchor(name.rectTransform, Vector2.up, Vector2.one, new(10, -34), new(-6, -6));
+                    int rank = RankSystem.Index(line?.rank), cap = RankSystem.Index(line?.cap);
+                    var tier = Label(tile, $"{RankSystem.At(rank)}/{RankSystem.At(cap)}", 19, TextAnchor.MiddleRight);
+                    tier.color = Color.Lerp(RankSystem.Color(RankSystem.At(rank)), Color.white, .45f);
+                    tier.font = UiKit.Font("Numbers", font, tier.text);
+                    Anchor(tier.rectTransform, Vector2.up, Vector2.one, new(10, -34), new(-8, -6));
+                    CardBar(tile, 10, -42, -10, 6, (cap + 1) / 7f, new Color(1, 1, 1, .22f));
+                    CardBar(tile, 10, -42, -10, 6, (rank + 1) / 7f, RankSystem.Color(RankSystem.At(rank)));
+                    if (cap >= RankSystem.Index("S"))
+                    {
+                        var star = Label(tile, "潛力 " + RankSystem.At(cap), 14, TextAnchor.MiddleLeft);
+                        star.color = CardGold;
+                        Anchor(star.rectTransform, Vector2.zero, Vector2.right, new(10, 3), new(-6, 20));
+                    }
+                }
+            }
         }
 
         internal void CreationTabs(IEnumerable<(string label, bool active, Action run)> filters)
@@ -151,7 +310,7 @@ namespace Wuxia
         internal void CreationArts(CreationOption[] combat, CreationOption[] production,
             Vector2 scrollPosition, Action<CreationOption> draw)
         {
-            var row = CreationRow("可習技藝", 285);
+            var row = CreationRow("可習技藝", 488);
             AddFamily(combat, 0);
             AddFamily(production, 1);
             creationGrid = null;
@@ -186,14 +345,14 @@ namespace Wuxia
         }
 
         internal void CreationChoice(string label, string description, string image, Action run,
-            string rarity = null, bool picked = false, int? cost = null, bool banner = false)
+            string rarity = null, bool picked = false, int? cost = null, bool banner = false, string tags = null)
         {
             var item = Button(creationGrid == null ? modalList : creationGrid, label, run);
             item.GetComponent<Button>().interactable = run != null;
             var layout = item.GetComponent<LayoutElement>();
             var caption = item.GetComponentInChildren<Text>();
             var art = string.IsNullOrEmpty(image) ? null : PortraitService.Story(image);
-            layout.preferredHeight = art == null ? 124 : 164;
+            layout.preferredHeight = art == null ? (string.IsNullOrEmpty(tags) ? 124 : 146) : 164;
             var frame = item.GetComponent<Image>();
             UiKit.Skin(frame, picked ? "Selected" : "Wood");
             frame.color = rarity switch
@@ -209,11 +368,30 @@ namespace Wuxia
             caption.resizeTextMinSize = 20;
             Anchor(caption.rectTransform, Vector2.up, Vector2.one, new(left, -44 - top),
                 new(cost.HasValue ? -120 : -16, -6 - top));
+            if (!string.IsNullOrEmpty(rarity))
+            {
+                var ribbon = Rect("Rarity ribbon", item);
+                Anchor(ribbon, Vector2.zero, Vector2.up, new(5, 8), new(10, -8));
+                var stripe = ribbon.gameObject.AddComponent<Image>();
+                stripe.raycastTarget = false;
+                stripe.color = rarity switch
+                {
+                    "legendary" => new Color(.95f, .66f, .22f),
+                    "rare" => new Color(.40f, .62f, .86f),
+                    _ => new Color(.62f, .58f, .50f)
+                };
+            }
             if (cost.HasValue)
             {
-                var badge = Label(item, $"{cost} 點", 20, TextAnchor.MiddleCenter);
-                badge.color = new Color(1, .84f, .55f);
-                Anchor(badge.rectTransform, Vector2.one, Vector2.one, new(-112, -43), new(-52, -7));
+                var coin = Rect("Cost seal", item);
+                Anchor(coin, Vector2.one, Vector2.one, new(picked ? -112 : -60, -46), new(picked ? -68 : -16, -8));
+                var disc = coin.gameObject.AddComponent<Image>();
+                disc.raycastTarget = false;
+                disc.color = cost < 0 ? new Color(.30f, .45f, .36f) : new Color(.62f, .20f, .14f);
+                var badge = Label(coin, cost < 0 ? $"+{-cost}" : cost.ToString(), 22, TextAnchor.MiddleCenter);
+                badge.color = new Color(1, .90f, .70f);
+                badge.font = UiKit.Font("Numbers", font, badge.text);
+                Fill(badge.rectTransform);
             }
             if (picked)
             {
@@ -225,7 +403,23 @@ namespace Wuxia
             var body = Label(item, description ?? "", 20);
             body.color = new Color(.96f, .89f, .75f);
             body.resizeTextForBestFit = false;
-            Anchor(body.rectTransform, Vector2.zero, Vector2.one, new(left, 8), new(-16, -46 - top));
+            Anchor(body.rectTransform, Vector2.zero, Vector2.one, new(left, string.IsNullOrEmpty(tags) ? 8 : 42), new(-16, -46 - top));
+            if (!string.IsNullOrEmpty(tags))
+            {
+                var strip = Rect("Effect tags", item);
+                Anchor(strip, Vector2.zero, Vector2.right, new(left - 4, 8), new(-12, 38));
+                var wash = strip.gameObject.AddComponent<Image>();
+                wash.color = new Color(.05f, .04f, .03f, .38f);
+                wash.raycastTarget = false;
+                var chips = Label(strip, tags, 18, TextAnchor.MiddleLeft);
+                chips.color = new Color(.99f, .80f, .45f);
+                chips.verticalOverflow = VerticalWrapMode.Overflow;
+                chips.horizontalOverflow = HorizontalWrapMode.Overflow;
+                chips.resizeTextForBestFit = false;
+                Anchor(chips.rectTransform, Vector2.zero, Vector2.one, new(8, 0), new(-6, 0));
+                var clip = strip.gameObject.AddComponent<RectMask2D>();
+                clip.padding = Vector4.zero;
+            }
             if (art != null)
             {
                 var thumbnail = Rect("Choice illustration", item);
@@ -357,27 +551,63 @@ namespace Wuxia
         private static Texture2D LookPortrait(CharacterLook look) =>
             PortraitService.Resolve(string.IsNullOrEmpty(look.portrait) ? look.id : look.portrait, look.gender);
 
-        internal void CreationAttribute(string name, string description, int current, int maximum, Action less, Action more)
+        /// <summary>One attribute row: seal glyph, name, pip track (min / base markers), value, delta and − / ＋.</summary>
+        internal void CreationAttribute(int index, int current, int baseValue, int minimum, int maximum, int bonus,
+            string description, Action less, Action more)
         {
-            var row = CreationRow(name, 87);
-            var meter = Panel(name, row, new(.06f, 0), new(.94f, 1), Vector2.zero, Vector2.zero);
-            var caption = Label(meter, name, 26, TextAnchor.MiddleLeft);
-            Anchor(caption.rectTransform, Vector2.up, Vector2.up, new(22, -45), new(140, -6));
-            var benefit = Label(meter, description, 21, TextAnchor.MiddleLeft);
-            Anchor(benefit.rectTransform, Vector2.zero, Vector2.right, new(22, 7), new(-240, 38));
-            var value = Label(meter, current.ToString(), 26, TextAnchor.MiddleCenter);
-            Anchor(value.rectTransform, Vector2.right, Vector2.one, new(-102, 14), new(-72, -14));
-            var track = Rect("Attribute track", meter);
-            Anchor(track, new(0, .68f), new(1, .68f), new(144, -4), new(-240, 4));
-            track.gameObject.AddComponent<Image>().color = new Color(.36f, .27f, .18f, .24f);
-            var fill = Rect("Attribute value", track);
-            Anchor(fill, Vector2.zero, new(Mathf.Clamp01(current / (float)Mathf.Max(1, maximum)), 1),
-                Vector2.zero, Vector2.zero);
-            fill.gameObject.AddComponent<Image>().color = new Color(.26f, .44f, .36f);
-            var minus = Button(meter, "−", less);
-            var plus = Button(meter, "＋", more);
-            Anchor(minus, Vector2.right, Vector2.one, new(-166, 19), new(-110, -19));
-            Anchor(plus, Vector2.right, Vector2.one, new(-64, 19), new(-8, -19));
+            string name = AttributeSystem.Names[index];
+            Color tint = AttributeSystem.Tints[index];
+            var row = CreationRow(name, 84);
+            var card = Panel(name, row, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero, false);
+            UiKit.Skin(card.GetComponent<Image>(), "Wood");
+            var seal = Rect("Seal", card);
+            Anchor(seal, new(0, .5f), new(0, .5f), new(16, -29), new(74, 29));
+            var sealInk = seal.gameObject.AddComponent<Image>();
+            sealInk.color = tint;
+            sealInk.raycastTarget = false;
+            var glyph = Label(seal, AttributeSystem.Glyphs[index], 32, TextAnchor.MiddleCenter);
+            glyph.color = new Color(1, .93f, .80f);
+            Fill(glyph.rectTransform);
+            var caption = Label(card, name, 27, TextAnchor.MiddleLeft);
+            caption.color = CardText;
+            Anchor(caption.rectTransform, Vector2.up, Vector2.up, new(90, -42), new(196, -6));
+            var benefit = Label(card, description, 18, TextAnchor.MiddleLeft);
+            benefit.color = CardMuted;
+            Anchor(benefit.rectTransform, Vector2.zero, Vector2.right, new(90, 6), new(-300, 36));
+
+            var track = Rect("Attribute pips", card);
+            Anchor(track, Vector2.up, Vector2.one, new(206, -33), new(-300, -15));
+            for (int pip = 1; pip <= maximum; pip++)
+            {
+                var cell = Rect("Pip", track);
+                Anchor(cell, new((pip - 1) / (float)maximum, 0), new(pip / (float)maximum, 1), new(1.5f, 0), new(-1.5f, 0));
+                var ink = cell.gameObject.AddComponent<Image>();
+                ink.raycastTarget = false;
+                ink.color = pip <= current
+                    ? (pip > baseValue ? Color.Lerp(tint, new Color(1, .86f, .55f), .55f) : Color.Lerp(tint, Color.white, .12f))
+                    : pip <= minimum ? new Color(.05f, .04f, .03f, .55f) : new Color(1, .95f, .85f, .14f);
+                if (pip == baseValue)
+                {
+                    var tick = Rect("Base mark", cell);
+                    Anchor(tick, new(1, 0), Vector2.one, new(0, -6), new(3, 6));
+                    var mark = tick.gameObject.AddComponent<Image>();
+                    mark.color = CardGold;
+                    mark.raycastTarget = false;
+                }
+            }
+            var value = Label(card, current.ToString(), 36, TextAnchor.MiddleCenter);
+            value.color = current > baseValue ? CardGold : current < baseValue ? CardLow : CardText;
+            value.font = UiKit.Font("Numbers", font, value.text);
+            Anchor(value.rectTransform, Vector2.right, Vector2.one, new(-290, 28), new(-196, -4));
+            int delta = current - baseValue;
+            string note = (delta == 0 ? "基礎" : $"{delta:+0;-0}") + (bonus != 0 ? $"　加成{bonus:+0;-0}" : "");
+            var deltaLabel = Label(card, note, 16, TextAnchor.MiddleCenter);
+            deltaLabel.color = CardMuted;
+            Anchor(deltaLabel.rectTransform, Vector2.right, Vector2.right, new(-300, 4), new(-186, 28));
+            var minus = Button(card, "−", less);
+            var plus = Button(card, "＋", more);
+            Anchor(minus, Vector2.right, Vector2.one, new(-178, 16), new(-104, -16));
+            Anchor(plus, Vector2.right, Vector2.one, new(-90, 16), new(-16, -16));
             minus.GetComponent<Button>().interactable = less != null;
             plus.GetComponent<Button>().interactable = more != null;
         }
@@ -392,11 +622,13 @@ namespace Wuxia
         internal bool StoryOpen => storyScreen != null;
 
         internal void ShowStoryBeat(string speaker, string text, string image, string portrait, bool required,
-            Action next, Action skip, string skipLabel = "略過")
+            Action next, Action skip, string skipLabel = "略過", string voiceText = null)
         {
             CloseModal(force: true);
             var previousImage = storyScreen != null ? storyArt.texture as Texture2D : null;
             CloseStoryBeat();
+            // AI voice-over keyed by the md5 of the raw (unformatted) beat text; silently absent when unvoiced.
+            AudioManager.VoiceForText(voiceText ?? text);
             storyScreen = Panel("Prologue", canvas, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero);
             var backing = storyScreen.GetComponent<Image>();
             backing.sprite = null;
@@ -508,6 +740,7 @@ namespace Wuxia
         {
             if (storyScreen == null)
                 return;
+            AudioManager.StopVoice();
             storyScreen.gameObject.SetActive(false);
             UnityEngine.Object.Destroy(storyScreen.gameObject);
             storyScreen = null;

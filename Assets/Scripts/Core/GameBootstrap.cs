@@ -401,7 +401,7 @@ namespace Wuxia
             string breakthrough = action.id switch
             {
                 "train" => state.TrainMartial(),
-                "explore" => state.TryBreakthrough("qiyu_cliff_cave", state.Story.insightChance + .01f * state.AttributeBonus("agi")),
+                "explore" => state.TryBreakthrough("qiyu_cliff_cave", state.Story.insightChance + state.AdventureBonus),
                 _ => ""
             };
             state.Apply(action.effect);

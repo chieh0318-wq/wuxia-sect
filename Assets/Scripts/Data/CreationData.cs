@@ -40,9 +40,11 @@ namespace Wuxia
         public CharacterModelSpec model;
         public SkillLine[] lines;
     }
+    [Serializable] internal sealed class AttributeInfo { public string id, name, desc; }
     [Serializable] internal sealed class CharacterCatalog
     {
-        public int attrBase = 3, attrMax = 10, attrPoints = 16;
+        public int attrBase = AttributeSystem.Base, attrMin = AttributeSystem.Min, attrMax = AttributeSystem.Max, attrPoints = 20;
+        public AttributeInfo[] attributes;
         public CharacterLook[] protagonistLooks;
         public NameSuggestions[] nameSuggestions;
         public CreationOption[] backgrounds;
@@ -51,11 +53,11 @@ namespace Wuxia
 
     [Serializable] internal sealed class TalentCatalog
     {
-        public int budget = 10, maxPicks = 4, rerollFree;
+        public int budget = 20, maxPicks = 8, rerollFree;
         public CreationOption[] talents;
     }
 
-    [Serializable] internal sealed class SkillCatalog { public int budget = 6; public CreationOption[] skills; public SkillCategory[] categories; }
+    [Serializable] internal sealed class SkillCatalog { public int budget = 20; public CreationOption[] skills; public SkillCategory[] categories; }
     [Serializable] internal sealed class StoryBeat { public string speaker, portrait, image, text; }
     [Serializable] internal sealed class StoryResponse : CreationOption { public StoryBeat[] beats; }
     [Serializable] internal sealed class StoryDisaster : CreationOption
@@ -77,7 +79,7 @@ namespace Wuxia
     {
         public string name = "顧行舟", gender = "男", title = "大師兄", lookId = "hero_m1", backgroundId, portrait;
         public int age = 20;
-        public int[] attrs = { 3, 3, 3, 3, 3 };
+        public int[] attrs = { 10, 10, 10, 10, 10, 10, 10 };
         public string[] talents = Array.Empty<string>(), skills = Array.Empty<string>();
         public bool noGraveInjury;
         public SkillLine[] lines;

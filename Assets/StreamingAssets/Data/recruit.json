@@ -71,7 +71,7 @@
     {
       "id": "spec_fugitive", "name": "蘇阿蠻", "gender": "女", "age": 14, "portrait": "spec_fugitive", "origin": "逃犯之女",
       "blurb": "衣衫襤褸，赤著腳，懷裡死死抱著一只布包。她的父親是折衝府逃兵，被官府判了死罪，她一路從潼關逃到這裡。",
-      "attrs": [3, 6, 4, 5, 3],
+      "attrs": [10, 13, 11, 10, 12, 10, 10],
       "aptitude": { "bone": 6, "insight": 7 },
       "talents": ["shenqing"],
       "personality": "devoted",
@@ -94,7 +94,7 @@
     {
       "id": "spec_monk", "name": "了塵", "gender": "男", "age": 17, "portrait": "spec_monk", "origin": "還俗少年僧",
       "blurb": "頭髮剛長出寸許，像一層青苔。他在少林外院掃了十年地，朝廷清查度牒，他沒有，便被勒令還俗。",
-      "attrs": [5, 4, 6, 4, 3],
+      "attrs": [12, 11, 13, 10, 11, 10, 10],
       "aptitude": { "bone": 8, "insight": 5 },
       "talents": ["tongpi", "yedu"],
       "personality": "honest",
@@ -116,7 +116,7 @@
     {
       "id": "spec_noble", "name": "韋青蘿", "gender": "女", "age": 18, "portrait": "spec_noble", "origin": "離家出走的世家子弟",
       "blurb": "錦衣沾滿泥點，髮簪換成了木釵。京兆韋氏的女兒，家裡要送她入宮應選，她在出城的前一夜跑了。",
-      "attrs": [3, 4, 3, 6, 6],
+      "attrs": [10, 11, 10, 10, 13, 13, 10],
       "aptitude": { "bone": 4, "insight": 8 },
       "talents": ["bowen", "mingmen"],
       "personality": "proud",

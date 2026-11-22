@@ -20,7 +20,7 @@
     { "id": "manual_weigong", "name": "《衛公兵法》殘卷", "type": "manual", "desc": "李衛公親授的兵法殘卷，兵陣之外，還錄著馬上長兵的用法。人人都想要的那只鐵匣，裝的就是它。", "target": "polearm", "capDelta": 1, "effectiveRankDelta": 0, "requirement": "奪回或取得鐵匣（flag treasure_recovered）", "chance": 1.0, "oneTime": true },
     { "id": "manual_qianjin", "name": "《千金方》手抄本", "type": "manual", "desc": "孫真人三十卷全本的手抄，頁邊密密麻麻寫滿歷代醫者的批注。", "target": "medicine", "capDelta": 1, "effectiveRankDelta": 0, "requirement": "以重金購得或救治終南山醫者後相贈", "chance": 1.0, "oneTime": true },
     { "id": "manual_sogdian_ledger", "name": "粟特商帳", "type": "manual", "desc": "一本記了三代人的駝隊帳簿，哪條路、哪個季節、哪樣貨最賺，一目了然。", "target": "commerce", "capDelta": 1, "effectiveRankDelta": 0, "requirement": "與粟特商團關係 50 以上", "chance": 1.0, "oneTime": true },
-    { "id": "manual_longmen", "name": "龍門拓片", "type": "manual", "desc": "伊闕石窟裡金剛力士像的拓片。細看筋肉走勢，竟與拳理暗合。", "target": "fist", "capDelta": 1, "effectiveRankDelta": 0, "requirement": "身在洛陽，悟性 6 以上", "chance": 0.5, "oneTime": true },
+    { "id": "manual_longmen", "name": "龍門拓片", "type": "manual", "desc": "伊闕石窟裡金剛力士像的拓片。細看筋肉走勢，竟與拳理暗合。", "target": "fist", "capDelta": 1, "effectiveRankDelta": 0, "requirement": "身在洛陽，悟性 13 以上", "chance": 0.5, "oneTime": true },
 
     { "id": "mentor_master_return", "name": "師父歸來", "type": "mentor", "desc": "某個大雪夜，山門外響起熟悉的咳嗽聲。師父只住了三天，三天裡每一句話都是劍理。", "target": "martial", "capDelta": 1, "effectiveRankDelta": 0, "requirement": "主線事件觸發；主角武學路線的保底一步", "chance": 1.0, "oneTime": true },
     { "id": "mentor_shaolin", "name": "少林首座指點", "type": "mentor", "desc": "少林戒律院首座看你打了一趟拳，只改了兩處：一處在腳跟，一處在心。", "target": "fist", "capDelta": 1, "effectiveRankDelta": 0, "requirement": "與少林寺關係 40 以上，親赴嵩山", "chance": 1.0, "oneTime": true },

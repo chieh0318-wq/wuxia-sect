@@ -12,25 +12,33 @@ namespace Wuxia
         {
             var close = ("關閉", (Action)(() => CloseModal()));
             ShowModal(name, new[] { title }, extra.HasValue ? new[] { extra.Value, close } : new[] { close });
-            Anchor(modalCard, new(.5f, .5f), new(.5f, .5f), new(-480, -344), new(480, 344));
+            Anchor(modalCard, new(.5f, .5f), new(.5f, .5f), new(-500, -390), new(500, 390));
             CharacterEquipment(portrait, gender, weapon);
-            var profile = CreationRow("人物", 110);
+            var profile = CreationRow("人物", 168);
             var rank = RankSystem.Martial(lines, weaponDelta: weaponDelta);
-            float multiplier = RankSystem.Multiplier(rank);
             var rankLabel = Label(profile, "武學  " + RankSystem.Format(rank, RankSystem.Martial(lines, true)), 28);
             rankLabel.color = Color.Lerp(RankSystem.Color(rank), Ink, .35f);
             Anchor(rankLabel.rectTransform, Vector2.up, Vector2.one, new(12, -39), new(-12, 0));
-            string[] names = { "武力", "身法", "根骨", "悟性", "魅力" };
-            for (int i = 0; i < names.Length && i < (attrs?.Length ?? 0); i++)
+            var values = AttributeSystem.Normalize(attrs);
+            for (int i = 0; i < AttributeSystem.Count; i++)
             {
-                var stat = Panel(names[i], profile, new(i / 5f, 0), new((i + 1) / 5f, 1),
-                    new(4, 0), new(-4, -41));
+                var stat = Panel(AttributeSystem.Names[i], profile, new(i / 7f, 1), new((i + 1) / 7f, 1),
+                    new(3, -114), new(-3, -44), false);
                 UiKit.Skin(stat.GetComponent<Image>(), "Wood");
-                var value = Label(stat, $"{names[i]}　{attrs[i]}\n實戰　{Mathf.RoundToInt(attrs[i] * multiplier)}",
-                    20, TextAnchor.MiddleCenter);
-                value.color = UiKit.WarmPaper;
-                Fill(value.rectTransform, 4);
+                var caption = Label(stat, AttributeSystem.Names[i], 18, TextAnchor.MiddleLeft);
+                caption.color = CardMuted;
+                Anchor(caption.rectTransform, Vector2.up, Vector2.one, new(10, -32), new(-4, -4));
+                var value = Label(stat, values[i].ToString(), 26, TextAnchor.MiddleRight);
+                value.color = values[i] > AttributeSystem.Base ? CardGold : values[i] < AttributeSystem.Base ? CardLow : CardText;
+                value.font = UiKit.Font("Numbers", font, value.text);
+                Anchor(value.rectTransform, Vector2.up, Vector2.one, new(10, -34), new(-10, -2));
+                CardBar(stat, 10, -44, -10, 6, values[i] / (float)AttributeSystem.Max,
+                    Color.Lerp(AttributeSystem.Tints[i], Color.white, .25f));
             }
+            var derived = AttributeSystem.Derive(values, lines, weaponDelta);
+            var summary = Label(profile, $"攻擊 {derived.Attack}　先手 {derived.Speed}　氣血 {derived.MaxHp}　內力 {derived.MaxQi}" +
+                $"　內功威力 {derived.QiPower}　閃避 {derived.Dodge:P0}　奇遇 {derived.Fortune:P0}", 20, TextAnchor.MiddleCenter);
+            Anchor(summary.rectTransform, Vector2.zero, Vector2.right, new(8, 4), new(-8, 46));
             SkillColumns(lines);
         }
 
@@ -73,9 +81,10 @@ namespace Wuxia
 
         internal static string Attributes(int[] attrs)
         {
-            if (attrs?.Length < 5 || attrs == null)
+            if (attrs == null || attrs.Length == 0)
                 return "";
-            return $"武力 {attrs[0]}　身法 {attrs[1]}　根骨 {attrs[2]}　悟性 {attrs[3]}　魅力 {attrs[4]}";
+            var values = AttributeSystem.Normalize(attrs);
+            return string.Join("　", values.Select((value, index) => $"{AttributeSystem.Names[index]} {value}"));
         }
     }
 }

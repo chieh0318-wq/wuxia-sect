@@ -36,12 +36,13 @@ namespace Wuxia
             Fill(rank.rectTransform, 2);
             Aptitude("根骨", candidate.aptitude?.bone ?? 0, 129);
             Aptitude("悟性", candidate.aptitude?.insight ?? 0, 167);
-            string[] attributes = { "武力", "身法", "根骨", "悟性", "魅力" };
-            for (int index = 0; index < Math.Min(attributes.Length, candidate.attrs?.Length ?? 0); index++)
+            var attributes = AttributeSystem.Normalize(candidate.attrs);
+            for (int index = 0; index < AttributeSystem.Count; index++)
             {
-                var cell = Label(card, $"{attributes[index]} {candidate.attrs[index]}", 19, TextAnchor.MiddleCenter);
-                Anchor(cell.rectTransform, new(index / 5f, 1), new((index + 1) / 5f, 1),
-                    new(8, -250), new(-8, -220));
+                var cell = Label(card, $"{AttributeSystem.Glyphs[index]} {attributes[index]}", 19, TextAnchor.MiddleCenter);
+                cell.color = attributes[index] >= 14 ? new Color(.55f, .30f, .10f) : Ink;
+                Anchor(cell.rectTransform, new(index / 7f, 1), new((index + 1) / 7f, 1),
+                    new(4, -250), new(-4, -220));
             }
             CardText($"戰鬥　{TopLines(true)}", 19, 20, 18, 255, 28);
             CardText($"生產　{TopLines(false)}", 19, 20, 18, 286, 28);

@@ -75,7 +75,7 @@ namespace Wuxia
                     hero.lines = hero.lines == null || hero.lines.Length == 0 ? state.Protagonist.lines
                         : RankSystem.Seed(hero.lines, null, null, "B");
                     var attrs = hero.attrs ?? Array.Empty<int>();
-                    hero.attrs = Enumerable.Range(0, 5).Select(index => index < attrs.Length ? attrs[index] : 3).ToArray();
+                    hero.attrs = AttributeSystem.Normalize(attrs);
                     hero.talents ??= Array.Empty<string>();
                     hero.skills ??= Array.Empty<string>();
                     hero.breakthroughs ??= Array.Empty<string>();

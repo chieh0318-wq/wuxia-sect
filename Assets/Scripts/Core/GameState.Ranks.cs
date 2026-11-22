@@ -41,8 +41,10 @@ namespace Wuxia
             var line = RankSystem.BestCombat(hero.lines);
             if (line == null)
                 return "";
-            float experience = Mathf.Max(.1f, 1 + Story.trainBonusPct / 100f) * ProductionMultiplier("teaching") * (1 + .05f * AttributeBonus("wit"));
-            TrainLine(line, experience * (1 + .05f * AttributeBonus("str")));
+            // 悟性 speeds study for everyone; 武力 adds a little to the protagonist's own martial study.
+            float experience = Mathf.Max(.1f, 1 + Story.trainBonusPct / 100f) * ProductionMultiplier("teaching") *
+                Mathf.Max(.5f, 1 + .05f * AttributeBonus("wit"));
+            TrainLine(line, experience * Mathf.Max(.5f, 1 + .02f * AttributeBonus("str")));
             foreach (var disciple in Disciples.Where(member => member.id != Story.delegateId))
                 TrainLine(RankSystem.BestCombat(disciple.lines), experience);
 
@@ -125,7 +127,8 @@ namespace Wuxia
         internal void RecoverInjuries()
         {
             int amount = Mathf.Max(1, Mathf.RoundToInt(ProductionMultiplier("medicine")));
-            Protagonist.injury = Mathf.Max(0, Protagonist.injury - amount - AttributeBonus("con") / 2);
+            // 根骨 governs how fast the protagonist's own wounds close.
+            Protagonist.injury = Mathf.Max(0, Protagonist.injury - Mathf.Max(1, amount + AttributeBonus("con") / 3));
             foreach (var member in Disciples)
                 member.injury = Mathf.Max(0, member.injury - amount);
         }

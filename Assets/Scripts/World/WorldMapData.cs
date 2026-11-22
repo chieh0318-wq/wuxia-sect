@@ -18,6 +18,8 @@ namespace Wuxia
         void SetFactionKnown(string id);
         /// <summary>Saved relation delta (prologue/story `relation` effects, -100..100) for a faction.</summary>
         int RelationShift(string id);
+        /// <summary>Rolls a roadside qi-yu (adventure) on arrival, driven by 幸運; returns a message or null.</summary>
+        string TravelFortune();
     }
 
     // GameState (Core/GameState.World.cs) is the save-backed IWorldMapHost.

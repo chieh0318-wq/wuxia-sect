@@ -20,7 +20,10 @@ namespace Wuxia
                 {
                     case "silver": Silver = Mathf.Max(0, Silver + value); break;
                     case "food": Food = Mathf.Max(0, Food + value); break;
-                    case "reputation": Reputation += value; break;
+                    // 魅力 widens reputation gains (never losses).
+                    case "reputation":
+                        Reputation += value > 0 ? Mathf.Max(1, Mathf.RoundToInt(value * (1 + .03f * AttributeBonus("cha")))) : value;
+                        break;
                     case "apMax": Story.apBonus += value; break;
                     case "recruitPoolSize": Story.recruitPoolSize += value; break;
                     case "recruitCostPct": Story.recruitCostPct += value; break;
@@ -33,11 +36,17 @@ namespace Wuxia
                             disciple.loyalty = Mathf.Clamp(disciple.loyalty + value, 0, 100);
                         break;
                     case "noGraveInjury": Protagonist.noGraveInjury = value > 0; break;
-                    case "str": Protagonist.attrs[0] += value; break;
-                    case "agi": Protagonist.attrs[1] += value; break;
-                    case "con": Protagonist.attrs[2] += value; break;
-                    case "wit": Protagonist.attrs[3] += value; break;
-                    case "cha": Protagonist.attrs[4] += value; break;
+                    case "str":
+                    case "agi":
+                    case "con":
+                    case "qi":
+                    case "wit":
+                    case "cha":
+                    case "luk":
+                        Protagonist.attrs = AttributeSystem.Normalize(Protagonist.attrs);
+                        Protagonist.attrs[AttributeSystem.Index(effect.key)] =
+                            Mathf.Clamp(Protagonist.attrs[AttributeSystem.Index(effect.key)] + value, 1, 30);
+                        break;
                     case "flag": SetValue(ref Story.flags, effect.@ref, value, false); break;
                     case "charRelation": SetValue(ref Story.characterRelations, CharacterId(effect.@ref), value, true); break;
                     case "relation": SetValue(ref Story.relations, effect.@ref, value, true); break;
@@ -82,6 +91,7 @@ namespace Wuxia
         {
             var copy = JsonUtility.FromJson<DiscipleData>(JsonUtility.ToJson(seed));
             copy.lines = RankSystem.Seed(copy.lines, copy.rank, copy.cap, "C");
+            copy.attrs = AttributeSystem.Normalize(copy.attrs);
             return copy;
         }
 

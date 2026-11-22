@@ -50,13 +50,21 @@ namespace Wuxia
             }
         }
 
-        internal int AttributeBonus(string id) => System.Math.Max(0, AttributeValue(id) - 3);
+        /// <summary>Signed distance of a protagonist attribute from the base 10 (negative when lowered).</summary>
+        internal int AttributeBonus(string id) => AttributeValue(id) - AttributeSystem.Base;
 
         private int AttributeValue(string id)
         {
-            int index = System.Array.IndexOf(new[] { "str", "agi", "con", "wit", "cha" }, id);
+            Protagonist.attrs = AttributeSystem.Normalize(Protagonist.attrs);
+            int index = AttributeSystem.Index(id);
             return index < 0 ? 0 : Protagonist.attrs[index];
         }
+
+        internal DerivedStats HeroStats => AttributeSystem.Derive(Protagonist.attrs, Protagonist.lines,
+            WeaponRankDelta(Protagonist.weapon));
+
+        /// <summary>Extra qi-yu (adventure) chance from 幸運, with a touch of 身法 for finding hidden paths.</summary>
+        internal float AdventureBonus => .012f * AttributeBonus("luk") + .003f * AttributeBonus("agi");
 
         internal int BuildingLevel(string id) => Buildings != null && Buildings.Any(building => building?.id == id)
             ? (Story.buildingLevels.FirstOrDefault(entry => entry.id == id)?.value ?? 1) : 0;

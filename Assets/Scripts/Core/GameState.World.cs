@@ -61,6 +61,26 @@ namespace Wuxia
         public int RelationShift(string id) =>
             (Story.relations ?? Array.Empty<StoryValue>()).FirstOrDefault(entry => entry.id == id)?.value ?? 0;
 
+        public string TravelFortune()
+        {
+            float chance = Mathf.Clamp(.06f + 1.5f * AdventureBonus, .01f, .5f);
+            if (UnityEngine.Random.value >= chance)
+                return null;
+            switch (UnityEngine.Random.Range(0, 3))
+            {
+                case 0:
+                    int silver = UnityEngine.Random.Range(10, 31);
+                    ApplyEffects(new[] { new GameEffect { key = "silver", value = silver } });
+                    return $"奇遇：路旁古廟拾得前人遺下的錢囊，得銀兩 {silver}。";
+                case 1:
+                    ApplyEffects(new[] { new GameEffect { key = "reputation", value = 3 } });
+                    return "奇遇：途中仗義解了商隊之圍，門派聲望上升。";
+                default:
+                    ApplyEffects(new[] { new GameEffect { key = "food", value = 20 } });
+                    return "奇遇：山民感念相助，贈糧食 20。";
+            }
+        }
+
         public void SetFactionKnown(string id)
         {
             if (string.IsNullOrEmpty(id) || IsFactionKnown(id))

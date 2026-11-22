@@ -331,37 +331,47 @@ namespace Wuxia
 
         private void ShowCommands()
         {
-            var commands = new List<(string, System.Action)>();
+            var commands = new List<(string, string, System.Action, bool)>();
             foreach (string type in new[] { "build", "recruit" })
             {
                 var action = state.Data.Actions.FirstOrDefault(entry => entry.type == type);
                 if (action != null)
-                    commands.Add((ActionLabel(action), CanUseAp(action) ? () => RunAction(action) : null));
+                    commands.Add((ActionLabel(action), action.summary, CanUseAp(action) ? () => RunAction(action) : null, false));
             }
-            commands.Add(("查看門派", ShowSect));
-            commands.Add(("主角", ShowProtagonist));
-            var exploration = state.Data.Actions.FirstOrDefault(entry => entry.id == "explore");
-            if (exploration != null)
-                commands.Add((ActionLabel(exploration), CanUseAp(exploration) ? () => RunAction(exploration) : null));
+            bool library = state.BuildingLevel("library") > 0;
+            commands.Add(("藏經閣科技樹", library
+                ? $"四脈十六門功法：已研習 {state.TechCount}／{GameState.TechTree.Length}，點擊開啟科技樹研習"
+                : "須先興建藏經閣", library ? ShowTechTree : null, false));
+            foreach (string id in new[] { "secret_realm", "explore" })
+            {
+                var action = state.Data.Actions.FirstOrDefault(entry => entry.id == id);
+                if (action != null)
+                    commands.Add((ActionLabel(action), action.summary, CanUseAp(action) ? () => RunAction(action) : null, false));
+            }
+            commands.Add(("查看門派", $"{HousingInfo()}　轄下據點 {state.Story.heldNodes?.Length ?? 0} 處", ShowSect, false));
+            commands.Add(("主角", $"{state.Protagonist.name}：武學、屬性與六件裝備（裝備庫 {state.Story.armoury?.Length ?? 0} 件）",
+                ShowProtagonist, false));
             ui.ShowCommands("指令", commands);
         }
 
         private void ShowBuilding(BuildingData building)
         {
             openBuilding = building;
-            var actions = new List<(string, System.Action)>();
+            var actions = new List<(string, string, System.Action)>();
             foreach (string id in building.actions)
             {
                 var action = state.Data.Actions.FirstOrDefault(entry => entry.id == id);
                 if (action != null)
-                    actions.Add((ActionLabel(action), CanUseAp(action) ? () => RunAction(action) : null));
+                    actions.Add((ActionLabel(action), action.summary, CanUseAp(action) ? () => RunAction(action) : null));
             }
+            if (building.id == "library")
+                actions.Add(("開啟門派科技樹", $"已研習 {state.TechCount}／{GameState.TechTree.Length}：劍宗・外功・內功輕功・百工", ShowTechTree));
             int level = state.BuildingLevel(building.id);
             if (building.id == "council" && level < 3)
             {
                 int silver = state.BuildSilver(18 * level);
                 bool mayUpgrade = state.ActionPoints >= 1 && state.Silver >= silver;
-                actions.Add(($"擴建　行動力 1／銀 {silver}", mayUpgrade ? () =>
+                actions.Add(($"擴建　行動力 1／銀 {silver}", $"升為 {level + 1} 級：每月行動力上限再 +1", mayUpgrade ? () =>
                 {
                     state.UpgradeCouncil();
                     ui.Refresh(state);
@@ -398,17 +408,42 @@ namespace Wuxia
             if (!SpendActionAp(action))
                 return;
             state.Pay(action.cost);
+            if (action.id == "secret_realm")
+            {
+                state.Apply(action.effect);
+                ui.Refresh(state);
+                ShowCommands();
+                EnterSecretRealm("循著江湖傳聞");
+                return;
+            }
+            float rumor = action.id == "explore" ? state.ConsumeRumors() : 0;
             string breakthrough = action.id switch
             {
                 "train" => state.TrainMartial(),
-                "explore" => state.TryBreakthrough("qiyu_cliff_cave", state.Story.insightChance + state.AdventureBonus),
+                "explore" => state.TryBreakthrough("qiyu_cliff_cave", state.Story.insightChance + state.AdventureBonus + rumor),
+                "feast" => state.Feast(),
+                "forge_gear" => state.ForgeGear(),
+                "decree" => state.Decree(),
+                "lodge" => state.Lodge(),
                 _ => ""
             };
+            bool realm = action.id == "explore" && UnityEngine.Random.value < state.RealmChance + rumor;
+            if (action.id == "gather_rumors")
+                realm = state.GatherRumors();
             state.Apply(action.effect);
             if (action.effect.silver > 0)
                 AudioManager.Play("coin");
             if (action.id == "medicine")
+            {
                 state.RecoverInjuries();
+                if (state.HasTech("craft1"))
+                {
+                    state.RecoverInjuries();
+                    state.Apply(new Yield { reputation = 1 });
+                }
+            }
+            if (action.id == "forge_gear")
+                AudioManager.Play("complete");
             if (action.id == "council" && state.BuildingLevel("council") >= 2)
                 state.ApplyEffects(new[] { new GameEffect { key = "flag", @ref = "sect_records", value = 1 } });
             ui.Refresh(state);
@@ -417,8 +452,15 @@ namespace Wuxia
                 ShowBuilding(openBuilding);
             string message = $"{action.name}完成。{Changes(action.effect)}";
             if (action.id == "lodge")
-                message = $"已安頓弟子。{HousingInfo()}　{Changes(action.effect)}".TrimEnd();
-            ui.Message(string.IsNullOrEmpty(breakthrough) ? message : breakthrough);
+                message = $"{breakthrough}{HousingInfo()}".TrimEnd();
+            else if (action.id == "gather_rumors")
+                message = $"茶寮裡打聽到不少消息，下次奇遇機率 +25%（目前 +{state.Story.rumorBonus:P0}）。{Changes(action.effect)}";
+            else if (!string.IsNullOrEmpty(breakthrough))
+                message = $"{breakthrough}　{Changes(action.effect)}".TrimEnd();
+            ui.Message(message);
+            if (realm)
+                OfferSecretRealm(action.id == "gather_rumors" ? "茶客壓低聲音說起一處無人敢去的秘境，連路徑都畫給了你。"
+                    : "山道盡頭的藤蔓後，竟藏著一道幽深的石門——是一處江湖秘境的入口！");
         }
 
         private void BeginBuild(ActionData action)
@@ -431,25 +473,63 @@ namespace Wuxia
 
             choosingBuilding = true;
             buildAction = action;
-            buildChoice = null;
-            world.HighlightPlots(false);
+            // M6: pre-select the first available building and light the empty plots immediately.
+            buildChoice = state.Data.Buildings.FirstOrDefault(state.IsAvailable);
             ui.CloseBuilding();
             ui.CloseDialogue();
-            ui.Message("選一種建築，再選院中的空地。");
+            string aid = TutorialBuildAid();
+            world.HighlightPlots(true);
+            ShowBuildMenu();
+            ui.Message(aid + (buildChoice == null ? "沒有可建的屋舍。" : $"已選【{buildChoice.name}】，點擊亮綠色空地動工"));
+        }
 
-            var options = new List<(string, System.Action)> { ("返回指令", CancelBuild) };
+        private Cost BuildTotal(BuildingData building) => new Cost
+        {
+            silver = state.BuildSilver(building.cost.silver + buildAction.cost.silver),
+            food = building.cost.food + buildAction.cost.food
+        };
+
+        /// <summary>Build menu: every available building as a card (cost, purpose / yield), the current pick marked 【已選】.</summary>
+        private void ShowBuildMenu()
+        {
+            var options = new List<(string, string, System.Action, bool)>
+            {
+                ("返回指令", "取消建造，回到門派事務", CancelBuild, false)
+            };
             foreach (var building in state.Data.Buildings.Where(state.IsAvailable))
             {
-                string cost = CostText(state.BuildSilver(building.cost.silver + action.cost.silver),
-                    building.cost.food + action.cost.food);
-                options.Add(($"{building.name}　{cost}", () =>
+                var total = BuildTotal(building);
+                string cost = $"銀 {total.silver}" + (total.food > 0 ? $"・糧 {total.food}" : "") + $"・行動力 {buildAction.apCost}";
+                bool picked = building == buildChoice;
+                options.Add(($"{(picked ? "【已選】" : "")}{building.name}　{cost}", building.summary ?? building.description, () =>
                 {
                     buildChoice = building;
+                    string aid = TutorialBuildAid();
                     world.HighlightPlots(true);
-                    ui.Message($"準備建造{building.name}。請選擇綠色空地。");
-                }));
+                    ShowBuildMenu();
+                    ui.Message($"{aid}已選【{building.name}】，點擊亮綠色空地動工");
+                }, picked));
             }
             ui.ShowCommands("建造", options);
+        }
+
+        /// <summary>
+        /// Tutorial softlock guard: while 「擴建院落」 (build_any) is pending, top AP up to the build cost and silver /
+        /// food up to the chosen building's price.
+        /// </summary>
+        private string TutorialBuildAid()
+        {
+            if (tutorial?.CanFund("build_any") != true || buildAction == null)
+                return "";
+            int ap = Mathf.Max(0, buildAction.apCost - state.ActionPoints);
+            var total = buildChoice == null ? new Cost() : BuildTotal(buildChoice);
+            var grant = new Yield { silver = Mathf.Max(0, total.silver - state.Silver), food = Mathf.Max(0, total.food - state.Food) };
+            if (ap == 0 && grant.silver == 0 && grant.food == 0)
+                return "";
+            state.GrantAp(ap);
+            state.Apply(grant);
+            ui.Refresh(state);
+            return "【引導補助】門派撥付開山營造銀兩與行動力　";
         }
 
         private void PlaceBuilding(int index)
@@ -465,12 +545,8 @@ namespace Wuxia
                 return;
             }
 
-            var total = new Cost
-            {
-                silver = state.BuildSilver(buildChoice.cost.silver + buildAction.cost.silver),
-                food = buildChoice.cost.food + buildAction.cost.food
-            };
-            string grant = tutorial?.Fund("build_any", total) ?? "";
+            string grant = TutorialBuildAid();
+            var total = BuildTotal(buildChoice);
             if (!state.CanPay(total))
             {
                 ui.Message("銀兩或糧食不足。");
@@ -543,8 +619,10 @@ namespace Wuxia
         private void ShowProtagonist()
         {
             var hero = state.Protagonist;
+            string storyWeapon = RankSystem.Catalog.breakthroughs?.FirstOrDefault(
+                entry => entry.id == hero.weapon && entry.type == "weapon")?.name ?? hero.weapon;
             ui.ShowCharacter(hero.name, hero.title, hero.gender, PortraitService.IdOrDefault(hero.portrait, hero.lookId), hero.attrs, hero.lines,
-                hero.weapon, state.WeaponRankDelta(hero.weapon));
+                hero.weapon, state.WeaponRankDelta(hero.weapon), gear: state.GearLabels(storyWeapon), stats: state.HeroStats);
         }
 
         private void ShowSect()
@@ -559,8 +637,7 @@ namespace Wuxia
 
         private string HousingInfo()
         {
-            int rooms = state.Buildings.Count(b => b != null && b.actions.Contains("lodge"));
-            return $"床位 {rooms * 4}　弟子 {state.Disciples.Count}";
+            return $"床位 {state.Beds}　弟子 {state.Disciples.Count}";
         }
 
         private void EndMonth()

@@ -178,7 +178,7 @@ namespace Wuxia
                 return Recruited;
             if (accepted >= Recruitment.maxAcceptPerVisit)
                 return "這一趟收徒名額已滿";
-            int beds = state.Buildings.Count(building => building != null && building.actions.Contains("lodge")) * 4;
+            int beds = state.Beds;
             if (beds > 0 && state.Disciples.Count >= beds && tutorial?.CanFund("recruit") != true)
                 return "床位已滿";
             if (!state.CanPay(recruitmentAction.cost, RecruitPrice(candidate)) && tutorial?.CanFund("recruit") != true)

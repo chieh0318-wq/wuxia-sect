@@ -8,12 +8,13 @@ namespace Wuxia
     public sealed partial class SectUI
     {
         internal void ShowCharacter(string name, string title, string gender, string portrait, int[] attrs,
-            SkillLine[] lines, string weapon, int weaponDelta, (string, Action)? extra = null)
+            SkillLine[] lines, string weapon, int weaponDelta, (string, Action)? extra = null,
+            string[] gear = null, DerivedStats? stats = null)
         {
             var close = ("關閉", (Action)(() => CloseModal()));
             ShowModal(name, new[] { title }, extra.HasValue ? new[] { extra.Value, close } : new[] { close });
             Anchor(modalCard, new(.5f, .5f), new(.5f, .5f), new(-500, -390), new(500, 390));
-            CharacterEquipment(portrait, gender, weapon);
+            CharacterEquipment(portrait, gender, weapon, gear);
             var profile = CreationRow("人物", 168);
             var rank = RankSystem.Martial(lines, weaponDelta: weaponDelta);
             var rankLabel = Label(profile, "武學  " + RankSystem.Format(rank, RankSystem.Martial(lines, true)), 28);
@@ -35,7 +36,7 @@ namespace Wuxia
                 CardBar(stat, 10, -44, -10, 6, values[i] / (float)AttributeSystem.Max,
                     Color.Lerp(AttributeSystem.Tints[i], Color.white, .25f));
             }
-            var derived = AttributeSystem.Derive(values, lines, weaponDelta);
+            var derived = stats ?? AttributeSystem.Derive(values, lines, weaponDelta);
             var summary = Label(profile, $"攻擊 {derived.Attack}　先手 {derived.Speed}　氣血 {derived.MaxHp}　內力 {derived.MaxQi}" +
                 $"　內功威力 {derived.QiPower}　閃避 {derived.Dodge:P0}　奇遇 {derived.Fortune:P0}", 20, TextAnchor.MiddleCenter);
             Anchor(summary.rectTransform, Vector2.zero, Vector2.right, new(8, 4), new(-8, 46));

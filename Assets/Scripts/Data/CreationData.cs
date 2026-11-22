@@ -87,6 +87,30 @@ namespace Wuxia
         public string weapon;
         public string[] breakthroughs = Array.Empty<string>();
         public CharacterLook look;
+        /// <summary>Worn gear, at most one item per slot (武器 護腕 飾品 冠帽 衣袍 履靴).</summary>
+        public GearItem[] gear = Array.Empty<GearItem>();
+    }
+
+    /// <summary>A forged or looted piece of wuxia gear with flat combat bonuses.</summary>
+    [Serializable] public sealed class GearItem
+    {
+        public string slot, name, grade;
+        public int attack, speed, hp, qi;
+        public float dodge;
+        internal int Power => attack * 2 + speed * 2 + hp / 4 + qi / 4 + Mathf.RoundToInt(dodge * 200);
+        internal string Stats
+        {
+            get
+            {
+                var parts = new System.Collections.Generic.List<string>();
+                if (attack != 0) parts.Add($"攻擊 +{attack}");
+                if (speed != 0) parts.Add($"先手 +{speed}");
+                if (hp != 0) parts.Add($"氣血 +{hp}");
+                if (qi != 0) parts.Add($"內力 +{qi}");
+                if (dodge > 0) parts.Add($"閃避 +{dodge:P0}");
+                return string.Join("・", parts);
+            }
+        }
     }
 
     [Serializable] public sealed class StoryProgress
@@ -103,6 +127,11 @@ namespace Wuxia
         public int questMonth;
         public StoryValue[] usedPortraits = Array.Empty<StoryValue>();
         public StoryValue[] relations = Array.Empty<StoryValue>(), flags = Array.Empty<StoryValue>();
+        /// <summary>M6: gear kept in the sect armoury, strongholds taken by the sect, and the next qi-yu boost.</summary>
+        public GearItem[] armoury = Array.Empty<GearItem>();
+        public string[] heldNodes = Array.Empty<string>();
+        public float rumorBonus;
+        public int lodgeMonth, realmsCleared;
     }
 
     [Serializable] public sealed class StoryValue { public string id; public int value; }

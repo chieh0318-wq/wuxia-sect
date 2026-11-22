@@ -55,7 +55,9 @@ namespace Wuxia
                     case "cap":
                         var line = effect.@ref == "martial" ? RankSystem.BestCombat(Protagonist.lines)
                             : Array.Find(Protagonist.lines, entry => entry.id == effect.@ref);
-                        RankSystem.Shift(line, value, effect.key == "cap");
+                        // Additive: rank effects carry the cap up with them, cap effects only widen potential.
+                        if (effect.key == "cap") RankSystem.Raise(line, 0, value);
+                        else RankSystem.Raise(line, value, 0);
                         break;
                     case "followers":
                         var member = Disciples.Find(d => d.id == effect.@ref);
@@ -90,7 +92,7 @@ namespace Wuxia
         private static DiscipleData CloneDisciple(DiscipleData seed)
         {
             var copy = JsonUtility.FromJson<DiscipleData>(JsonUtility.ToJson(seed));
-            copy.lines = RankSystem.Seed(copy.lines, copy.rank, copy.cap, "C");
+            copy.lines = RankSystem.Seed(copy.lines, copy.rank, copy.cap, RankSystem.BaseCap, RankSystem.BaseRank);
             copy.attrs = AttributeSystem.Normalize(copy.attrs);
             return copy;
         }

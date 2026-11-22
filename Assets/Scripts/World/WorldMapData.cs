@@ -20,6 +20,13 @@ namespace Wuxia
         int RelationShift(string id);
         /// <summary>Rolls a roadside qi-yu (adventure) on arrival, driven by 幸運; returns a message or null.</summary>
         string TravelFortune();
+        /// <summary>M6: road AP after tech discounts, sect-held strongholds and 率眾攻討.</summary>
+        int TravelCost(int ap);
+        bool HoldsNode(string id);
+        string SectLabel { get; }
+        int SectPower { get; }
+        float AssaultChance(int garrison, float guard);
+        string Assault(string nodeId, string factionId, int garrison, float guard);
     }
 
     // GameState (Core/GameState.World.cs) is the save-backed IWorldMapHost.
@@ -27,13 +34,15 @@ namespace Wuxia
     [Serializable] internal sealed class MapBounds
     {
         public float lonMin = 70, lonMax = 136, latMin = 15, latMax = 55;
-        public Vector2 Uv(MapNode node) => new(
+        public Vector2 Uv(MapNode node) => node.x >= 0 && node.y >= 0 ? new Vector2(node.x, 1 - node.y) : new Vector2(
             Mathf.InverseLerp(lonMin,lonMax,node.lon), Mathf.InverseLerp(latMin,latMax,node.lat));
     }
     [Serializable] internal sealed class MapNode
     {
         public string id, name, type, region, desc;
         public float lon, lat;
+        /// <summary>M6 spread layout on the painting: normalized 0..1, y measured from the top (-1 = use lon/lat).</summary>
+        public float x = -1, y = -1;
         public string Label => string.IsNullOrWhiteSpace(name) ? id : name;
     }
     [Serializable] internal sealed class MapRoad
@@ -79,6 +88,8 @@ namespace Wuxia
         public string RelationWith(int shift) => RelationLabel(StanceWith(shift));
         private static string RelationLabel(string value) => value == "friendly" ? "友好" : value == "hostile" ? "敵對" : "中立";
         public bool Court => special || type == "court" || type == "military";
+        /// <summary>草莽勢力: bandit / outlaw holds, weakly garrisoned and open to 率眾攻討.</summary>
+        public bool Outlaw => type == "bandit" || type == "outlaw";
         public string TypeName => type switch
         {
             "sect" => "門派", "court" => "朝廷", "military" => "軍鎮", "clan" => "世家",

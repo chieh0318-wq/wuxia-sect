@@ -23,5 +23,13 @@
 - Attributes (M5) are 7 values in the order `str agi con qi wit cha luk` (武力 身法 根骨 內力 悟性 魅力 幸運). `characters.json` sets `attrBase` 10, `attrMin` 5, `attrMax` 20 and `attrPoints` 20; lowering an attribute below the base refunds points. Legacy 5-value arrays (`str agi con wit cha`, base 3) are lifted by +7 and padded with 10 for `qi`/`luk` on load. Effects may use the keys `qi` and `luk`.
 - `talents.json` uses `budget` 20 / `maxPicks` 8; `skills.json` uses `budget` 20 and each art's `capBonus` raises that line's potential cap (cost-3 arts lift a B line to S).
 - `voice_map.json` maps `hash` (first 12 hex chars of the UTF-8 md5 of the raw, unformatted beat `text`) to a clip id in `Resources/Audio/Voice/`.
-- Rank order is C, B, A, A+, S, S+, SS. Martial rank is the highest combat line and gains one tier if the second-highest is at least A and within one tier. Apply the same calculation to line caps. A weapon adds its effective rank delta to the result without raising the cap. Production uses the best eligible character’s line multiplier.
+- Rank order (M6) is E, D, C, B, A, A+, S, SS, SSS (legacy `S+` is read as `SS`). Martial rank is the highest combat line and gains one tier if the second-highest is at least A and within one tier. Apply the same calculation to line caps. A weapon adds its effective rank delta to the result without raising the cap. Production uses the best eligible character’s line multiplier.
 - Month-end saves `save_slot1.json` under Unity’s persistent data path. Version 1 holds protagonist, choices, world start node, relations, flags, council levels, acting head, disciples, building slot IDs, AP, date, and resources.
+
+## M6
+
+- `buildings.json` and `actions.json` entries may carry `summary`: a one-line purpose / yield shown under the card title in the command, build and building panels.
+- New generic actions: `feast` (kitchen), `forge_gear` (smithy), `gather_rumors` (teahouse), `decree` (council), `secret_realm` (command menu: three-floor qi-yu dungeon). `lodge` grants loyalty +2 / injury -1 once per month.
+- Creation base tiers: the sword line starts C / B, every other line D / C. A creation skill raises both rank and cap of its line by its point cost (1-3); talent / background `rank`/`lineRank` raise the rank (carrying the cap), `cap` raises the cap.
+- `worldmap.json` nodes may carry `x`, `y` (0-1, y from the top) which override `lon`/`lat` placement; `tools/m6_map_layout.py` regenerates them and verifies every pair is at least 0.075 apart and every node has a controller. Faction `type` `bandit` marks outlaw strongholds (garrison 80-160, open to 率眾攻討).
+- Save: `protagonist.gear` (worn items, one per slot), `story.armoury`, `story.heldNodes`, `story.rumorBonus`, `story.lodgeMonth`, `story.realmsCleared`; researched tech nodes are `story.flags` entries `tech_<id>`.

@@ -7,7 +7,7 @@ namespace Wuxia
 {
     public sealed partial class SectUI
     {
-        private void CharacterEquipment(string portrait, string gender, string weapon)
+        private void CharacterEquipment(string portrait, string gender, string weapon, string[] gear = null)
         {
             var row = CreationRow("裝備", 356);
             var frame = Rect("肖像裱框", row);
@@ -27,12 +27,13 @@ namespace Wuxia
 
             string weaponName = RankSystem.Catalog.breakthroughs?.FirstOrDefault(
                 entry => entry.id == weapon && entry.type == "weapon")?.name ?? weapon;
-            Slot("武器", weaponName, false, 0);
-            Slot("護腕", null, false, 1);
-            Slot("飾品", null, false, 2);
-            Slot("冠帽", null, true, 0);
-            Slot("衣袍", null, true, 1);
-            Slot("履靴", null, true, 2);
+            string Worn(int index) => gear != null && index < gear.Length ? gear[index] : null;
+            Slot("武器", Worn(0) ?? weaponName, false, 0);
+            Slot("護腕", Worn(1), false, 1);
+            Slot("飾品", Worn(2), false, 2);
+            Slot("冠帽", Worn(3), true, 0);
+            Slot("衣袍", Worn(4), true, 1);
+            Slot("履靴", Worn(5), true, 2);
 
             void Slot(string label, string item, bool right, int index)
             {
@@ -47,8 +48,9 @@ namespace Wuxia
                 heading.color = new Color(.96f, .87f, .69f);
                 Anchor(heading.rectTransform, Vector2.up, Vector2.one, new(8, -44), new(-8, -9));
                 var value = Label(slot, string.IsNullOrEmpty(item) ? "未裝備" : item, 21, TextAnchor.MiddleCenter);
-                value.color = new Color(.86f, .76f, .61f);
-                Anchor(value.rectTransform, Vector2.zero, Vector2.right, new(8, 11), new(-8, 55));
+                value.color = string.IsNullOrEmpty(item) ? new Color(.86f, .76f, .61f) : new Color(.99f, .86f, .52f);
+                value.resizeTextMinSize = 12;
+                Anchor(value.rectTransform, Vector2.zero, Vector2.right, new(8, 6), new(-8, 60));
             }
         }
 

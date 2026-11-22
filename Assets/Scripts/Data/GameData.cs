@@ -11,7 +11,7 @@ namespace Wuxia
     [Serializable] public class Yield { public int silver, food, reputation; }
     [Serializable] public class BuildingData
     {
-        public string id, name, description, color;
+        public string id, name, description, color, summary;
         public float[] size;
         public Cost cost;
         public int upkeep;
@@ -34,7 +34,7 @@ namespace Wuxia
 
     [Serializable] public class ActionData
     {
-        public string id, name, description, type;
+        public string id, name, description, type, summary;
         public int apCost;
         public Cost cost;
         public Yield effect;

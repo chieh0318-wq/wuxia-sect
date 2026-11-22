@@ -1,12 +1,38 @@
 {
   "actions": [
     {
-      "id":"explore","name":"山道巡訪","description":"沿山道巡查，留意鄉里與山門外的動靜。",
-      "type":"generic","apCost":1,"cost":{"silver":0,"food":0},"effect":{"silver":0,"food":0,"reputation":0}
+      "id": "explore",
+      "name": "山道巡訪",
+      "description": "沿山道巡查，留意鄉里與山門外的動靜。",
+      "type": "generic",
+      "apCost": 1,
+      "cost": {
+        "silver": 0,
+        "food": 0
+      },
+      "effect": {
+        "silver": 0,
+        "food": 0,
+        "reputation": 0
+      },
+      "summary": "巡查山道：可能觸發武學奇遇，或發現【江湖秘境】入口（幸運越高越易遇上）"
     },
     {
-      "id":"talk","name":"門中問候","description":"聽弟子說說近況。",
-      "type":"generic","apCost":0,"cost":{"silver":0,"food":0},"effect":{"silver":0,"food":0,"reputation":0}
+      "id": "talk",
+      "name": "門中問候",
+      "description": "聽弟子說說近況。",
+      "type": "generic",
+      "apCost": 0,
+      "cost": {
+        "silver": 0,
+        "food": 0
+      },
+      "effect": {
+        "silver": 0,
+        "food": 0,
+        "reputation": 0
+      },
+      "summary": "聽弟子說說近況"
     },
     {
       "id": "build",
@@ -22,7 +48,8 @@
         "silver": 0,
         "food": 0,
         "reputation": 0
-      }
+      },
+      "summary": "挑選屋舍圖樣，於院中亮綠色空地動工；新屋舍帶來每月產出與新指令"
     },
     {
       "id": "recruit",
@@ -38,7 +65,8 @@
         "silver": 0,
         "food": 0,
         "reputation": 0
-      }
+      },
+      "summary": "延請有意入門者拜師，擴充門下弟子（束脩另計）"
     },
     {
       "id": "council",
@@ -54,7 +82,8 @@
         "silver": 0,
         "food": 0,
         "reputation": 1
-      }
+      },
+      "summary": "聲望 +1；議事堂二級後整理門派紀錄"
     },
     {
       "id": "train",
@@ -70,7 +99,8 @@
         "silver": 0,
         "food": 0,
         "reputation": 2
-      }
+      },
+      "summary": "主角與弟子最強武學修習進度提升，聲望 +2"
     },
     {
       "id": "study",
@@ -86,7 +116,8 @@
         "silver": 0,
         "food": 0,
         "reputation": 1
-      }
+      },
+      "summary": "抄錄拳譜、參詳前輩手記，聲望 +1"
     },
     {
       "id": "lodge",
@@ -102,7 +133,8 @@
         "silver": 0,
         "food": 0,
         "reputation": 0
-      }
+      },
+      "summary": "清點床位；每月一次讓全門弟子忠誠 +2、傷勢 −1"
     },
     {
       "id": "medicine",
@@ -118,6 +150,92 @@
         "silver": 0,
         "food": 0,
         "reputation": 2
+      },
+      "summary": "全門療傷加速，聲望 +2"
+    },
+    {
+      "id": "feast",
+      "name": "開伙犒賞",
+      "description": "殺雞宰羊、大鍋燉肉，犒賞連月辛勞的同門。",
+      "summary": "全體弟子忠誠 +6、主角與弟子傷勢恢復、聲望 +1",
+      "type": "generic",
+      "apCost": 1,
+      "cost": {
+        "silver": 0,
+        "food": 4
+      },
+      "effect": {
+        "silver": 0,
+        "food": 0,
+        "reputation": 1
+      }
+    },
+    {
+      "id": "forge_gear",
+      "name": "鍛造兵甲",
+      "description": "開爐鍛打，為主角打造一件兵器或護具。",
+      "summary": "隨機打造武器／護腕／飾品／冠帽／衣袍／履靴，自動裝備或存入門派裝備庫",
+      "type": "generic",
+      "apCost": 1,
+      "cost": {
+        "silver": 8,
+        "food": 0
+      },
+      "effect": {
+        "silver": 0,
+        "food": 0,
+        "reputation": 0
+      }
+    },
+    {
+      "id": "gather_rumors",
+      "name": "江湖聽風",
+      "description": "在茶寮裡請行旅喝碗茶，打聽各路消息。",
+      "summary": "聲望 +2、下次奇遇機率 +25%，或直接發現一處【江湖秘境】入口",
+      "type": "generic",
+      "apCost": 1,
+      "cost": {
+        "silver": 3,
+        "food": 0
+      },
+      "effect": {
+        "silver": 0,
+        "food": 0,
+        "reputation": 2
+      }
+    },
+    {
+      "id": "secret_realm",
+      "name": "秘境探尋",
+      "description": "循著江湖傳聞，深入人跡罕至的秘境探寶。",
+      "summary": "三層奇遇副本：以七項屬性闖關，奪取神兵護具、武學精進與銀兩聲望",
+      "type": "generic",
+      "apCost": 2,
+      "cost": {
+        "silver": 0,
+        "food": 2
+      },
+      "effect": {
+        "silver": 0,
+        "food": 0,
+        "reputation": 0
+      }
+    },
+    {
+      "id": "decree",
+      "name": "門派政令",
+      "description": "頒布門規、分派職守，整肅門風。",
+      "summary": "全門忠誠 +3、聲望 +1",
+      "type": "generic",
+      "apCost": 1,
+      "cost": {
+        "silver": 5,
+        "food": 0
+      },
+      "effect": {
+        "silver": 0,
+        "food": 0,
+        "reputation": 1
       }
     }
   ]

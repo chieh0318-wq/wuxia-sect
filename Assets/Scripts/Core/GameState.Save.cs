@@ -73,12 +73,13 @@ namespace Wuxia
                     // Tolerate saves with missing/partial fields: JsonUtility leaves absent arrays empty.
                     var hero = snapshot.protagonist;
                     hero.lines = hero.lines == null || hero.lines.Length == 0 ? state.Protagonist.lines
-                        : RankSystem.Seed(hero.lines, null, null, "B");
+                        : RankSystem.Seed(hero.lines, null, null, RankSystem.BaseCap, RankSystem.BaseRank);
                     var attrs = hero.attrs ?? Array.Empty<int>();
                     hero.attrs = AttributeSystem.Normalize(attrs);
                     hero.talents ??= Array.Empty<string>();
                     hero.skills ??= Array.Empty<string>();
                     hero.breakthroughs ??= Array.Empty<string>();
+                    hero.gear ??= Array.Empty<GearItem>();
                     state.Protagonist = hero;
                 }
                 state.Story = snapshot.story ?? new StoryProgress();
@@ -89,6 +90,8 @@ namespace Wuxia
                 state.Story.characterRelations ??= Array.Empty<StoryValue>();
                 state.Story.questProgress ??= Array.Empty<QuestProgress>();
                 state.Story.queuedQuests ??= Array.Empty<QueuedQuest>();
+                state.Story.armoury ??= Array.Empty<GearItem>();
+                state.Story.heldNodes ??= Array.Empty<string>();
                 for (int index = 0; index < state.Buildings.Length; index++)
                 {
                     string id = index < snapshot.buildings.Length ? snapshot.buildings[index] : "";

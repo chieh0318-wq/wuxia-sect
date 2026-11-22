@@ -21,7 +21,7 @@ namespace Wuxia
         private string cue;
         private float duck = 1, startedAt;
         private AudioClip[] library;
-        private Dictionary<string, string> voiceMap;
+        private Dictionary<string, VoiceEntry> voiceMap;
 
         /// <summary>Tracks that suit each scene cue; the playlist rotates through them instead of looping one cue.</summary>
         private static readonly Dictionary<string, string[]> Playlists = new()
@@ -171,19 +171,21 @@ namespace Wuxia
         internal static bool VoicePlaying => instance != null && instance.voice.isPlaying;
 
         /// <summary>Looks up the voice clip for a raw story-beat text (12-char md5 key in voice_map.json) and plays it.</summary>
-        public static void VoiceForText(string rawText)
+        public static void VoiceForText(string rawText, bool femaleHero = false)
         {
             if (instance == null) return;
-            string clip = ClipFor(rawText);
+            string clip = ClipFor(rawText, femaleHero);
             if (clip == null) StopVoice();
             else Voice(clip);
         }
 
-        internal static string ClipFor(string rawText)
+        /// <summary>Clip for a raw beat text; a female protagonist gets the entry's <c>clip_f</c> read when one exists.</summary>
+        internal static string ClipFor(string rawText, bool femaleHero = false)
         {
             if (instance == null || string.IsNullOrEmpty(rawText)) return null;
             instance.voiceMap ??= LoadVoiceMap();
-            return instance.voiceMap.TryGetValue(VoiceKey(rawText), out var clip) ? clip : null;
+            if (!instance.voiceMap.TryGetValue(VoiceKey(rawText), out var entry)) return null;
+            return femaleHero && !string.IsNullOrEmpty(entry.clip_f) ? entry.clip_f : entry.clip;
         }
 
         internal static string VoiceKey(string rawText)
@@ -195,12 +197,12 @@ namespace Wuxia
             return builder.ToString();
         }
 
-        [Serializable] private sealed class VoiceEntry { public string hash, clip; }
+        [Serializable] private sealed class VoiceEntry { public string hash, clip, clip_f; }
         [Serializable] private sealed class VoiceManifest { public VoiceEntry[] entries; }
 
-        private static Dictionary<string, string> LoadVoiceMap()
+        private static Dictionary<string, VoiceEntry> LoadVoiceMap()
         {
-            var map = new Dictionary<string, string>();
+            var map = new Dictionary<string, VoiceEntry>();
             string path = Path.Combine(Application.streamingAssetsPath, "Data", "voice_map.json");
             try
             {
@@ -208,7 +210,7 @@ namespace Wuxia
                 var manifest = JsonUtility.FromJson<VoiceManifest>(File.ReadAllText(path));
                 foreach (var entry in manifest?.entries ?? Array.Empty<VoiceEntry>())
                     if (!string.IsNullOrEmpty(entry?.hash) && !string.IsNullOrEmpty(entry.clip))
-                        map[entry.hash] = entry.clip;
+                        map[entry.hash] = entry;
             }
             catch (Exception error)
             {

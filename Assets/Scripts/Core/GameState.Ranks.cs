@@ -70,7 +70,7 @@ namespace Wuxia
                 return "";
             var line = entry.target == "martial" ? RankSystem.BestCombat(Protagonist.lines) :
                 Array.Find(Protagonist.lines, value => value.id == entry.target);
-            if (line == null || RankSystem.Index(line.cap) >= RankSystem.Index("SS"))
+            if (line == null || RankSystem.Index(line.cap) >= RankSystem.Index(RankSystem.Top))
                 return "";
             RankSystem.Shift(line, entry.capDelta, true);
             if (entry.oneTime)
@@ -82,7 +82,7 @@ namespace Wuxia
         {
             var hero = Protagonist;
             var strongest = RankSystem.BestCombat(hero.lines);
-            if (strongest == null || RankSystem.Index(strongest.cap) >= RankSystem.Index("SS"))
+            if (strongest == null || RankSystem.Index(strongest.cap) >= RankSystem.Index(RankSystem.Top))
                 return "";
             bool learnedCombat = (M2Data.Load<SkillCatalog>("skills").skills ?? Array.Empty<CreationOption>())
                 .Any(art => hero.skills.Contains(art.id) && RankSystem.IsCombat(art.category));

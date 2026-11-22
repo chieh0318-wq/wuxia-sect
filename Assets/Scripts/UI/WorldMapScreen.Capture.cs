@@ -58,6 +58,46 @@ namespace Wuxia
             Debug.Log("[Capture] Map interactions verified: scouting, route confirmation, AP, elapsed days and arrival.");
         }
 
+        /// <summary>Opens the card of the outlaw stronghold nearest the party (for the 46 shot).</summary>
+        internal bool CaptureOutlaw()
+        {
+            CloseIntel();
+            var target = OutlawNodes().OrderBy(node => data.Route(host.PartyNode, node.id)?.Days ?? 999).FirstOrDefault();
+            if (target == null) return false;
+            CenterOn(target.id);
+            ShowNode(target);
+            return true;
+        }
+
+        private System.Collections.Generic.IEnumerable<MapNode> OutlawNodes() =>
+            data.Nodes.Values.Where(node => data.Controllers(node).FirstOrDefault()?.Outlaw == true);
+
+        /// <summary>M6 map checks: no empty node, spread layout, and 率眾攻討 spending AP on a throwaway state.</summary>
+        internal void VerifyM6Map(GameState check)
+        {
+            var empty = data.Nodes.Values.Where(node => !data.Controllers(node).Any()).Select(node => node.id).ToArray();
+            float closest = float.MaxValue;
+            var nodes = data.Nodes.Values.ToArray();
+            for (int i = 0; i < nodes.Length; i++)
+                for (int j = i + 1; j < nodes.Length; j++)
+                    closest = Mathf.Min(closest, Vector2.Distance(data.Bounds.Uv(nodes[i]), data.Bounds.Uv(nodes[j])));
+            var outlaw = OutlawNodes().FirstOrDefault();
+            string result = "";
+            if (outlaw != null)
+            {
+                check.RefillAp();
+                int before = check.ActionPoints;
+                result = check.Assault(outlaw.id, data.Controllers(outlaw).First().id, 120, .8f);
+                if (check.ActionPoints != before - 2)
+                    Debug.LogError("[Capture] M6 assault did not spend 2 AP.");
+            }
+            if (empty.Length > 0 || closest < .075f)
+                Debug.LogError($"[Capture] M6 map: empty nodes [{string.Join(",", empty)}], closest pair {closest:0.000}.");
+            else
+                Debug.Log($"[Capture] M6 map: {nodes.Length} nodes all controlled, closest pair {closest:0.000}, " +
+                    $"outlaw holds {OutlawNodes().Count()}. Assault: {result}");
+        }
+
         private static int Stamp(GameState state) => ((state.Year*12)+state.Month-1)*GameState.DaysPerMonth+state.Day;
 
         private Button FindCardButton(string label) =>

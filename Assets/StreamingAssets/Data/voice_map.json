@@ -10,7 +10,8 @@
     },
     {
       "hash": "d547ff10989a",
-      "clip": "prologue_open_02"
+      "clip": "prologue_open_02",
+      "clip_f": "prologue_open_02_f"
     },
     {
       "hash": "e7fc3707e3e0",
@@ -22,7 +23,8 @@
     },
     {
       "hash": "d1f5a7d6dd3f",
-      "clip": "prologue_open_05"
+      "clip": "prologue_open_05",
+      "clip_f": "prologue_open_05_f"
     },
     {
       "hash": "50c60e8b3013",
@@ -42,7 +44,8 @@
     },
     {
       "hash": "50a01b1ec83b",
-      "clip": "prologue_close_00"
+      "clip": "prologue_close_00",
+      "clip_f": "prologue_close_00_f"
     },
     {
       "hash": "f9a59bad9dd3",
@@ -54,11 +57,13 @@
     },
     {
       "hash": "3049aedf1c30",
-      "clip": "prologue_close_03"
+      "clip": "prologue_close_03",
+      "clip_f": "prologue_close_03_f"
     },
     {
       "hash": "5989a5f935b8",
-      "clip": "prologue_close_04"
+      "clip": "prologue_close_04",
+      "clip_f": "prologue_close_04_f"
     }
   ]
 }

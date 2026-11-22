@@ -10,6 +10,8 @@ namespace Wuxia
         private readonly SectUI ui;
         private readonly SlotData[] slots;
         private readonly Renderer[] plots;
+        private readonly Renderer[][] plotFrames;
+        private readonly HashSet<int> plotLabels = new();
         private readonly Dictionary<Collider, int> slotTargets = new();
         private readonly Dictionary<Collider, DiscipleData> discipleTargets = new();
         private readonly Dictionary<string, Material> surfaces = new();
@@ -25,6 +27,7 @@ namespace Wuxia
             this.ui = ui;
             this.slots = slots;
             plots = new Renderer[slots.Length];
+            plotFrames = new Renderer[slots.Length][];
             halls = new TangBuildingFactory(this);
             foreach (string name in new[] { "Solid", "Tile", "Paving", "Earth", "Plaster", "Timber", "Grass", "Fir", "Broadleaf" })
                 surfaces.Add(name, Resources.Load<Material>("Materials/" + name));
@@ -59,13 +62,24 @@ namespace Wuxia
                     Part("Foundation edge", PrimitiveType.Cube, outline, new(x, -.021f, z + side * 2.9f),
                         new(6.3f, .055f, .14f), Tint("#77736D"));
                 }
-                var tile = Part("Plot selection", PrimitiveType.Cube, outline, new(x, .011f, z),
-                    new(6.1f, .015f, 5.65f), Tint("#688752"));
+                // M6: a thick, bright jade pad with a glowing pale-green frame so empty plots cannot be missed.
+                var tile = Part("Plot selection", PrimitiveType.Cube, outline, new(x, .06f, z),
+                    new(6.1f, .06f, 5.65f), Tint("#5CD669"));
                 var collider = tile.GetComponent<Collider>();
                 collider.enabled = true;
                 slotTargets.Add(collider, index);
                 plots[index] = tile.GetComponent<Renderer>();
                 plots[index].enabled = false;
+                var frame = new List<Renderer>();
+                for (int side = -1; side <= 1; side += 2)
+                {
+                    frame.Add(Part("Plot glow frame", PrimitiveType.Cube, outline, new(x + side * 3.0f, .12f, z),
+                        new(.22f, .1f, 5.85f), Tint("#C8FFB4")).GetComponent<Renderer>());
+                    frame.Add(Part("Plot glow frame", PrimitiveType.Cube, outline, new(x, .12f, z + side * 2.78f),
+                        new(6.22f, .1f, .22f), Tint("#C8FFB4")).GetComponent<Renderer>());
+                }
+                foreach (var bar in frame) bar.enabled = false;
+                plotFrames[index] = frame.ToArray();
             }
 
             var random = new System.Random(18);
@@ -102,14 +116,39 @@ namespace Wuxia
         public bool TryGetSlot(Collider target, out int index) => slotTargets.TryGetValue(target, out index);
         public bool TryGetDisciple(Collider target, out DiscipleData disciple) => discipleTargets.TryGetValue(target, out disciple);
         public bool TryGetLandmark(string id, out (Transform root, float height) landmark) => landmarks.TryGetValue(id, out landmark);
+        /// <summary>
+        /// Lights every empty plot (bright pad + glow frame + a floating 「可建空地（點擊建造）」 tag); built plots stay hidden.
+        /// </summary>
         public void HighlightPlots(bool active)
         {
-            foreach (var plot in plots)
-                plot.enabled = active;
+            for (int index = 0; index < plots.Length; index++)
+            {
+                var plot = plots[index];
+                bool empty = plot.transform.parent.gameObject.activeSelf;
+                bool lit = active && empty;
+                plot.enabled = lit;
+                foreach (var bar in plotFrames[index] ?? System.Array.Empty<Renderer>())
+                    bar.enabled = lit;
+                bool labelled = plotLabels.Contains(index);
+                if (lit && !labelled)
+                {
+                    ui.AddWorldLabel(plot.transform, Vector3.up * 2.8f, "可建空地（點擊建造）");
+                    plotLabels.Add(index);
+                }
+                else if (!lit && labelled)
+                {
+                    ui.RemoveWorldLabel(plot.transform);
+                    plotLabels.Remove(index);
+                }
+            }
         }
+
+        public bool PlotsHighlighted => plotLabels.Count > 0;
 
         public void PlaceBuilding(int index, BuildingData data)
         {
+            if (plotLabels.Remove(index))
+                ui.RemoveWorldLabel(plots[index].transform);
             plots[index].transform.parent.gameObject.SetActive(false);
             var building = new GameObject(data.name).transform;
             building.SetParent(root, false);

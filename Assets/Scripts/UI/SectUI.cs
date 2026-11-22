@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -101,7 +102,7 @@ namespace Wuxia
             Anchor(end, Vector2.right, Vector2.one, new Vector2(-188, 12), new Vector2(-12, -12));
 
             var commands = Panel("Commands", canvas, new Vector2(0, 1), new Vector2(0, 1),
-                new Vector2(18, -365), new Vector2(310, -110));
+                new Vector2(18, -365), new Vector2(448, -110));
             this.commands = commands;
             commandList = ScrollList(commands, new Vector2(14, 14), new Vector2(-14, -14));
 
@@ -187,24 +188,59 @@ namespace Wuxia
             resourceLabels[3].text = $"弟子 {state.Disciples.Count}";
         }
 
-        public void ShowCommands(string title, IEnumerable<(string label, Action run)> commands)
+        public void ShowCommands(string title, IEnumerable<(string label, Action run)> commands) =>
+            ShowCommands(title, commands.Select(command => (command.label, (string)null, command.run, false)));
+
+        /// <summary>
+        /// Command / build menu of rich cards: a title-and-cost line plus a 1–2 line purpose / yield subtitle.
+        /// A selected card (the building chosen for placement) is drawn with the highlighted frame.
+        /// </summary>
+        public void ShowCommands(string title, IEnumerable<(string label, string detail, Action run, bool selected)> commands)
         {
             Clear(commandList);
-            SetCommandsPanelHeight(title == "建造" ? 480 : 381);
+            SetCommandsPanelHeight(title == "建造" ? 800 : 780);
             AddLine(commandList, title == "指令" ? "門派事務" : title, 28);
             targets.Remove("cmd_build");
             targets.Remove("cmd_recruit");
             int index = 0;
             foreach (var command in commands)
             {
-                var rect = Button(commandList, command.label, command.run);
-                rect.GetComponent<Button>().interactable = command.run != null;
+                var rect = CommandCard(commandList, command.label, command.detail, command.run, command.selected);
                 if (title == "指令" && index < 2)
                     targets[index == 0 ? "cmd_build" : "cmd_recruit"] = rect;
-                else if (title == "指令")
+                else if (title == "指令" && !command.selected)
                     UiKit.Skin(rect.GetComponent<Image>(), "Wood");
                 index++;
             }
+        }
+
+        private RectTransform CommandCard(RectTransform parent, string label, string detail, Action run, bool selected)
+        {
+            var rect = Button(parent, label, run);
+            rect.GetComponent<Button>().interactable = run != null;
+            if (selected)
+            {
+                UiKit.Skin(rect.GetComponent<Image>(), "Selected");
+                var glow = rect.gameObject.AddComponent<Outline>();
+                glow.effectColor = new Color(.55f, .95f, .55f, .9f);
+                glow.effectDistance = new Vector2(3, 3);
+            }
+            if (string.IsNullOrEmpty(detail))
+                return rect;
+            rect.GetComponent<LayoutElement>().preferredHeight = 88;
+            var caption = rect.GetComponentInChildren<Text>();
+            caption.alignment = TextAnchor.MiddleLeft;
+            caption.resizeTextMaxSize = 21;
+            Anchor(caption.rectTransform, Vector2.up, Vector2.one, new(14, -36), new(-10, -4));
+            // No-break spaces: legacy Text only wraps at spaces, which strands "+10，解鎖…" runs on one line.
+            var body = Label(rect, detail.Replace(' ', ' '), 16);
+            body.color = new Color(1f, .86f, .62f);
+            body.alignment = TextAnchor.UpperLeft;
+            body.horizontalOverflow = HorizontalWrapMode.Wrap;
+            body.resizeTextMinSize = 12;
+            body.resizeTextMaxSize = 16;
+            Anchor(body.rectTransform, Vector2.zero, Vector2.one, new(14, 5), new(-10, -38));
+            return rect;
         }
 
         private RectTransform mapButtons;
@@ -232,17 +268,22 @@ namespace Wuxia
 
         private void SetCommandsPanelHeight(float height) => commands.offsetMin = new Vector2(18, -110 - height);
 
-        public void ShowBuilding(BuildingData building, IEnumerable<(string label, Action run)> actions, int level = 1)
+        public void ShowBuilding(BuildingData building, IEnumerable<(string label, Action run)> actions, int level = 1) =>
+            ShowBuilding(building, actions.Select(action => (action.label, (string)null, action.run)), level);
+
+        public void ShowBuilding(BuildingData building, IEnumerable<(string label, string detail, Action run)> actions, int level = 1)
         {
             Clear(detailsList);
             AddLine(detailsList, building.name, 28);
             AddLine(detailsList, $"等級 {level}");
             AddLine(detailsList, building.description);
+            if (!string.IsNullOrEmpty(building.summary))
+                AddLine(detailsList, "【用途】" + building.summary, 20);
             foreach (var action in actions)
-                Button(detailsList, action.label, action.run).GetComponent<Button>().interactable = action.run != null;
+                CommandCard(detailsList, action.label, action.detail, action.run, false);
             details.gameObject.SetActive(true);
             LayoutRebuilder.ForceRebuildLayoutImmediate(detailsList);
-            float height = Mathf.Clamp(LayoutUtility.GetPreferredHeight(detailsList) + 86, 155, 555);
+            float height = Mathf.Clamp(LayoutUtility.GetPreferredHeight(detailsList) + 86, 155, 780);
             Anchor(details, Vector2.one, Vector2.one, new Vector2(-390, -110 - height), new Vector2(-18, -110));
             detailsList.anchoredPosition = Vector2.zero;
         }

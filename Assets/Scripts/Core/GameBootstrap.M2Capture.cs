@@ -46,9 +46,17 @@ namespace Wuxia
                 capture("31_stronghold.png");
             }
 
+            // M6: an outlaw stronghold card with its 【草莽據點・易攻】 badge and 率眾攻討 command.
+            if (map.CaptureOutlaw())
+            {
+                yield return null;
+                capture("46_m6_outlaw_stronghold.png");
+            }
+
             // Exercise scouting and travel on a throwaway state so the real capture state stays untouched.
             var check = new GameState(data);
             check.Story.mapNode = state.Story.mapNode;
+            map.VerifyM6Map(check);
             yield return map.VerifyCaptureInteractions(check);
             map.Open(state);
             map.Close();

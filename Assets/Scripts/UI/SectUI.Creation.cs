@@ -235,8 +235,8 @@ namespace Wuxia
                     tier.color = Color.Lerp(RankSystem.Color(RankSystem.At(rank)), Color.white, .45f);
                     tier.font = UiKit.Font("Numbers", font, tier.text);
                     Anchor(tier.rectTransform, Vector2.up, Vector2.one, new(10, -34), new(-8, -6));
-                    CardBar(tile, 10, -42, -10, 6, (cap + 1) / 7f, new Color(1, 1, 1, .22f));
-                    CardBar(tile, 10, -42, -10, 6, (rank + 1) / 7f, RankSystem.Color(RankSystem.At(rank)));
+                    CardBar(tile, 10, -42, -10, 6, (cap + 1) / (float)RankSystem.Count, new Color(1, 1, 1, .22f));
+                    CardBar(tile, 10, -42, -10, 6, (rank + 1) / (float)RankSystem.Count, RankSystem.Color(RankSystem.At(rank)));
                     if (cap >= RankSystem.Index("S"))
                     {
                         var star = Label(tile, "潛力 " + RankSystem.At(cap), 14, TextAnchor.MiddleLeft);
@@ -622,13 +622,13 @@ namespace Wuxia
         internal bool StoryOpen => storyScreen != null;
 
         internal void ShowStoryBeat(string speaker, string text, string image, string portrait, bool required,
-            Action next, Action skip, string skipLabel = "略過", string voiceText = null)
+            Action next, Action skip, string skipLabel = "略過", string voiceText = null, bool femaleHero = false)
         {
             CloseModal(force: true);
             var previousImage = storyScreen != null ? storyArt.texture as Texture2D : null;
             CloseStoryBeat();
             // AI voice-over keyed by the md5 of the raw (unformatted) beat text; silently absent when unvoiced.
-            AudioManager.VoiceForText(voiceText ?? text);
+            AudioManager.VoiceForText(voiceText ?? text, femaleHero);
             storyScreen = Panel("Prologue", canvas, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero);
             var backing = storyScreen.GetComponent<Image>();
             backing.sprite = null;

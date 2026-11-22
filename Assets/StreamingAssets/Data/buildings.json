@@ -1,9 +1,32 @@
 {
   "buildings": [
     {
-      "id":"council", "name":"議事堂", "description":"召集同門，分掌門務。可擴建至三級，每級提高行動力上限。",
-      "color":"#8B654E", "size":[5,2.6,4], "unique":true, "startBuilt":false,
-      "cost":{"silver":20,"food":0},"upkeep":1,"income":{"silver":0,"food":0,"reputation":0},"actions":["council"]
+      "id": "council",
+      "name": "議事堂",
+      "description": "召集同門，分掌門務。可擴建至三級，每級提高行動力上限。",
+      "color": "#8B654E",
+      "size": [
+        5,
+        2.6,
+        4
+      ],
+      "unique": true,
+      "startBuilt": false,
+      "cost": {
+        "silver": 20,
+        "food": 0
+      },
+      "upkeep": 1,
+      "income": {
+        "silver": 0,
+        "food": 0,
+        "reputation": 0
+      },
+      "actions": [
+        "council",
+        "decree"
+      ],
+      "summary": "每月行動力上限 +1（最高三級 +3），解鎖【召集議事】【門派政令】"
     },
     {
       "id": "hall",
@@ -30,7 +53,8 @@
       "actions": [
         "council",
         "recruit"
-      ]
+      ],
+      "summary": "每月銀兩 +4、聲望 +1，解鎖【召集議事】【招收弟子】"
     },
     {
       "id": "yard",
@@ -56,7 +80,8 @@
       "startBuilt": true,
       "actions": [
         "train"
-      ]
+      ],
+      "summary": "解鎖【督促操練】（主角與弟子武學修習進度，聲望 +2）"
     },
     {
       "id": "library",
@@ -82,7 +107,8 @@
       "startBuilt": true,
       "actions": [
         "study"
-      ]
+      ],
+      "summary": "解鎖【研讀拳譜】與【門派科技樹】（劍宗・外功・內功輕功・百工四脈功法）"
     },
     {
       "id": "quarters",
@@ -108,7 +134,8 @@
       "startBuilt": true,
       "actions": [
         "lodge"
-      ]
+      ],
+      "summary": "弟子容納上限 +4，解鎖【安頓弟子】（恢復弟子體力與忠誠）"
     },
     {
       "id": "infirmary",
@@ -134,7 +161,8 @@
       "startBuilt": true,
       "actions": [
         "medicine"
-      ]
+      ],
+      "summary": "每月銀兩 +2，解鎖【施藥義診】（療傷加速、聲望 +2）"
     },
     {
       "id": "kitchen",
@@ -158,7 +186,10 @@
       },
       "unique": false,
       "startBuilt": false,
-      "actions": []
+      "actions": [
+        "feast"
+      ],
+      "summary": "每月產出糧食 +8，解鎖【開伙犒賞】（全門忠誠 +5、傷勢加速恢復）"
     },
     {
       "id": "smithy",
@@ -182,7 +213,10 @@
       },
       "unique": false,
       "startBuilt": false,
-      "actions": []
+      "actions": [
+        "forge_gear"
+      ],
+      "summary": "每月產出銀兩 +10，解鎖【鍛造兵甲】（為主角與弟子打造武器、防具與飾品裝備！）"
     },
     {
       "id": "teahouse",
@@ -206,7 +240,10 @@
       },
       "unique": true,
       "startBuilt": false,
-      "actions": []
+      "actions": [
+        "gather_rumors"
+      ],
+      "summary": "每月產出銀兩 +5、聲望 +1，解鎖【江湖聽風】（探聽秘境奇遇線索與各派動向）"
     }
   ]
 }

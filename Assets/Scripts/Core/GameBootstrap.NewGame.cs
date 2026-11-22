@@ -76,7 +76,7 @@ namespace Wuxia
             if (speaker < 0) { StartStory(); return; }
             currentCg = opening.Take(speaker + 1).LastOrDefault(beat => !string.IsNullOrEmpty(beat.image))?.image;
             Play(new[] { opening[speaker] }, ChooseDisaster, SkipStory);
-            string clip = AudioManager.ClipFor(opening[speaker].text);
+            string clip = AudioManager.ClipFor(opening[speaker].text, state.Protagonist.gender == "女");
             int voiced = opening.Concat(story.closingBeats ?? Array.Empty<StoryBeat>()).Count(beat => AudioManager.ClipFor(beat.text) != null);
             Debug.Log($"[Capture] Voice: beat clip={clip ?? "none"} loaded={(clip != null && Resources.Load<AudioClip>("Audio/Voice/" + clip) != null)}" +
                 $" voicedBeats={voiced} playlist={AudioManager.PlaylistSummary}");
@@ -253,16 +253,24 @@ namespace Wuxia
             ui.SkillTiles(PreviewLines(selected));
         }
 
+        /// <summary>
+        /// Skill lines as they will stand after creation: the base tiers (劍 C/B, others D/C), then the background
+        /// and talent rank/cap effects, each stacking additively (applied for real only in StartStory).
+        /// </summary>
         private SkillLine[] PreviewLines(IEnumerable<CreationOption> picks)
         {
-            var preview = RankSystem.Seed(state.Protagonist.lines, null, null, "B");
-            foreach (var effect in picks.SelectMany(option => option.effects ?? Array.Empty<GameEffect>()))
+            var preview = RankSystem.Seed(null, RankSystem.PrimaryRank, RankSystem.PrimaryCap, RankSystem.BaseCap, RankSystem.BaseRank);
+            var effects = (background?.effects ?? Array.Empty<GameEffect>())
+                .Concat(picks.SelectMany(option => option.effects ?? Array.Empty<GameEffect>()));
+            foreach (var effect in effects)
             {
                 if (effect == null || effect.key is not ("rank" or "lineRank" or "cap"))
                     continue;
                 var line = effect.@ref == "martial" ? RankSystem.BestCombat(preview)
                     : Array.Find(preview, entry => entry.id == effect.@ref);
-                RankSystem.Shift(line, Mathf.RoundToInt(effect.value), effect.key == "cap");
+                int value = Mathf.RoundToInt(effect.value);
+                if (effect.key == "cap") RankSystem.Raise(line, 0, value);
+                else RankSystem.Raise(line, value, 0);
             }
             return preview;
         }
@@ -311,10 +319,11 @@ namespace Wuxia
                     effect.key.EndsWith("Pct", StringComparison.Ordinal) ? $"{effect.value:+0;-0}%" : $"{effect.value:+0;-0}";
                 return $"{caption} {value}";
             }).Where(line => line.Length > 0).ToList();
-            if (option.capBonus > 0 && !string.IsNullOrEmpty(option.category))
-                details.Insert(0, $"潛力上限 +{option.capBonus}");
-            if (!string.IsNullOrEmpty(option.grantsRank) && !string.IsNullOrEmpty(option.category))
-                details.Insert(0, $"習得 {option.grantsRank}");
+            if (!string.IsNullOrEmpty(option.category) && RankSystem.Categories.Any(entry => entry.id == option.category))
+            {
+                int steps = RankSystem.LearnSteps(option);
+                details.Insert(0, $"習得階位 +{steps}・潛力上限 +{steps}");
+            }
             return string.Join("・", details);
         }
 
@@ -571,7 +580,7 @@ namespace Wuxia
                 if (!string.IsNullOrEmpty(beat.image))
                     currentCg = beat.image;
                 ui.ShowStoryBeat(FormatStory(beat.speaker), FormatStory(beat.text), currentCg, portrait,
-                    beat.portrait != "hero", ShowNext, skip, voiceText: beat.text);
+                    beat.portrait != "hero", ShowNext, skip, voiceText: beat.text, femaleHero: state.Protagonist.gender == "女");
             }
         }
 

@@ -60,8 +60,8 @@ namespace Wuxia
             return index < 0 ? 0 : Protagonist.attrs[index];
         }
 
-        internal DerivedStats HeroStats => AttributeSystem.Derive(Protagonist.attrs, Protagonist.lines,
-            WeaponRankDelta(Protagonist.weapon));
+        internal DerivedStats HeroStats => WithBonuses(AttributeSystem.Derive(Protagonist.attrs, Protagonist.lines,
+            WeaponRankDelta(Protagonist.weapon)));
 
         /// <summary>Extra qi-yu (adventure) chance from 幸運, with a touch of 身法 for finding hidden paths.</summary>
         internal float AdventureBonus => .012f * AttributeBonus("luk") + .003f * AttributeBonus("agi");
@@ -108,8 +108,9 @@ namespace Wuxia
             Silver = data.Start.silver;
             Food = data.Start.food;
             Reputation = data.Start.reputation;
-            Protagonist.lines = RankSystem.Seed(null, RankSystem.Catalog.protagonistPath?.defaultRank ?? "A",
-                RankSystem.Catalog.protagonistPath?.defaultCap ?? "S", "B");
+            // Creation base: the sect's sword line starts C / B, every other line D / C; picks then stack on top.
+            Protagonist.lines = RankSystem.Seed(null, RankSystem.Catalog.protagonistPath?.defaultRank ?? RankSystem.PrimaryRank,
+                RankSystem.Catalog.protagonistPath?.defaultCap ?? RankSystem.PrimaryCap, RankSystem.BaseCap, RankSystem.BaseRank);
             Disciples = data.Disciples.Where(d => d.startInSect).Select(CloneDisciple).ToList();
             foreach (var disciple in Disciples) EnsurePortrait(disciple);
             Buildings = new BuildingData[data.Start.slots.Length];
@@ -165,6 +166,7 @@ namespace Wuxia
 
             silver = UnityEngine.Mathf.RoundToInt(silver * ProductionMultiplier("commerce"));
             food = UnityEngine.Mathf.RoundToInt(food * ProductionMultiplier("farming"));
+            M6MonthIncome(ref silver, ref food, report);
             int consumed = Disciples.Count * Data.Start.foodPerDisciple;
             Silver += silver - upkeep;
             Food += food - consumed;

@@ -1,14 +1,16 @@
 {
   "tiers": [
+    { "id": "E", "name": "粗通皮毛", "color": "#6a6a66", "statMul": 0.8 },
+    { "id": "D", "name": "略有小成", "color": "#7a7568", "statMul": 0.9 },
     { "id": "C", "name": "初窺門徑", "color": "#7c776d", "statMul": 1.0 },
     { "id": "B", "name": "登堂入室", "color": "#9a6b3f", "statMul": 1.25 },
     { "id": "A", "name": "爐火純青", "color": "#4f8a6a", "statMul": 1.6 },
     { "id": "A+", "name": "出類拔萃", "color": "#2f8a8a", "statMul": 1.85 },
     { "id": "S", "name": "一代名家", "color": "#c0442f", "statMul": 2.2 },
-    { "id": "S+", "name": "威震一方", "color": "#d26a2a", "statMul": 2.6 },
-    { "id": "SS", "name": "登峰造極", "color": "#d9b45a", "statMul": 3.2 }
+    { "id": "SS", "name": "威震一方", "color": "#d26a2a", "statMul": 2.8 },
+    { "id": "SSS", "name": "登峰造極", "color": "#d9b45a", "statMul": 3.4 }
   ],
-  "martialFormula": "武學總階 = 最高的戰鬥技能線階位；若次高戰鬥線不低於 A，且與最高線相差不超過一階，則再升一階（至多 SS）。武學上限以各戰鬥線的上限用同一規則計算。神兵的 effectiveRankDelta 只加在當下的有效階位上，可超過上限，不改變上限。",
+  "martialFormula": "武學總階 = 最高的戰鬥技能線階位；若次高戰鬥線不低於 A，且與最高線相差不超過一階，則再升一階（至多 SSS）。武學上限以各戰鬥線的上限用同一規則計算。神兵的 effectiveRankDelta 只加在當下的有效階位上，可超過上限，不改變上限。",
   "breakthroughs": [
     { "id": "qiyu_cliff_cave", "name": "斷崖古洞", "type": "qiyu", "desc": "失足墜崖，掛在一株老松上，崖壁裂縫裡竟有前人刻下的劍痕與運氣圖。", "target": "martial", "capDelta": 1, "effectiveRankDelta": 0, "requirement": "外出遊歷途經山險之地（山、關隘）", "chance": 0.02, "oneTime": true },
     { "id": "qiyu_thunder_pine", "name": "雷雨觀松", "type": "qiyu", "desc": "夏夜驟雨，雷劈古松。看松枝在狂風中起伏不折，忽然想通了劍招的收放。", "target": "sword", "capDelta": 1, "effectiveRankDelta": 0, "requirement": "劍線達 B 以上，夏季於山門練功", "chance": 0.03, "oneTime": true },
@@ -39,12 +41,12 @@
     { "id": "weapon_pozhen_shuo", "name": "破陣槊", "type": "weapon", "desc": "丈八馬槊，槊首鑲著一圈吐蕃人的箭鏃。河西軍中代代相傳，只交給最能打的人。", "target": "polearm", "capDelta": 0, "effectiveRankDelta": 1, "requirement": "河西節度使所持", "chance": 1.0, "oneTime": true }
   ],
   "protagonistPath": {
-    "defaultRank": "A",
-    "defaultCap": "S",
+    "defaultRank": "C",
+    "defaultCap": "B",
     "martialFocusSteps": [
-      { "breakthrough": "seclusion_houshan", "condition": "主角創角時至少選一門戰鬥武學，且親自督促操練累計 6 個月後解鎖（武學上限 S → S+）" },
-      { "breakthrough": "manual_xiaoshan_full", "condition": "完成後山閉關，且主角最高戰鬥線達 S；或累計親自操練 18 個月（武學上限 S+ → SS）" },
-      { "breakthrough": "mentor_master_return", "condition": "保底：第三年元月，若主角仍以武學為重而上限未達 SS，師父歸來補足一階" }
+      { "breakthrough": "seclusion_houshan", "condition": "主角創角時至少選一門戰鬥武學，且親自督促操練累計 6 個月後解鎖（武學上限 +1 階）" },
+      { "breakthrough": "manual_xiaoshan_full", "condition": "完成後山閉關，且主角最高戰鬥線達 S；或累計親自操練 18 個月（武學上限 +1 階）" },
+      { "breakthrough": "mentor_master_return", "condition": "保底：第三年元月，若主角仍以武學為重而上限未達 SSS，師父歸來補足一階" }
     ]
   }
 }

@@ -200,6 +200,16 @@ namespace Wuxia
             "sect" => "門派山門", "mountain" => "名山", "pass" => "關隘", _ => "據點"
         };
 
+        /// <summary>Outlaw garrisons are thin: 80–160 men, fixed per stronghold.</summary>
+        private static int Garrison(MapNode node)
+        {
+            int hash = 17;
+            foreach (char c in node.id) hash = hash * 31 + c;
+            return 80 + Mathf.Abs(hash % 81);
+        }
+
+        private static string OutlawGuard(MapNode node) => node.type is "capital" or "city" or "pass" ? "丙" : "丁";
+
         private static string Defence(string type) => type switch
         {
             "capital" => "甲上", "pass" => "甲", "city" => "乙", "sect" => "乙", "outpost" => "丙", _ => "丁"
@@ -443,17 +453,20 @@ namespace Wuxia
         private void ShowNode(MapNode node)
         {
             if (traveling) return;
-            var panel = Card(node.Label, $"{TypeName(node.type)}　{node.region ?? ""}");
-            FocusMarker(node);
             var factions = data.Controllers(node).ToArray();
             var faction = factions.FirstOrDefault();
+            bool held = host.HoldsNode(node.id);
+            bool outlaw = faction != null && faction.Outlaw && !held;
+            var panel = Card(node.Label, $"{TypeName(node.type)}　{node.region ?? ""}");
+            FocusMarker(node);
             bool known = faction != null && host.IsFactionKnown(faction.id);
-            // Faction banner hanging from the card's top edge.
-            var banner = MapUi.Panel(panel, "勢力旗", 300, 0, 58, 92, faction?.Tint ?? new Color(.45f, .42f, .36f));
+            // Faction banner hanging from the card's top edge (the sect's own banner once taken).
+            var banner = MapUi.Panel(panel, "勢力旗", 300, 0, 58, 92,
+                held ? new Color(.55f, .16f, .12f) : faction?.Tint ?? new Color(.45f, .42f, .36f));
             banner.GetComponent<Image>().raycastTarget = false;
             MapUi.Panel(banner, "旗緣", 0, 86, 58, 6, MapUi.Gold).GetComponent<Image>().raycastTarget = false;
-            MapUi.Text(banner, faction == null ? "無" : faction.Label.Substring(0, 1), 0, 8, 58, 70, 40, MapUi.Paper,
-                TextAnchor.MiddleCenter, "Names");
+            MapUi.Text(banner, held ? host.SectLabel.Substring(0, 1) : faction == null ? "無" : faction.Label.Substring(0, 1),
+                0, 8, 58, 70, 40, MapUi.Paper, TextAnchor.MiddleCenter, "Names");
             if (faction != null)
             {
                 MapUi.Portrait(panel, known ? PortraitService.Resolve(faction.PortraitId) : null, 20, 116, 104, 138);
@@ -467,11 +480,15 @@ namespace Wuxia
             }
             else
                 MapUi.Text(panel, "此地沒有已知的控制勢力", 20, 120, 386, 34, 21, MapUi.Jade);
+            if (held || outlaw)
+                MapUi.Text(panel, held ? $"【本派據點・{host.SectLabel}】" : "【草莽據點・易攻】", 140, 222, 266, 30, 20,
+                    held ? MapUi.Jade : MapUi.Red, TextAnchor.MiddleLeft, "Names");
 
             // Garrison / strength ledger.
             int y = faction == null ? 160 : 262;
-            Stat(20, "守備", Defence(node.type));
-            Stat(150, "兵力", known ? $"{Mathf.RoundToInt(faction.disciples * (seats.Contains(node.id) ? .6f : .2f)):N0}" : faction == null ? "—" : "？");
+            int garrison = outlaw ? Garrison(node) : 0;
+            Stat(20, "守備", held ? "本派" : outlaw ? OutlawGuard(node) : Defence(node.type));
+            Stat(150, "兵力", outlaw ? garrison.ToString() : known ? $"{Mathf.RoundToInt(faction.disciples * (seats.Contains(node.id) ? .6f : .2f)):N0}" : faction == null ? "—" : "？");
             Stat(280, "聲望", known ? faction.reputation.ToString() : faction == null ? "—" : "？");
             y += 58;
             if (factions.Length > 1)
@@ -500,7 +517,8 @@ namespace Wuxia
 
             var route = data.Route(host.PartyNode, node.id);
             string message = node.id == host.PartyNode ? "隊伍就在此地" : route == null ? "沒有可通的道路" :
-                $"行軍　{route.Days} 日　行動力 {route.Ap}";
+                $"行軍　{route.Days} 日　行動力 {host.TravelCost(route.Ap)}";
+            if (outlaw) message += $"　戰力 {host.SectPower}・攻討 2 點";
             MapUi.Text(panel, message, 20, y, 386, 28, 20, MapUi.Jade);
             if (route != null)
             {
@@ -510,8 +528,28 @@ namespace Wuxia
                     Line(routeLayer, Position(data.Nodes[route.Nodes[i - 1]]), Position(data.Nodes[route.Nodes[i]]), MapUi.Red, 3, false);
             }
 
-            // Command row: scout / intel / march.
-            if (faction != null && !known)
+            // Command row: scout (or 率眾攻討 on outlaw holds) / intel / march.
+            if (outlaw)
+            {
+                float guard = OutlawGuard(node) == "丙" ? .9f : .7f;
+                var assault = MapUi.Button(panel, $"率眾攻討\n勝算 {host.AssaultChance(garrison, guard):P0}", 20, 610, 124, 48, () =>
+                {
+                    string result = host.Assault(node.id, faction.id, garrison, guard);
+                    AudioManager.Play(host.HoldsNode(node.id) ? "complete" : "page");
+                    UpdateAp();
+                    ShowNode(node);
+                    status.text = result;
+                }, MapUi.Red, 15);
+                assault.interactable = host.ActionPoints >= 2;
+                cardActions.Add(assault);
+            }
+            else if (held)
+            {
+                var own = MapUi.Button(panel, "本派據點", 20, 610, 124, 48, () => { }, null, 18);
+                own.interactable = false;
+                cardActions.Add(own);
+            }
+            else if (faction != null && !known)
             {
                 var scout = MapUi.Button(panel, "派人打探　行動力 1", 20, 610, 124, 48, () =>
                 {
@@ -537,7 +575,7 @@ namespace Wuxia
             }, null, 18);
             cardActions.Add(intelButton);
             var confirm = MapUi.Button(panel, "確認啟程", 282, 610, 124, 48, () => StartTravel(route, node.id), MapUi.Red, 18);
-            confirm.interactable = route != null && host.ActionPoints >= route.Ap;
+            confirm.interactable = route != null && host.ActionPoints >= host.TravelCost(route.Ap);
             cardActions.Add(confirm);
 
             void Stat(int x, string caption, string value)
@@ -682,7 +720,7 @@ namespace Wuxia
 
         private void StartTravel(MapRoute route,string destination)
         {
-            if (traveling || !host.TrySpendAp(route.Ap,"travel:"+destination)) return;
+            if (traveling || !host.TrySpendAp(host.TravelCost(route.Ap),"travel:"+destination)) return;
             selected = destination;
             traveling = true;
             host.AdvanceDays(route.Days);

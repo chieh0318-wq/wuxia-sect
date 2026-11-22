@@ -29,9 +29,14 @@ namespace Wuxia
 
     public static class RankSystem
     {
-        private static readonly string[] Tiers = { "C", "B", "A", "A+", "S", "S+", "SS" };
-        private static readonly string[] FallbackColors = { "#7c776d", "#a37649", "#548461", "#4a918a", "#aa4234", "#db894e", "#e7bd64" };
-        private static readonly float[] Multipliers = { 1, 1.25f, 1.6f, 1.85f, 2.2f, 2.6f, 3.2f };
+        private static readonly string[] Tiers = { "E", "D", "C", "B", "A", "A+", "S", "SS", "SSS" };
+        private static readonly string[] FallbackColors =
+            { "#6a6a66", "#7a7568", "#7c776d", "#a37649", "#548461", "#4a918a", "#aa4234", "#db894e", "#e7bd64" };
+        private static readonly float[] Multipliers = { .8f, .9f, 1, 1.25f, 1.6f, 1.85f, 2.2f, 2.8f, 3.4f };
+        /// <summary>Primary sect art (劍) base tiers before any creation pick; every other line starts one tier lower.</summary>
+        internal const string PrimaryRank = "C", PrimaryCap = "B", BaseRank = "D", BaseCap = "C";
+        internal static string Top => Tiers[Tiers.Length - 1];
+        internal static int Count => Tiers.Length;
         internal static readonly RankCatalog Catalog = M2Data.Load<RankCatalog>("ranks");
         internal static readonly SkillCategory[] Categories = M2Data.Load<SkillCatalog>("skills").categories
             ?? new[]
@@ -47,11 +52,12 @@ namespace Wuxia
         private static SkillCategory Category(string id, string name, bool production = false) =>
             new() { id = id, name = name, family = production ? "production" : "combat" };
 
-        internal static int Index(string tier) => Math.Max(0, Array.IndexOf(Tiers, tier));
+        // Saves from the 7-tier era may still hold "S+"; it was the tier just above S, now named SS.
+        internal static int Index(string tier) => Math.Max(0, Array.IndexOf(Tiers, tier == "S+" ? "SS" : tier));
         internal static string At(int index) => Tiers[Mathf.Clamp(index, 0, Tiers.Length - 1)];
         public static string Format(string rank, string cap) => $"{At(Index(rank))} / {At(Index(cap))}";
         /// <summary>Tier order, or -1 for a missing/unknown tier (used for sorting intel).</summary>
-        internal static int Order(string tier) => Array.IndexOf(Tiers, tier);
+        internal static int Order(string tier) => Array.IndexOf(Tiers, tier == "S+" ? "SS" : tier);
         /// <summary>Like <see cref="Format"/> but shows "?" for missing data instead of defaulting to C.</summary>
         internal static string FormatKnown(string rank, string cap) =>
             $"{(Order(rank) < 0 ? "?" : rank)} / {(Order(cap) < 0 ? "?" : cap)}";
@@ -68,7 +74,8 @@ namespace Wuxia
             return value > 0 ? value : Multipliers[Index(tier)];
         }
 
-        internal static SkillLine[] Seed(SkillLine[] existing, string rank, string cap, string defaultCap)
+        internal static SkillLine[] Seed(SkillLine[] existing, string rank, string cap, string defaultCap,
+            string defaultRank = null)
         {
             var primary = Categories.Any(entry => entry.id == "sword") ? "sword" :
                 Categories.FirstOrDefault(entry => entry.family == "combat")?.id;
@@ -76,7 +83,7 @@ namespace Wuxia
             return Categories.Select(category =>
             {
                 var line = existing?.FirstOrDefault(entry => entry != null && entry.id == category.id);
-                string current = line?.rank ?? (quickSeed && category.id == primary ? rank : null);
+                string current = line?.rank ?? (quickSeed && category.id == primary ? rank : null) ?? defaultRank;
                 string ceiling = line?.cap ?? (quickSeed && category.id == primary ? cap : null) ?? defaultCap;
                 return new SkillLine { id = category.id, rank = At(Math.Min(Index(current), Index(ceiling))),
                     cap = At(Index(ceiling)), progress = line?.progress ?? 0 };
@@ -108,13 +115,28 @@ namespace Wuxia
             line.rank = At(Math.Min(Index(line.cap), Index(line.rank) + (cap ? 0 : delta)));
         }
 
+        /// <summary>
+        /// Additive climb: the cap rises by <paramref name="capDelta"/> and the rank by <paramref name="rankDelta"/>;
+        /// if the rank would pass the cap, the cap is carried up with it. Both clamp at the top tier (SSS).
+        /// </summary>
+        internal static void Raise(SkillLine line, int rankDelta, int capDelta)
+        {
+            if (line == null)
+                return;
+            int cap = Mathf.Clamp(Index(line.cap) + capDelta, 0, Tiers.Length - 1);
+            int rank = Mathf.Clamp(Index(line.rank) + rankDelta, 0, Tiers.Length - 1);
+            line.cap = At(Math.Max(cap, rank));
+            line.rank = At(rank);
+        }
+
+        /// <summary>Tiers a creation skill adds to both its line's rank and cap: one per point spent (1–3).</summary>
+        internal static int LearnSteps(CreationOption art) => Mathf.Clamp(art?.cost ?? 0, 1, 3);
+
         internal static void Learn(SkillLine[] lines, CreationOption art)
         {
             var line = Array.Find(lines, entry => entry.id == art.category);
-            if (line == null)
-                return;
-            Shift(line, art.capBonus, true);
-            line.rank = At(Math.Min(Index(line.cap), Math.Max(Index(line.rank), Index(art.grantsRank))));
+            int steps = LearnSteps(art);
+            Raise(line, steps, steps);
         }
     }
 }

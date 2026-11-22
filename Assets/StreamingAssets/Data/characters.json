@@ -646,18 +646,18 @@
         "angry",
         "smile"
       ],
-      "rank": "S+",
-      "cap": "SS",
+      "rank": "SS",
+      "cap": "SSS",
       "lines": [
         {
           "id": "sword",
           "rank": "S",
-          "cap": "SS"
+          "cap": "SSS"
         },
         {
           "id": "neigong",
           "rank": "S",
-          "cap": "S+"
+          "cap": "SS"
         },
         {
           "id": "qinggong",
@@ -709,7 +709,7 @@
         "smile"
       ],
       "rank": "A+",
-      "cap": "S+",
+      "cap": "SS",
       "lines": [
         {
           "id": "sword",
@@ -770,7 +770,7 @@
         "smile"
       ],
       "rank": "A+",
-      "cap": "S+",
+      "cap": "SS",
       "lines": [
         {
           "id": "hidden",
@@ -830,12 +830,12 @@
         "smile"
       ],
       "rank": "S",
-      "cap": "S+",
+      "cap": "SS",
       "lines": [
         {
           "id": "sword",
           "rank": "S",
-          "cap": "S+"
+          "cap": "SS"
         },
         {
           "id": "qinggong",
@@ -885,8 +885,8 @@
         "angry",
         "smile"
       ],
-      "rank": "S+",
-      "cap": "SS",
+      "rank": "SS",
+      "cap": "SSS",
       "lines": [
         {
           "id": "sword",
@@ -896,7 +896,7 @@
         {
           "id": "neigong",
           "rank": "S",
-          "cap": "S+"
+          "cap": "SS"
         },
         {
           "id": "fist",
@@ -941,8 +941,8 @@
         "angry",
         "smile"
       ],
-      "rank": "S+",
-      "cap": "S+",
+      "rank": "SS",
+      "cap": "SS",
       "lines": [
         {
           "id": "blade",
@@ -990,7 +990,7 @@
       "portrait": "official",
       "expressions": [],
       "rank": "A+",
-      "cap": "S+",
+      "cap": "SS",
       "lines": [
         {
           "id": "hidden",
@@ -1038,7 +1038,7 @@
       "portrait": "rival_head",
       "expressions": [],
       "rank": "S",
-      "cap": "S+",
+      "cap": "SS",
       "lines": [
         {
           "id": "sword",
@@ -1315,12 +1315,12 @@
       "portrait": "leader_anxi_dhf",
       "expressions": [],
       "rank": "S",
-      "cap": "S+",
+      "cap": "SS",
       "lines": [
         {
           "id": "blade",
           "rank": "S",
-          "cap": "S+"
+          "cap": "SS"
         },
         {
           "id": "polearm",
@@ -1398,13 +1398,13 @@
       "group": "leader",
       "portrait": "leader_shaolin",
       "expressions": [],
-      "rank": "S+",
-      "cap": "S+",
+      "rank": "SS",
+      "cap": "SS",
       "lines": [
         {
           "id": "polearm",
-          "rank": "S+",
-          "cap": "S+"
+          "rank": "SS",
+          "cap": "SS"
         },
         {
           "id": "fist",
@@ -1500,12 +1500,12 @@
       "portrait": "leader_wulong",
       "expressions": [],
       "rank": "A+",
-      "cap": "S+",
+      "cap": "SS",
       "lines": [
         {
           "id": "sword",
           "rank": "A+",
-          "cap": "S+"
+          "cap": "SS"
         },
         {
           "id": "fist",
@@ -1672,13 +1672,13 @@
       "group": "leader",
       "portrait": "leader_yeyu",
       "expressions": [],
-      "rank": "S+",
-      "cap": "S+",
+      "rank": "SS",
+      "cap": "SS",
       "lines": [
         {
           "id": "sword",
-          "rank": "S+",
-          "cap": "S+"
+          "rank": "SS",
+          "cap": "SS"
         },
         {
           "id": "hidden",
@@ -1829,7 +1829,7 @@
         {
           "id": "commerce",
           "rank": "S",
-          "cap": "S+"
+          "cap": "SS"
         }
       ],
       "dialogue": [
@@ -1991,12 +1991,12 @@
       "portrait": "leader_tubo",
       "expressions": [],
       "rank": "S",
-      "cap": "S+",
+      "cap": "SS",
       "lines": [
         {
           "id": "polearm",
           "rank": "S",
-          "cap": "S+"
+          "cap": "SS"
         },
         {
           "id": "fist",

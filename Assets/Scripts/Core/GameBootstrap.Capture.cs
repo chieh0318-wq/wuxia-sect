@@ -120,7 +120,7 @@ namespace Wuxia
                             ?? StoryCharacters.FirstOrDefault();
                         if (person != null) ShowCharacterDetail(person, ShowCharacterDirectory);
                     })
-                };
+                }.Concat(M6CaptureSteps()).ToArray();
 
                 foreach (var step in steps)
                 {

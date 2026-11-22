@@ -97,9 +97,11 @@ namespace Wuxia
             get
             {
                 if (library != null) return library;
+                // Resources/Audio/Music wins over the serialized M2RuntimeAssets list, so freshly copied WAVs are
+                // picked up without re-serializing the asset.
                 var builtIn = M2RuntimeAssets.Load()?.music ?? Array.Empty<AudioClip>();
                 var extra = Resources.LoadAll<AudioClip>("Audio/Music") ?? Array.Empty<AudioClip>();
-                library = builtIn.Concat(extra).Where(clip => clip != null)
+                library = extra.Concat(builtIn).Where(clip => clip != null)
                     .GroupBy(clip => clip.name).Select(group => group.First()).ToArray();
                 return library;
             }
@@ -108,7 +110,8 @@ namespace Wuxia
         private AudioClip[] Tracks(string name)
         {
             var names = Playlists.TryGetValue(name, out var list) ? list : new[] { name };
-            var tracks = names.Select(id => Library.FirstOrDefault(clip => clip.name == id)).Where(clip => clip != null).ToList();
+            var tracks = names.Select(id => Resources.Load<AudioClip>("Audio/Music/" + id) ??
+                Library.FirstOrDefault(clip => clip.name == id)).Where(clip => clip != null).Distinct().ToList();
             foreach (var clip in Library.Where(clip => clip.name.StartsWith(name, StringComparison.Ordinal)))
                 if (!tracks.Contains(clip)) tracks.Add(clip);
             return tracks.ToArray();

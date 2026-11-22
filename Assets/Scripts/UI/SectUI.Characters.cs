@@ -5,6 +5,17 @@ using UnityEngine.UI;
 
 namespace Wuxia
 {
+    /// <summary>Everything the 江湖人物 dossier shows for the selected character.</summary>
+    internal sealed class CharacterDossier
+    {
+        public StoryCharacter person;
+        public string faction, stance, arts, biography, bond;
+        public int relation, kind = 2;
+        public int[] attrs;
+        public bool estimated;
+        public (string label, System.Action run)[] actions;
+    }
+
     public sealed partial class SectUI
     {
         private void CharacterEquipment(string portrait, string gender, string weapon, string[] gear = null)
@@ -49,49 +60,305 @@ namespace Wuxia
                 Anchor(heading.rectTransform, Vector2.up, Vector2.one, new(8, -44), new(-8, -9));
                 var value = Label(slot, string.IsNullOrEmpty(item) ? "未裝備" : item, 21, TextAnchor.MiddleCenter);
                 value.color = string.IsNullOrEmpty(item) ? new Color(.86f, .76f, .61f) : new Color(.99f, .86f, .52f);
-                value.resizeTextMinSize = 12;
+                value.resizeTextMinSize = 18;
                 Anchor(value.rectTransform, Vector2.zero, Vector2.right, new(8, 6), new(-8, 60));
             }
         }
 
+        private float rosterScroll = 1;
+        private int rosterFilter = -1;
+
+        /// <summary>
+        /// 江湖人物 — Koei-style master/detail view: category tabs on top, a scrollable two-column roster on the
+        /// left (44%) and an always-visible dossier of the selected character on the right (56%).
+        /// </summary>
         internal void ShowDirectory(string[] filters, int selected, Action<int> filter,
-            StoryCharacter[] people, Action<StoryCharacter> open)
+            StoryCharacter[] people, int[] kinds, string[] factionNames, int focus, Action<int> choose, CharacterDossier dossier)
         {
+            bool sameFilter = rosterFilter == selected;
+            float keepScroll = sameFilter ? rosterScroll : 1;
+            rosterFilter = selected;
             ShowCreation("江湖人物", Array.Empty<string>(),
-                new[] { ("關閉", (Action)(() => CloseModal(force: true))) }, null);
-            var tabs = characterDecoration = Rect("人物分類", modalCard);
-            Anchor(tabs, Vector2.up, Vector2.one, new(36, -159), new(-36, -111));
+                new[] { ("關閉", (Action)(() => { rosterFilter = -1; CloseModal(force: true); })) }, null);
+            Anchor(modalCard, new(.03f, .025f), new(.97f, .975f), Vector2.zero, Vector2.zero);
+            characterDecoration = Rect("人物總覽", modalCard);
+            Fill(characterDecoration);
+            var tabs = Rect("人物分類", characterDecoration);
+            Anchor(tabs, Vector2.up, Vector2.one, new(36, -162), new(-36, -108));
             var tabsLayout = tabs.gameObject.AddComponent<HorizontalLayoutGroup>();
             tabsLayout.spacing = 10;
             tabsLayout.childControlWidth = tabsLayout.childControlHeight = true;
+            tabsLayout.childForceExpandWidth = tabsLayout.childForceExpandHeight = true;
             for (int index = 0; index < filters.Length; index++)
             {
                 int category = index;
                 var tab = Button(tabs, filters[index], () => filter(category));
-                UiKit.Skin(tab.GetComponent<Image>(), index == selected ? "Selected" : "Wood");
+                bool active = index == selected;
+                UiKit.Skin(tab.GetComponent<Image>(), active ? "Selected" : "Wood");
+                var caption = tab.GetComponentInChildren<Text>();
+                caption.fontSize = caption.resizeTextMaxSize = 20;
+                caption.color = active ? UiKit.HeaderGold : new Color(.88f, .80f, .66f);
+                if (active) caption.fontStyle = FontStyle.Bold;
             }
-            // The tabs sit above the scroll viewport and remain available while browsing.
-            Anchor((RectTransform)modalList.parent, Vector2.zero, Vector2.one, new(36, 88), new(-36, -172));
+
+            float inner = modalCard.rect.width - 72;
+            float rosterWidth = inner * .44f - 26;
+            var viewport = (RectTransform)modalList.parent;
+            Anchor(viewport, Vector2.zero, new(.44f, 1), new(36, 88), new(-8, -176));
+            AttachScrollbar(viewport, characterDecoration, new(.44f, 0), new(-4, 88), new(8, -176));
+            creationListWidth = rosterWidth;
             if (people.Length == 0)
-            {
                 AddLine(modalList, "此類人物暫無紀錄。");
+            else
+            {
+                CreationGrid(2, (people.Length + 1) / 2, 132);
+                for (int index = 0; index < people.Length; index++)
+                    RosterCard(people[index], kinds != null && index < kinds.Length ? kinds[index] : 2, index == focus, index,
+                        factionNames != null && index < factionNames.Length ? factionNames[index] : people[index].faction);
+                Canvas.ForceUpdateCanvases();
+                viewport.GetComponent<ScrollRect>().verticalNormalizedPosition = Mathf.Clamp01(keepScroll);
+            }
+            var sheet = Panel("人物卷宗", characterDecoration, new(.44f, 0), Vector2.one, new(22, 88), new(-36, -176), false);
+            UiKit.Skin(sheet.GetComponent<Image>(), "Lacquer");
+            if (dossier?.person == null)
+            {
+                var none = Label(sheet, "請於左側名冊點選人物。", 24, TextAnchor.MiddleCenter);
+                none.color = CardMuted;
+                Fill(none.rectTransform, 30);
                 return;
             }
-            CreationGrid(3, (people.Length + 2) / 3, 125);
-            foreach (var person in people)
+            Dossier(sheet, dossier);
+
+            void RosterCard(StoryCharacter person, int kind, bool active, int index, string factionName)
             {
-                var card = Button(creationGrid, $"{person.name}\n{person.title ?? person.role}", () => open(person));
-                UiKit.Skin(card.GetComponent<Image>(), "Wood");
-                var art = Rect("人物肖像", card);
-                Anchor(art, Vector2.zero, Vector2.up, new(10, 10), new(89, -10));
-                AddImage(art, PortraitService.Resolve(person.portrait ?? person.id, person.gender));
-                var caption = card.GetComponentInChildren<Text>();
-                caption.alignment = TextAnchor.MiddleLeft;
-                Anchor(caption.rectTransform, Vector2.zero, Vector2.one, new(105, 36), new(-14, -4));
-                var rank = Label(card, RankSystem.FormatKnown(person.rank, person.cap), 22);
-                rank.color = RankTextColor(person.rank, dark: true);
-                Anchor(rank.rectTransform, Vector2.zero, Vector2.right, new(105, 6), new(-14, 36));
+                var card = Button(creationGrid, "", () =>
+                {
+                    rosterScroll = viewport.GetComponent<ScrollRect>().verticalNormalizedPosition;
+                    choose(index);
+                });
+                card.name = person.name ?? person.id;
+                UiKit.Skin(card.GetComponent<Image>(), active ? "Selected" : "Wood");
+                if (active)
+                {
+                    var glow = card.gameObject.AddComponent<Outline>();
+                    glow.effectColor = new Color(.93f, .76f, .40f, .95f);
+                    glow.effectDistance = new Vector2(3, 3);
+                }
+                UiKit.AccentStripe(card, KindColor(kind));
+                var texture = PortraitService.Resolve(person.portrait ?? person.id, person.gender);
+                MapUi.Portrait(card, texture, 18, 12, 84, 108);
+                var name = Label(card, person.name ?? person.id, 22, TextAnchor.MiddleLeft);
+                name.font = UiKit.Font("Names", font, name.text);
+                name.fontStyle = FontStyle.Bold;
+                name.color = active ? UiKit.HeaderGold : CardText;
+                Anchor(name.rectTransform, Vector2.up, Vector2.one, new(114, -46), new(-82, -10));
+                string role = person.title ?? person.role ?? "";
+                var badge = Panel("身分", card, Vector2.up, Vector2.one, new(114, -84), new(-12, -52), false);
+                UiKit.Skin(badge.GetComponent<Image>(), "Jade");
+                var roleText = Label(badge, string.IsNullOrEmpty(role) ? "江湖人士" : role, 18, TextAnchor.MiddleLeft);
+                roleText.color = new Color(.86f, .93f, .86f);
+                Anchor(roleText.rectTransform, Vector2.zero, Vector2.one, new(10, 0), new(-6, 0));
+                var faction = Label(card, factionName ?? "", 18, TextAnchor.MiddleLeft);
+                faction.color = CardMuted;
+                Anchor(faction.rectTransform, Vector2.zero, Vector2.right, new(114, 10), new(-12, 40));
+                RankSeal(card, person.rank, person.cap, new(-76, -48), new(-10, -10), 22);
+                card.GetComponentInChildren<Text>().text = "";
             }
+        }
+
+        private static Color KindColor(int kind) => kind switch
+        {
+            0 => UiKit.JadeAccent,
+            1 => UiKit.Crimson,
+            _ => UiKit.GoldAccent
+        };
+
+        /// <summary>Colored martial rank seal (e.g. "SS") anchored to the top-right of <paramref name="parent"/>.</summary>
+        private void RankSeal(RectTransform parent, string rank, string cap, Vector2 min, Vector2 max, int size)
+        {
+            bool known = RankSystem.Order(rank) >= 0;
+            var seal = Rect("武學印", parent);
+            Anchor(seal, Vector2.one, Vector2.one, min, max);
+            var ink = seal.gameObject.AddComponent<Image>();
+            var tint = known ? RankSystem.Color(rank) : new Color(.45f, .40f, .34f);
+            ink.color = Color.Lerp(tint, Color.black, .45f);
+            ink.raycastTarget = false;
+            var rim = seal.gameObject.AddComponent<Outline>();
+            rim.effectColor = Color.Lerp(tint, Color.white, .25f);
+            rim.effectDistance = new Vector2(2, 2);
+            var text = Label(seal, known ? rank : "？", size, TextAnchor.MiddleCenter);
+            text.color = Color.Lerp(tint, Color.white, .55f);
+            text.font = UiKit.Font("Numbers", font, text.text);
+            text.fontStyle = FontStyle.Bold;
+            Fill(text.rectTransform, 2);
+        }
+
+        private static void AttachScrollbar(RectTransform viewport, RectTransform parent, Vector2 anchor, Vector2 min, Vector2 max)
+        {
+            var track = Rect("名冊捲軸", parent);
+            Anchor(track, anchor, new(anchor.x, 1), min, max);
+            track.gameObject.AddComponent<Image>().color = new Color(.36f, .27f, .18f, .30f);
+            var slide = Rect("捲軸範圍", track);
+            Fill(slide);
+            var thumb = Rect("捲軸滑塊", slide);
+            Fill(thumb);
+            var grip = thumb.gameObject.AddComponent<Image>();
+            grip.color = UiKit.Crimson;
+            var bar = track.gameObject.AddComponent<Scrollbar>();
+            bar.direction = Scrollbar.Direction.BottomToTop;
+            bar.targetGraphic = grip;
+            bar.handleRect = thumb;
+            var scroll = viewport.GetComponent<ScrollRect>();
+            scroll.verticalScrollbar = bar;
+            scroll.verticalScrollbarVisibility = ScrollRect.ScrollbarVisibility.AutoHide;
+        }
+
+        /// <summary>Right-hand dossier: large framed portrait, identity, seven attributes, arts, biography and actions.</summary>
+        private void Dossier(RectTransform sheet, CharacterDossier info)
+        {
+            var person = info.person;
+            const float pad = 30, portraitW = 240, portraitH = 320;
+            var frame = Rect("卷宗肖像框", sheet);
+            Anchor(frame, Vector2.up, Vector2.up, new(pad - 6, -pad - portraitH - 6), new(pad + portraitW + 6, -pad + 6));
+            frame.gameObject.AddComponent<Image>().color = UiKit.AntiqueGold;
+            var texture = PortraitService.Resolve(person.portrait ?? person.id, person.gender);
+            MapUi.Portrait(frame, texture, 3, 3, portraitW + 6, portraitH + 6);
+
+            float x = pad + portraitW + 28;
+            float y = -pad + 2;
+            var name = Label(sheet, person.name ?? person.id, 32, TextAnchor.MiddleLeft);
+            name.font = UiKit.Font("Names", font, name.text);
+            name.fontStyle = FontStyle.Bold;
+            name.color = UiKit.HeaderGold;
+            Anchor(name.rectTransform, Vector2.up, Vector2.one, new(x, y - 44), new(-150, y));
+            RankSeal(sheet, person.rank, person.cap, new(-136, -pad - 50), new(-pad, -pad - 2), 26);
+            var capLabel = Label(sheet, "武學印　潛力 " + (RankSystem.Order(person.cap) < 0 ? "？" : person.cap), 18, TextAnchor.MiddleRight);
+            capLabel.color = CardMuted;
+            Anchor(capLabel.rectTransform, Vector2.one, Vector2.one, new(-300, -pad - 84), new(-pad, -pad - 56));
+            y -= 50;
+            string courtesy = string.Join("　", new[]
+            {
+                string.IsNullOrEmpty(person.courtesy) ? null : "字 " + person.courtesy, person.title ?? person.role
+            }.Where(value => !string.IsNullOrWhiteSpace(value)));
+            Line(string.IsNullOrEmpty(courtesy) ? "江湖人士" : courtesy, 22, CardGold, 32);
+            Line(string.Join("　", new[]
+            {
+                person.gender, person.age > 0 ? $"{person.age} 歲" : "年歲不詳", info.relation == 0 ? null : $"好感 {info.relation:+0;-0}"
+            }.Where(value => !string.IsNullOrWhiteSpace(value))), 18, CardText, 28);
+            var badges = Rect("勢力立場", sheet);
+            Anchor(badges, Vector2.up, Vector2.one, new(x, y - 36), new(-pad, y));
+            var badgeRow = badges.gameObject.AddComponent<HorizontalLayoutGroup>();
+            badgeRow.spacing = 10;
+            badgeRow.childControlWidth = badgeRow.childControlHeight = true;
+            badgeRow.childForceExpandWidth = false;
+            badgeRow.childForceExpandHeight = true;
+            Pill(badges, string.IsNullOrEmpty(info.faction) ? "無門無派" : info.faction, UiKit.GoldAccent);
+            if (!string.IsNullOrEmpty(info.stance)) Pill(badges, info.stance, KindColor(info.kind));
+            y -= 50;
+
+            // Seven-attribute bar grid in two columns beside the portrait.
+            var attrs = AttributeSystem.Normalize(info.attrs);
+            for (int index = 0; index < AttributeSystem.Count; index++)
+            {
+                int column = index % 2, attrRow = index / 2;
+                var cell = Rect(AttributeSystem.Names[index], sheet);
+                float top = y - attrRow * 34;
+                Anchor(cell, Vector2.up, Vector2.one, new(x, top - 30), new(-pad, top));
+                var half = Rect("欄", cell);
+                Anchor(half, new(column * .5f, 0), new((column + 1) * .5f, 1), new(column == 0 ? 0 : 10, 0), new(column == 0 ? -10 : 0, 0));
+                var label = Label(half, AttributeSystem.Names[index], 18, TextAnchor.MiddleLeft);
+                label.color = CardMuted;
+                Anchor(label.rectTransform, Vector2.zero, new(0, 1), Vector2.zero, new(48, 0));
+                var value = Label(half, attrs[index].ToString(), 20, TextAnchor.MiddleRight);
+                value.color = attrs[index] >= 15 ? CardGold : attrs[index] < AttributeSystem.Base ? CardLow : CardText;
+                value.font = UiKit.Font("Numbers", font, value.text);
+                Anchor(value.rectTransform, new(1, 0), Vector2.one, new(-34, 0), Vector2.zero);
+                CardBar(half, 54, -11, -40, 9, attrs[index] / (float)AttributeSystem.Max,
+                    Color.Lerp(AttributeSystem.Tints[index], Color.white, .2f));
+            }
+            if (info.estimated)
+            {
+                var note = Label(sheet, "屬性係據江湖傳聞推估", 18, TextAnchor.MiddleRight);
+                note.color = new Color(.62f, .55f, .44f);
+                float noteTop = y - 4 * 34 + 4;
+                Anchor(note.rectTransform, Vector2.up, Vector2.one, new(x, noteTop - 28), new(-pad, noteTop));
+            }
+
+            // Lower half: signature arts, then a scrolling biography / relationship column.
+            float lower = -pad - portraitH - 20;
+            var artsHeading = Label(sheet, "拿手武學與技藝", 22, TextAnchor.MiddleLeft);
+            artsHeading.color = CardGold;
+            Anchor(artsHeading.rectTransform, Vector2.up, Vector2.one, new(pad, lower - 32), new(-pad, lower));
+            Rule(lower - 34);
+            var arts = Label(sheet, string.IsNullOrEmpty(info.arts) ? "尚無記載" : info.arts, 18, TextAnchor.UpperLeft);
+            arts.color = CardText;
+            arts.horizontalOverflow = HorizontalWrapMode.Wrap;
+            arts.resizeTextForBestFit = false;
+            Anchor(arts.rectTransform, Vector2.up, Vector2.one, new(pad, lower - 92), new(-pad, lower - 40));
+
+            var bio = ScrollList(sheet, new Vector2(pad, 84), new Vector2(-pad - 14, lower - 98));
+            BioLine("生平列傳", 22, CardGold);
+            BioLine(string.IsNullOrWhiteSpace(info.biography) ? "生平未詳。" : info.biography, 18, CardText);
+            BioLine("與本門淵源", 22, CardGold);
+            BioLine(string.IsNullOrWhiteSpace(info.bond) ? "與本門尚無往來。" : info.bond, 18, CardText);
+
+            var actions = Rect("卷宗行動", sheet);
+            Anchor(actions, Vector2.zero, Vector2.right, new(pad, 18), new(-pad, 70));
+            var row = actions.gameObject.AddComponent<HorizontalLayoutGroup>();
+            row.spacing = 14;
+            row.childControlWidth = row.childControlHeight = true;
+            row.childForceExpandWidth = row.childForceExpandHeight = true;
+            foreach (var (label, run) in info.actions ?? Array.Empty<(string, Action)>())
+            {
+                var button = Button(actions, label, run);
+                button.GetComponent<Button>().interactable = run != null;
+                var caption = button.GetComponentInChildren<Text>();
+                caption.fontSize = caption.resizeTextMaxSize = 20;
+                caption.color = UiKit.HeaderGold;
+            }
+
+            void Line(string text, int size, Color color, float height)
+            {
+                var line = Label(sheet, text, size, TextAnchor.MiddleLeft);
+                line.color = color;
+                Anchor(line.rectTransform, Vector2.up, Vector2.one, new(x, y - height), new(-pad, y));
+                y -= height + 2;
+            }
+            void Rule(float top)
+            {
+                var rule = Rect("Rule", sheet);
+                Anchor(rule, Vector2.up, Vector2.one, new(pad, top - 1), new(-pad, top));
+                var ink = rule.gameObject.AddComponent<Image>();
+                ink.color = new Color(.78f, .63f, .35f, .55f);
+                ink.raycastTarget = false;
+            }
+            void BioLine(string text, int size, Color color)
+            {
+                var line = Label(bio, text, size);
+                line.color = color;
+                line.gameObject.AddComponent<LayoutElement>().minHeight = size + 8;
+                line.horizontalOverflow = HorizontalWrapMode.Wrap;
+                line.verticalOverflow = VerticalWrapMode.Overflow;
+                line.resizeTextForBestFit = false;
+                line.lineSpacing = 1.15f;
+            }
+        }
+
+        private void Pill(RectTransform parent, string text, Color accent)
+        {
+            var pill = Rect(text, parent);
+            var image = pill.gameObject.AddComponent<Image>();
+            image.color = Color.Lerp(accent, Color.black, .55f);
+            image.raycastTarget = false;
+            var rim = pill.gameObject.AddComponent<Outline>();
+            rim.effectColor = accent;
+            rim.effectDistance = new Vector2(1.5f, 1.5f);
+            var label = Label(pill, text, 18, TextAnchor.MiddleCenter);
+            label.color = Color.Lerp(accent, Color.white, .6f);
+            label.resizeTextForBestFit = false;
+            label.horizontalOverflow = HorizontalWrapMode.Overflow;
+            Fill(label.rectTransform);
+            pill.gameObject.AddComponent<LayoutElement>().preferredWidth = text.Length * 19 + 28;
         }
 
         internal void ShowCharacterProfile(StoryCharacter person, string faction, int relation,

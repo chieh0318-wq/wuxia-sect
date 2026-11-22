@@ -114,6 +114,8 @@ namespace Wuxia
                     ("30_exit_confirmation.png", () => ui.ConfirmExit(ui.ShowSystemMenu)),
                     ("12_protagonist_panel.png", ShowProtagonist),
                     ("26_characters_panel.png", ShowCharacterDirectory),
+                    ("26b_characters_sect.png", () => ShowCharacterDirectory(1, "lin")),
+                    ("26c_characters_leaders.png", () => ShowCharacterDirectory(5, null)),
                     ("27_character_detail.png", () =>
                     {
                         var person = StoryCharacters.FirstOrDefault(entry => entry.id == state.FriendId)

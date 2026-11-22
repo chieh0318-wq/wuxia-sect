@@ -103,6 +103,9 @@ namespace Wuxia
                 state.Story.usedPortraits ??= Array.Empty<StoryValue>();
                 foreach (var disciple in state.Disciples)
                 {
+                    // Named disciples always resync to their own portrait, overriding stale ids from old saves.
+                    if (state.IsNamedDisciple(disciple.id) && PortraitService.FindPortrait(disciple.id) != null)
+                        disciple.portrait = disciple.id;
                     if (migratePortraits) PortraitPool.Track(state.Story, disciple.portrait);
                     state.EnsurePortrait(disciple);
                 }

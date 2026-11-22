@@ -28,7 +28,7 @@ namespace Wuxia
             IEnumerable<(string name, string motto, TechCard[] nodes)> branches, Action close)
         {
             ShowCreation("藏經閣・門派科技樹", header, new[] { ("關閉", close) }, null);
-            const float plaqueWidth = 196, arrow = 44, rowHeight = 158;
+            const float plaqueWidth = 196, arrow = 44, rowHeight = 170;
             foreach (var branch in branches)
             {
                 var row = CreationRow(branch.name, rowHeight);
@@ -37,7 +37,7 @@ namespace Wuxia
                 var title = Label(plaque, branch.name, 26, TextAnchor.MiddleCenter);
                 title.color = new Color(.98f, .89f, .72f);
                 Anchor(title.rectTransform, new(0, .45f), Vector2.one, new(8, 0), new(-8, -10));
-                var motto = Label(plaque, branch.motto, 17, TextAnchor.UpperCenter);
+                var motto = Label(plaque, branch.motto, 18, TextAnchor.UpperCenter);
                 motto.color = new Color(.92f, .80f, .62f);
                 Anchor(motto.rectTransform, Vector2.zero, new(1, .45f), new(8, 10), new(-8, -4));
 
@@ -64,18 +64,17 @@ namespace Wuxia
                     caption.alignment = TextAnchor.MiddleLeft;
                     caption.resizeTextMaxSize = 22;
                     Anchor(caption.rectTransform, Vector2.up, Vector2.one, new(12, -34), new(-8, -4));
-                    var cost = Label(card, $"第{"一二三四"[Mathf.Clamp(index, 0, 3)]}重　{node.cost}", 16, TextAnchor.MiddleLeft);
+                    var cost = Label(card, $"第{"一二三四"[Mathf.Clamp(index, 0, 3)]}重　{node.cost}", 18, TextAnchor.MiddleLeft);
                     cost.color = new Color(.95f, .82f, .62f);
                     Anchor(cost.rectTransform, Vector2.up, Vector2.one, new(12, -58), new(-8, -34));
-                    var effect = Label(card, node.effect, 16);
+                    var effect = Label(card, node.effect, 18);
                     effect.color = new Color(1f, .93f, .80f);
                     effect.horizontalOverflow = HorizontalWrapMode.Wrap;
-                    effect.resizeTextMinSize = 12;
-                    effect.resizeTextMaxSize = 16;
+                    effect.resizeTextForBestFit = false;
                     Anchor(effect.rectTransform, Vector2.zero, Vector2.one, new(12, 34), new(-8, -60));
                     var status = Label(card, node.status, 18, TextAnchor.MiddleLeft);
                     status.color = node.researched ? TechDone : node.unlocked ? TechOpen : TechLocked;
-                    status.resizeTextMinSize = 12;
+                    status.resizeTextMinSize = 18;
                     Anchor(status.rectTransform, Vector2.zero, Vector2.right, new(12, 6), new(-8, 32));
                     if (index == branch.nodes.Length - 1)
                         continue;

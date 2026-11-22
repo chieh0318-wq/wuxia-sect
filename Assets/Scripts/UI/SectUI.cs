@@ -57,64 +57,73 @@ namespace Wuxia
             labels = Rect("World labels", canvas);
             Fill(labels);
             var top = Panel("Top bar", canvas, new Vector2(0, 1), Vector2.one,
-                new Vector2(18, -94), new Vector2(-18, -18));
+                new Vector2(18, -98), new Vector2(-18, -18));
             UiKit.Skin(top.GetComponent<Image>(), "Teal");
-            date = Label(top, "", 28, TextAnchor.MiddleLeft);
-            var lightInk = new Color(.92f, .86f, .73f);
-            date.color = lightInk;
-            Anchor(date.rectTransform, Vector2.zero, Vector2.up, new(56, 0), new(360, 0));
-            HudIcon(top, "Month", 16);
+            var lightInk = new Color(.95f, .89f, .76f);
+            var datePlaque = HudPlaque(top, "日期", new(0, 0), new(0, 1), new(14, 10), new(400, -10));
+            date = Label(datePlaque, "", 24, TextAnchor.MiddleLeft);
+            date.color = UiKit.HeaderGold;
+            date.font = UiKit.Font("Names", font);
+            Anchor(date.rectTransform, Vector2.zero, Vector2.one, new(58, 0), new(-10, 0));
+            HudIcon(datePlaque, "Month", 14);
             var counters = Rect("門派資源", top);
-            Anchor(counters, new(.31f, 0), new(.68f, 1), Vector2.zero, Vector2.zero);
+            Anchor(counters, new(.225f, 0), new(.655f, 1), Vector2.zero, Vector2.zero);
             string[] icons = { "Silver", "Food", "Reputation", "Disciples" };
             for (int index = 0; index < icons.Length; index++)
             {
-                var cell = Rect(icons[index], counters);
-                Anchor(cell, new(index * .25f, 0), new((index + 1) * .25f, 1), Vector2.zero, Vector2.zero);
-                HudIcon(cell, icons[index], 0);
-                var value = Label(cell, "", 24, TextAnchor.MiddleLeft);
+                var cell = HudPlaque(counters, icons[index], new(index * .25f, 0), new((index + 1) * .25f, 1),
+                    new(5, 10), new(-5, -10));
+                HudIcon(cell, icons[index], 12);
+                var value = Label(cell, "", 22, TextAnchor.MiddleLeft);
                 value.color = lightInk;
                 value.font = UiKit.Font("Numbers", font);
-                Anchor(value.rectTransform, Vector2.zero, Vector2.one, new(36, 0), new(-6, 0));
+                Anchor(value.rectTransform, Vector2.zero, Vector2.one, new(52, 0), new(-8, 0));
                 resourceLabels[index] = value;
             }
-            var ap = Panel("行動力", top, new(.70f, 0), new(.70f, 1), new(0, 8), new(242, -8));
-            UiKit.Skin(ap.GetComponent<Image>(), "Wood");
-            apDisplay = Label(ap, "", 24, TextAnchor.MiddleCenter);
+            var ap = HudPlaque(top, "行動力", new(.665f, 0), new(.665f, 1), new(0, 8), new(290, -8));
+            apDisplay = Label(ap, "", 22, TextAnchor.MiddleLeft);
             apDisplay.color = lightInk;
-            Anchor(apDisplay.rectTransform, Vector2.zero, Vector2.one, new(12, 18), new(-12, -5));
+            Anchor(apDisplay.rectTransform, Vector2.zero, Vector2.one, new(18, 22), new(-12, -4));
             apHud = ap.gameObject.AddComponent<ApHud>();
-            var apSources = Panel("行動力來源", ap, Vector2.zero, Vector2.right, new(-38, -134), new(38, -4), false);
+            var apSources = Panel("行動力來源", ap, Vector2.zero, Vector2.right, new(-38, -150), new(38, -4), false);
             UiKit.Skin(apSources.GetComponent<Image>(), "Wood");
             var sourceList = Label(apSources, "", 20, TextAnchor.MiddleLeft);
             sourceList.color = lightInk;
             Fill(sourceList.rectTransform, 14);
             var apTrack = Rect("本月行動力", ap);
-            Anchor(apTrack, Vector2.zero, Vector2.right, new(19, 10), new(-19, 15));
-            apTrack.gameObject.AddComponent<Image>().color = new Color(.91f, .83f, .69f, .26f);
-            var apFill = Rect("剩餘行動力", apTrack);
-            Fill(apFill);
-            apFill.gameObject.AddComponent<Image>().color = new Color(.88f, .67f, .35f);
-            apHud.Initialize(apDisplay, sourceList, apFill);
+            Anchor(apTrack, Vector2.zero, Vector2.right, new(18, 9), new(-18, 23));
+            var pipRow = apTrack.gameObject.AddComponent<HorizontalLayoutGroup>();
+            pipRow.spacing = 5;
+            pipRow.childControlWidth = pipRow.childControlHeight = true;
+            pipRow.childForceExpandWidth = pipRow.childForceExpandHeight = true;
+            apHud.Initialize(apDisplay, sourceList, apTrack);
             targets["ap"] = ap;
             var end = Button(top, "結束本月", endMonth);
             targets["end_month"] = end;
-            Anchor(end, Vector2.right, Vector2.one, new Vector2(-188, 12), new Vector2(-12, -12));
+            UiKit.Skin(end.GetComponent<Image>(), "Selected");
+            var endLabel = end.GetComponentInChildren<Text>();
+            endLabel.fontSize = endLabel.resizeTextMaxSize = 24;
+            endLabel.resizeTextMinSize = UiKit.MinTitle;
+            endLabel.color = UiKit.HeaderGold;
+            endLabel.fontStyle = FontStyle.Bold;
+            Anchor(end, Vector2.right, Vector2.one, new Vector2(-220, 10), new Vector2(-14, -10));
 
             var commands = Panel("Commands", canvas, new Vector2(0, 1), new Vector2(0, 1),
-                new Vector2(18, -365), new Vector2(448, -110));
+                new Vector2(18, -365), new Vector2(458, -112));
+            UiKit.Skin(commands.GetComponent<Image>(), "Xuan");
             this.commands = commands;
-            commandList = ScrollList(commands, new Vector2(14, 14), new Vector2(-14, -14));
+            commandList = ScrollList(commands, new Vector2(22, 22), new Vector2(-22, -22));
 
             details = Panel("Building details", canvas, Vector2.one, Vector2.one,
-                new Vector2(-390, -665), new Vector2(-18, -110));
-            detailsList = ScrollList(details, new Vector2(14, 14), new Vector2(-14, -72));
+                new Vector2(-420, -665), new Vector2(-18, -112));
+            UiKit.Skin(details.GetComponent<Image>(), "Xuan");
+            detailsList = ScrollList(details, new Vector2(22, 22), new Vector2(-22, -76));
             var closeDetails = Button(details, "關閉", CloseBuilding);
             Anchor(closeDetails, Vector2.one, Vector2.one, new Vector2(-118, -60), new Vector2(-14, -12));
             CloseBuilding();
 
             var help = Panel("Controls", canvas, Vector2.zero, Vector2.zero,
-                new Vector2(18, 18), new Vector2(550, 88), false);
+                new Vector2(18, 18), new Vector2(550, 104), false);
             Fill(Label(help, "左鍵查看院中建築與弟子\nWASD 移動　滾輪縮放",
                 22, TextAnchor.MiddleLeft).rectTransform, 12);
 
@@ -149,9 +158,10 @@ namespace Wuxia
             backdrop.type = Image.Type.Simple;
             backdrop.color = new Color(.08f, .055f, .034f, .40f);
             modalCard = Panel("Report", modal, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero);
-            modalList = ScrollList(modalCard, new Vector2(26, 82), new Vector2(-26, -22));
+            UiKit.Skin(modalCard.GetComponent<Image>(), "Xuan");
+            modalList = ScrollList(modalCard, new Vector2(32, 84), new Vector2(-32, -28));
             modalButtons = Rect("Report actions", modalCard);
-            Anchor(modalButtons, Vector2.zero, Vector2.right, new Vector2(22, 18), new Vector2(-22, 68));
+            Anchor(modalButtons, Vector2.zero, Vector2.right, new Vector2(30, 22), new Vector2(-30, 72));
             var actions = modalButtons.gameObject.AddComponent<HorizontalLayoutGroup>();
             actions.spacing = 16;
             actions.childControlWidth = actions.childControlHeight = true;
@@ -168,10 +178,20 @@ namespace Wuxia
 
         public bool BuildingOpen => details.gameObject.activeSelf;
 
+        /// <summary>Dark lacquer badge on the top bar (date, each resource, action points).</summary>
+        private static RectTransform HudPlaque(RectTransform parent, string name, Vector2 a, Vector2 b, Vector2 min, Vector2 max)
+        {
+            var rect = Rect(name, parent);
+            Anchor(rect, a, b, min, max);
+            var image = rect.gameObject.AddComponent<Image>();
+            UiKit.Skin(image, "Wood");
+            return rect;
+        }
+
         private static void HudIcon(RectTransform parent, string icon, int offset)
         {
             var rect = Rect(icon + " icon", parent);
-            Anchor(rect, new(0, .5f), new(0, .5f), new(offset, -18), new(offset + 36, 18));
+            Anchor(rect, new(0, .5f), new(0, .5f), new(offset, -17), new(offset + 34, 17));
             var image = rect.gameObject.AddComponent<Image>();
             image.sprite = UiKit.Sprite(icon);
             image.enabled = image.sprite != null;
@@ -185,7 +205,7 @@ namespace Wuxia
             resourceLabels[0].text = $"銀兩 {state.Silver}";
             resourceLabels[1].text = $"糧食 {state.Food}";
             resourceLabels[2].text = $"聲望 {state.Reputation}";
-            resourceLabels[3].text = $"弟子 {state.Disciples.Count}";
+            resourceLabels[3].text = $"門人 {state.Disciples.Count}";
         }
 
         public void ShowCommands(string title, IEnumerable<(string label, Action run)> commands) =>
@@ -227,19 +247,26 @@ namespace Wuxia
             }
             if (string.IsNullOrEmpty(detail))
                 return rect;
-            rect.GetComponent<LayoutElement>().preferredHeight = 88;
+            rect.GetComponent<LayoutElement>().preferredHeight = 122;
             var caption = rect.GetComponentInChildren<Text>();
             caption.alignment = TextAnchor.MiddleLeft;
-            caption.resizeTextMaxSize = 21;
-            Anchor(caption.rectTransform, Vector2.up, Vector2.one, new(14, -36), new(-10, -4));
+            caption.fontSize = caption.resizeTextMaxSize = 22;
+            caption.resizeTextMinSize = UiKit.MinBody;
+            Anchor(caption.rectTransform, Vector2.up, Vector2.one, new(22, -38), new(-10, -6));
+            var divider = Rect("Card rule", rect);
+            Anchor(divider, Vector2.up, Vector2.one, new(22, -41), new(-14, -40));
+            var rule = divider.gameObject.AddComponent<Image>();
+            rule.color = new Color(.90f, .72f, .40f, .45f);
+            rule.raycastTarget = false;
             // No-break spaces: legacy Text only wraps at spaces, which strands "+10，解鎖…" runs on one line.
-            var body = Label(rect, detail.Replace(' ', ' '), 16);
+            var body = Label(rect, detail.Replace(' ', ' '), 18);
             body.color = new Color(1f, .86f, .62f);
             body.alignment = TextAnchor.UpperLeft;
             body.horizontalOverflow = HorizontalWrapMode.Wrap;
-            body.resizeTextMinSize = 12;
-            body.resizeTextMaxSize = 16;
-            Anchor(body.rectTransform, Vector2.zero, Vector2.one, new(14, 5), new(-10, -38));
+            body.resizeTextForBestFit = false;
+            body.lineSpacing = 1.05f;
+            Anchor(body.rectTransform, Vector2.zero, Vector2.one, new(22, 6), new(-10, -44));
+            UiKit.AccentStripe(rect, selected ? UiKit.GoldAccent : run == null ? new Color(.45f, .40f, .34f) : UiKit.Crimson);
             return rect;
         }
 
@@ -266,7 +293,7 @@ namespace Wuxia
             targets["intel"] = intelButton;
         }
 
-        private void SetCommandsPanelHeight(float height) => commands.offsetMin = new Vector2(18, -110 - height);
+        private void SetCommandsPanelHeight(float height) => commands.offsetMin = new Vector2(18, -112 - height);
 
         public void ShowBuilding(BuildingData building, IEnumerable<(string label, Action run)> actions, int level = 1) =>
             ShowBuilding(building, actions.Select(action => (action.label, (string)null, action.run)), level);
@@ -284,7 +311,7 @@ namespace Wuxia
             details.gameObject.SetActive(true);
             LayoutRebuilder.ForceRebuildLayoutImmediate(detailsList);
             float height = Mathf.Clamp(LayoutUtility.GetPreferredHeight(detailsList) + 86, 155, 780);
-            Anchor(details, Vector2.one, Vector2.one, new Vector2(-390, -110 - height), new Vector2(-18, -110));
+            Anchor(details, Vector2.one, Vector2.one, new Vector2(-420, -112 - height), new Vector2(-18, -112));
             detailsList.anchoredPosition = Vector2.zero;
         }
 
@@ -327,28 +354,128 @@ namespace Wuxia
             var image = Rect("Title art", titleScreen);
             Fill(image);
             AddImage(image, PortraitService.Story("title_bg") ?? UiKit.Backdrop());
-            var plaque = Panel("Title plaque", titleScreen, new(.30f, .5f), new(.30f, .5f),
-                new(-256, -208), new(256, 240));
-            UiKit.Skin(plaque.GetComponent<Image>(), "Plaque");
-            var heading = Label(plaque, title, 62, TextAnchor.MiddleCenter);
-            heading.color = new Color(.94f, .88f, .76f);
-            Anchor(heading.rectTransform, Vector2.up, Vector2.one, new(24, -128), new(-24, -16));
-            var divider = Rect("Divider", plaque);
-            Anchor(divider, Vector2.up, Vector2.one, new(48, -131), new(-48, -123));
+            var shade = Rect("Ink vignette", titleScreen);
+            Fill(shade);
+            AddImage(shade, UiKit.Vignette()).color = new Color(1, 1, 1, .85f);
+            // Left-side ink wash so the banner reads against any illustration.
+            var wash = Rect("Ink wash", titleScreen);
+            Anchor(wash, Vector2.zero, new(.48f, 1), Vector2.zero, Vector2.zero);
+            AddImage(wash, InkWash()).color = new Color(1, 1, 1, .9f);
+
+            // Zongmen-Origin style vertical banner: dark ink lacquer, double antique-gold trim, seal, calligraphy.
+            var banner = Panel("Title banner", titleScreen, new(.24f, .5f), new(.24f, .5f),
+                new(-300, -430), new(300, 430));
+            var bannerImage = banner.GetComponent<Image>();
+            UiKit.Skin(bannerImage, "Lacquer");
+            bannerImage.color = new Color(1, 1, 1, .93f);
+            GoldFrame(banner, 16, 2, UiKit.TitleGold);
+            GoldFrame(banner, 22, 1, new Color(.78f, .66f, .42f, .6f));
+
+            var seal = Panel("Title seal", banner, new(.5f, 1), new(.5f, 1), new(-130, -104), new(130, -54), false);
+            UiKit.Skin(seal.GetComponent<Image>(), "Seal");
+            var sealText = Label(seal, "【開元武林錄】", 24, TextAnchor.MiddleCenter);
+            sealText.color = new Color(1f, .91f, .74f);
+            sealText.font = UiKit.Font("Names", font, sealText.text);
+            Fill(sealText.rectTransform, 4);
+
+            var heading = Label(banner, string.Join(" ", title.ToCharArray()), 48, TextAnchor.MiddleCenter);
+            heading.fontStyle = FontStyle.Bold;
+            heading.font = UiKit.Font("Titles", font, title);
+            heading.color = new Color(.97f, .90f, .72f);
+            heading.resizeTextForBestFit = false;
+            var headingShadow = heading.gameObject.AddComponent<Shadow>();
+            headingShadow.effectColor = new Color(0, 0, 0, .85f);
+            headingShadow.effectDistance = new Vector2(2, -3);
+            var headingGlow = heading.gameObject.AddComponent<Outline>();
+            headingGlow.effectColor = new Color(.78f, .60f, .30f, .45f);
+            Anchor(heading.rectTransform, new(0, 1), Vector2.one, new(30, -196), new(-30, -118));
+
+            var subtitle = Label(banner, "「崤函風雲起・一劍開宗門」", 20, TextAnchor.MiddleCenter);
+            subtitle.color = UiKit.TitleGold;
+            subtitle.font = UiKit.Font("Narration", font, subtitle.text);
+            Anchor(subtitle.rectTransform, new(0, 1), Vector2.one, new(30, -238), new(-30, -204));
+
+            var divider = Rect("Divider", banner);
+            Anchor(divider, new(0, 1), Vector2.one, new(70, -262), new(-70, -250));
             var dividerImage = divider.gameObject.AddComponent<Image>();
             dividerImage.sprite = UiKit.Sprite("Divider");
+            dividerImage.color = UiKit.TitleGold;
             dividerImage.raycastTarget = false;
-            AddTitleButton("新遊戲", start, 192);
-            AddTitleButton("繼續", resume, 264);
-            AddTitleButton("設定", ShowAudioOptions, 336);
-            AddTitleButton("退出遊戲", () => ConfirmExit(CloseModalFromMenu), 408);
 
-            void AddTitleButton(string text, Action run, float bottom)
+            AddTitleButton("踏入江湖", "新遊戲", start, 0);
+            AddTitleButton("再續前緣", "繼續遊玩", resume, 1);
+            AddTitleButton("百器天工", "系統設定", ShowAudioOptions, 2);
+            AddTitleButton("歸隱山林", "退出遊戲", () => ConfirmExit(CloseModalFromMenu), 3);
+
+            var footer = Label(banner, "開元元年・崤函之間", 18, TextAnchor.MiddleCenter);
+            footer.color = new Color(.70f, .60f, .44f);
+            Anchor(footer.rectTransform, Vector2.zero, Vector2.right, new(30, 34), new(-30, 64));
+
+            void AddTitleButton(string text, string note, Action run, int index)
             {
-                var item = Button(plaque, text, run);
-                Anchor(item, Vector2.up, Vector2.one, new(72, -bottom), new(-72, -bottom + 56));
-                item.GetComponent<Button>().interactable = run != null;
+                float top = -310 - index * 84;
+                var item = Button(banner, text, run);
+                item.name = text;
+                Anchor(item, new(0, 1), Vector2.one, new(64, top - 56), new(-64, top));
+                var plate = item.GetComponent<Image>();
+                UiKit.Skin(plate, "TitleMenu");
+                var button = item.GetComponent<Button>();
+                button.interactable = run != null;
+                var colors = button.colors;
+                colors.highlightedColor = Color.white;
+                colors.selectedColor = Color.white;
+                colors.pressedColor = new Color(.85f, .78f, .70f);
+                colors.disabledColor = new Color(.55f, .52f, .50f, .85f);
+                button.colors = colors;
+                var caption = item.GetComponentInChildren<Text>();
+                caption.supportRichText = true;
+                caption.text = $"{text}<color=#B99D6B>　（{note}）</color>";
+                caption.fontSize = caption.resizeTextMaxSize = 26;
+                caption.resizeTextMinSize = UiKit.MinTitle;
+                caption.color = new Color(.98f, .91f, .76f);
+                caption.alignment = TextAnchor.MiddleLeft;
+                caption.font = UiKit.Font("Names", font, text + note + "（）　");
+                Anchor(caption.rectTransform, Vector2.zero, Vector2.one, new(46, 2), new(-16, -2));
+                var glow = Rect("Hover glow", item);
+                glow.SetAsFirstSibling();
+                Fill(glow, -6);
+                var glowImage = glow.gameObject.AddComponent<Image>();
+                glowImage.sprite = null;
+                glowImage.color = new Color(.95f, .76f, .38f, 0);
+                glowImage.raycastTarget = false;
+                item.gameObject.AddComponent<HoverGlow>().Initialize(glowImage, caption);
             }
+        }
+
+        /// <summary>Rectangular gold rule inset inside <paramref name="parent"/> (four thin bars).</summary>
+        private static void GoldFrame(RectTransform parent, float inset, float thickness, Color color)
+        {
+            for (int side = 0; side < 4; side++)
+            {
+                var bar = Rect("Gold rule", parent);
+                if (side < 2)
+                    Anchor(bar, new(0, side), new(1, side), new(inset, side == 0 ? inset : -inset - thickness),
+                        new(-inset, side == 0 ? inset + thickness : -inset));
+                else
+                    Anchor(bar, new(side - 2, 0), new(side - 2, 1), new(side == 2 ? inset : -inset - thickness, inset),
+                        new(side == 2 ? inset + thickness : -inset, -inset));
+                var image = bar.gameObject.AddComponent<Image>();
+                image.color = color;
+                image.raycastTarget = false;
+            }
+        }
+
+        private static Texture2D inkWash;
+
+        /// <summary>Horizontal ink gradient: deep ink on the left fading to clear, behind the title banner.</summary>
+        private static Texture2D InkWash()
+        {
+            if (inkWash != null) return inkWash;
+            inkWash = new Texture2D(64, 1, TextureFormat.RGBA32, false) { wrapMode = TextureWrapMode.Clamp };
+            for (int x = 0; x < 64; x++)
+                inkWash.SetPixel(x, 0, new Color(.04f, .035f, .03f, Mathf.SmoothStep(.78f, 0, x / 63f)));
+            inkWash.Apply(false, true);
+            return inkWash;
         }
 
         public void CloseTitle()
@@ -599,7 +726,7 @@ namespace Wuxia
             var label = Label(rect, text, 22, TextAnchor.MiddleCenter);
             label.color = new Color(.98f, .92f, .81f);
             label.resizeTextForBestFit = true;
-            label.resizeTextMinSize = 15;
+            label.resizeTextMinSize = UiKit.MinBody;
             label.resizeTextMaxSize = 22;
             Fill(label.rectTransform, 4);
             return rect;
@@ -607,6 +734,7 @@ namespace Wuxia
 
         private Text Label(RectTransform parent, string content, int size, TextAnchor alignment = TextAnchor.UpperLeft)
         {
+            size = UiKit.Readable(size);
             var text = Rect("Text", parent).gameObject.AddComponent<Text>();
             text.font = UiKit.Font(size >= 28 ? "Titles" : "Interface", font, content);
             text.fontSize = size;
@@ -614,8 +742,10 @@ namespace Wuxia
             text.color = Ink;
             text.raycastTarget = false;
             text.resizeTextForBestFit = true;
-            text.resizeTextMinSize = Mathf.Min(15, size);
+            text.resizeTextMinSize = UiKit.MinBody;
             text.resizeTextMaxSize = size;
+            // With the 18px floor a label may not shrink to fit; let it draw rather than silently truncate.
+            text.verticalOverflow = VerticalWrapMode.Overflow;
             text.text = content;
             return text;
         }

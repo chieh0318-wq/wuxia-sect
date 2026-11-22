@@ -81,8 +81,21 @@ namespace Wuxia
             ActionPoints = Mathf.Min(ActionPoints, ApMax);
         }
 
+        /// <summary>The authored sect disciples, whose own portrait always wins over any pooled recruit art.</summary>
+        internal static readonly string[] NamedDisciples =
+            { "lin", "xu", "luo", "du", "han", "kang", "pei", "shen", "song", "wei", "cui", "qiao" };
+
+        internal bool IsNamedDisciple(string id) =>
+            !string.IsNullOrEmpty(id) && (Array.IndexOf(NamedDisciples, id) >= 0 || Data.Disciples.Any(seed => seed.id == id));
+
         internal void EnsurePortrait(DiscipleData person)
         {
+            // Old saves may carry a stale recruit_* or superseded id; a named disciple always uses its own art.
+            if (IsNamedDisciple(person.id) && PortraitService.FindPortrait(person.id) != null)
+            {
+                person.portrait = person.id;
+                return;
+            }
             if (string.IsNullOrEmpty(person.portrait) && PortraitService.FindPortrait(person.id) == null)
                 person.portrait = PortraitPool.Assign(Story, person);
         }

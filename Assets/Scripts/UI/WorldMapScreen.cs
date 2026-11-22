@@ -117,7 +117,7 @@ namespace Wuxia
             {
                 var points = region.Select(Position).ToArray();
                 Vector2 center = new(points.Average(point => point.x), points.Average(point => point.y));
-                var name = MapUi.Text(regions, region.Key, center.x - 76, center.y - 44, 152, 24, 17,
+                var name = MapUi.Text(regions, region.Key, center.x - 90, center.y - 48, 180, 30, 20,
                     new Color(1, .95f, .82f, .62f), TextAnchor.MiddleCenter, "Names");
                 var outline = name.gameObject.AddComponent<Outline>();
                 outline.effectColor = new Color(.10f, .08f, .05f, .55f);
@@ -149,18 +149,18 @@ namespace Wuxia
             var focusText = MapUi.Text(focusMarker,"◯",0,0,36,36,32,MapUi.Red,TextAnchor.MiddleCenter);
             focusText.fontStyle = FontStyle.Bold;
             focusMarker.gameObject.SetActive(false);
-            party = MapUi.Panel(map,"Party",0,0,23,23,MapUi.Red);
+            party = MapUi.Panel(map,"Party",0,0,28,28,MapUi.Red);
             party.GetComponent<Image>().raycastTarget = false;
             party.pivot = Vector2.one*.5f;
-            MapUi.Text(party,"行",0,0,23,23,16,MapUi.Paper,TextAnchor.MiddleCenter);
+            MapUi.Text(party,"行",0,0,28,28,18,MapUi.Paper,TextAnchor.MiddleCenter);
             card = MapUi.Rect(frame,"Map card",1113,96,426,680);
             var footer = MapUi.Kit(frame,"Map status bar",12,808,1576,82,"Wood",false);
             status = MapUi.Text(footer,"",22,6,1530,38,22,MapUi.Paper,TextAnchor.MiddleLeft,"Narration");
             MapUi.Text(footer,"滾輪縮放　右鍵或中鍵拖曳　WASD 平移",
-                22,44,630,30,17,MapUi.Gold);
+                22,44,630,30,18,MapUi.Gold);
             var legend = MapUi.Kit(footer,"Legend paper tag",750,13,805,55,"Paper",false);
             MapUi.Text(legend,"大城 雄城重鎮　小城 縣鎮驛站　山門 門派名山　關隘 險要雄關　旗 勢力　行 隊伍",
-                16,0,773,55,17,MapUi.Ink,TextAnchor.MiddleCenter);
+                16,0,773,55,18,MapUi.Ink,TextAnchor.MiddleCenter);
             if (data.Nodes.Count == 0) status.text = "地圖資料尚未載入。";
             intel = new IntelPanel(frame,data,FocusFaction);
             ApplyView();
@@ -218,18 +218,18 @@ namespace Wuxia
         /// <summary>A small faction banner: ink pole, cloth in the faction colour and the faction's first glyph.</summary>
         private RectTransform Banner(MapFaction faction)
         {
-            var button = MapUi.Button(map,"",0,0,24,30,() => FocusFaction(faction),Color.clear);
+            var button = MapUi.Button(map,"",0,0,30,34,() => FocusFaction(faction),Color.clear);
             var rect = (RectTransform)button.transform;
             rect.pivot = new Vector2(.5f,1);
-            MapUi.Panel(rect,"Pole",2,0,2.5f,30,MapUi.Ink).GetComponent<Image>().raycastTarget = false;
-            var cloth = MapUi.Panel(rect,"Banner",4.5f,1,19,19,faction.Tint);
+            MapUi.Panel(rect,"Pole",2,0,2.5f,34,MapUi.Ink).GetComponent<Image>().raycastTarget = false;
+            var cloth = MapUi.Panel(rect,"Banner",4.5f,1,24,24,faction.Tint);
             cloth.GetComponent<Image>().raycastTarget = false;
             var edge = cloth.gameObject.AddComponent<Outline>();
             edge.effectColor = new Color(.10f,.07f,.05f,.8f);
             edge.effectDistance = new Vector2(1,-1);
-            var glyph = MapUi.Text(cloth,faction.Label.Substring(0,1),0,0,19,19,14,MapUi.Paper,TextAnchor.MiddleCenter,"Names");
+            var glyph = MapUi.Text(cloth,faction.Label.Substring(0,1),0,0,24,24,18,MapUi.Paper,TextAnchor.MiddleCenter,"Names");
             glyph.resizeTextForBestFit = false;
-            MapUi.Panel(rect,"Fringe",4.5f,20,19,2,MapUi.Gold).GetComponent<Image>().raycastTarget = false;
+            MapUi.Panel(rect,"Fringe",4.5f,25,24,2,MapUi.Gold).GetComponent<Image>().raycastTarget = false;
             return rect;
         }
 
@@ -270,7 +270,7 @@ namespace Wuxia
             art.raycastTarget = true;
 
             bool major = node.type is "capital" or "city" or "sect";
-            var plate = MapUi.Panel(plateLayer, "Nameplate", 0, 0, 80, 24, MapUi.Ink);
+            var plate = MapUi.Panel(plateLayer, "Nameplate", 0, 0, 80, 30, MapUi.Ink);
             plate.pivot = new Vector2(0, 1);
             var paper = MapUi.Panel(plate, "Plate paper", 1.5f, 1.5f, 77, 21,
                 node.type == "capital" ? new Color(.62f, .22f, .15f) : new Color(.95f, .89f, .76f));
@@ -279,7 +279,7 @@ namespace Wuxia
             paper.offsetMin = new Vector2(1.5f, 1.5f);
             paper.offsetMax = new Vector2(-1.5f, -1.5f);
             paper.GetComponent<Image>().raycastTarget = false;
-            var label = MapUi.Text(plate, node.Label, 0, 0, 80, 24, major ? 17 : 15,
+            var label = MapUi.Text(plate, node.Label, 0, 0, 80, 30, major ? 20 : 18,
                 node.type == "capital" ? MapUi.Paper : MapUi.Ink, TextAnchor.MiddleCenter, "Names");
             label.resizeTextForBestFit = false;
             label.horizontalOverflow = HorizontalWrapMode.Overflow;
@@ -395,8 +395,8 @@ namespace Wuxia
             foreach (var (node,plate,label,point) in labels.OrderBy(entry => entry.node.id == host?.PartyNode ? -1 : LabelPriority(entry.node)))
             {
                 plate.localScale = Vector3.one/zoom;
-                float width = Mathf.Clamp(label.text.Length * (label.fontSize + 1) + 14, 40, 150);
-                plate.sizeDelta = new Vector2(width,24);
+                float width = Mathf.Clamp(label.text.Length * (label.fontSize + 1) + 16, 48, 180);
+                plate.sizeDelta = new Vector2(width,30);
                 Vector2 marker = point*zoom+offset;
                 float icon = IconWidth(node.type) * iconScale;
                 Vector2[] candidates = {
@@ -471,7 +471,7 @@ namespace Wuxia
             {
                 MapUi.Portrait(panel, known ? PortraitService.Resolve(faction.PortraitId) : null, 20, 116, 104, 138);
                 if (!known) MapUi.Text(panel, "？", 20, 116, 104, 138, 54, MapUi.Paper, TextAnchor.MiddleCenter);
-                MapUi.Text(panel, "控制勢力", 140, 112, 140, 24, 16, MapUi.Red);
+                MapUi.Text(panel, "控制勢力", 140, 112, 140, 24, 18, MapUi.Red);
                 MapUi.Text(panel, faction.Label, 140, 134, 266, 34, 26, MapUi.Ink);
                 MapUi.Text(panel, known ? $"首領　{faction.leader ?? "不詳"}" : "首領　尚待打探", 140, 168, 266, 26, 19, MapUi.Ink);
                 string relation = faction.RelationWith(host.RelationShift(faction.id));
@@ -493,17 +493,17 @@ namespace Wuxia
             y += 58;
             if (factions.Length > 1)
             {
-                MapUi.Text(panel, "另有勢力　" + string.Join("、", factions.Skip(1).Select(f => f.Label)), 20, y, 386, 24, 16, MapUi.Ink);
+                MapUi.Text(panel, "另有勢力　" + string.Join("、", factions.Skip(1).Select(f => f.Label)), 20, y, 386, 24, 18, MapUi.Ink);
                 y += 26;
             }
-            MapUi.Text(panel, node.desc ?? "", 20, y, 386, 64, 17, MapUi.Ink, TextAnchor.UpperLeft, "Narration");
+            MapUi.Text(panel, node.desc ?? "", 20, y, 386, 64, 18, MapUi.Ink, TextAnchor.UpperLeft, "Narration");
             y += 70;
 
             // Connected roads as chips; clicking one jumps to that stronghold.
             MapUi.Text(panel, "相通驛路", 20, y, 200, 24, 18, MapUi.Red);
             y += 28;
             var roads = data.Connections(node);
-            if (roads.Count == 0) MapUi.Text(panel, "沒有相連道路", 20, y, 386, 26, 17, MapUi.Ink);
+            if (roads.Count == 0) MapUi.Text(panel, "沒有相連道路", 20, y, 386, 26, 18, MapUi.Ink);
             int chip = 0;
             foreach (var road in roads.GroupBy(road => road.Other(node.id)).Select(group => group.First()).Take(6))
             {
@@ -522,7 +522,7 @@ namespace Wuxia
             MapUi.Text(panel, message, 20, y, 386, 28, 20, MapUi.Jade);
             if (route != null)
             {
-                MapUi.Text(panel, string.Join(" → ", route.Nodes.Select(data.NodeLabel)), 20, y + 28, 386, 40, 15,
+                MapUi.Text(panel, string.Join(" → ", route.Nodes.Select(data.NodeLabel)), 20, y + 28, 386, 40, 18,
                     MapUi.Ink, TextAnchor.UpperLeft);
                 for (int i = 1; i < route.Nodes.Count; i++)
                     Line(routeLayer, Position(data.Nodes[route.Nodes[i - 1]]), Position(data.Nodes[route.Nodes[i]]), MapUi.Red, 3, false);
@@ -581,7 +581,7 @@ namespace Wuxia
             void Stat(int x, string caption, string value)
             {
                 var box = MapUi.Kit(panel, caption, x, y, 120, 52, "Wood", false);
-                MapUi.Text(box, caption, 10, 3, 60, 24, 16, MapUi.Gold).verticalOverflow = VerticalWrapMode.Overflow;
+                MapUi.Text(box, caption, 10, 3, 60, 24, 18, MapUi.Gold).verticalOverflow = VerticalWrapMode.Overflow;
                 MapUi.Text(box, value, 10, 20, 100, 30, 22, MapUi.Paper, TextAnchor.MiddleRight, "Numbers").verticalOverflow = VerticalWrapMode.Overflow;
             }
         }
@@ -634,7 +634,7 @@ namespace Wuxia
                 int y = 562 + row++*51;
                 MapUi.Text(panel,$"{notable.name}　{notable.title}",20,y,250,29,19,MapUi.Ink);
                 MapUi.Text(panel,RankSystem.FormatKnown(notable.rank,notable.cap),273,y,135,29,19,RankSystem.Color(notable.rank));
-                MapUi.Text(panel,notable.desc ?? "",20,y+26,386,25,15,MapUi.Ink);
+                MapUi.Text(panel,notable.desc ?? "",20,y+26,386,25,18,MapUi.Ink);
             }
         }
 
@@ -649,15 +649,15 @@ namespace Wuxia
             foreach (var line in lines)
             {
                 int y = 480 + row++*28;
-                MapUi.Text(panel,names[line.id],x,y,77,21,17,MapUi.Ink);
+                MapUi.Text(panel,names[line.id],x,y,77,21,18,MapUi.Ink);
                 Color tier = RankSystem.Color(line.rank);
-                MapUi.Text(panel,RankSystem.FormatKnown(line.rank,line.cap),x+77,y,102,21,17,tier);
+                MapUi.Text(panel,RankSystem.FormatKnown(line.rank,line.cap),x+77,y,102,21,18,tier);
                 float cap = Mathf.Clamp01((RankSystem.Order(line.cap)+1)/7f);
                 float rank = Mathf.Min(cap,Mathf.Clamp01((RankSystem.Order(line.rank)+1)/7f));
                 if (cap > 0) MapUi.Panel(panel,"Rank cap",x,y+22,184*cap,3,new Color(.72f,.63f,.49f));
                 if (rank > 0) MapUi.Panel(panel,"Current rank",x,y+22,184*rank,3,tier);
             }
-            if (row == 0) MapUi.Text(panel,"—",x,478,185,26,17,MapUi.Ink);
+            if (row == 0) MapUi.Text(panel,"—",x,478,185,26,18,MapUi.Ink);
         }
 
         private void OpenIntel()

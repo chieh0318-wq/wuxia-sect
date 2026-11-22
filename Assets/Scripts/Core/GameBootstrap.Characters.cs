@@ -37,13 +37,17 @@ namespace Wuxia
             ShowCharacterDetail(person, () => { ui.CloseModal(force: true); OpenWorldMap(); });
         }
 
+        private string directoryFocus;
+
         private void ShowCharacterDirectory()
         {
             if (choosingBuilding) CancelBuild();
             ShowCharacterDirectory(0);
         }
 
-        private void ShowCharacterDirectory(int filter)
+        private void ShowCharacterDirectory(int filter) => ShowCharacterDirectory(filter, directoryFocus);
+
+        private void ShowCharacterDirectory(int filter, string focusId)
         {
             ui.CloseBuilding();
             ui.CloseDialogue();
@@ -55,36 +59,128 @@ namespace Wuxia
                 {
                     id = seed.id, name = current.name, gender = current.gender, age = current.age,
                     title = current.title, faction = state.Data.Start.sectName,
-                    portrait = current.portrait ?? seed.id, rank = current.rank ?? (current.lines?.Length > 0 ? RankSystem.Martial(current.lines) : null),
+                    portrait = PortraitService.FindPortrait(seed.id) != null ? seed.id : current.portrait ?? seed.id,
+                    rank = current.rank ?? (current.lines?.Length > 0 ? RankSystem.Martial(current.lines) : null),
                     cap = current.cap ?? (current.lines?.Length > 0 ? RankSystem.Martial(current.lines, true) : null), lines = current.lines,
                     personality = seed.personality ?? seed.trait, background = seed.background,
                     relation = seed.relation, signatureSkills = seed.signatureSkills, questline = seed.questline,
-                    desc = seed.blurb
+                    desc = seed.blurb, attrs = current.attrs
                 };
             })).Concat(factions.Where(faction => state.IsFactionKnown(faction.id)).Select(FactionLeader))
                 .GroupBy(person => person.id).Select(group => group.First());
             string[] filters = { "全部", "師門", "青梅", "敵對", "朝廷", "各派掌門", "新秀" };
             var visible = characters.Where(person =>
             {
-                var faction = factions.FirstOrDefault(entry => entry.id == person.faction || entry.name == person.faction ||
-                    entry.PortraitId == person.id);
+                var faction = FactionOf(person, factions);
                 bool leader = faction != null && faction.PortraitId == person.id;
                 if (leader && !state.IsFactionKnown(faction.id)) return false;
                 if (person.id is "friend_m" or "friend_f" && person.id != state.FriendId) return false;
                 return filter switch
                 {
-                    1 => person.id is "master" or "uncle_schemer" || person.faction == state.Data.Start.sectName,
+                    1 => IsSectPerson(person),
                     2 => person.id == state.FriendId,
-                    3 => person.id is "elder_villain" or "warlord" or "rival_head" or "official" ||
-                        faction?.StanceWith(state.RelationShift(faction.id)) == "hostile",
+                    3 => IsHostile(person, faction),
                     4 => faction?.Court == true || person.id == "official",
                     5 => leader || (person.id?.StartsWith("leader_", StringComparison.Ordinal) == true),
                     6 => person.id?.StartsWith("prodigy_", StringComparison.Ordinal) == true,
                     _ => true
                 };
             }).ToArray();
-            ui.ShowDirectory(filters, filter, ShowCharacterDirectory, visible,
-                person => ShowCharacterDetail(person, () => ShowCharacterDirectory(filter)));
+            int focus = Math.Max(0, Array.FindIndex(visible, person => person.id == focusId));
+            directoryFocus = visible.Length > 0 ? visible[focus].id : null;
+            int[] kinds = visible.Select(person => PersonKind(person, FactionOf(person, factions))).ToArray();
+            string[] factionNames = visible.Select(person => FactionOf(person, factions)?.Label ?? person.faction).ToArray();
+            ui.ShowDirectory(filters, filter, next => ShowCharacterDirectory(next, directoryFocus), visible, kinds, factionNames,
+                visible.Length == 0 ? -1 : focus, index => ShowCharacterDirectory(filter, visible[index].id),
+                visible.Length == 0 ? null : BuildDossier(visible[focus], factions, filter));
+        }
+
+        private static MapFaction FactionOf(StoryCharacter person, IEnumerable<MapFaction> factions) =>
+            factions.FirstOrDefault(entry => entry.id == person.faction || entry.name == person.faction ||
+                entry.PortraitId == person.id);
+
+        private bool IsSectPerson(StoryCharacter person) =>
+            person.id is "master" or "uncle_schemer" || person.faction == state.Data.Start.sectName;
+
+        private bool IsHostile(StoryCharacter person, MapFaction faction) =>
+            person.id is "elder_villain" or "warlord" or "rival_head" or "official" ||
+            faction?.StanceWith(state.RelationShift(faction.id)) == "hostile";
+
+        private int PersonKind(StoryCharacter person, MapFaction faction) =>
+            IsSectPerson(person) || person.id == state.FriendId ? 0 : IsHostile(person, faction) ? 1 : 2;
+
+        /// <summary>Collects the right-hand dossier for the selected character, including its context actions.</summary>
+        private CharacterDossier BuildDossier(StoryCharacter person, IEnumerable<MapFaction> factions, int filter)
+        {
+            var faction = FactionOf(person, factions);
+            int kind = PersonKind(person, faction);
+            var disciple = state.Disciples.FirstOrDefault(entry => entry.id == person.id);
+            bool sect = IsSectPerson(person);
+            string stance = sect ? "本門" : person.id == state.FriendId ? "青梅故交" :
+                faction != null ? faction.RelationWith(state.RelationShift(faction.id)) : kind == 1 ? "敵對" : "江湖散人";
+            var lines = (person.lines ?? Array.Empty<SkillLine>()).Where(line => line != null && !string.IsNullOrEmpty(line.id))
+                .OrderByDescending(line => RankSystem.Index(line.rank)).Take(4)
+                .Select(line => (RankSystem.Categories.FirstOrDefault(category => category.id == line.id)?.name ?? line.id) +
+                    " " + RankSystem.FormatKnown(line.rank, line.cap));
+            string arts = string.Join("　", (person.signatureSkills ?? Array.Empty<string>()).Select(skill => "【" + skill + "】"));
+            string tiers = string.Join("　", lines);
+            if (!string.IsNullOrEmpty(tiers)) arts = string.IsNullOrEmpty(arts) ? tiers : arts + "\n" + tiers;
+            string biography = string.Join("\n", new[]
+            {
+                string.IsNullOrWhiteSpace(person.personality) ? null : "性情　" + person.personality,
+                person.background ?? person.desc
+            }.Where(text => !string.IsNullOrWhiteSpace(text)));
+            int relation = state.CharacterRelation(person.id);
+            string bond = string.Join("\n", new[]
+            {
+                string.IsNullOrWhiteSpace(person.relation) ? null : FormatQuestText(person.relation),
+                faction == null ? null : faction.Label + "與本門：" + faction.RelationWith(state.RelationShift(faction.id)),
+                relation == 0 ? null : $"好感 {relation:+0;-0}"
+            }.Where(text => !string.IsNullOrWhiteSpace(text)));
+
+            Action back = () => ShowCharacterDirectory(filter, person.id);
+            var actions = new List<(string, Action)>();
+            if (sect)
+            {
+                actions.Add(("「門中問敘（交談）」", disciple != null ? () => { ui.CloseModal(force: true); Speak(disciple); }
+                    : () => ShowCharacterDetail(person, back)));
+                actions.Add(("「指點武學」", disciple != null ? () => { ui.CloseModal(force: true); ShowDisciple(disciple); }
+                    : null));
+            }
+            else
+            {
+                bool seat = faction != null && state.IsFactionKnown(faction.id) && !string.IsNullOrEmpty(faction.seat);
+                actions.Add(("「查看據點」", seat ? () =>
+                {
+                    ui.CloseModal(force: true);
+                    OpenWorldMap();
+                    map.FocusFaction(faction);
+                } : null));
+            }
+            actions.Add(("「列傳詳情」", () => ShowCharacterDetail(person, back)));
+            return new CharacterDossier
+            {
+                person = person, faction = faction?.Label ?? person.faction, stance = stance, kind = kind,
+                relation = relation, attrs = person.attrs ?? disciple?.attrs ?? EstimateAttributes(person),
+                estimated = person.attrs == null && disciple?.attrs == null, arts = arts, biography = biography,
+                bond = bond, actions = actions.ToArray()
+            };
+        }
+
+        /// <summary>Rumoured attributes for story characters without authored ones, scaled by martial tier.</summary>
+        private static int[] EstimateAttributes(StoryCharacter person)
+        {
+            int tier = Math.Max(0, RankSystem.Index(person.rank));
+            int seed = 17;
+            foreach (char ch in person.id ?? "") seed = unchecked(seed * 31 + ch);
+            var values = new int[AttributeSystem.Count];
+            for (int index = 0; index < values.Length; index++)
+            {
+                int jitter = Math.Abs((seed >> (index * 3)) % 7) - 3;
+                values[index] = Mathf.Clamp(8 + tier + jitter + (index == 0 || index == 3 ? tier / 2 : 0),
+                    AttributeSystem.Min, AttributeSystem.Max);
+            }
+            return values;
         }
 
         private void ShowCharacterDetail(StoryCharacter person, Action back)

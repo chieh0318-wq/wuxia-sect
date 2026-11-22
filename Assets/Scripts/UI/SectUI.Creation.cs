@@ -58,8 +58,9 @@ namespace Wuxia
             creationPlaque = Panel("Scroll title", modalCard, new(.5f, 1), new(.5f, 1),
                 new(-275, -89), new(275, -17));
             UiKit.Skin(creationPlaque.GetComponent<Image>(), "Plaque");
-            var title = Label(creationPlaque, heading, 35, TextAnchor.MiddleCenter);
-            title.color = new Color(.98f, .89f, .72f);
+            var title = Label(creationPlaque, heading, 34, TextAnchor.MiddleCenter);
+            title.color = UiKit.HeaderGold;
+            title.fontStyle = FontStyle.Bold;
             Fill(title.rectTransform, 10);
             Stamp(creationPlaque, heading[0].ToString(), 48);
             var divider = Rect("Ink rule", creationPlaque);
@@ -81,7 +82,7 @@ namespace Wuxia
                 decoration.gameObject.SetActive(false);
                 UnityEngine.Object.Destroy(decoration.gameObject);
             }
-            Anchor((RectTransform)modalList.parent, Vector2.zero, Vector2.one, new(26, 82), new(-26, -22));
+            Anchor((RectTransform)modalList.parent, Vector2.zero, Vector2.one, new(32, 84), new(-32, -28));
         }
 
         private static readonly Color CardText = new(.96f, .89f, .75f);
@@ -174,7 +175,7 @@ namespace Wuxia
                 sheet.picks.Count == 0 ? CardMuted : CardText, 18, y, -18, 0, TextAnchor.UpperLeft);
             Anchor(picks.rectTransform, Vector2.zero, Vector2.one, new(18, 14), new(-18, y));
             picks.horizontalOverflow = HorizontalWrapMode.Wrap;
-            picks.resizeTextMinSize = 13;
+            picks.resizeTextMinSize = 18;
 
             void CardHeading(string text, float top)
             {
@@ -239,7 +240,7 @@ namespace Wuxia
                     CardBar(tile, 10, -42, -10, 6, (rank + 1) / (float)RankSystem.Count, RankSystem.Color(RankSystem.At(rank)));
                     if (cap >= RankSystem.Index("S"))
                     {
-                        var star = Label(tile, "潛力 " + RankSystem.At(cap), 14, TextAnchor.MiddleLeft);
+                        var star = Label(tile, "潛力 " + RankSystem.At(cap), 18, TextAnchor.MiddleLeft);
                         star.color = CardGold;
                         Anchor(star.rectTransform, Vector2.zero, Vector2.right, new(10, 3), new(-6, 20));
                     }
@@ -601,7 +602,7 @@ namespace Wuxia
             Anchor(value.rectTransform, Vector2.right, Vector2.one, new(-290, 28), new(-196, -4));
             int delta = current - baseValue;
             string note = (delta == 0 ? "基礎" : $"{delta:+0;-0}") + (bonus != 0 ? $"　加成{bonus:+0;-0}" : "");
-            var deltaLabel = Label(card, note, 16, TextAnchor.MiddleCenter);
+            var deltaLabel = Label(card, note, 18, TextAnchor.MiddleCenter);
             deltaLabel.color = CardMuted;
             Anchor(deltaLabel.rectTransform, Vector2.right, Vector2.right, new(-300, 4), new(-186, 28));
             var minus = Button(card, "−", less);

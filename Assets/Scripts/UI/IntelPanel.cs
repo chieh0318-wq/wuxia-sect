@@ -176,7 +176,7 @@ namespace Wuxia
             };
             MapUi.Text(card, "目前線索　" + location, 148, 82, 555, 28, 19, MapUi.Jade);
             MapUi.Text(card, person.personality ?? person.desc ?? person.background ?? "尚無更多消息",
-                148, 112, 560, 66, 17, MapUi.Ink, TextAnchor.UpperLeft);
+                148, 112, 560, 66, 18, MapUi.Ink, TextAnchor.UpperLeft);
         }
     }
 }

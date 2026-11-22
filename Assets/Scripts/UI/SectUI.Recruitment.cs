@@ -57,7 +57,7 @@ namespace Wuxia
                 var talent = catalog.FirstOrDefault(option => option.id == id);
                 var chip = Panel("天賦", chips, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero);
                 UiKit.Skin(chip.GetComponent<Image>(), "Wood");
-                var text = Label(chip, talent?.name ?? id, 17, TextAnchor.MiddleCenter);
+                var text = Label(chip, talent?.name ?? id, 18, TextAnchor.MiddleCenter);
                 text.color = talent?.rarity switch
                 {
                     "legendary" => new Color(1, .71f, .37f),

@@ -38,7 +38,177 @@ namespace Wuxia
             return backdrop;
         }
 
-        internal static Sprite Sprite(string name) => Resources.Load<Sprite>("InkUi/" + name);
+        // ── M7 Koei / Zongmen-Origin theme: dark lacquer, antique gold rules, aged xuan paper, crimson seals ──
+        internal static readonly Color Lacquer = Hex("#1B1714");
+        internal static readonly Color LacquerDeep = Hex("#1A1714");
+        internal static readonly Color AntiqueGold = Hex("#C6A25A");
+        internal static readonly Color TitleGold = Hex("#C8A86B");
+        internal static readonly Color HeaderGold = Hex("#E6C98A");
+        internal static readonly Color JadeHeader = Hex("#162629");
+        internal static readonly Color Crimson = Hex("#A8382B");
+        internal static readonly Color JadeAccent = Hex("#3B7A6E");
+        internal static readonly Color GoldAccent = Hex("#C69B4B");
+        internal static readonly Color Ivory = Hex("#F3E7CC");
+
+        /// <summary>Readability floor: body text never renders below 18 reference pixels.</summary>
+        internal const int MinBody = 18, MinTitle = 22;
+        internal static int Readable(int size) => Mathf.Max(MinBody, size);
+
+        internal static Color Hex(string html) => ColorUtility.TryParseHtmlString(html, out var color) ? color : Color.magenta;
+
+        private static readonly System.Collections.Generic.Dictionary<string, Sprite> themed = new();
+
+        /// <summary>
+        /// Theme sprites are generated at runtime so every screen picks up the lacquer/gold/xuan look without
+        /// re-importing art. Names that are not themed fall back to the InkUi resources (icons, dividers).
+        /// </summary>
+        internal static Sprite Sprite(string name)
+        {
+            if (themed.TryGetValue(name, out var cached) && cached != null) return cached;
+            var made = name switch
+            {
+                "Paper" => Frame(64, 12, PaperPixel),
+                "Xuan" => Frame(96, 26, XuanPixel),
+                "Lacquer" => Frame(96, 26, LacquerPixel),
+                "Wood" or "Card" => Frame(64, 12, CardPixel),
+                "Teal" or "Jade" or "Plaque" => Frame(64, 12, JadePixel),
+                "Vermilion" => Frame(64, 12, (x, y, n) => ButtonPixel(x, y, n, Hex("#7E2A20"), Hex("#A8382B"))),
+                "Selected" => Frame(64, 12, (x, y, n) => ButtonPixel(x, y, n, Hex("#6B2219"), Hex("#93372A"), true)),
+                "TitleMenu" => Frame(96, 26, TitleMenuPixel, new Vector4(30, 14, 14, 14)),
+                "Seal" => Frame(64, 12, SealPixel),
+                _ => null
+            };
+            if (made != null)
+            {
+                themed[name] = made;
+                return made;
+            }
+            return Resources.Load<Sprite>("InkUi/" + name);
+        }
+
+        private static Sprite Frame(int size, int border, System.Func<int, int, int, Color> pixel, Vector4? borders = null)
+        {
+            var texture = new Texture2D(size, size, TextureFormat.RGBA32, false)
+            {
+                wrapMode = TextureWrapMode.Clamp, filterMode = FilterMode.Bilinear, name = "M7 theme"
+            };
+            var pixels = new Color[size * size];
+            for (int y = 0; y < size; y++)
+            for (int x = 0; x < size; x++)
+                pixels[y * size + x] = pixel(x, y, size);
+            texture.SetPixels(pixels);
+            texture.Apply(false, true);
+            return UnityEngine.Sprite.Create(texture, new Rect(0, 0, size, size), Vector2.one * .5f, 100, 0,
+                SpriteMeshType.FullRect, borders ?? Vector4.one * border);
+        }
+
+        private static int Edge(int x, int y, int n) => Mathf.Min(Mathf.Min(x, y), Mathf.Min(n - 1 - x, n - 1 - y));
+        private static int EdgeX(int x, int n) => Mathf.Min(x, n - 1 - x);
+        private static int EdgeY(int y, int n) => Mathf.Min(y, n - 1 - y);
+        private static float Grain(int x, int y, float fx, float fy) => Mathf.PerlinNoise(x * fx + 3.1f, y * fy + 7.7f);
+
+        /// <summary>Aged xuan paper inside a lacquer rim with double antique-gold rules and corner brackets.</summary>
+        private static Color XuanPixel(int x, int y, int n)
+        {
+            int edge = Edge(x, y, n), ex = EdgeX(x, n), ey = EdgeY(y, n);
+            if (edge <= 5) return Color.Lerp(Lacquer, Hex("#2A221B"), Grain(x, y, .4f, .4f) * .6f);
+            if (edge == 6 || edge == 7) return AntiqueGold;
+            if (edge == 8 || edge == 9) return Color.Lerp(Lacquer, Hex("#3A2E22"), .4f);
+            if (edge == 10) return Color.Lerp(AntiqueGold, Hex("#8C6A37"), .35f);
+            if (ex < 26 && ey < 26 && ex >= 14 && ey >= 14 && (ex == 14 || ey == 14)) return AntiqueGold;
+            if (ex >= 17 && ex <= 20 && ey >= 17 && ey <= 20) return Crimson;
+            float fibre = Grain(x, y, .09f, .55f) * .55f + Grain(x, y, .37f, .21f) * .45f;
+            var paper = Color.Lerp(Hex("#E3D3B0"), Hex("#F1E6CD"), fibre);
+            float age = Mathf.InverseLerp(26, 11, edge);
+            return Color.Lerp(paper, Hex("#C9B188"), age * .45f);
+        }
+
+        /// <summary>Small xuan-paper tag: thin lacquer rim and a single gold rule.</summary>
+        private static Color PaperPixel(int x, int y, int n)
+        {
+            int edge = Edge(x, y, n);
+            if (edge <= 1) return Lacquer;
+            if (edge == 3) return AntiqueGold;
+            if (edge == 2) return Color.Lerp(Lacquer, Hex("#3A2E22"), .5f);
+            float fibre = Grain(x, y, .09f, .55f) * .55f + Grain(x, y, .37f, .21f) * .45f;
+            return Color.Lerp(Color.Lerp(Hex("#E3D3B0"), Hex("#F1E6CD"), fibre), Hex("#CDB68D"), Mathf.InverseLerp(9, 4, edge) * .5f);
+        }
+
+        /// <summary>Obsidian lacquer window frame with double gold rules and corner ornaments.</summary>
+        private static Color LacquerPixel(int x, int y, int n)
+        {
+            int edge = Edge(x, y, n), ex = EdgeX(x, n), ey = EdgeY(y, n);
+            if (edge <= 1) return Hex("#0E0B09");
+            if (edge == 2 || edge == 3) return AntiqueGold;
+            if (edge == 7) return Color.Lerp(AntiqueGold, Lacquer, .25f);
+            if (ex < 24 && ey < 24 && ((ex == 11 && ey >= 11) || (ey == 11 && ex >= 11))) return AntiqueGold;
+            if (Mathf.Abs(ex - 16) + Mathf.Abs(ey - 16) <= 2) return Crimson;
+            return Color.Lerp(Lacquer, Hex("#271F19"), Grain(x, y, .05f, .3f) * .7f);
+        }
+
+        /// <summary>Dark card body with a thin double gold rule (left accent stripes are added per card).</summary>
+        private static Color CardPixel(int x, int y, int n)
+        {
+            int edge = Edge(x, y, n);
+            if (edge == 0) return Hex("#0F0C0A");
+            if (edge == 1) return Color.Lerp(AntiqueGold, Lacquer, .15f);
+            if (edge == 4) return Color.Lerp(AntiqueGold, Lacquer, .62f);
+            return Color.Lerp(Hex("#211B16"), Hex("#2E261F"), Grain(x, y, .06f, .25f) * .8f + (1 - y / (float)n) * .2f);
+        }
+
+        /// <summary>Dark-jade ink header bar with gold rules top and bottom.</summary>
+        private static Color JadePixel(int x, int y, int n)
+        {
+            int edge = Edge(x, y, n);
+            if (edge == 0) return Hex("#0B1314");
+            if (edge == 1 || edge == 2) return AntiqueGold;
+            if (edge == 5) return Color.Lerp(AntiqueGold, JadeHeader, .5f);
+            return Color.Lerp(JadeHeader, Hex("#20393B"), y / (float)n * .7f + Grain(x, y, .07f, .3f) * .3f);
+        }
+
+        private static Color ButtonPixel(int x, int y, int n, Color low, Color high, bool selected = false)
+        {
+            int edge = Edge(x, y, n);
+            if (edge == 0) return Hex("#120B08");
+            if (edge == 1 || (selected && edge == 2)) return selected ? HeaderGold : AntiqueGold;
+            if (edge == 4) return Color.Lerp(AntiqueGold, low, .55f);
+            return Color.Lerp(low, high, y / (float)n * .75f + Grain(x, y, .08f, .3f) * .25f);
+        }
+
+        /// <summary>Grand title-menu plaque: dark lacquer, gold border, crimson seal accent on the left.</summary>
+        private static Color TitleMenuPixel(int x, int y, int n)
+        {
+            int edge = Edge(x, y, n);
+            if (edge == 0) return Hex("#0A0807");
+            if (edge == 1 || edge == 2) return TitleGold;
+            if (edge == 5) return Color.Lerp(TitleGold, LacquerDeep, .55f);
+            if (x >= 9 && x <= 21 && y >= 9 && y <= n - 10)
+                return (x == 9 || x == 21 || y == 9 || y == n - 10) ? Hex("#E0B979") : Crimson;
+            return Color.Lerp(LacquerDeep, Hex("#2A221B"), y / (float)n * .5f + Grain(x, y, .06f, .3f) * .3f);
+        }
+
+        private static Color SealPixel(int x, int y, int n)
+        {
+            int edge = Edge(x, y, n);
+            if (edge <= 1) return Color.clear;
+            if (edge == 4) return Hex("#E8C38A");
+            return Color.Lerp(Hex("#8E2A1F"), Crimson, Grain(x, y, .2f, .2f));
+        }
+
+        /// <summary>Vertical category stripe on the left edge of a card (crimson / jade / gold).</summary>
+        internal static Image AccentStripe(RectTransform card, Color color, float width = 7)
+        {
+            var stripe = new GameObject("Accent stripe", typeof(RectTransform)).GetComponent<RectTransform>();
+            stripe.SetParent(card, false);
+            stripe.anchorMin = Vector2.zero;
+            stripe.anchorMax = Vector2.up;
+            stripe.offsetMin = new Vector2(4, 5);
+            stripe.offsetMax = new Vector2(4 + width, -5);
+            var image = stripe.gameObject.AddComponent<Image>();
+            image.color = color;
+            image.raycastTarget = false;
+            return image;
+        }
 
         internal static Font Font(string role, Font fallback, string text = "")
         {
@@ -89,6 +259,39 @@ namespace Wuxia
         {
             if (panel != null && group.alpha < 1)
                 panel.anchoredPosition = restingPosition;
+        }
+    }
+}
+
+namespace Wuxia
+{
+    /// <summary>Warm gold hover glow for grand menu plaques (title menu, dossier actions).</summary>
+    internal sealed class HoverGlow : MonoBehaviour, UnityEngine.EventSystems.IPointerEnterHandler,
+        UnityEngine.EventSystems.IPointerExitHandler
+    {
+        private Image glow;
+        private Text caption;
+        private Color restingText;
+        private float target, level;
+
+        internal void Initialize(Image image, Text text)
+        {
+            glow = image;
+            caption = text;
+            if (caption != null) restingText = caption.color;
+        }
+
+        public void OnPointerEnter(UnityEngine.EventSystems.PointerEventData eventData) => target = 1;
+        public void OnPointerExit(UnityEngine.EventSystems.PointerEventData eventData) => target = 0;
+
+        private void Update()
+        {
+            if (glow == null || Mathf.Approximately(level, target)) return;
+            level = Mathf.MoveTowards(level, target, Time.unscaledDeltaTime * 6);
+            var color = glow.color;
+            color.a = .26f * level;
+            glow.color = color;
+            if (caption != null) caption.color = Color.Lerp(restingText, new Color(1, .86f, .52f), level);
         }
     }
 }

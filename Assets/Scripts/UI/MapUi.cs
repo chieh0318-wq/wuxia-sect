@@ -54,6 +54,7 @@ namespace Wuxia
             if (font == null)
                 font = Font.CreateDynamicFontFromOSFont(new[] { "Microsoft JhengHei","Noto Sans CJK TC","Arial" },22)
                     ?? Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            size = UiKit.Readable(size);
             var text = Rect(parent,label,x,y,w,h).gameObject.AddComponent<Text>();
             text.font = UiKit.Font(role ?? (size >= 28 ? "Titles" : "Interface"),font,label);
             text.fontSize = size;
@@ -62,10 +63,10 @@ namespace Wuxia
             text.alignment = alignment;
             text.raycastTarget = false;
             text.horizontalOverflow = HorizontalWrapMode.Wrap;
-            text.verticalOverflow = VerticalWrapMode.Truncate;
+            text.verticalOverflow = VerticalWrapMode.Overflow;
             // Paragraphs (upper-left) keep their size and wrap; single-line labels shrink to fit their slot.
             text.resizeTextForBestFit = alignment != TextAnchor.UpperLeft;
-            text.resizeTextMinSize = Mathf.Min(15,size);
+            text.resizeTextMinSize = UiKit.MinBody;
             text.resizeTextMaxSize = size;
             return text;
         }

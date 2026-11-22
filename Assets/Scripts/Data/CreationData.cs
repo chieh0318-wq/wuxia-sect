@@ -39,6 +39,7 @@ namespace Wuxia
         public string[] expressions, signatureSkills;
         public CharacterModelSpec model;
         public SkillLine[] lines;
+        public int[] attrs;
     }
     [Serializable] internal sealed class AttributeInfo { public string id, name, desc; }
     [Serializable] internal sealed class CharacterCatalog

@@ -9,7 +9,7 @@ namespace Wuxia
         // Presentation runs on an unscaled clock. Holding the contact frame locally
         // leaves Unity's time scale, menu transitions and capture timing intact.
         private IEnumerator PlayImpact(RectTransform stage, BattleUnitView attacker, BattleUnitView target,
-            BattleEvent entry, int speed, bool firstBigMove, System.Action<BattleEvent> capture)
+            BattleEvent entry, int speed, bool firstBigMove, System.Action<BattleEvent> capture, System.Action onContact)
         {
             bool heavy = entry.Skill?.telegraph == true || entry.Skill?.all == true;
             bool guarded = entry.Target.statuses.ContainsKey("guard");
@@ -22,7 +22,12 @@ namespace Wuxia
                 "土" => ("ground_crack", new Color(.93f, .72f, .45f)),
                 _ => ("impact_cross", Color.white)
             };
-            string arc = entry.Skill?.id == "seal" ? "palm" : heavy ? "arc_heavy" : "arc_medium";
+            string arc = entry.Skill?.id switch
+            {
+                "seal" => "palm",
+                "attack" => "arc_thin",
+                _ => heavy ? "arc_heavy" : "arc_medium"
+            };
             var center = target.StandingPosition + Vector2.up * (stage.rect.height * target.Root.anchorMin.y + 116);
             var blade = Strip(arc, center, heavy ? 364 : 272, Color.white);
             var ink = Strip(heavy ? "shock_ring" : "ink_trail", center, heavy ? 380 : 245, Color.white);
@@ -30,6 +35,8 @@ namespace Wuxia
             var stagePosition = stage.anchoredPosition;
             var stageScale = stage.localScale;
             var targetColor = target.Art.color;
+            var targetRect = target.Art.rectTransform;
+            bool falls = !entry.Target.Alive;
             float tempo = Mathf.Sqrt(speed);
             float hold = (heavy ? .085f : .060f) / tempo;
             float duration = (firstBigMove ? .54f : heavy ? .32f : .28f) / tempo;
@@ -39,13 +46,20 @@ namespace Wuxia
             yield return null;
             if (stage == null) yield break;
             AudioManager.Play(guarded ? "hit_guard" : "hit_fist");
-            for (float time = 0; time < duration && stage != null; time += Time.unscaledDeltaTime)
+            onContact();
+            for (float time = 0; time < duration && stage != null; time += Mathf.Min(Time.unscaledDeltaTime, .05f))
             {
                 float progress = Mathf.Clamp01((time - hold) / (duration - hold));
                 float shake = time < hold ? 0 : Mathf.Sin(progress * 36) * (1 - progress) * (heavy ? 16 : 8);
                 stage.anchoredPosition = stagePosition + new Vector2(shake, shake * .27f);
                 if (firstBigMove) stage.localScale = stageScale * (1 + .037f * (1 - progress));
-                target.Art.color = Color.Lerp(tint, targetColor, progress);
+                var illumination = Color.Lerp(tint, targetColor, progress);
+                if (falls)
+                {
+                    illumination.a *= Mathf.Lerp(1f, .25f, progress);
+                    targetRect.localRotation = Quaternion.Euler(0, 0, direction * -24 * progress);
+                }
+                target.Art.color = illumination;
                 if (time >= hold) attacker.Root.anchoredPosition = attacker.StandingPosition;
                 SetFrame(blade, progress, direction < 0);
                 SetFrame(ink, progress, direction < 0);
@@ -61,6 +75,11 @@ namespace Wuxia
             stage.anchoredPosition = stagePosition;
             stage.localScale = stageScale;
             attacker.Root.anchoredPosition = attacker.StandingPosition;
+            if (falls)
+            {
+                targetColor.a = .25f;
+                targetRect.localRotation = Quaternion.Euler(0, 0, direction * -24);
+            }
             target.Art.color = targetColor;
             if (blade != null) Object.Destroy(blade.gameObject);
             if (ink != null) Object.Destroy(ink.gameObject);

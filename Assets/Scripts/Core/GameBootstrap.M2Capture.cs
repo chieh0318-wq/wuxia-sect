@@ -83,7 +83,7 @@ namespace Wuxia
                 figures[i] = new GameObject("Close-up standee");
                 figures[i].transform.position = world.Grounded(new Vector3((i - 1.5f) * 1.03f, 0, -8.65f));
                 CharacterFactory.BuildStandee(people[i], figures[i].transform, out _, view.transform.rotation,
-                    i == 0 ? CharacterFactory.HeroStandee(hero.gender, hero.lookId ?? hero.portrait,
+                    i == 0 ? CharacterFactory.HeroOriginStandee(hero.gender, hero.lookId ?? hero.portrait,
                         hero.backgroundId, hero.title) : null);
             }
             yield return null;

@@ -41,7 +41,7 @@ namespace Wuxia
     {
         public string Text, Float, Cue;
         public BattleCombatant Actor, Target;
-        public bool Hit, Critical;
+        public bool Hit, Critical, Recovery;
         public BattleSkill Skill;
     }
 
@@ -164,7 +164,7 @@ namespace Wuxia
                     actor.hp = Math.Min(actor.maxHp, actor.hp + medicine.hp);
                     actor.qi = Math.Min(actor.maxQi, actor.qi + medicine.qi);
                     Emit($"{actor.name} 使用{medicine.name}，氣血 +{actor.hp - hp}。", target: actor,
-                        floating: $"+{actor.hp - hp}", cue: "complete");
+                        floating: $"+{actor.hp - hp}", cue: "complete", recovery: true);
                 }
                 else
                     Use(actor, Skill(command), target);
@@ -316,7 +316,8 @@ namespace Wuxia
                     multiplier * reduction * (.95 + roll * .1) * (critical ? 1.5 : 1)));
                 victim.hp = Math.Max(0, victim.hp - amount);
                 string element = counter > 0 ? " 剋制！" : counter < 0 ? " 被剋" : "";
-                Emit($"{actor.name}・{move.label} → {victim.name} {amount} 傷害。{element}",
+                string damageType = critical ? "暴擊" : "傷害";
+                Emit($"{actor.name}・{move.label} → {victim.name} {amount} {damageType}。{element}",
                     actor, victim, $"-{amount}{element}", hit: true, skill: move, critical: critical);
                 if (!victim.Alive) victim.intent = null;
                 if (!victim.Alive) continue;
@@ -345,7 +346,12 @@ namespace Wuxia
         }
 
         private void Emit(string text, BattleCombatant actor = null, BattleCombatant target = null,
-            string floating = null, string cue = null, bool hit = false, BattleSkill skill = null, bool critical = false) =>
-            events.Add(new BattleEvent { Text = text, Actor = actor, Target = target, Float = floating, Cue = cue, Hit = hit, Skill = skill, Critical = critical });
+            string floating = null, string cue = null, bool hit = false, BattleSkill skill = null,
+            bool critical = false, bool recovery = false) =>
+            events.Add(new BattleEvent
+            {
+                Text = text, Actor = actor, Target = target, Float = floating, Cue = cue,
+                Hit = hit, Skill = skill, Critical = critical, Recovery = recovery
+            });
     }
 }

@@ -149,7 +149,7 @@ namespace Wuxia
                     world.PlaceBuilding(index, state.Buildings[index]);
             }
             var hero = state.Protagonist;
-            world.SpawnDisciple(ProtagonistFigure(), CharacterFactory.HeroStandee(hero.gender,
+            world.SpawnDisciple(ProtagonistFigure(), CharacterFactory.HeroOriginStandee(hero.gender,
                 hero.lookId ?? hero.portrait, hero.backgroundId, hero.title));
             foreach (var disciple in state.Disciples)
                 world.SpawnDisciple(disciple);

@@ -228,7 +228,7 @@ namespace Wuxia
             {
                 var walkers = FindObjectsByType<DiscipleWalker>();
                 foreach (var walker in walkers) walker.gameObject.SetActive(false);
-                controls.Frame(new Vector2(0, -11.4f), 9f);
+                controls.Frame(new Vector2(0, -12.3f), 5.6f);
                 view.fieldOfView = 45;
                 var examples = new[]
                 {
@@ -243,7 +243,7 @@ namespace Wuxia
                         try
                         {
                             figure.transform.position = world.Grounded(new Vector3(0, 0, -12.3f));
-                            var outfit = CharacterFactory.HeroStandee(gender, look, origin, title);
+                            var outfit = CharacterFactory.HeroOriginStandee(gender, look, origin, title);
                             var body = CharacterFactory.BuildStandee(new DiscipleData { id = look, gender = gender },
                                 figure.transform, out _, standee: outfit);
                             var renderer = body.GetComponentInChildren<SpriteRenderer>();
@@ -283,7 +283,7 @@ namespace Wuxia
                     {
                         (hero.gender, hero.lookId, hero.backgroundId, hero.title, hero.name, hero.portrait) =
                             (gender, look, background, title, name, look);
-                        var standee = CharacterFactory.HeroStandee(gender, look, background, title);
+                        var standee = CharacterFactory.HeroOriginStandee(gender, look, background, title);
                         Debug.Log($"[Capture] Hero {look}/{background}/{title}: {standee.name}.");
                         ui.StartTurnBattle(state, new BattleRequest(), this);
                         yield return null;
@@ -306,7 +306,7 @@ namespace Wuxia
                 System.Action<string> inspect = null;
                 bool hitShot = false, critShot = false, bossShot = false;
                 ui.StartTurnBattle(state, new BattleRequest(), this, routine => round = routine, action => inspect = action,
-                    CaptureImpact, captureCommand: _ => "attack");
+                    CaptureImpact, captureCommand: _ => "attack", captureSeed: 89);
                 try
                 {
                     yield return null;
@@ -387,6 +387,13 @@ namespace Wuxia
                 {
                     ui.CloseBattle();
                     AudioManager.Music("courtyard");
+                }
+
+                if (shotsOk && !(hitShot && critShot && bossShot))
+                {
+                    shotsOk = false;
+                    Debug.LogError($"[Capture] Impact evidence missing: hit={hitShot}, crit={critShot}, boss={bossShot}.");
+                    Application.Quit(1);
                 }
 
                 void CaptureImpact(BattleEvent entry)

@@ -211,6 +211,22 @@ namespace Wuxia
             string look = lookId != null && lookId.StartsWith(prefix, StringComparison.Ordinal) &&
                 int.TryParse(lookId.Substring(prefix.Length), out int number) && number >= 1 && number <= 12
                 ? prefix + number : prefix + "1";
+            string identity = title switch
+            {
+                "大師姐" => "dashijie",
+                "大師兄" => "dashixiong",
+                "少掌門" => "shaozhangmen",
+                _ => null
+            };
+            string key = !string.IsNullOrEmpty(backgroundId)
+                ? look + "_" + backgroundId + (identity == null ? "" : "_" + identity)
+                : look + (identity == null ? "" : "_" + identity);
+            return StandeeTexture(key, gender, heroFallback: look);
+        }
+
+        internal static Texture2D HeroOriginStandee(string gender, string lookId, string backgroundId, string title)
+        {
+            string sex = gender == "女" ? "f" : "m";
             string outfit = (backgroundId, sex) switch
             {
                 ("fubing_orphan", "f") => "hero_f1_fubing_orphan_dashijie",
@@ -223,17 +239,7 @@ namespace Wuxia
             if (outfit != null && Resources.Load<Texture2D>("Standees/" + outfit) is Texture2D outfitTexture)
                 return outfitTexture;
 
-            string identity = title switch
-            {
-                "大師姐" => "dashijie",
-                "大師兄" => "dashixiong",
-                "少掌門" => "shaozhangmen",
-                _ => null
-            };
-            string key = !string.IsNullOrEmpty(backgroundId)
-                ? look + "_" + backgroundId + (identity == null ? "" : "_" + identity)
-                : look + (identity == null ? "" : "_" + identity);
-            return StandeeTexture(key, gender, heroFallback: look);
+            return HeroStandee(gender, lookId, backgroundId, title);
         }
 
         internal static Transform BuildStandee(DiscipleData data, Transform parent, out Collider hit,

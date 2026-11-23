@@ -24,14 +24,15 @@ namespace Wuxia
         internal bool BattleOpen => battleScreen != null;
 
         internal void StartTurnBattle(GameState state, BattleRequest req, MonoBehaviour runner,
-            Action<Func<IEnumerator>> captureRound = null, Action<Action<string>> captureInspect = null, Action<BattleEvent> captureImpact = null, Func<int, string> captureCommand = null)
+            Action<Func<IEnumerator>> captureRound = null, Action<Action<string>> captureInspect = null, Action<BattleEvent> captureImpact = null, Func<int, string> captureCommand = null, int? captureSeed = null)
         {
             CloseBattle();
             AudioManager.Music(req.MusicCue);
 
             var catalog = new BattleCatalog();
             var (players, enemies) = BattleSetup.Create(state, req, catalog);
-            var model = new BattleModel(players, enemies, catalog, UnityEngine.Random.Range(0, int.MaxValue),
+            int seed = captureSeed ?? UnityEngine.Random.Range(0, int.MaxValue);
+            var model = new BattleModel(players, enemies, catalog, seed,
                 () => MedicineCount("item_jiuzhuan") > 0 || MedicineCount("item_jinchuang") > 0,
                 UseMedicine);
             var views = new Dictionary<BattleCombatant, BattleUnitView>();
@@ -75,6 +76,7 @@ namespace Wuxia
             var floatLayer = Rect("FloatingBattleFeedback", battleScreen);
             Fill(floatLayer);
             var playedBigMoves = new HashSet<string>();
+            var floatingFeedback = new Dictionary<BattleCombatant, RectTransform>();
 
             bool busy = false;
             int targetIdx = 0;
@@ -477,6 +479,8 @@ namespace Wuxia
             void ShowFloatText(BattleCombatant u, string msg, Color color, bool critical)
             {
                 if (u == null || views[u].Root == null) return;
+                if (floatingFeedback.TryGetValue(u, out var previous) && previous != null)
+                    UnityEngine.Object.Destroy(previous.gameObject);
                 var unitView = views[u];
                 var anchor = new Vector2(.5f, unitView.Root.anchorMin.y);
                 var position = unitView.StandingPosition + Vector2.up * 315;
@@ -489,6 +493,7 @@ namespace Wuxia
                 sh.effectDistance = new Vector2(2, -2);
                 Anchor(ft.rectTransform, anchor, anchor, position + new Vector2(-160, -30),
                     position + new Vector2(160, 30));
+                floatingFeedback[u] = ft.rectTransform;
                 runner.StartCoroutine(FloatAndDestroy(ft.rectTransform, .70f / Mathf.Sqrt(speed)));
             }
 
@@ -498,24 +503,21 @@ namespace Wuxia
                 Vector2 start = rt.anchoredPosition;
                 while (t < dur && rt != null)
                 {
-                    t += Time.unscaledDeltaTime;
-                    rt.anchoredPosition = start + Vector2.up * (54f * (t / dur));
+                    rt.anchoredPosition = start + Vector2.up * (54f * Mathf.Clamp01(t / dur));
                     yield return null;
+                    t += Mathf.Min(Time.unscaledDeltaTime, .05f);
                 }
                 if (rt != null) UnityEngine.Object.Destroy(rt.gameObject);
             }
 
-            IEnumerator Lunge(BattleCombatant attacker, BattleCombatant defender)
+            IEnumerator Lunge(BattleCombatant attacker)
             {
                 float step = .16f / speed;
                 var moving = views[attacker];
-                var hit = defender == null ? null : views[defender];
                 if (moving.Root != null)
                     moving.Root.anchoredPosition = moving.StandingPosition + Vector2.right * (attacker.isPlayer ? 64f : -26f);
-                if (hit?.Art != null) hit.Art.color = new Color(1f, .45f, .45f);
                 yield return new WaitForSecondsRealtime(step);
                 if (moving.Root != null) moving.Root.anchoredPosition = moving.StandingPosition;
-                if (hit?.Art != null && defender.Alive) hit.Art.color = Color.white;
             }
 
             IEnumerator Advance(string command = null, bool stopAfterRound = false)
@@ -541,20 +543,25 @@ namespace Wuxia
                     {
                         if (battleScreen != screen) yield break;
                         PushLog(entry.Text);
-                        if (entry.Float != null)
-                            ShowFloatText(entry.Target, entry.Float, entry.Critical ? new Color(1f, .51f, .26f)
-                                : entry.Hit ? UiKit.HeaderGold : new Color(.65f, .95f, 1f), entry.Critical);
+                        if (entry.Float != null && !entry.Hit)
+                            ShowFloatText(entry.Target, entry.Float, new Color(.65f, .95f, 1f), false);
                         if (entry.Cue != null) AudioManager.Play(entry.Cue);
                         if (entry.Hit)
                         {
                             bool firstBigMove = (entry.Skill?.all == true || entry.Skill?.telegraph == true)
                                 && playedBigMoves.Add(entry.Skill.id);
                             yield return PlayImpact(stage, views[entry.Actor], views[entry.Target], entry,
-                                speed, firstBigMove, captureImpact);
+                                speed, firstBigMove, captureImpact, ShowDamage);
+
+                            void ShowDamage()
+                            {
+                                ShowFloatText(entry.Target, entry.Float, entry.Critical
+                                    ? new Color(1f, .51f, .26f) : UiKit.HeaderGold, entry.Critical);
+                            }
                         }
                         else if (entry.Actor != null)
-                            yield return Lunge(entry.Actor, null);
-                        else if (entry.Float?.StartsWith("+", StringComparison.Ordinal) == true)
+                            yield return Lunge(entry.Actor);
+                        else if (entry.Recovery)
                             yield return PlayRecovery(views[entry.Target]);
                     }
                     RefreshBattle();

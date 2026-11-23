@@ -417,12 +417,13 @@ namespace Wuxia
                 glow.effectColor = new Color(.89f, .66f, .31f, .75f);
                 glow.effectDistance = new Vector2(2, 2);
             }
-            var body = Label(item, description ?? "", 20);
+            var body = Label(item, description ?? "", wideDescription ? 18 : 20);
             if (wideDescription)
             {
                 body.alignment = TextAnchor.UpperLeft;
                 body.horizontalOverflow = HorizontalWrapMode.Wrap;
                 body.verticalOverflow = VerticalWrapMode.Truncate;
+                body.lineSpacing = .94f;
             }
             body.color = new Color(.96f, .89f, .75f);
             body.resizeTextForBestFit = false;

@@ -155,7 +155,7 @@ namespace Wuxia
                     MapUi.Text(plate, line.subtitle, 14, 38, 332, 24, 18, MapUi.Gold, TextAnchor.MiddleCenter);
             }
             var text = MapUi.Text(paper, line.text, 44, narrator ? 30 : 36, 1232, height - 60, 32,
-                MapUi.Ink, TextAnchor.UpperLeft, narrator ? "Narration" : "Dialogue");
+                MapUi.Paper, TextAnchor.UpperLeft, narrator ? "Narration" : "Dialogue");
             text.lineSpacing = 1.1f;
             if (narrator) text.fontStyle = FontStyle.Italic;
         }

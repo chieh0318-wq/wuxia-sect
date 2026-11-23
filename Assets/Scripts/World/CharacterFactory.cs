@@ -191,14 +191,9 @@ namespace Wuxia
 
             // Preserve the silhouette direction in older saves and for party members
             // who have no individual combat artwork yet.
-            if (!ally) return (Resources.Load<Texture2D>("Battle/enemy_boss_battle_right"), true);
             string sex = gender == "女" ? "f" : "m";
-            if (hero)
-                return (Resources.Load<Texture2D>("Standees/hero_" + sex + "1_battle_right") ??
-                    Resources.Load<Texture2D>("Standees/" + (sex == "f"
-                        ? "hero_f1_fubing_orphan_dashijie" : "hero_m1_scholar_family_shaozhangmen")), true);
-            return (Resources.Load<Texture2D>("Battle/ally_" + sex + "_battle_right") ??
-                Resources.Load<Texture2D>("Standees/" + (sex == "f" ? "xu" : "lin") + "_battle_right"), true);
+            string fallback = ally ? (hero ? "hero_" : "ally_") + sex : "enemy_boss";
+            return (Resources.Load<Texture2D>("Battle/" + fallback + "_battle_right"), true);
         }
 
         internal static bool FlipStandee(Texture2D texture, bool faceRight) =>

@@ -28,11 +28,11 @@ namespace Wuxia
             var rand = Button(row, "隨機姓名", () => { input.text = suggest(); changed(input.text); });
             Anchor(rand, Vector2.right, Vector2.one, new(-380, 4), new(-236, -4));
 
-            var male = Button(row, "男・大師兄", () => chooseGender("男"));
+            var male = Button(row, "男・三師兄", () => chooseGender("男"));
             UiKit.Skin(male.GetComponent<Image>(), currentGender == "男" ? "Selected" : "Wood");
             Anchor(male, Vector2.right, Vector2.one, new(-226, 4), new(-116, -4));
 
-            var female = Button(row, "女・大師姐", () => chooseGender("女"));
+            var female = Button(row, "女・三師姐", () => chooseGender("女"));
             UiKit.Skin(female.GetComponent<Image>(), currentGender == "女" ? "Selected" : "Wood");
             Anchor(female, Vector2.right, Vector2.one, new(-110, 4), new(0, -4));
         }

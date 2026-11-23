@@ -638,6 +638,8 @@ namespace Wuxia
                 .Concat(state.Data.GeneralLines).Where(line => !string.IsNullOrWhiteSpace(line)).ToArray();
             string text = lines.Length == 0 ? "請吩咐。" :
                 lines[UnityEngine.Random.Range(0, lines.Length)];
+            var castLines = CastDialogue.Find(disciple.id)?.daily?.Get(CastDialogue.Tier(CastDialogue.Score(state, disciple)));
+            text = CastDialogue.Format(state, CastDialogue.Pick(castLines) ?? text, disciple.id);
             if (state.Story.delegateId == disciple.id)
                 text = "正在代行掌門門務。";
             ui.ShowDialogue(disciple, text, () => ShowDisciple(disciple));

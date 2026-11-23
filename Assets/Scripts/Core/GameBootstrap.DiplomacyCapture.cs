@@ -11,8 +11,7 @@ namespace Wuxia
     public sealed partial class GameBootstrap
     {
         /// <summary>
-        /// "-wuxiaDiplomacyCapture &lt;dir&gt;": muted, offscreen shots of the diplomacy UI on a seeded mid-game state
-        /// (faction card button, diplomacy panel, victory routes, a 外交急報), plus logic checks; quits when done.
+        /// "-wuxiaDiplomacyCapture &lt;dir&gt;": muted, offscreen shots of the diplomacy conversation and 外交急報 on a seeded campaign; quits after verification.
         /// </summary>
         private IEnumerator CaptureDiplomacy(string directory)
         {
@@ -71,60 +70,100 @@ namespace Wuxia
                     Debug.LogError("[Diplomacy] Faction card has no usable 外交 button.");
                     ok = false;
                 }
-                Shot("01_faction_card_diplomacy_button.png");
+                Shot("00_faction_card.png");
 
-                // 02: the panel opened from that button, after one real gift so the result line shows.
                 cardButton?.onClick.Invoke();
                 yield return null;
                 var panel = map.CaptureDiplomacy;
-                if (!panel.IsOpen)
-                {
-                    Debug.LogError("[Diplomacy] The card button did not open the diplomacy panel.");
-                    ok = false;
-                }
                 var randomState = Random.state;
                 Random.InitState(1123);
                 int ap = state.ActionPoints, silver = state.Silver, before = state.Attitude(faction);
-                string gift = panel.Act("gift");
+                Click("外交:gift");
+                yield return null;
+                Check(state.ActionPoints == ap && state.Silver == silver, "council preview is free");
+                Click("再議");
+                yield return null;
+                Check(!panel.EventOpen && state.ActionPoints == ap && state.Silver == silver, "cancelling council is free");
+                Click("外交:gift");
+                yield return null;
+                Shot("01_council.png");
+                yield return AdvanceTo("使者抵達");
+                Check(state.ActionPoints == ap - 1 && state.Silver == silver - 25 && state.Attitude(faction) == before,
+                    "dispatch pays base costs without settling");
+                Click("對話繼續");
+                yield return null;
+                Shot("02_envoy_arrival.png");
+                yield return AdvanceTo("答覆");
+                Shot("03_reply_choices.png");
+                Click("答覆:lavish");
+                yield return null;
+                Check(state.Silver == silver - 40 && state.Attitude(faction) == before, "choice pays its extra silver before settlement");
+                Click("對話繼續");
+                yield return null;
+                Shot("04_leader_reaction.png");
+                yield return AdvanceTo("結局");
+                Shot("05_narrated_outcome.png");
+                Check(state.Attitude(faction) == before, "narrated outcome precedes settlement");
+                yield return AdvanceTo(null);
+                Check(!panel.EventOpen && (state.Attitude(faction) == before + 14 || state.Attitude(faction) == before - 2),
+                    "gift settles with its selected modifier");
                 Random.state = randomState;
-                bool paid = state.ActionPoints == ap - 1 && state.Silver == silver - 25 && state.Attitude(faction) != before;
-                Debug.Log($"[Diplomacy] Gift on {faction.Label}: {gift} AP {ap}->{state.ActionPoints}, silver {silver}->{state.Silver}, " +
-                    $"attitude {before}->{state.Attitude(faction)}.");
-                if (!paid)
-                {
-                    Debug.LogError("[Diplomacy] Gift did not spend 1 AP / 25 silver or move attitude.");
-                    ok = false;
-                }
-                yield return null;
-                Shot("02_diplomacy_panel.png");
 
-                // 03: the 勝利之路 tab — conquest and diplomatic victory side by side.
-                panel.ShowVictoryTab();
-                yield return null;
-                Shot("03_victory_progress.png");
-
-                // 04: a 外交急報 (forced 掌門壽宴 on a friendly sect), then its resolution.
-                panel.Select(faction);
-                if (!state.RollDiploEvent("birthday"))
-                {
-                    Debug.LogError("[Diplomacy] No faction qualified for the 掌門壽宴 event.");
-                    ok = false;
-                }
+                Check(state.RollDiploEvent("birthday"), "birthday event can be generated");
                 panel.ShowEvent();
                 yield return null;
-                Shot("04_diplomacy_event.png");
+                Shot("06_event_arrival.png");
                 var host = state.PendingDiploTarget;
                 int eventBefore = host == null ? 0 : state.Attitude(host);
                 silver = state.Silver;
-                string outcome = panel.Resolve(0);
-                Debug.Log($"[Diplomacy] Event resolved: {outcome}");
-                if (host == null || state.PendingDiploEvent != null || state.Silver != silver - 30 || state.Attitude(host) != Mathf.Min(100, eventBefore + 12))
+                yield return AdvanceTo("答覆");
+                Click("答覆:lavish");
+                yield return null;
+                yield return AdvanceTo(null);
+                Check(host != null && state.PendingDiploEvent == null && state.Silver == silver - 30 &&
+                    state.Attitude(host) == Mathf.Min(100, eventBefore + 12), "birthday event settles through conversation");
+
+                state.RefillAp();
+                Check(state.RollDiploEvent("vassal_plea"), "vassal plea can be generated");
+                panel.ShowEvent();
+                yield return null;
+                yield return AdvanceTo("答覆");
+                ap = state.ActionPoints;
+                var vassal = state.PendingDiploTarget;
+                int vassalBefore = state.Attitude(vassal);
+                Click("答覆:lead");
+                yield return null;
+                yield return AdvanceTo(null);
+                var relief = Diplomacy.Data.events.First(incident => incident.id == "vassal_plea").options[0];
+                int reliefGain = Mathf.RoundToInt(relief.effects.First(effect => effect.key == "attitude").value);
+                Check(state.ActionPoints == ap - relief.ap - 1 && state.Attitude(vassal) == Mathf.Min(100, vassalBefore + reliefGain + 5),
+                    "leading relief reuses the original option and adds its surcharge and effects");
+
+                void Click(string buttonName)
                 {
-                    Debug.LogError("[Diplomacy] Event option did not apply its cost and attitude change.");
+                    var button = overlay.GetComponentsInChildren<Button>().FirstOrDefault(b => b.name == buttonName);
+                    Check(button != null && button.interactable, "usable button: " + buttonName);
+                    if (button != null && button.interactable) button.onClick.Invoke();
+                }
+
+                IEnumerator AdvanceTo(string stage)
+                {
+                    bool Arrived() => stage == null ? !panel.EventOpen :
+                        overlay.GetComponentsInChildren<RectTransform>().Any(rect => rect.name == stage && rect.parent.name == "外交急報");
+                    for (int i = 0; i < 20 && !Arrived(); i++)
+                    {
+                        Click("對話繼續");
+                        yield return null;
+                    }
+                    Check(Arrived(), "arrived at " + (stage ?? "settlement"));
+                }
+
+                void Check(bool condition, string message)
+                {
+                    if (condition) return;
+                    Debug.LogError("[Diplomacy] Capture check failed: " + message);
                     ok = false;
                 }
-                yield return null;
-                Shot("05_diplomacy_event_result.png");
                 map.Close();
                 overlay.renderMode = RenderMode.ScreenSpaceOverlay;
             }
@@ -164,6 +203,17 @@ namespace Wuxia
             }
             var rules = Diplomacy.Data;
             Check(rules.actions.Length == 9 && rules.events.Length >= 5, $"diplomacy.json loaded ({rules.actions.Length} actions, {rules.events.Length} events)");
+            var dialogue = DiplomacyDialogue.Data;
+            Check(rules.actions.All(action => dialogue.actions.Any(scene => scene.id == action.id && scene.options.Length >= 2)),
+                "all nine actions have conversation choices");
+            Check(rules.events.All(incident => dialogue.events.Any(scene => scene.id == incident.id && scene.Covers(incident))),
+                "all six events have matching conversation choices");
+            Check(CastDialogue.Find("lin")?.address?.mid == "老三" && CastDialogue.Find("han")?.daily?.low?.Length > 0,
+                "affinity-sensitive addresses and daily lines deserialize");
+            var gift = dialogue.actions.First(scene => scene.id == "gift").options.First(choice => choice.id == "lavish");
+            Check(Mathf.Approximately(GameState.ModifiedDiploChance(.72f, gift.mods), .78f) &&
+                Mathf.Approximately(GameState.ModifiedDiploChance(.94f, gift.mods), .95f),
+                "option odds modify the base and respect the upper cap");
             var fresh = new GameState(data);
             var shaolin = GameState.FindFaction("shaolin");
             var court = GameState.FindFaction("jinwuwei");
@@ -176,6 +226,10 @@ namespace Wuxia
 
             var demo = new GameState(data);
             demo.SeedDiplomacyDemo();
+            var pressure = dialogue.actions.First(scene => scene.id == "vassal").options.First(choice => choice.id == "press");
+            var awed = GameState.FindFaction("wulong");
+            var terms = pressure.mods.Effective(demo, awed, "recluse", "neutral");
+            Check(terms.chance == 6 && terms.terms.tributePct == 30, "conditional and permanent negotiation modifiers deserialize");
             var v = demo.Victory;
             Check(v.Loyal == 3 && v.Subjects == 1 && v.Held == 3 && !v.Diplomatic && !v.Conquest,
                 $"demo victory counts loyal {v.Loyal} subjects {v.Subjects} held {v.Held}");

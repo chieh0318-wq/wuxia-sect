@@ -208,8 +208,8 @@ namespace Wuxia
                 ? prefix + number : prefix + "1";
             string identity = title switch
             {
-                "大師姐" => "dashijie",
-                "大師兄" => "dashixiong",
+                "大師姐" or "三師姐" => "dashijie",
+                "大師兄" or "三師兄" => "dashixiong",
                 "少掌門" => "shaozhangmen",
                 _ => null
             };

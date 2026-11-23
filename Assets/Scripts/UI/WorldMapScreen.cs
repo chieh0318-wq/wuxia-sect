@@ -75,7 +75,7 @@ namespace Wuxia
 
         public void Close()
         {
-            if (!IsOpen) return;
+            if (!IsOpen || diplomacy.TalkCommitted) return;
             if (traveling) FinishTravel(selected);
             StopAllCoroutines();
             ClearCard();

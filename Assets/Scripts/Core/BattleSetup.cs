@@ -62,7 +62,7 @@ namespace Wuxia
                 new()
                 {
                     name = state.Protagonist.title == "少掌門" ? state.Protagonist.title
-                        : state.Protagonist.gender == "女" ? "大師姐" : "大師兄",
+                        : state.Protagonist.gender == "女" ? "三師姐" : "三師兄",
                     standee = CharacterFactory.HeroOriginStandee(state.Protagonist.gender,
                         state.Protagonist.lookId ?? state.Protagonist.portrait,
                         state.Protagonist.backgroundId, state.Protagonist.title),

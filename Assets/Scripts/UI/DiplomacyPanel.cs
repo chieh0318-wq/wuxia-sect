@@ -23,8 +23,11 @@ namespace Wuxia
         private MapFaction selected;
         private string result = "";
         private bool victoryView;
+        private DiplomacyTalk talk;
+        private readonly Dictionary<string, string> lastDissent = new();
         public bool IsOpen => root.gameObject.activeSelf;
         public bool EventOpen => overlay.gameObject.activeSelf;
+        internal bool TalkCommitted => talk?.Committed == true;
         internal event Action Closed;
 
         internal DiplomacyPanel(Transform parent, WorldMapData data, Action changed)
@@ -73,7 +76,8 @@ namespace Wuxia
 
         public void Close()
         {
-            if (!IsOpen) return;
+            if (!IsOpen || talk?.Committed == true) return;
+            talk = null;
             overlay.gameObject.SetActive(false);
             root.gameObject.SetActive(false);
             Closed?.Invoke();
@@ -104,6 +108,34 @@ namespace Wuxia
             Refresh();
             if (state.ClaimDiplomaticVictory()) ShowVictoryProclamation();
             return result;
+        }
+
+        private void BeginTalk(DiploAction action)
+        {
+            if (talk != null || state.DiploBlock(action, selected) != null) return;
+            var scene = DiplomacyDialogue.Data.actions.FirstOrDefault(entry => entry.id == action.id && entry.options.Length > 0);
+            if (scene == null) { Act(action.id); return; }
+            OpenTalk(scene, selected, action, null);
+        }
+
+        private void OpenTalk(TalkScene scene, MapFaction faction, DiploAction action, DiploEvent incident)
+        {
+            lastDissent.TryGetValue(faction.id, out string previous);
+            talk = new DiplomacyTalk(overlay, state, data, faction, scene, action, incident, previous, role =>
+            {
+                if (role != null) lastDissent[faction.id] = role;
+            }, text =>
+            {
+                talk = null;
+                overlay.gameObject.SetActive(false);
+                if (text != null)
+                {
+                    result = text;
+                    changed?.Invoke();
+                }
+                Refresh();
+                if (state.ClaimDiplomaticVictory()) ShowVictoryProclamation();
+            });
         }
 
         private IEnumerable<MapFaction> Roster() => data.Factions
@@ -223,7 +255,7 @@ namespace Wuxia
                 var action = actions[i];
                 float x = i % 3 * 214, y = 272 + i / 3 * 124;
                 string block = state.DiploBlock(action, faction);
-                var button = MapUi.Button(detail, action.name, x, y, 202, 48, () => Act(action.id), block == null ? MapUi.Red : null, 21);
+                var button = MapUi.Button(detail, action.name, x, y, 202, 48, () => BeginTalk(action), block == null ? MapUi.Red : null, 21);
                 button.name = "外交:" + action.id;
                 button.interactable = block == null;
                 string cost = $"行動力{action.ap}" + (action.silver > 0 ? $"・銀兩{action.silver}" : "") +
@@ -377,6 +409,9 @@ namespace Wuxia
             var diploEvent = state?.PendingDiploEvent;
             var faction = state?.PendingDiploTarget;
             if (diploEvent == null || faction == null) return;
+            if (talk != null) return;
+            var scene = DiplomacyDialogue.Data.events.FirstOrDefault(entry => entry.id == diploEvent.id && entry.Covers(diploEvent));
+            if (scene != null) { OpenTalk(scene, faction, null, diploEvent); return; }
             AudioManager.Play("page");
             var scroll = Popup("外交急報・" + diploEvent.title,
                 $"{faction.Label}　{Diplomacy.GroupName(faction)}　態度 {Diplomacy.AttitudeLabel(state.Attitude(faction))} {state.Attitude(faction):+0;-0;0}",

@@ -10,6 +10,7 @@ namespace Wuxia
     {
         public string id;
         public int status;
+        public int tradeIncome, tributePct, pactPower, rivalShift, monthlyAttitude;
         /// <summary>Month stamp (year*12+month) when the faction became a vassal.</summary>
         public int since;
     }
@@ -170,7 +171,16 @@ namespace Wuxia
                 tie.status |= bit;
                 if (bit == Diplomacy.Vassal) tie.status &= ~Diplomacy.Awed;
             }
-            else tie.status &= ~bit;
+            else
+            {
+                tie.status &= ~bit;
+                if (bit == Diplomacy.Trade) tie.tradeIncome = 0;
+                if (bit == Diplomacy.Vassal) tie.tributePct = 0;
+                if ((tie.status & (Diplomacy.Pact | Diplomacy.Alliance)) == 0) tie.pactPower = 0;
+                if (bit == Diplomacy.Alliance) tie.rivalShift = 0;
+                if ((tie.status & (Diplomacy.Trade | Diplomacy.Vassal | Diplomacy.Pact | Diplomacy.Alliance)) == 0)
+                    tie.monthlyAttitude = 0;
+            }
         }
 
         /// <summary>Envoy eloquence: the best 魅力 + 悟性/2 among the head and the uninjured disciples.</summary>
@@ -194,8 +204,9 @@ namespace Wuxia
             5 * (Story.ties ?? Array.Empty<DiploTie>()).Count(tie => tie != null && (tie.status & Diplomacy.Alliance) != 0);
 
         /// <summary>+8% sect power per defence pact or sworn alliance, at most +40%.</summary>
-        internal float DiplomacyPowerBonus => Mathf.Min(.4f, .08f * (Story.ties ?? Array.Empty<DiploTie>())
-            .Count(tie => tie != null && (tie.status & (Diplomacy.Pact | Diplomacy.Alliance)) != 0));
+        internal float DiplomacyPowerBonus => Mathf.Min(.4f, (Story.ties ?? Array.Empty<DiploTie>())
+            .Where(tie => tie != null && (tie.status & (Diplomacy.Pact | Diplomacy.Alliance)) != 0)
+            .Sum(tie => (8 + tie.pactPower) / 100f));
 
         internal static DiploAction DiploActionById(string id) => Array.Find(Diplomacy.Data.actions ?? Array.Empty<DiploAction>(), a => a.id == id);
 
@@ -242,21 +253,48 @@ namespace Wuxia
         /// <summary>Attempts a diplomatic action, paying its costs; returns the narrated result.</summary>
         internal string DiploAct(DiploAction action, MapFaction faction)
         {
-            string block = DiploBlock(action, faction);
+            string block = DiploBegin(action, faction, out float chance);
             if (block != null) return $"{action?.name}：{block}。";
-            float chance = DiploChance(action, faction);
-            if (!TrySpendAp(action.ap, "diplomacy:" + action.id + ":" + faction.id)) return "行動力不足。";
-            Silver -= action.silver;
-            Reputation -= action.reputation;
+            return DiploResolve(action, faction, new TalkModifiers(), chance, UnityEngine.Random.value < chance);
+        }
+
+        internal string DiploBegin(DiploAction action, MapFaction faction, out float chance)
+        {
+            chance = 0;
+            string block = DiploBlock(action, faction);
+            if (block != null) return block;
+            chance = DiploChance(action, faction);
+            return DiploPay(action.ap, action.silver, action.reputation, $"diplomacy:{action.id}:{faction.id}");
+        }
+
+        internal static float ModifiedDiploChance(float chance, TalkModifiers mods) =>
+            Mathf.Clamp(chance + Mathf.Clamp(mods.chance, -15, 15) / 100f, .05f, .95f);
+
+        internal string DiploCostBlock(int ap, int silver, int reputation) =>
+            ap > ActionPoints ? "行動力不足" : silver > Silver ? "銀兩不足" : reputation > Reputation ? "聲望不足" : null;
+
+        internal string DiploPay(int ap, int silver, int reputation, string reason)
+        {
+            string block = DiploCostBlock(ap, silver, reputation);
+            if (block != null) return block;
+            if (ap > 0 && !TrySpendAp(ap, reason)) return "行動力不足";
+            Silver -= silver;
+            Reputation -= reputation;
+            return null;
+        }
+
+        internal string DiploResolve(DiploAction action, MapFaction faction, TalkModifiers mods, float chance, bool success)
+        {
             Eloquence(out string envoy);
-            bool success = UnityEngine.Random.value < chance;
             if (!success)
             {
-                ShiftAttitude(faction, action.fail);
+                int fail = Mathf.Min(0, action.fail + mods.fail);
+                ShiftAttitude(faction, fail);
                 if (action.id == "intimidate") Reputation -= 2;
-                return $"【{action.name}失敗】{Diplomacy.Fill(action.failure, faction)}\n（使者 {envoy}，成功率 {chance:P0}；態度 {action.fail:+0;-0}）";
+                return $"【{action.name}失敗】{Diplomacy.Fill(action.failure, faction)}\n（使者 {envoy}，成功率 {chance:P0}；態度 {fail:+0;-0}）";
             }
-            int gain = action.gain;
+            int gain = action.gain + mods.gain;
+            var terms = mods.terms ?? new TalkTerms();
             string extra = "";
             switch (action.id)
             {
@@ -276,8 +314,9 @@ namespace Wuxia
                     {
                         var enemy = FindFaction(rival);
                         if (enemy == null) continue;
-                        ShiftAttitude(enemy, -10);
-                        extra += $"{enemy.Label}視本派為敵，態度 −10。";
+                        int shift = -10 + (Tie(faction.id)?.rivalShift ?? 0) + terms.rivalShift;
+                        ShiftAttitude(enemy, shift);
+                        extra += $"{enemy.Label}視本派為敵，態度 {shift:+0;-0;0}。";
                     }
                     break;
                 case "intimidate": SetTie(faction, Diplomacy.Awed, true); break;
@@ -289,6 +328,21 @@ namespace Wuxia
                     ApplyEffects(new[] { new GameEffect { key = "reputation", value = 5 } });
                     extra = $"新增據點 {nodes.Length} 處，聲望 +5。";
                     break;
+            }
+            if (terms.tradeIncome != 0 || terms.tributePct != 0 || terms.pactPower != 0 ||
+                terms.rivalShift != 0 || terms.monthlyAttitude != 0)
+            {
+                var tie = Tie(faction.id, true);
+                tie.tradeIncome += terms.tradeIncome;
+                tie.tributePct += terms.tributePct;
+                tie.pactPower += terms.pactPower;
+                tie.rivalShift += terms.rivalShift;
+                tie.monthlyAttitude += terms.monthlyAttitude;
+            }
+            if (terms.repOnSuccess != 0)
+            {
+                ApplyEffects(new[] { new GameEffect { key = "reputation", value = terms.repOnSuccess } });
+                extra += $"議定條款：聲望 {terms.repOnSuccess:+0;-0}。";
             }
             ShiftAttitude(faction, gain);
             return $"【{action.name}成功】{Diplomacy.Fill(action.success, faction)}\n（使者 {envoy}；態度 {gain:+0;-0}）{extra}";
@@ -375,7 +429,7 @@ namespace Wuxia
             return null;
         }
 
-        internal string ResolveDiploEvent(int index)
+        internal string ResolveDiploEvent(int index, TalkChoice choice = null, bool prepaid = false)
         {
             var diploEvent = PendingDiploEvent;
             var faction = PendingDiploTarget;
@@ -385,12 +439,16 @@ namespace Wuxia
                 return "急報已過時。";
             }
             var option = diploEvent.options[index];
-            string block = DiploOptionBlock(option);
-            if (block != null) return block + "。";
-            TrySpendAp(option.ap, "diplo_event:" + diploEvent.id);
-            Silver -= option.silver;
+            int ap = option.ap + (choice?.mods?.ap ?? 0);
+            int silver = option.silver + (choice?.mods?.silver ?? 0);
+            if (!prepaid)
+            {
+                string block = DiploPay(ap, silver, choice?.mods?.reputation ?? 0, "diplo_event:" + diploEvent.id);
+                if (block != null) return block + "。";
+            }
             var parts = new List<string>();
-            foreach (var effect in option.effects ?? Array.Empty<GameEffect>())
+            foreach (var effect in (option.effects ?? Array.Empty<GameEffect>())
+                .Concat(choice?.mods?.effects ?? Array.Empty<GameEffect>()).Concat(choice?.effects ?? Array.Empty<GameEffect>()))
             {
                 int value = Mathf.RoundToInt(effect.value);
                 switch (effect.key)
@@ -406,8 +464,8 @@ namespace Wuxia
                         break;
                 }
             }
-            if (option.silver > 0) parts.Insert(0, $"銀兩 −{option.silver}");
-            if (option.ap > 0) parts.Insert(0, $"行動力 −{option.ap}");
+            if (silver > 0) parts.Insert(0, $"銀兩 −{silver}");
+            if (ap > 0) parts.Insert(0, $"行動力 −{ap}");
             Story.diploEvent = Story.diploEventTarget = null;
             return Diplomacy.Fill(option.result, faction) + (parts.Count > 0 ? "\n（" + string.Join("，", parts) + "）" : "");
         }
@@ -426,20 +484,22 @@ namespace Wuxia
                 int ties = Ties(faction.id);
                 if ((ties & Diplomacy.Merged) != 0) continue;
                 int shift = RelationShift(faction.id);
-                int delta = 0;
+                var terms = Tie(faction.id);
+                int delta = terms?.monthlyAttitude ?? 0;
                 if ((ties & (Diplomacy.Trade | Diplomacy.Pact | Diplomacy.Alliance | Diplomacy.Vassal)) == 0)
                     delta += shift > 0 ? -1 : shift < 0 ? 1 : 0;
                 if ((ties & Diplomacy.Trade) != 0)
                 {
                     delta += 1;
-                    trade += faction.type == "merchant" ? 12 : 6;
+                    trade += Mathf.Max(1, (faction.type == "merchant" ? 12 : 6) + (terms?.tradeIncome ?? 0));
                 }
                 if ((ties & Diplomacy.Pact) != 0) delta += 1;
                 if ((ties & Diplomacy.Alliance) != 0) delta += 1;
                 if ((ties & Diplomacy.Vassal) != 0)
                 {
                     delta -= 1;
-                    tribute += Mathf.Clamp(faction.money / 600, 5, 30);
+                    tribute += Mathf.Clamp(Mathf.RoundToInt(Mathf.Clamp(faction.money / 600, 5, 30) *
+                        (100 + (terms?.tributePct ?? 0)) / 100f), 5, 30);
                     if (Attitude(faction) < 10 && UnityEngine.Random.value < .3f)
                     {
                         SetTie(faction, Diplomacy.Vassal, false);

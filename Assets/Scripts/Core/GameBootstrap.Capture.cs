@@ -55,7 +55,7 @@ namespace Wuxia
                     {
                         var preview = new GameState(data);
                         preview.Protagonist.gender = "女";
-                        preview.Protagonist.title = "大師姐";
+                        preview.Protagonist.title = "三師姐";
                         preview.Protagonist.name = "顧清霜";
                         new NewGameFlow(ui, preview, _ => { }).CaptureAppearance();
                     }),
@@ -232,8 +232,8 @@ namespace Wuxia
                 view.fieldOfView = 45;
                 var examples = new[]
                 {
-                    ("女", "hero_f1", "fubing_orphan", "大師姐", true, "77_courtyard_p4_orphan.png"),
-                    ("男", "hero_m9", "temple_foundling", "大師兄", false, "78_courtyard_p4_temple.png")
+                    ("女", "hero_f1", "fubing_orphan", "三師姐", true, "77_courtyard_p4_orphan.png"),
+                    ("男", "hero_m9", "temple_foundling", "三師兄", false, "78_courtyard_p4_temple.png")
                 };
                 try
                 {
@@ -272,10 +272,10 @@ namespace Wuxia
                 var original = (hero.gender, hero.lookId, hero.backgroundId, hero.title, hero.name, hero.portrait);
                 var examples = new[]
                 {
-                    ("女", "hero_f1", "fubing_orphan", "大師姐", "大師姐", "68_hero_female_dashijie.png"),
+                    ("女", "hero_f1", "fubing_orphan", "三師姐", "三師姐", "68_hero_female_dashijie.png"),
                     ("男", "hero_m1", "scholar_family", "少掌門", "少掌門", "69_hero_male_shaozhangmen.png"),
-                    ("女", "hero_f6", "mountain_hunter", "大師姐", "山野獵戶", "70_hero_female_mountain_hunter.png"),
-                    ("男", "hero_m9", "temple_foundling", "大師兄", "寺院棄嬰", "71_hero_male_temple_foundling.png")
+                    ("女", "hero_f6", "mountain_hunter", "三師姐", "山野獵戶", "70_hero_female_mountain_hunter.png"),
+                    ("男", "hero_m9", "temple_foundling", "三師兄", "寺院棄嬰", "71_hero_male_temple_foundling.png")
                 };
                 try
                 {

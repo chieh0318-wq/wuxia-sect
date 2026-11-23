@@ -62,7 +62,7 @@ namespace Wuxia
             var hero = state.Protagonist;
             string gender = hero.gender == "女" ? "女" : "男";
             hero.gender = gender;
-            if (string.IsNullOrWhiteSpace(hero.title)) hero.title = gender == "女" ? "大師姐" : "大師兄";
+            if (string.IsNullOrWhiteSpace(hero.title)) hero.title = gender == "女" ? "三師姐" : "三師兄";
             if (string.IsNullOrWhiteSpace(hero.name)) hero.name = SuggestedName();
             ChooseAppearance();
         }
@@ -111,11 +111,11 @@ namespace Wuxia
         internal void Begin()
         {
             AudioManager.Music("title");
-            ui.ShowCreation("首徒稱謂", new[] { "你是師父最早收入門下的弟子。師弟師妹們該怎麼稱呼你？" },
+            ui.ShowCreation("同門排行", new[] { "師父門下，你排行第三，卻是同輩中最出挑的一個。同門該怎麼稱呼你？" },
                 null, ChooseAppearance);
             ui.CreationGrid(2, 1, 540);
-            ui.CreationIdentity("大師兄", "hero_m1", "男", () => ChooseGender("男"));
-            ui.CreationIdentity("大師姐", "hero_f1", "女", () => ChooseGender("女"));
+            ui.CreationIdentity("三師兄", "hero_m1", "男", () => ChooseGender("男"));
+            ui.CreationIdentity("三師姐", "hero_f1", "女", () => ChooseGender("女"));
         }
 
         private void ChooseGender(string gender)
@@ -123,7 +123,7 @@ namespace Wuxia
             // Coming back with the same gender keeps the chosen look and typed name.
             bool changed = look == null || state.Protagonist.gender != gender;
             state.Protagonist.gender = gender;
-            state.Protagonist.title = gender == "女" ? "大師姐" : "大師兄";
+            state.Protagonist.title = gender == "女" ? "三師姐" : "三師兄";
             if (changed)
             {
                 look = null;
@@ -660,8 +660,8 @@ namespace Wuxia
             return characters.storyCharacters?.FirstOrDefault(entry => entry.id == id);
         }
 
-        private string FormatStory(string text) => (text ?? "").Replace("{title}", state.Protagonist.title)
-            .Replace("{name}", state.Protagonist.name).Replace("{sect}", state.Data.Start.sectName)
+        private string FormatStory(string text) => CastDialogue.Format(state, text).Replace("{title}", state.Protagonist.title)
+            .Replace("{name}", state.Protagonist.name)
             .Replace("{friend}", Friend()?.name ?? "故友").Replace("{he}", state.Protagonist.gender == "女" ? "她" : "他");
 
         private void Finish()

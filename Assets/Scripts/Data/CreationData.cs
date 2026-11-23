@@ -78,7 +78,7 @@ namespace Wuxia
 
     [Serializable] public sealed class ProtagonistData
     {
-        public string name = "顧行舟", gender = "男", title = "大師兄", lookId = "hero_m1", backgroundId, portrait;
+        public string name = "顧行舟", gender = "男", title = "三師兄", lookId = "hero_m1", backgroundId, portrait;
         public int age = 20;
         public int[] attrs = { 10, 10, 10, 10, 10, 10, 10 };
         public string[] talents = Array.Empty<string>(), skills = Array.Empty<string>();

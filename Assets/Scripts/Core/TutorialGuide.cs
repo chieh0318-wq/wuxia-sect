@@ -66,7 +66,7 @@ namespace Wuxia
             data.steps = steps.ToArray();
         }
 
-        private string Format(string text) => (text ?? "").Replace("{title}", title ?? "首徒")
+        private string Format(string text) => (text ?? "").Replace("{title}", title ?? "掌門")
             .Replace("{sect}", state.Data.Start.sectName);
 
         private void ShowIntro()

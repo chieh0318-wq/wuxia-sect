@@ -1,0 +1,9 @@
+{
+  "entries": [
+    {"id":"leader","element":"土","moves":[{"skill":"attack","weight":3},{"skill":"seal","weight":3},{"skill":"breaker","weight":3,"every":2}]},
+    {"id":"boss","element":"土","phaseAt":55,"moves":[{"skill":"breaker","weight":1,"opening":1},{"skill":"attack","weight":4,"phase":1},{"skill":"seal","weight":4,"phase":1},{"skill":"breaker","weight":3,"phase":1,"every":2},{"skill":"storm","weight":7,"phase":2},{"skill":"seal","weight":4,"phase":2},{"skill":"attack","weight":2,"phase":2}]},
+    {"id":"scout","element":"木","moves":[{"skill":"venom","weight":1,"opening":1},{"skill":"venom","weight":4},{"skill":"attack","weight":2},{"skill":"second_wind","weight":1}]},
+    {"id":"axe","element":"火","moves":[{"skill":"cleave","weight":6,"every":2},{"skill":"attack","weight":4}]},
+    {"id":"assassin","element":"水","moves":[{"skill":"hamstring","weight":5},{"skill":"seal","weight":3},{"skill":"attack","weight":2}]}
+  ]
+}

@@ -640,7 +640,7 @@ namespace Wuxia
             string current = faction.StanceWith(shift);
             var stance = current == "friendly" ? new Color(.20f,.39f,.28f) :
                 current == "hostile" ? MapUi.Red : MapUi.Ink;
-            MapUi.Text(panel,"關係　"+faction.RelationWith(shift),20,105,384,32,21,stance);
+            MapUi.Text(panel,"關係　"+faction.RelationWith(shift),20,105,270,32,21,stance);
             if (!known)
             {
                 MapUi.Text(panel,"尚待打探首領與兵力",20,166,386,48,23,MapUi.Ink);
@@ -656,7 +656,7 @@ namespace Wuxia
                 return;
             }
             MapUi.Text(panel,$"首領　{faction.leader ?? "—"}",20,149,274,32,22,MapUi.Ink);
-            MapUi.Button(panel,"掌門",303,149,103,34,() => LeaderSelected?.Invoke(faction),MapUi.Red);
+            MapUi.Button(panel,"掌門",303,105,103,34,() => LeaderSelected?.Invoke(faction),MapUi.Red);
             MapUi.Text(panel,RankSystem.FormatKnown(faction.leaderRank,faction.leaderCap),20,183,386,30,24,RankSystem.Color(faction.leaderRank));
             if (!string.IsNullOrEmpty(faction.leaderWeapon))
                 MapUi.Text(panel,"神兵　"+faction.WeaponLabel,155,183,249,30,19,MapUi.Red);

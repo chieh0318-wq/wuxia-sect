@@ -11,7 +11,11 @@ namespace Wuxia
         public bool isPlayer;
         public int level, hp, maxHp, qi, maxQi, attack, speed;
         public float dodge;
-        public bool defending;
+        public int defense, phase = 1;
+        public string element, enemyProfile;
+        public BattleSkill intent;
+        public BattleCombatant intentTarget;
+        public readonly Dictionary<string, int> statuses = new();
         public bool Alive => hp > 0;
     }
 
@@ -43,11 +47,11 @@ namespace Wuxia
         };
     }
 
-    // Encounter construction and combat state live outside UGUI. When command validation,
-    // enemy decisions and statuses move here, resolve actions into events for the UI and FX.
+    // Encounter construction preserves the stats derived from each party member.
+
     internal static class BattleSetup
     {
-        public static (List<BattleCombatant> party, List<BattleCombatant> enemies) Create(GameState state, BattleRequest req)
+        public static (List<BattleCombatant> party, List<BattleCombatant> enemies) Create(GameState state, BattleRequest req, BattleCatalog catalog)
         {
             var stats = state.HeroStats;
             var players = new List<BattleCombatant>
@@ -64,6 +68,8 @@ namespace Wuxia
                     qi = stats.MaxQi, maxQi = stats.MaxQi,
                     attack = Math.Max(28, stats.Attack),
                     speed = Math.Max(15, stats.Speed),
+                    defense = Math.Max(8, stats.Attack / 3),
+                    element = "木",
                     dodge = stats.Dodge
                 }
             };
@@ -84,6 +90,8 @@ namespace Wuxia
                     hp = derived.MaxHp, maxHp = derived.MaxHp, qi = derived.MaxQi, maxQi = derived.MaxQi,
                     attack = derived.Attack,
                     speed = derived.Speed,
+                    defense = Math.Max(8, derived.Attack / 3),
+                    element = "水",
                     dodge = derived.Dodge
                 });
             }
@@ -95,7 +103,7 @@ namespace Wuxia
             // Attacks stay moderate so the party can spend those rounds fighting.
             float partyHp = (float)players.Average(unit => unit.maxHp);
             int bossHp = req.IsBoss
-                ? Mathf.RoundToInt(players.Sum(unit => unit.attack) * 5.35f * diff)
+                ? Mathf.RoundToInt(players.Sum(unit => unit.attack) * 4.65f * diff)
                 : Mathf.RoundToInt(stats.MaxHp * 1.15f * diff);
             enemies.Add(new BattleCombatant
             {
@@ -108,9 +116,12 @@ namespace Wuxia
                 hp = bossHp, maxHp = bossHp, qi = 100, maxQi = 100,
                 attack = Mathf.RoundToInt((req.IsBoss ? partyHp * .135f : stats.Attack * .72f) * diff),
                 speed = Math.Max(10, stats.Speed - 3),
+                defense = Math.Max(8, (int)players.Average(unit => unit.attack) / 3),
+                enemyProfile = req.IsBoss ? "boss" : "leader",
                 dodge = 0.05f
             });
             string[] minionSprites = { "enemy_scout", "enemy_axe", "enemy_assassin" };
+            string[] minionProfiles = { "scout", "axe", "assassin" };
             string[] minionNames = { "山賊斥候", "山寨悍匪", "黑衣刺客" };
             int count = Mathf.Clamp(req.enemyCount, 2, 4);
             for (int i = 1; i < count; i++)
@@ -127,10 +138,13 @@ namespace Wuxia
                     hp = mHp, maxHp = mHp, qi = 60, maxQi = 60,
                     attack = Mathf.RoundToInt((req.IsBoss ? partyHp * .055f : stats.Attack * .52f) * diff),
                     speed = Math.Max(10, stats.Speed - 4 + i),
+                    defense = Math.Max(5, stats.Attack / 5),
+                    enemyProfile = minionProfiles[i - 1],
                     dodge = 0.06f
                 });
             }
 
+            foreach (var enemy in enemies) enemy.element = catalog.Enemies[enemy.enemyProfile].element;
             return (players, enemies);
         }
     }

@@ -222,7 +222,7 @@ namespace Wuxia
                 {
                     yield return null;
                     Debug.Log("[Capture] Battle start: both sides ready for round one.");
-                    shotsOk = SaveShot("50_battle_start.png");
+                    shotsOk = SaveShot("50_battle_start.png") && SaveShot("53_battle_p2_commands.png");
                     if (!shotsOk)
                         yield break;
 
@@ -237,7 +237,7 @@ namespace Wuxia
 
                     yield return new WaitForSecondsRealtime(.7f);
                     Debug.Log("[Capture] Battle mid: round one resolved, action buttons visible.");
-                    shotsOk = SaveShot("51_battle_mid.png");
+                    shotsOk = SaveShot("51_battle_mid.png") && SaveShot("54_battle_p2_statuses.png");
                     if (!shotsOk) yield break;
                     ui.CloseBattle();
 
@@ -262,7 +262,7 @@ namespace Wuxia
                             yield break;
                         }
                         Debug.Log($"[Capture] Stronghold boss {boss.enemyLeadName}, cue={boss.MusicCue}, track={track}.");
-                        shotsOk = SaveShot("52_battle_boss.png");
+                        shotsOk = SaveShot("52_battle_boss.png") && SaveShot("56_battle_p2_boss.png");
                         if (!shotsOk) yield break;
 
                         int rounds = 0;

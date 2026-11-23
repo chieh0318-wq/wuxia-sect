@@ -1,0 +1,15 @@
+{
+  "entries": [
+    {"id":"poison","label":"中毒","turns":3,"attack":1,"incoming":1,"defense":1,"dot":0.025},
+    {"id":"bleed","label":"流血","turns":2,"attack":1,"incoming":1,"defense":1,"dot":0.018},
+    {"id":"wound","label":"內傷","turns":2,"attack":0.85,"incoming":1,"defense":1,"qi":-8},
+    {"id":"stun","label":"點穴","turns":1,"attack":1,"incoming":1,"defense":1,"skip":true},
+    {"id":"sunder","label":"破甲","turns":2,"attack":1,"incoming":1,"defense":0.65},
+    {"id":"focus","label":"專注","turns":2,"attack":1.3,"incoming":1,"defense":1,"qi":8},
+    {"id":"guard","label":"護體","turns":1,"attack":1,"incoming":0.45,"defense":1},
+    {"id":"seal","label":"封招","turns":1,"attack":1,"incoming":1,"defense":1,"seal":true},
+    {"id":"haste","label":"疾風","turns":2,"attack":1,"incoming":1,"defense":1,"speed":12},
+    {"id":"slow","label":"遲滯","turns":2,"attack":1,"incoming":1,"defense":1,"speed":-12},
+    {"id":"evade","label":"閃身","turns":1,"attack":1,"incoming":1,"defense":1,"evade":true}
+  ]
+}

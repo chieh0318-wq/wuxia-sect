@@ -1,0 +1,18 @@
+{
+  "entries": [
+    {"id":"attack","label":"普攻","power":1.18,"restoreQi":15},
+    {"id":"skill","label":"青鋒刺","power":1.72,"element":"金","qi":25,"status":"bleed"},
+    {"id":"ultimate","label":"崤山劍陣","power":1.28,"element":"土","qi":50,"status":"sunder","all":true},
+    {"id":"interrupt","label":"拆招","power":1.05,"element":"水","qi":15},
+    {"id":"defend","label":"防禦","power":0,"restoreQi":25,"status":"guard"},
+    {"id":"dodge","label":"閃身","power":0,"restoreQi":10,"status":"evade"},
+    {"id":"focus","label":"運功","power":0,"restoreQi":15,"status":"focus"},
+    {"id":"venom","label":"淬毒短刀","power":1.05,"element":"木","qi":10,"status":"poison"},
+    {"id":"hamstring","label":"絆足刺","power":1.08,"element":"水","qi":10,"status":"slow"},
+    {"id":"cleave","label":"開山斧","power":1.72,"element":"土","qi":16,"status":"wound","telegraph":true},
+    {"id":"seal","label":"截脈手","power":1.12,"element":"火","qi":10,"status":"seal"},
+    {"id":"storm","label":"黑松崩山","power":1.48,"element":"火","qi":18,"status":"wound","all":true,"telegraph":true},
+    {"id":"breaker","label":"斷岳重斬","power":1.95,"element":"土","qi":18,"status":"stun","telegraph":true},
+    {"id":"second_wind","label":"疾步","power":0,"restoreQi":20,"status":"haste"}
+  ]
+}

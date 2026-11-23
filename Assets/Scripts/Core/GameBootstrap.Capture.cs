@@ -270,6 +270,11 @@ namespace Wuxia
                         {
                             rounds++;
                             yield return round();
+                            if (rounds == 1)
+                            {
+                                shotsOk = SaveShot("55_battle_p2_telegraph.png");
+                                if (!shotsOk) yield break;
+                            }
                         }
                         Debug.Log($"[Capture] Boss pacing: {rounds} rounds, victory={won}.");
                     }

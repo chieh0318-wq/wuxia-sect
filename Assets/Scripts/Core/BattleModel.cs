@@ -101,7 +101,7 @@ namespace Wuxia
 
         public (string id, BattleCombatant target) AutoCommand(BattleCombatant target)
         {
-            var threatened = enemies.FirstOrDefault(u => u.Alive && u.intent != null);
+            var threatened = enemies.FirstOrDefault(u => u.Alive && u.intent != null && u.intentRound < Round);
             if (threatened != null && Reason("interrupt", threatened) == "") return ("interrupt", threatened);
             if (threatened != null && (threatened.intent.all || threatened.intentTarget == Actor))
                 return ("defend", target);
@@ -234,6 +234,7 @@ namespace Wuxia
             var skill = Skill(moveId);
             if (skill.telegraph)
             {
+                actor.intentRound = Round;
                 actor.intent = skill;
                 actor.intentTarget = victim;
                 Emit($"{actor.name} 蓄勢準備{skill.label}，目標：{(skill.all ? "全體" : victim.name)}！");

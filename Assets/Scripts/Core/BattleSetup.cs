@@ -11,7 +11,7 @@ namespace Wuxia
         public bool isPlayer;
         public int level, hp, maxHp, qi, maxQi, attack, speed;
         public float dodge;
-        public int defense, phase = 1;
+        public int defense, phase = 1, intentRound;
         public string element, enemyProfile;
         public BattleSkill intent;
         public BattleCombatant intentTarget;
@@ -48,7 +48,6 @@ namespace Wuxia
     }
 
     // Encounter construction preserves the stats derived from each party member.
-
     internal static class BattleSetup
     {
         public static (List<BattleCombatant> party, List<BattleCombatant> enemies) Create(GameState state, BattleRequest req, BattleCatalog catalog)
@@ -103,7 +102,7 @@ namespace Wuxia
             // Attacks stay moderate so the party can spend those rounds fighting.
             float partyHp = (float)players.Average(unit => unit.maxHp);
             int bossHp = req.IsBoss
-                ? Mathf.RoundToInt(players.Sum(unit => unit.attack) * 4.65f * diff)
+                ? Mathf.RoundToInt(players.Sum(unit => unit.attack) * 7.9f * diff)
                 : Mathf.RoundToInt(stats.MaxHp * 1.15f * diff);
             enemies.Add(new BattleCombatant
             {

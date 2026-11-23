@@ -136,7 +136,7 @@ namespace Wuxia
             });
             UiKit.Skin(autoBtn.GetComponent<Image>(), "Wood");
 
-            var turn = Panel("CurrentActor", battleScreen, Vector2.zero, Vector2.zero, new(570, 151), new(1502, 193), false);
+            var turn = Panel("CurrentActor", battleScreen, Vector2.zero, Vector2.zero, new(570, 151), new(1689, 193), false);
             UiKit.Skin(turn.GetComponent<Image>(), "Lacquer");
             var actorLabel = Label(turn, "", 23, TextAnchor.MiddleCenter);
             actorLabel.color = UiKit.HeaderGold;
@@ -160,6 +160,9 @@ namespace Wuxia
                 var (id, icon, tip) = actionDefs[i];
                 var move = id == "item" ? null : model.Skill(id);
                 var btn = Button(battleScreen, "", () => choose?.Invoke(id));
+                var colors = btn.GetComponent<Button>().colors;
+                colors.disabledColor = Color.white;
+                btn.GetComponent<Button>().colors = colors;
                 float x0 = 570 + i * 141;
                 Anchor(btn, Vector2.zero, Vector2.zero, new(x0, 26), new(x0 + 132, 146));
                 var outline = btn.gameObject.AddComponent<Outline>();
@@ -288,6 +291,9 @@ namespace Wuxia
                     : "戰況結算";
                 warningText.text = model.Warning;
                 warning.gameObject.SetActive(warningText.text.Length > 0);
+                int lines = 1 + warningText.text.Count(c => c == '\n');
+                warning.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 20 + lines * 28);
+                warning.anchoredPosition = new Vector2(0, -88 - warning.rect.height * .5f);
             }
 
 
@@ -509,8 +515,9 @@ namespace Wuxia
 
             var nm = Label(plate, "", 18, TextAnchor.MiddleCenter);
             nm.color = Color.white;
+            nm.fontSize = 17;
             nm.resizeTextForBestFit = false;
-            Anchor(nm.rectTransform, Vector2.up, Vector2.one, new(2, -42), new(-2, 0));
+            Anchor(nm.rectTransform, Vector2.up, Vector2.one, new(2, -46), new(-2, -7));
 
             var statusPlate = Panel("Statuses", rt, Vector2.zero, Vector2.right, new(1, -42), new(-1, 12), false);
             UiKit.Skin(statusPlate.GetComponent<Image>(), "Lacquer");

@@ -167,6 +167,7 @@ namespace Wuxia
             silver = UnityEngine.Mathf.RoundToInt(silver * ProductionMultiplier("commerce"));
             food = UnityEngine.Mathf.RoundToInt(food * ProductionMultiplier("farming"));
             M6MonthIncome(ref silver, ref food, report);
+            DiplomacyMonth(report);
             int consumed = Disciples.Count * Data.Start.foodPerDisciple;
             Silver += silver - upkeep;
             Food += food - consumed;

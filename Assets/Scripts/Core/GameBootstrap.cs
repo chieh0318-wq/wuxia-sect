@@ -18,6 +18,7 @@ namespace Wuxia
             string[] args = Environment.GetCommandLineArgs();
             MuteAudio = Application.isBatchMode || args.Contains("-wuxiaCapture") ||
                 args.Contains("-wuxiaCaptureRes") || args.Contains("-wuxiaQuitAfter") ||
+                args.Contains("-wuxiaDiplomacyCapture") ||
                 args.Contains("-runTests");
             if (MuteAudio)
             {
@@ -53,7 +54,8 @@ namespace Wuxia
         {
             string[] args = Environment.GetCommandLineArgs();
             int capture = Array.IndexOf(args, "-wuxiaCapture");
-            if (!Application.isBatchMode && capture < 0)
+            int diplomacyCapture = Array.IndexOf(args, "-wuxiaDiplomacyCapture");
+            if (!Application.isBatchMode && capture < 0 && diplomacyCapture < 0)
             {
                 int sysW = Display.main != null && Display.main.systemWidth >= 1600 ? Display.main.systemWidth : 1920;
                 int sysH = Display.main != null && Display.main.systemHeight >= 900 ? Display.main.systemHeight : 1080;
@@ -75,6 +77,8 @@ namespace Wuxia
             ShowTitle();
             if (capture >= 0 && capture + 1 < args.Length)
                 StartCoroutine(Capture(args[capture + 1]));
+            else if (diplomacyCapture >= 0 && diplomacyCapture + 1 < args.Length)
+                StartCoroutine(CaptureDiplomacy(args[diplomacyCapture + 1]));
             // Smoke tests: "-wuxiaQuitAfter 20" exits cleanly after N seconds so no process has to be killed.
             int quit = Array.IndexOf(args, "-wuxiaQuitAfter");
             if (quit >= 0 && quit + 1 < args.Length && float.TryParse(args[quit + 1],

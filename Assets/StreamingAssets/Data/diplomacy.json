@@ -1,0 +1,131 @@
+{
+  "victory": {
+    "jianghuTypes": ["sect", "clan", "merchant"],
+    "loyalNeeded": 9,
+    "subjectNeeded": 4,
+    "reputationNeeded": 60,
+    "conquestNodes": 12,
+    "conquestReputation": 60
+  },
+  "weakRatio": 1.2,
+  "eventChance": 0.4,
+  "rivals": [
+    "huayue|funiu",
+    "shaolin|yeyu",
+    "sute|yanbang",
+    "nongchao|yanbang",
+    "emei|zhurong",
+    "wulong|louguan"
+  ],
+  "actions": [
+    {
+      "id": "gift", "name": "送禮朝貢", "ap": 1, "silver": 25, "reputation": 0, "chance": 90, "gain": 10, "fail": -2,
+      "minAttitude": -100, "maxAttitude": 74, "groups": ["jianghu", "court", "bandit"],
+      "desc": "備下綢緞藥材與山珍，登門致意。", "success": "{f}收下厚禮，回贈一封親筆書信。", "failure": "{f}原封退回禮物，只說「無功不受祿」。"
+    },
+    {
+      "id": "envoy", "name": "遣使拜訪", "ap": 1, "silver": 8, "reputation": 0, "chance": 80, "gain": 6, "fail": -3,
+      "minAttitude": -100, "maxAttitude": 100, "groups": ["jianghu", "court", "bandit"],
+      "desc": "派口才最好的人上門論道，順便探明虛實。", "success": "使者與{f}首領相談甚歡，帶回山門虛實。", "failure": "使者在{f}山門外吃了閉門羹。"
+    },
+    {
+      "id": "trade", "name": "通商互市", "ap": 1, "silver": 30, "reputation": 0, "chance": 70, "gain": 4, "fail": -2,
+      "minAttitude": 10, "maxAttitude": 100, "groups": ["jianghu", "court"], "forbid": "trade",
+      "desc": "互開山貨藥材之市，每月互利。", "success": "與{f}立下互市之約，商隊從此往來不絕。", "failure": "{f}的帳房嫌本派貨色寒酸，生意沒談成。"
+    },
+    {
+      "id": "mediate", "name": "調停仇怨", "ap": 2, "silver": 40, "reputation": 0, "chance": 55, "gain": 25, "fail": -5,
+      "minAttitude": -100, "maxAttitude": -1, "groups": ["jianghu", "court", "bandit"],
+      "desc": "請德高望重的前輩作保，擺酒化解舊怨。", "success": "一杯和頭酒，與{f}的舊帳一筆勾銷。", "failure": "和頭酒還沒喝完，{f}的人便拍案而去。"
+    },
+    {
+      "id": "pact", "name": "共同防禦", "ap": 2, "silver": 20, "reputation": 0, "chance": 60, "gain": 5, "fail": -4,
+      "minAttitude": 30, "maxAttitude": 100, "groups": ["jianghu", "court"], "forbid": "pact",
+      "desc": "約定一方有難，另一方出人出力。本派戰力 +8%。", "success": "與{f}歃血立約，守望相助。", "failure": "{f}不願捲入本派的是非。"
+    },
+    {
+      "id": "alliance", "name": "結義同盟", "ap": 2, "silver": 60, "reputation": 0, "chance": 50, "gain": 8, "fail": -6,
+      "minAttitude": 50, "maxAttitude": 100, "groups": ["jianghu"], "forbid": "alliance", "requires": "trade|pact",
+      "desc": "聯姻或掌門金蘭結義，兩派從此同進同退。", "success": "兩派掌門焚香結義，{f}從此與本派同進同退！", "failure": "{f}長老會議爭執不下，結盟之事擱置。"
+    },
+    {
+      "id": "intimidate", "name": "以聲望威懾", "ap": 1, "silver": 0, "reputation": 3, "chance": 60, "gain": -5, "fail": -12,
+      "minAttitude": -100, "maxAttitude": 100, "groups": ["jianghu", "bandit"], "forbid": "awed", "needRatio": 1.0,
+      "desc": "陳兵山下、廣發英雄帖，讓對方知道誰才是此地之主。", "success": "{f}上下震恐，從此對本派言聽計從。", "failure": "{f}反倒嘲笑本派虛張聲勢。"
+    },
+    {
+      "id": "vassal", "name": "收為附庸", "ap": 3, "silver": 80, "reputation": 0, "chance": 50, "gain": 5, "fail": -8,
+      "minAttitude": 40, "maxAttitude": 100, "groups": ["jianghu", "bandit"], "forbid": "vassal", "needRatio": 1.2, "awedBypass": true,
+      "desc": "許以庇護，令其奉本派號令、按月朝貢。山寨則稱招安。", "success": "{f}奉上名冊印信，自此為本派附庸。", "failure": "{f}寧為雞首，不願為人附庸。"
+    },
+    {
+      "id": "merge", "name": "併入本派", "ap": 3, "silver": 100, "reputation": 0, "chance": 55, "gain": 0, "fail": -10,
+      "minAttitude": 60, "maxAttitude": 100, "groups": ["jianghu", "bandit"], "requires": "vassal", "vassalMonths": 3,
+      "desc": "附庸滿三月且歸心者，可併入本派，山門轄地插上本派旗號。", "success": "{f}弟子改投本派門牆，山門插上本派旗號！", "failure": "{f}的老弟子們不肯改換門庭。"
+    }
+  ],
+  "events": [
+    {
+      "id": "birthday", "title": "掌門壽宴", "target": "friendly", "weight": 3,
+      "text": "{f}掌門六十大壽，請柬送到山門。席上群雄畢至，誰來、誰沒來、送了什麼，江湖上半年內都會有人說。",
+      "options": [
+        { "label": "備厚禮赴宴", "silver": 30, "result": "壽禮體面，{f}掌門親自出迎，席上群雄對本派刮目相看。",
+          "effects": [ { "key": "attitude", "value": 12 }, { "key": "reputation", "value": 2 } ] },
+        { "label": "遣弟子致意", "silver": 8, "result": "弟子禮數周到，{f}回了一封謝帖。",
+          "effects": [ { "key": "attitude", "value": 4 } ] },
+        { "label": "婉拒", "result": "{f}的人當眾說本派架子大。",
+          "effects": [ { "key": "attitude", "value": -5 } ] }
+      ]
+    },
+    {
+      "id": "pact_offer", "title": "共守之約", "target": "proposal", "weight": 2,
+      "text": "{f}遣使來訪：近來官府與山寨都不安分，兩家若能約為守望，一方有難、一方馳援，彼此都安心。",
+      "options": [
+        { "label": "應允立約", "result": "與{f}立下共同防禦之約。",
+          "effects": [ { "key": "tie", "ref": "pact", "value": 1 }, { "key": "attitude", "value": 5 } ] },
+        { "label": "婉拒", "result": "{f}使者悻悻而去。",
+          "effects": [ { "key": "attitude", "value": -6 } ] }
+      ]
+    },
+    {
+      "id": "vassal_plea", "title": "附庸告急", "target": "vassal", "weight": 3,
+      "text": "{f}飛鴿傳書：山下來了一夥強人圍住山門，請上宗速速發兵。附庸看的是上宗肯不肯為他們出頭。",
+      "options": [
+        { "label": "派人馳援", "ap": 1, "silver": 10, "result": "本派弟子連夜趕到，強人一哄而散，{f}感激涕零。",
+          "effects": [ { "key": "attitude", "value": 15 }, { "key": "reputation", "value": 3 } ] },
+        { "label": "置之不理", "result": "{f}苦撐了半月才解圍，從此對本派心存芥蒂。",
+          "effects": [ { "key": "attitude", "value": -20 } ] }
+      ]
+    },
+    {
+      "id": "rival_slander", "title": "宿敵挑撥", "target": "rival", "weight": 2,
+      "text": "{f}見本派與其宿敵走得近，四處散布流言，說本派「拉幫結派、圖謀不軌」。",
+      "options": [
+        { "label": "遣使澄清", "silver": 15, "result": "使者把話說開，{f}的流言也就淡了。",
+          "effects": [ { "key": "attitude", "value": 6 } ] },
+        { "label": "以牙還牙", "result": "本派也放出{f}的醜事，江湖人看了場熱鬧。",
+          "effects": [ { "key": "attitude", "value": -10 }, { "key": "reputation", "value": 1 } ] }
+      ]
+    },
+    {
+      "id": "caravan", "title": "商路劫案", "target": "trade", "weight": 2,
+      "text": "本派與{f}合辦的商隊在半路遭劫，貨物盡失。{f}的帳房臉色很難看。",
+      "options": [
+        { "label": "出資賠補", "silver": 20, "result": "本派一力承擔損失，{f}讚本派講信義。",
+          "effects": [ { "key": "attitude", "value": 8 } ] },
+        { "label": "追剿劫匪", "ap": 1, "result": "弟子們追了三天三夜，奪回大半貨物。",
+          "effects": [ { "key": "attitude", "value": 5 }, { "key": "reputation", "value": 2 } ] }
+      ]
+    },
+    {
+      "id": "submission", "title": "衰門來投", "target": "weak", "weight": 2,
+      "text": "{f}近年人丁凋零、用度日緊。掌門親自登門，願舉派奉本派為上宗，只求門下弟子有口飯吃。",
+      "options": [
+        { "label": "收為附庸", "silver": 20, "result": "{f}奉上名冊印信，成為本派附庸。",
+          "effects": [ { "key": "tie", "ref": "vassal", "value": 1 }, { "key": "attitude", "value": 5 } ] },
+        { "label": "婉言相勸", "result": "本派贈以盤纏，勸{f}自強。{f}掌門感念在心。",
+          "effects": [ { "key": "attitude", "value": 5 } ] }
+      ]
+    }
+  ]
+}

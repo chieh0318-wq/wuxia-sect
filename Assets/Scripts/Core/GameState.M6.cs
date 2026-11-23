@@ -307,7 +307,7 @@ namespace Wuxia
                 float power = hero.Attack + hero.MaxHp / 10f + hero.Speed;
                 foreach (var disciple in Disciples.Where(member => member.injury < 3))
                     power += 14 * RankSystem.Multiplier(RankSystem.Martial(disciple.lines ?? Array.Empty<SkillLine>()));
-                power *= 1 + (HasTech("sword3") ? .2f : 0) + (HasTech("outer4") ? .1f : 0);
+                power *= 1 + (HasTech("sword3") ? .2f : 0) + (HasTech("outer4") ? .1f : 0) + DiplomacyPowerBonus;
                 return Mathf.RoundToInt(power);
             }
         }

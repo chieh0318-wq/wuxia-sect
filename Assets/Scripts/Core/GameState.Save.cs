@@ -92,6 +92,7 @@ namespace Wuxia
                 state.Story.queuedQuests ??= Array.Empty<QueuedQuest>();
                 state.Story.armoury ??= Array.Empty<GearItem>();
                 state.Story.heldNodes ??= Array.Empty<string>();
+                state.Story.ties ??= Array.Empty<DiploTie>();
                 for (int index = 0; index < state.Buildings.Length; index++)
                 {
                     string id = index < snapshot.buildings.Length ? snapshot.buildings[index] : "";

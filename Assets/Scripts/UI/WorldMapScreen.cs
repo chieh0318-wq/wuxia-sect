@@ -18,8 +18,10 @@ namespace Wuxia
         private IWorldMapHost host;
         private Canvas canvas;
         private RectTransform frame, viewport, map, card, party, routeLayer, iconLayer, plateLayer;
-        private Text ap, status;
+        private Text ap, status, victoryStrip, diplomacyLabel;
         private IntelPanel intel;
+        private DiplomacyPanel diplomacy;
+        private MapFaction cardFaction;
         private readonly List<(MapNode node, RectTransform plate, Text label, Vector2 point)> labels = new();
         private readonly List<RectTransform> regionNames = new();
         private RectTransform openedCard;
@@ -40,6 +42,11 @@ namespace Wuxia
         public event Action Closed;
         internal bool CloseIntel()
         {
+            if (diplomacy != null && diplomacy.IsOpen)
+            {
+                diplomacy.Close();
+                return true;
+            }
             if (intel == null || !intel.IsOpen) return false;
             intel.Close();
             return true;
@@ -53,12 +60,15 @@ namespace Wuxia
             if (canvas == null) Build();
             canvas.gameObject.SetActive(true);
             intel.Close();
+            diplomacy.Close();
             if (!data.Nodes.ContainsKey(host.PartyNode ?? ""))
                 host.PartyNode = data.Nodes.ContainsKey(host.StartNode ?? "") ? host.StartNode : data.DefaultNode;
             SyncParty();
             UpdateAp();
             CenterOn(host.PartyNode);
             if (!traveling) status.text = $"隊伍駐於{data.NodeLabel(host.PartyNode)}。點選城寨查看守備與路線，點選旗幟查看勢力。";
+            if (!traveling && host is GameState game && game.PendingDiploEvent != null)
+                status.text = $"外交急報待決：{game.PendingDiploEvent.title}（{game.PendingDiploTarget?.Label}）。點右上「外交」處理。";
             ApplyView();
             AudioManager.Music("jianghu_map");
         }
@@ -99,8 +109,13 @@ namespace Wuxia
             frame.anchorMin = frame.anchorMax = frame.pivot = new Vector2(.5f,.5f);
             frame.anchoredPosition = Vector2.zero;
             var top = MapUi.Kit(frame,"Map top bar",12,8,1576,64,"Wood");
-            MapUi.Text(top,"江湖地圖",26,4,330,56,34,MapUi.Paper);
-            ap = MapUi.Text(top,"",470,8,560,48,22,MapUi.Paper,TextAnchor.MiddleRight,"Numbers");
+            MapUi.Text(top,"江湖地圖",26,4,170,56,34,MapUi.Paper);
+            // Both victory routes side by side, always visible on the map.
+            victoryStrip = MapUi.Text(top,"",200,8,400,48,20,MapUi.Gold,TextAnchor.MiddleLeft,"Numbers");
+            ap = MapUi.Text(top,"",600,8,320,48,22,MapUi.Paper,TextAnchor.MiddleRight,"Numbers");
+            var diplomacyButton = MapUi.Button(top,"外交",930,10,120,44,() => OpenDiplomacy(null),MapUi.Red);
+            diplomacyButton.name = "地圖外交";
+            diplomacyLabel = diplomacyButton.GetComponentInChildren<Text>();
             MapUi.Button(top,"情報",1060,10,150,44,OpenIntel,MapUi.Red);
             MapUi.Button(top,"全圖",1220,10,96,44,() => { targetZoom = MinZoom; targetPan = Vector2.zero; });
             MapUi.Button(top,"返回宗門　M",1326,10,232,44,Close,MapUi.Red);
@@ -167,6 +182,12 @@ namespace Wuxia
                 16,0,773,55,18,MapUi.Ink,TextAnchor.MiddleCenter);
             if (data.Nodes.Count == 0) status.text = "地圖資料尚未載入。";
             intel = new IntelPanel(frame,data,FocusFaction);
+            diplomacy = new DiplomacyPanel(frame,data,UpdateAp);
+            diplomacy.Closed += () =>
+            {
+                UpdateAp();
+                if (openedCard != null && cardFaction != null) ShowFaction(cardFaction);
+            };
             ApplyView();
         }
 
@@ -311,7 +332,7 @@ namespace Wuxia
 
         private void Update()
         {
-            if (!IsOpen || intel.IsOpen) return;
+            if (!IsOpen || intel.IsOpen || diplomacy.IsOpen) return;
             Vector2 mouse = Input.mousePosition;
             // The node/faction card floats over the viewport: wheel and drags that start on it must not move the map.
             bool overMap = RectTransformUtility.RectangleContainsScreenPoint(viewport,mouse,canvas.worldCamera) && !OverCard(mouse);
@@ -469,6 +490,7 @@ namespace Wuxia
             var panel = MapUi.Kit(card,title,0,0,426,680,"Paper");
             openedCard = panel;
             LayoutLabels();
+            cardFaction = null;
             MapUi.Text(panel,title,20,16,342,48,31,MapUi.Ink);
             MapUi.Text(panel,subtitle,20,66,382,32,19,MapUi.Red,TextAnchor.MiddleLeft,"Names");
             var divider = MapUi.Rect(panel,"Divider",20,100,386,8).gameObject.AddComponent<Image>();
@@ -505,8 +527,12 @@ namespace Wuxia
                 MapUi.Text(panel, faction.Label, 140, 134, 266, 34, 26, MapUi.Ink);
                 MapUi.Text(panel, known ? $"首領　{faction.leader ?? "不詳"}" : "首領　尚待打探", 140, 168, 266, 26, 19, MapUi.Ink);
                 string relation = faction.RelationWith(host.RelationShift(faction.id));
-                MapUi.Text(panel, $"關係　{relation}", 140, 194, 266, 26, 19,
+                MapUi.Text(panel, $"關係　{relation}", 140, 194, 150, 26, 19,
                     relation == "敵對" ? MapUi.Red : relation == "友好" ? MapUi.Jade : MapUi.Ink);
+                var talks = MapUi.Button(panel, "外交", 300, 190, 106, 32, () => OpenDiplomacy(faction), MapUi.Red, 18);
+                talks.name = "據點外交";
+                talks.interactable = host is GameState;
+                cardActions.Add(talks);
             }
             else
                 MapUi.Text(panel, "此地沒有已知的控制勢力", 20, 120, 386, 34, 21, MapUi.Jade);
@@ -646,7 +672,12 @@ namespace Wuxia
             string current = faction.StanceWith(shift);
             var stance = current == "friendly" ? new Color(.20f,.39f,.28f) :
                 current == "hostile" ? MapUi.Red : MapUi.Ink;
-            MapUi.Text(panel,"關係　"+faction.RelationWith(shift),20,105,270,32,21,stance);
+            cardFaction = faction;
+            string attitude = host is GameState game ? $" {game.Attitude(faction):+0;-0;0}" : "";
+            MapUi.Text(panel,"關係　"+faction.RelationWith(shift)+attitude,20,105,176,32,21,stance);
+            var talks = MapUi.Button(panel,"外交",200,105,96,34,() => OpenDiplomacy(faction),MapUi.Red);
+            talks.name = "門派外交";
+            talks.interactable = host is GameState;
             if (!known)
             {
                 MapUi.Text(panel,"尚待打探首領與兵力",20,166,386,48,23,MapUi.Ink);
@@ -758,7 +789,24 @@ namespace Wuxia
             pan = targetPan = new Vector2((MapWidth/2-p.x)*zoom,(p.y-MapHeight/2)*zoom);
         }
 
-        private void UpdateAp() => ap.text = $"{host.DateText}　　行動力 {host.ActionPoints}";
+        private void UpdateAp()
+        {
+            ap.text = $"{host.DateText}　行動力 {host.ActionPoints}";
+            if (host is not GameState game) return;
+            var v = game.Victory;
+            victoryStrip.text = $"勝利　外交 {v.Loyal}/{v.Rules.loyalNeeded}　武力 {v.Held}/{v.Rules.conquestNodes}";
+            if (diplomacyLabel != null) diplomacyLabel.text = game.PendingDiploEvent != null ? "外交・急報" : "外交";
+        }
+
+        internal void OpenDiplomacy(MapFaction faction)
+        {
+            if (traveling || host is not GameState game) return;
+            intel.Close();
+            AudioManager.Play("page");
+            diplomacy.Open(game, faction);
+        }
+
+        internal DiplomacyPanel CaptureDiplomacy => diplomacy;
         private void SyncParty()
         {
             bool found = data.Nodes.TryGetValue(host.PartyNode ?? "",out var node);

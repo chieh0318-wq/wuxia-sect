@@ -135,6 +135,9 @@ namespace Wuxia
         public int lodgeMonth, realmsCleared;
         /// <summary>M9: carried consumables & legacy items (id -> quantity).</summary>
         public StoryValue[] inventory = Array.Empty<StoryValue>();
+        /// <summary>Diplomacy: ties per faction and the pending 外交急報 (event id + target faction).</summary>
+        public DiploTie[] ties = Array.Empty<DiploTie>();
+        public string diploEvent, diploEventTarget;
     }
 
     [Serializable] public sealed class StoryValue { public string id; public int value; }

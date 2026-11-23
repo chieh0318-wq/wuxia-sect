@@ -53,6 +53,7 @@ namespace Wuxia
         private readonly Func<(string name, int hp, int qi)> useMedicine;
         private readonly List<BattleCombatant> order = new();
         private readonly List<BattleEvent> events = new();
+        private readonly int intentSeed;
         private int cursor;
 
         public int Round { get; private set; }
@@ -71,6 +72,7 @@ namespace Wuxia
             this.hasMedicine = hasMedicine;
             this.useMedicine = useMedicine;
             random = new Random(seed);
+            intentSeed = seed;
             StartRound();
         }
 
@@ -78,11 +80,29 @@ namespace Wuxia
         private IEnumerable<BattleStatus> Effects(BattleCombatant unit) =>
             unit.statuses.Keys.Select(id => catalog.Statuses[id]);
 
-        public string StatusText(BattleCombatant unit) => !unit.Alive ? "" :
-            string.Join("　", unit.statuses.Select(entry => $"{catalog.Statuses[entry.Key].label}{entry.Value}回"));
+        public BattleStatus Status(string id) => catalog.Statuses[id];
 
-        public string Warning => string.Join("\n", enemies.Where(u => u.Alive && u.intent != null)
-            .Select(u => $"{u.name} 蓄勢・{u.intent.label} → {(u.intent.all ? "全體" : u.intentTarget.name)}"));
+        public IEnumerable<BattleCombatant> RemainingTurns =>
+            order.Skip(cursor).Where(unit => unit.Alive);
+
+        public (BattleSkill move, BattleCombatant target, string unavailable) PreviewIntent(BattleCombatant unit)
+        {
+            if (TurnDamage(unit) >= unit.hp) return (null, null, "內傷將發作");
+            if (Effects(unit).Any(status => status.skip)) return (null, null, "無法出招");
+            if (unit.intent != null)
+            {
+                if (!unit.intent.all && !unit.intentTarget.Alive)
+                    return (unit.intent, unit.intentTarget, "目標已倒下");
+                if (unit.intent.qi > 0 && Effects(unit).Any(status => status.seal))
+                    return (unit.intent, unit.intentTarget, "已被封招");
+                return (unit.intent, unit.intentTarget, null);
+            }
+            if (Finished) return (null, null, "戰鬥結束");
+
+            int round = RemainingTurns.Contains(unit) ? Round : Round + 1;
+            var (move, target) = PlanEnemyMove(unit, round, TurnQi(unit), EnemyPhase(unit));
+            return (move, target, null);
+        }
 
         public string Reason(string id, BattleCombatant target)
         {
@@ -198,25 +218,53 @@ namespace Wuxia
                 return;
             }
 
-            var profile = catalog.Enemies[actor.enemyProfile];
-            if (actor.phase == 1 && profile.phaseAt > 0 && actor.hp * 100 <= actor.maxHp * profile.phaseAt)
+            int phase = EnemyPhase(actor);
+            if (actor.phase != phase)
             {
-                actor.phase = 2;
+                actor.phase = phase;
                 Emit($"{actor.name} 轉入第二階段，攻勢更烈！");
             }
 
+            var (skill, victim) = PlanEnemyMove(actor, Round, actor.qi, phase);
+            if (skill.telegraph)
+            {
+                actor.intentRound = Round;
+                actor.intent = skill;
+                actor.intentTarget = victim;
+                Emit($"{actor.name} 蓄勢準備{skill.label}，目標：{(skill.all ? "全體" : victim.name)}！");
+            }
+            else
+                Use(actor, skill, victim);
+        }
+
+        private int EnemyPhase(BattleCombatant actor)
+        {
+            int threshold = catalog.Enemies[actor.enemyProfile].phaseAt;
+            // A forecast uses the same phase check as the eventual enemy turn.
+            return actor.phase == 1 && threshold > 0 && actor.hp * 100 <= actor.maxHp * threshold
+                ? 2 : actor.phase;
+        }
+
+        private (BattleSkill move, BattleCombatant target) PlanEnemyMove(
+            BattleCombatant actor, int round, int qi, int phase)
+        {
+            // Keep each enemy's decision roll stable for the round, while eligibility and
+            // target preference still use the current state when its turn actually arrives.
+            var decision = new Random(unchecked(intentSeed ^ (round * 73856093) ^
+                ((enemies.IndexOf(actor) + 1) * 19349663)));
+            var profile = catalog.Enemies[actor.enemyProfile];
             bool sealedMoves = Effects(actor).Any(status => status.seal);
             var rules = profile.moves.Where(rule =>
-                (rule.phase == 0 || rule.phase == actor.phase) &&
-                (rule.every == 0 || Round % rule.every == 0) &&
-                (rule.opening == 0 || rule.opening == Round) &&
-                Skill(rule.skill).qi <= actor.qi &&
+                (rule.phase == 0 || rule.phase == phase) &&
+                (rule.every == 0 || round % rule.every == 0) &&
+                (rule.opening == 0 || rule.opening == round) &&
+                Skill(rule.skill).qi <= qi &&
                 (!sealedMoves || Skill(rule.skill).qi == 0)).ToArray();
-            var opening = rules.FirstOrDefault(rule => rule.opening == Round);
+            var opening = rules.FirstOrDefault(rule => rule.opening == round);
             var moveId = opening?.skill ?? "attack";
             if (opening == null && rules.Length > 0)
             {
-                int roll = random.Next(rules.Sum(rule => rule.weight));
+                int roll = decision.Next(rules.Sum(rule => rule.weight));
                 foreach (var rule in rules)
                 {
                     roll -= rule.weight;
@@ -227,20 +275,11 @@ namespace Wuxia
             }
 
             var alive = party.Where(u => u.Alive).ToArray();
-            double preference = random.NextDouble();
+            double preference = decision.NextDouble();
             var victim = preference < .5 ? alive.OrderBy(u => (double)u.hp / u.maxHp).First()
                 : preference < .8 ? alive.OrderByDescending(u => u.attack).First()
-                : alive[random.Next(alive.Length)];
-            var skill = Skill(moveId);
-            if (skill.telegraph)
-            {
-                actor.intentRound = Round;
-                actor.intent = skill;
-                actor.intentTarget = victim;
-                Emit($"{actor.name} 蓄勢準備{skill.label}，目標：{(skill.all ? "全體" : victim.name)}！");
-            }
-            else
-                Use(actor, skill, victim);
+                : alive[decision.Next(alive.Length)];
+            return (Skill(moveId), victim);
         }
 
         private void Use(BattleCombatant actor, BattleSkill move, BattleCombatant target)

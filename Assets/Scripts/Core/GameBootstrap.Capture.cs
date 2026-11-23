@@ -217,12 +217,14 @@ namespace Wuxia
             IEnumerator CaptureBattle()
             {
                 System.Func<IEnumerator> round = null;
-                ui.StartTurnBattle(state, new BattleRequest(), this, routine => round = routine);
+                System.Action<string> inspect = null;
+                ui.StartTurnBattle(state, new BattleRequest(), this, routine => round = routine, action => inspect = action);
                 try
                 {
                     yield return null;
                     Debug.Log("[Capture] Battle start: both sides ready for round one.");
-                    shotsOk = SaveShot("50_battle_start.png") && SaveShot("53_battle_p2_commands.png");
+                    inspect("interrupt");
+                    shotsOk = SaveShot("60_battle_p3_command_tooltip.png") && SaveShot("61_battle_p3_turn_order.png");
                     if (!shotsOk)
                         yield break;
 
@@ -237,14 +239,14 @@ namespace Wuxia
 
                     yield return new WaitForSecondsRealtime(.7f);
                     Debug.Log("[Capture] Battle mid: round one resolved, action buttons visible.");
-                    shotsOk = SaveShot("51_battle_mid.png") && SaveShot("54_battle_p2_statuses.png");
+                    shotsOk = SaveShot("62_battle_p3_statuses.png");
                     if (!shotsOk) yield break;
                     ui.CloseBattle();
 
                     ui.StartTurnBattle(state, new BattleRequest { ground = BattleGround.MountainGate },
                         this, routine => round = routine);
                     yield return null;
-                    shotsOk = SaveShot("57_battle_p2_mountain_gate.png");
+                    shotsOk = SaveShot("63_battle_p3_mountain_gate.png");
                     if (!shotsOk) yield break;
                     ui.CloseBattle();
 
@@ -269,7 +271,7 @@ namespace Wuxia
                             yield break;
                         }
                         Debug.Log($"[Capture] Stronghold boss {boss.enemyLeadName}, cue={boss.MusicCue}, track={track}.");
-                        shotsOk = SaveShot("52_battle_boss.png") && SaveShot("56_battle_p2_boss.png");
+                        shotsOk = SaveShot("64_battle_p3_boss.png");
                         if (!shotsOk) yield break;
 
                         int rounds = 0;
@@ -279,7 +281,7 @@ namespace Wuxia
                             yield return round();
                             if (rounds == 1)
                             {
-                                shotsOk = SaveShot("55_battle_p2_telegraph.png");
+                                shotsOk = SaveShot("65_battle_p3_enemy_intents.png");
                                 if (!shotsOk) yield break;
                             }
                         }

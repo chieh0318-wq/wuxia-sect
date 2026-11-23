@@ -14,7 +14,9 @@ namespace Wuxia
             public RectTransform Root;
             public RawImage Art, Shadow;
             public Image HpFill;
-            public Text HpText, TargetArrow, Status;
+            public Text HpText, TargetArrow;
+            public RectTransform Statuses;
+            public string StatusKey;
             public Vector2 StandingPosition;
         }
 
@@ -22,7 +24,7 @@ namespace Wuxia
         internal bool BattleOpen => battleScreen != null;
 
         internal void StartTurnBattle(GameState state, BattleRequest req, MonoBehaviour runner,
-            Action<Func<IEnumerator>> captureRound = null)
+            Action<Func<IEnumerator>> captureRound = null, Action<Action<string>> captureInspect = null)
         {
             CloseBattle();
             AudioManager.Music(req.MusicCue);
@@ -100,7 +102,7 @@ namespace Wuxia
             };
 
             // ── BOTTOM-LEFT COMBAT LOG ──
-            var logBox = Panel("CombatLog", battleScreen, Vector2.zero, Vector2.zero, new(20, 18), new(540, 152));
+            var logBox = Panel("CombatLog", battleScreen, Vector2.zero, Vector2.zero, new(20, 18), new(386, 211));
             UiKit.Skin(logBox.GetComponent<Image>(), "Lacquer");
             var viewport = Rect("Viewport", logBox);
             Fill(viewport, 12);
@@ -121,7 +123,8 @@ namespace Wuxia
 
             bool fastMode = false, autoMode = false;
             string selectedAction = "attack";
-            var actButtons = new Dictionary<string, (RectTransform rt, Outline outline, Text detail, Text title)>();
+            string inspectedAction = selectedAction;
+            int activeTab = 0;
             var sideBar = Panel("SideTools", battleScreen, new(0, .5f), new(0, .5f), new(20, -135), new(106, 135), false);
             UiKit.Skin(sideBar.GetComponent<Image>(), "Lacquer");
             var sideV = sideBar.gameObject.AddComponent<VerticalLayoutGroup>();
@@ -131,6 +134,7 @@ namespace Wuxia
             sideV.childForceExpandWidth = sideV.childForceExpandHeight = true;
 
             Action<string> choose = null;
+            Action<int> changeTab = null;
             Action startAuto = null;
             var bagBtn = Button(sideBar, "背包", () => choose?.Invoke("item"));
             UiKit.Skin(bagBtn.GetComponent<Image>(), "Wood");
@@ -150,51 +154,76 @@ namespace Wuxia
             });
             UiKit.Skin(autoBtn.GetComponent<Image>(), "Wood");
 
-            var turn = Panel("CurrentActor", battleScreen, Vector2.zero, Vector2.zero, new(570, 151), new(1689, 193), false);
-            UiKit.Skin(turn.GetComponent<Image>(), "Lacquer");
-            var actorLabel = Label(turn, "", 23, TextAnchor.MiddleCenter);
+            var commandPanel = Panel("Commands", battleScreen, Vector2.zero, Vector2.zero,
+                new(398, 18), new(1900, 211), false);
+            UiKit.Skin(commandPanel.GetComponent<Image>(), "Lacquer");
+            var actorLabel = BattleLabel(commandPanel, "", 21, TextAnchor.MiddleLeft,
+                new(18, 141), new(508, 186));
             actorLabel.color = UiKit.HeaderGold;
-            Fill(actorLabel.rectTransform, 3);
 
-            var warning = Panel("EnemyWindup", battleScreen, new(.5f, 1), new(.5f, 1), new(-470, -218), new(470, -88), false);
-            UiKit.Skin(warning.GetComponent<Image>(), "Lacquer");
-            var warningText = Label(warning, "", 23, TextAnchor.MiddleCenter);
-            warningText.color = new Color(1f, .69f, .45f);
-            Fill(warningText.rectTransform, 5);
+            var description = BattleLabel(commandPanel, "", 22, TextAnchor.MiddleLeft,
+                new(924, 16), new(1349, 177));
+            description.color = CardText;
 
-            var actionDefs = new[]
+            var tabNames = new[] { "攻擊", "恢復", "支援" };
+            var tabs = new RectTransform[tabNames.Length];
+            for (int i = 0; i < tabs.Length; i++)
             {
-                ("attack", "act_attack", "+15 內"), ("skill", "act_skill", "25 內・流血"),
-                ("ultimate", "act_ultimate", "50 內・全體"), ("interrupt", "act_skill", "15 內・打斷"),
-                ("defend", "act_defend", "+25 內・減傷"), ("dodge", "act_defend", "+10 內・避一擊"),
-                ("focus", "act_skill", "+15 內・專注"), ("item", "act_item", "靈藥療傷")
+                int tab = i;
+                tabs[i] = Button(commandPanel, tabNames[i], () => changeTab?.Invoke(tab));
+                float x = 514 + 132 * i;
+                Anchor(tabs[i], Vector2.zero, Vector2.zero, new(x, 147), new(x + 124, 181));
+            }
+
+            var actionDefs = new (string id, int tab, int slot, string seal)[]
+            {
+                ("attack", 0, 0, "普"), ("skill", 0, 1, "刺"),
+                ("ultimate", 0, 2, "陣"), ("interrupt", 0, 3, "拆"),
+                ("item", 1, 0, "藥"), ("focus", 1, 1, "氣"),
+                ("defend", 2, 0, "護"), ("dodge", 2, 1, "避")
             };
-            for (int i = 0; i < actionDefs.Length; i++)
+            var actButtons = new Dictionary<string, (RectTransform root, Outline border, Text seal, Text title, Text detail)>();
+            foreach (var (id, _, slot, seal) in actionDefs)
             {
-                var (id, icon, tip) = actionDefs[i];
-                var move = id == "item" ? null : model.Skill(id);
-                var btn = Button(battleScreen, "", () => choose?.Invoke(id));
-                var colors = btn.GetComponent<Button>().colors;
-                colors.disabledColor = Color.white;
-                btn.GetComponent<Button>().colors = colors;
-                float x0 = 570 + i * 141;
-                Anchor(btn, Vector2.zero, Vector2.zero, new(x0, 26), new(x0 + 132, 146));
-                var outline = btn.gameObject.AddComponent<Outline>();
-                outline.effectColor = UiKit.HeaderGold;
-                outline.effectDistance = new Vector2(3, 3);
+                var btn = Button(commandPanel, "", () => choose?.Invoke(id));
+                btn.GetComponent<Button>().transition = Selectable.Transition.None;
+                float x = 18 + slot * 224;
+                Anchor(btn, Vector2.zero, Vector2.zero, new(x, 16), new(x + 212, 138));
+                var border = btn.gameObject.AddComponent<Outline>();
+                border.effectColor = UiKit.HeaderGold;
+                border.effectDistance = new Vector2(2, 2);
+                var glyph = BattleLabel(btn, seal, 29, TextAnchor.MiddleCenter, new(4, 78), new(208, 111));
+                var title = BattleLabel(btn, ActionName(id), 24, TextAnchor.MiddleCenter, new(4, 44), new(208, 79));
+                var detail = BattleLabel(btn, "", 20, TextAnchor.MiddleCenter, new(4, 7), new(208, 42));
+                actButtons[id] = (btn, border, glyph, title, detail);
+            }
 
-                var ic = Rect("ActIcon", btn);
-                Anchor(ic, new(.5f, 1), new(.5f, 1), new(-28, -63), new(28, -7));
-                var texture = UiKit.Icon(icon);
-                if (texture != null) AddImage(ic, texture);
+            var timeline = Panel("TurnOrder", battleScreen, Vector2.up, Vector2.one,
+                new(20, -159), new(-148, -109), false);
+            UiKit.Skin(timeline.GetComponent<Image>(), "Lacquer");
+            var orderTitle = BattleLabel(timeline, "行動序", 22, TextAnchor.MiddleCenter, new(4, 0), new(110, 50));
+            orderTitle.color = UiKit.HeaderGold;
+            var orderLabels = new Text[players.Count + enemies.Count];
+            for (int i = 0; i < orderLabels.Length; i++)
+            {
+                float x = 116 + i * 228;
+                var card = Panel("Turn", timeline, Vector2.zero, Vector2.zero, new(x, 6), new(x + 220, 44), false);
+                orderLabels[i] = Label(card, "", 20, TextAnchor.MiddleCenter);
+                Fill(orderLabels[i].rectTransform, 3);
+            }
 
-                string element = string.IsNullOrEmpty(move?.element) ? "" : $"〔{move.element}〕";
-                var title = Label(btn, (move?.label ?? "道具") + element, 19, TextAnchor.MiddleCenter);
-                title.fontStyle = FontStyle.Bold;
-                Anchor(title.rectTransform, Vector2.zero, Vector2.right, new(2, 24), new(-2, 53));
-                var detail = Label(btn, tip, 17, TextAnchor.MiddleCenter);
-                Anchor(detail.rectTransform, Vector2.zero, Vector2.right, new(2, 2), new(-2, 25));
-                actButtons[id] = (btn, outline, detail, title);
+            var intents = Panel("EnemyIntents", battleScreen, Vector2.up, Vector2.one,
+                new(20, -245), new(-148, -165), false);
+            UiKit.Skin(intents.GetComponent<Image>(), "Lacquer");
+            var intentTitle = BattleLabel(intents, "敵勢", 22, TextAnchor.MiddleCenter, new(4, 0), new(110, 80));
+            intentTitle.color = UiKit.HeaderGold;
+            var intentLabels = new Text[enemies.Count];
+            for (int i = 0; i < intentLabels.Length; i++)
+            {
+                float x = 116 + i * 407;
+                var card = Panel("Intent", intents, Vector2.zero, Vector2.zero, new(x, 7), new(x + 397, 73), false);
+                intentLabels[i] = Label(card, "", 22, TextAnchor.MiddleCenter);
+                Fill(intentLabels[i].rectTransform, 3);
             }
 
             Action confirm = null;
@@ -202,7 +231,7 @@ namespace Wuxia
             {
                 confirm?.Invoke();
             });
-            Anchor(goBtn, Vector2.right, Vector2.right, new(-202, 22), new(-24, 154));
+            Anchor(goBtn, Vector2.right, Vector2.right, new(-154, 34), new(-32, 195));
             UiKit.Skin(goBtn.GetComponent<Image>(), "Selected");
             var goTxt = goBtn.GetComponentInChildren<Text>();
             goTxt.fontSize = goTxt.resizeTextMaxSize = 30;
@@ -220,26 +249,42 @@ namespace Wuxia
             UiKit.Skin(fleeBtn.GetComponent<Image>(), "Wood");
 
             choose = SelectAction;
+            changeTab = ChangeTab;
             startAuto = () => runner.StartCoroutine(Advance());
             confirm = () =>
             {
-                if (!busy && model.Reason(selectedAction, Target()) == "")
+                if (selectedAction != null && CommandReason(selectedAction) == "")
                     runner.StartCoroutine(Advance(selectedAction));
             };
             onTargetChanged = () =>
             {
-                if (model.Reason(selectedAction, Target()) != "") selectedAction = "attack";
+                selectedAction = CommandReason(inspectedAction) == "" ? inspectedAction : null;
                 RefreshBattle();
             };
             RefreshBattle();
             captureRound?.Invoke(() => Advance(stopAfterRound: true));
+            captureInspect?.Invoke(SelectAction);
             if (captureRound == null && !model.NeedsCommand) runner.StartCoroutine(Advance());
+
+            void ChangeTab(int tab)
+            {
+                activeTab = tab;
+                SelectAction(actionDefs.First(entry => entry.tab == tab).id);
+            }
 
             void SelectAction(string id)
             {
-                if (busy || model.Reason(id, Target()) != "") return;
-                selectedAction = id;
+                activeTab = actionDefs.First(entry => entry.id == id).tab;
+                inspectedAction = id;
+                selectedAction = CommandReason(id) == "" ? id : null;
                 RefreshActionButtons();
+            }
+
+            string ActionName(string id) => id == "item" ? "道具" : model.Skill(id).label;
+            string CommandReason(string id)
+            {
+                string reason = model.Reason(id, Target());
+                return busy && reason.Length == 0 ? "戰況結算中" : reason;
             }
 
             BattleCombatant Target() => targetIdx < 0 ? null : enemies[targetIdx];
@@ -276,21 +321,70 @@ namespace Wuxia
 
             void RefreshActionButtons()
             {
-                foreach (var (id, _, tip) in actionDefs)
+                for (int i = 0; i < tabs.Length; i++)
+                    UiKit.Skin(tabs[i].GetComponent<Image>(), i == activeTab ? "Selected" : "Wood");
+
+                foreach (var (id, tab, _, _) in actionDefs)
                 {
-                    var (rt, outline, detail, title) = actButtons[id];
-                    string reason = model.Reason(id, Target());
-                    bool usable = !busy && reason == "";
-                    bool active = usable && id == selectedAction;
-                    rt.GetComponent<Button>().interactable = usable;
-                    UiKit.Skin(rt.GetComponent<Image>(), active ? "Selected" : "Wood");
-                    rt.GetComponent<Image>().color = reason == "" ? Color.white : new Color(.52f, .52f, .52f);
-                    outline.enabled = active;
-                    title.color = reason == "" ? UiKit.HeaderGold : new Color(.72f, .72f, .72f);
-                    detail.text = reason == "" ? tip : reason;
-                    detail.color = reason == "" ? CardMuted : new Color(.76f, .76f, .76f);
+                    var (root, border, seal, title, detail) = actButtons[id];
+                    root.gameObject.SetActive(tab == activeTab);
+                    string reason = CommandReason(id);
+                    bool usable = reason.Length == 0;
+                    bool inspected = id == inspectedAction;
+                    var image = root.GetComponent<Image>();
+                    if (usable)
+                        UiKit.Skin(image, inspected ? "Selected" : "Wood");
+                    else
+                    {
+                        image.sprite = null;
+                        image.type = Image.Type.Simple;
+                        image.color = new Color(.19f, .19f, .19f);
+                    }
+
+                    border.enabled = inspected;
+                    border.effectColor = usable ? UiKit.HeaderGold : new Color(.62f, .62f, .62f);
+                    seal.color = title.color = usable ? UiKit.HeaderGold : new Color(.65f, .65f, .65f);
+                    detail.text = usable ? ActionCost(id) : reason;
+                    detail.color = usable ? CardText : new Color(.86f, .86f, .86f);
                 }
-                goBtn.GetComponent<Button>().interactable = !busy && model.Reason(selectedAction, Target()) == "";
+
+                string inspectedReason = CommandReason(inspectedAction);
+                description.text = $"{ActionName(inspectedAction)}　｜　{ActionCost(inspectedAction)}\n" +
+                    $"五行 {ActionElement(inspectedAction)}　・　冷卻 無\n{ActionEffect(inspectedAction)}" +
+                    (inspectedReason.Length == 0 ? "" : $"\n{inspectedReason}");
+                goBtn.GetComponent<Button>().interactable =
+                    selectedAction != null && CommandReason(selectedAction) == "";
+            }
+
+            string ActionCost(string id)
+            {
+                if (id == "item") return "消耗 1 份靈藥";
+                var skill = model.Skill(id);
+                return skill.qi > 0 ? $"消耗 {skill.qi} 內力" : $"回復 {skill.restoreQi} 內力";
+            }
+
+            string ActionElement(string id)
+            {
+                string element = id == "item" ? null : model.Skill(id).element;
+                return string.IsNullOrEmpty(element) ? "無" : element;
+            }
+
+            string ActionEffect(string id)
+            {
+                if (id == "item") return "回復自身氣血。九轉回元丹另回內力。";
+                if (id == "interrupt") return "單體傷害 ×" + model.Skill(id).power.ToString("0.00") + "，打斷蓄勢。";
+                var move = model.Skill(id);
+                string damage = move.power > 0 ? $"{(move.all ? "全體" : "單體")}傷害 ×{move.power:0.00}" : "";
+                if (string.IsNullOrEmpty(move.status)) return damage;
+                var status = model.Status(move.status);
+                if (move.power > 0) return $"{damage}，附加{status.label}{status.turns}回。";
+                string effect = id switch
+                {
+                    "defend" => $"所受傷害降低 {(1 - status.incoming) * 100:0}%",
+                    "dodge" => "閃避下一次攻擊",
+                    _ => $"攻擊提高 {(status.attack - 1) * 100:0}%，回合開始回復 {status.qi} 內力"
+                };
+                return $"{status.label}{status.turns}回，{effect}。";
             }
 
             void RefreshBattle()
@@ -299,17 +393,53 @@ namespace Wuxia
                 RefreshLeadHuds();
                 RefreshActionButtons();
                 roundLabel.text = $"第 {model.Round} 回合";
-                var actor = model.Actor;
+                var actor = model.Finished ? null : model.Actor;
                 actorLabel.text = !busy && model.NeedsCommand
                     ? $"{actor.name} 下指令　內力 {actor.qi}/{actor.maxQi}"
                     : "戰況結算";
-                warningText.text = model.Warning;
-                warning.gameObject.SetActive(warningText.text.Length > 0);
-                int lines = 1 + warningText.text.Count(c => c == '\n');
-                warning.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 20 + lines * 28);
-                warning.anchoredPosition = new Vector2(0, -88 - warning.rect.height * .5f);
+                RefreshTurnOrder();
+                RefreshIntents();
             }
 
+            void RefreshTurnOrder()
+            {
+                var remaining = model.Finished ? Array.Empty<BattleCombatant>() : model.RemainingTurns.ToArray();
+                for (int i = 0; i < orderLabels.Length; i++)
+                {
+                    var label = orderLabels[i];
+                    label.transform.parent.gameObject.SetActive(i < remaining.Length);
+                    if (i >= remaining.Length) continue;
+                    var unit = remaining[i];
+                    label.text = $"{(i == 0 ? "當前 " : "")}{(unit.isPlayer ? "我" : "敵")}・{unit.name}";
+                    label.color = i == 0 ? UiKit.HeaderGold : Color.white;
+                    label.transform.parent.GetComponent<Image>().color = unit.isPlayer
+                        ? new Color(.13f, .35f, .28f) : new Color(.43f, .23f, .20f);
+                    label.fontStyle = i == 0 ? FontStyle.Bold : FontStyle.Normal;
+                }
+            }
+
+            void RefreshIntents()
+            {
+                int i = 0;
+                foreach (var enemy in enemies.Where(unit => unit.Alive))
+                {
+                    var label = intentLabels[i++];
+                    var (move, target, unavailable) = model.PreviewIntent(enemy);
+                    bool charging = enemy.intent != null;
+                    bool danger = move?.all == true && unavailable == null;
+                    string phase = charging ? "蓄勢" : "預計";
+                    string focus = move?.all == true ? "全隊危險" : target?.name;
+                    string action = unavailable ?? (move.power == 0
+                        ? $"{phase}・{move.label} → 自身" : $"{phase}・{move.label} → {focus}");
+                    label.text = $"{enemy.name}\n{action}";
+                    label.color = danger || charging ? new Color(1f, .80f, .65f) : CardText;
+                    label.transform.parent.GetComponent<Image>().color = danger
+                        ? new Color(.49f, .16f, .13f) : new Color(.19f, .17f, .15f);
+                    label.transform.parent.gameObject.SetActive(true);
+                }
+                for (; i < intentLabels.Length; i++)
+                    intentLabels[i].transform.parent.gameObject.SetActive(false);
+            }
 
             void RefreshTargetArrows()
             {
@@ -334,10 +464,9 @@ namespace Wuxia
                     var unitView = views[u];
                     unitView.HpFill.fillAmount = (float)u.hp / u.maxHp;
                     unitView.HpText.text = $"{u.name}〔{u.element}〕\n{u.hp}/{u.maxHp}";
-                    unitView.Status.text = model.StatusText(u);
-                    unitView.Status.transform.parent.gameObject.SetActive(unitView.Status.text.Length > 0);
+                    RefreshStatuses(unitView, u, model);
                     unitView.Art.color = u.Alive ? Color.white : new Color(.4f, .4f, .4f, .25f);
-                    unitView.Shadow.color = new Color(.17f, .13f, .10f, u.Alive ? .68f : .17f);
+                    unitView.Shadow.color = new Color(.17f, .13f, .10f, u.Alive ? .84f : .19f);
                 }
             }
 
@@ -383,6 +512,7 @@ namespace Wuxia
             IEnumerator Advance(string command = null, bool stopAfterRound = false)
             {
                 busy = true;
+                RefreshActionButtons();
                 var screen = battleScreen;
                 int startingRound = model.Round;
                 while (battleScreen == screen && !model.Finished)
@@ -422,6 +552,8 @@ namespace Wuxia
                 }
 
                 busy = false;
+                activeTab = 0;
+                inspectedAction = "attack";
                 selectedAction = "attack";
                 RefreshBattle();
             }
@@ -498,7 +630,7 @@ namespace Wuxia
 
             var shadowRect = Rect("ContactShadow", rt);
             var feet = new Vector2(.5f, 0);
-            Anchor(shadowRect, feet, feet, new(-72, -13), new(72, 11));
+            Anchor(shadowRect, feet, feet, new(-83, -16), new(83, 13));
             var shadow = AddImage(shadowRect, CharacterFactory.StandeeShadow.texture);
 
             var spr = Rect("Sprite", rt);
@@ -547,12 +679,8 @@ namespace Wuxia
             nm.resizeTextForBestFit = false;
             Anchor(nm.rectTransform, Vector2.up, Vector2.one, new(2, -46), new(-2, -7));
 
-            var statusPlate = Panel("Statuses", rt, Vector2.zero, Vector2.right, new(1, -54), new(-1, -14), false);
-            UiKit.Skin(statusPlate.GetComponent<Image>(), "Lacquer");
-            var status = Label(statusPlate, "", 17, TextAnchor.MiddleCenter);
-            status.color = new Color(.82f, .97f, .8f);
-            status.resizeTextMinSize = 13;
-            Fill(status.rectTransform, 3);
+            var statuses = Rect("Statuses", rt);
+            Anchor(statuses, Vector2.zero, Vector2.right, new(-9, -63), new(9, -13));
 
             Text arrow = null;
             if (onClick != null)
@@ -569,9 +697,55 @@ namespace Wuxia
 
             return new BattleUnitView
             {
-                Root = rt, Art = raw, Shadow = shadow, HpFill = fImg, HpText = nm, Status = status,
+                Root = rt, Art = raw, Shadow = shadow, HpFill = fImg, HpText = nm, Statuses = statuses,
                 TargetArrow = arrow, StandingPosition = rt.anchoredPosition
             };
+        }
+
+        private Text BattleLabel(RectTransform parent, string content, int size, TextAnchor alignment,
+            Vector2 min, Vector2 max)
+        {
+            var label = Label(parent, content, size, alignment);
+            Anchor(label.rectTransform, Vector2.zero, Vector2.zero, min, max);
+            return label;
+        }
+
+        private void RefreshStatuses(BattleUnitView view, BattleCombatant unit, BattleModel model)
+        {
+            var statuses = unit.statuses;
+            string key = unit.Alive ? string.Join(",", statuses.Select(entry => $"{entry.Key}:{entry.Value}")) : "";
+            if (key == view.StatusKey) return;
+            view.StatusKey = key;
+
+            // Keep the foot anchor intact while replacing the old seals.
+            foreach (Transform child in view.Statuses)
+            {
+                child.gameObject.SetActive(false);
+                UnityEngine.Object.Destroy(child.gameObject);
+            }
+            if (!unit.Alive) return;
+
+            int i = 0;
+            foreach (var (id, turns) in statuses)
+            {
+                var status = model.Status(id);
+                bool boon = status.attack > 1 || status.incoming < 1 || status.speed > 0 || status.evade;
+                float x = (i % 2) * 104;
+                float y = 25 * (i / 2) + 26;
+                var tag = Panel("Status_" + id, view.Statuses, Vector2.zero, Vector2.zero,
+                    new(x, y - 24), new(x + 101, y), false);
+                tag.GetComponent<Image>().color = new Color(.13f, .12f, .10f, .98f);
+                var seal = Panel("Seal", tag, Vector2.zero, Vector2.zero,
+                    new(2, 2), new(22, 22), false);
+                seal.GetComponent<Image>().color = boon ? new Color(.18f, .43f, .32f) : new Color(.55f, .23f, .21f);
+                var icon = Label(seal, status.label.Substring(0, 1), 18, TextAnchor.MiddleCenter);
+                icon.color = Color.white;
+                Fill(icon.rectTransform);
+                var caption = BattleLabel(tag, $"{status.label}{turns}回", 18, TextAnchor.MiddleCenter,
+                    new(23, 0), new(101, 24));
+                caption.color = CardText;
+                i++;
+            }
         }
 
         internal void CloseBattle()

@@ -15,28 +15,32 @@ namespace Wuxia
         private static AudioManager instance;
         private readonly AudioSource[] music = new AudioSource[2];
         private readonly float[] mix = new float[2];
-        private AudioSource effects, voice;
+        private AudioSource effects, voice, jingle;
         private Coroutine fade;
         private int active;
         private string cue;
         private float duck = 1, startedAt;
-        private AudioClip[] library;
         private Dictionary<string, VoiceEntry> voiceMap;
 
-        /// <summary>Tracks that suit each scene cue; the playlist rotates through them instead of looping one cue.</summary>
         private static readonly Dictionary<string, string[]> Playlists = new()
         {
-            ["prologue"] = new[] { "prologue", "intel_scheme" },
-            ["courtyard"] = new[] { "courtyard", "courtyard_autumn", "courtyard_night" },
-            ["map"] = new[] { "map", "map_campaign", "intel_scheme" }
+            ["title"] = new[] { "title_g1" },
+            ["courtyard"] = new[] { "courtyard_g1" },
+            ["jianghu_map"] = new[] { "jianghu_map_a_g1", "jianghu_map_b_g1" },
+            ["battle"] = new[] { "battle_a_g1", "battle_b_g1" },
+            ["boss"] = new[] { "boss_a_g1", "boss_b_g1" },
+            ["sorrow"] = new[] { "sorrow_a_g1", "sorrow_b_g1" }
         };
+
+        private readonly Dictionary<string, AudioClip[]> tracksByCue = new();
+        private readonly Dictionary<string, int> nextTrackByCue = new();
 
         public static void Initialize()
         {
             if (instance != null) return;
             instance = new GameObject("Wuxia Audio").AddComponent<AudioManager>();
             UiSfx.Handler = Play; // UI kit buttons route click/hover cues through UiSfx
-            Music("prologue"); // title and opening story; the courtyard switches to its own cue
+            Music("title"); // title and opening story; the courtyard switches to its own cue
         }
 
         private void Awake()
@@ -51,6 +55,8 @@ namespace Wuxia
             effects = gameObject.AddComponent<AudioSource>();
             voice = gameObject.AddComponent<AudioSource>();
             voice.loop = false;
+            jingle = gameObject.AddComponent<AudioSource>();
+            jingle.loop = false;
             GameAudioPrefs.Changed += Apply;
             Apply();
         }
@@ -69,14 +75,15 @@ namespace Wuxia
         {
             for (int i = 0; i < music.Length; i++)
                 music[i].volume = mix[i] * duck * GameAudioPrefs.Master * GameAudioPrefs.Music;
+            jingle.volume = GameAudioPrefs.Master * GameAudioPrefs.Music;
             effects.volume = GameAudioPrefs.Master * GameAudioPrefs.Sfx;
             voice.volume = GameAudioPrefs.Master * GameAudioPrefs.Sfx;
         }
 
         private void Update()
         {
-            // Duck the score a little under spoken lines.
-            float target = voice.isPlaying ? .55f : 1;
+            // Duck the score under the jingle or spoken lines.
+            float target = DuckTarget;
             if (!Mathf.Approximately(duck, target))
             {
                 duck = Mathf.MoveTowards(duck, target, Time.unscaledDeltaTime * 1.5f);
@@ -84,48 +91,32 @@ namespace Wuxia
             }
             // Auto-advance: when the current track is about to end, crossfade into another fitting track.
             var current = music[active];
-            if (fade != null || current.clip == null || string.IsNullOrEmpty(cue)) return;
+            if (fade != null || current.loop || current.clip == null || string.IsNullOrEmpty(cue)) return;
             float length = current.clip.length;
             bool ending = current.isPlaying ? current.time >= length - FadeSeconds
                 : Time.unscaledTime - startedAt >= Mathf.Max(FadeSeconds, length - FadeSeconds);
             if (ending)
-                Switch(NextTrack(current.clip));
+                Switch(NextTrack());
         }
 
-        private AudioClip[] Library
-        {
-            get
-            {
-                if (library != null) return library;
-                // Resources/Audio/Music wins over the serialized M2RuntimeAssets list, so freshly copied WAVs are
-                // picked up without re-serializing the asset.
-                var builtIn = M2RuntimeAssets.Load()?.music ?? Array.Empty<AudioClip>();
-                var extra = Resources.LoadAll<AudioClip>("Audio/Music") ?? Array.Empty<AudioClip>();
-                library = extra.Concat(builtIn).Where(clip => clip != null)
-                    .GroupBy(clip => clip.name).Select(group => group.First()).ToArray();
-                return library;
-            }
-        }
+        private float DuckTarget => jingle.isPlaying ? .3f : voice.isPlaying ? .55f : 1;
 
         private AudioClip[] Tracks(string name)
         {
-            var names = Playlists.TryGetValue(name, out var list) ? list : new[] { name };
-            var tracks = names.Select(id => Resources.Load<AudioClip>("Audio/Music/" + id) ??
-                Library.FirstOrDefault(clip => clip.name == id)).Where(clip => clip != null).Distinct().ToList();
-            foreach (var clip in Library.Where(clip => clip.name.StartsWith(name, StringComparison.Ordinal)))
-                if (!tracks.Contains(clip)) tracks.Add(clip);
-            return tracks.ToArray();
+            if (tracksByCue.TryGetValue(name, out var tracks)) return tracks;
+            if (!Playlists.TryGetValue(name, out var names)) return Array.Empty<AudioClip>();
+            tracks = names.Select(id => Resources.Load<AudioClip>("Audio/Music/" + id))
+                .Where(clip => clip != null).ToArray();
+            tracksByCue[name] = tracks;
+            return tracks;
         }
 
-        private AudioClip NextTrack(AudioClip current)
+        private AudioClip NextTrack()
         {
             var tracks = Tracks(cue);
-            if (tracks.Length == 0) return current;
-            if (tracks.Length == 1) return tracks[0];
-            int index = Array.IndexOf(tracks, current);
-            // Step forward through the playlist with a little shuffle so the order is not monotonous.
-            int step = UnityEngine.Random.value < .7f ? 1 : 2;
-            return tracks[((index < 0 ? -1 : index) + step + tracks.Length) % tracks.Length];
+            nextTrackByCue.TryGetValue(cue, out int index);
+            nextTrackByCue[cue] = (index + 1) % tracks.Length;
+            return tracks[index];
         }
 
         public static void Music(string cue)
@@ -137,13 +128,24 @@ namespace Wuxia
             instance.cue = cue;
             // Already playing something from this cue's playlist: let it run, the playlist continues from there.
             if (playing.clip != null && playing.isPlaying && tracks.Contains(playing.clip)) return;
-            instance.Switch(tracks[0]);
+            instance.Switch(instance.NextTrack());
         }
 
         internal static string PlaylistSummary => instance == null ? "" :
             string.Join(" | ", Playlists.Keys.Select(key => key + ":" + string.Join(",", instance.Tracks(key).Select(clip => clip.name))));
 
         internal static string CurrentTrack => instance == null ? null : instance.music[instance.active].clip?.name;
+
+        public static void Jingle(string cue)
+        {
+            if (instance == null || cue != "victory") return;
+            var clip = Resources.Load<AudioClip>("Audio/Music/victory_g1");
+            if (clip == null) return;
+            instance.jingle.clip = clip;
+            instance.duck = .3f;
+            instance.Apply();
+            instance.jingle.Play();
+        }
 
         public static void Play(string cue)
         {
@@ -229,6 +231,7 @@ namespace Wuxia
             int outgoing = active;
             active = 1 - active;
             music[active].clip = clip;
+            music[active].loop = Tracks(cue).Length == 1;
             music[active].time = 0;
             music[active].Play();
             startedAt = Time.unscaledTime;

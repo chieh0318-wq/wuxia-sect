@@ -110,7 +110,7 @@ namespace Wuxia
 
         internal void Begin()
         {
-            AudioManager.Music("creation");
+            AudioManager.Music("title");
             ui.ShowCreation("首徒稱謂", new[] { "你是師父最早收入門下的弟子。師弟師妹們該怎麼稱呼你？" },
                 null, ChooseAppearance);
             ui.CreationGrid(2, 1, 540);
@@ -524,7 +524,7 @@ namespace Wuxia
                 RankSystem.Learn(state.Protagonist.lines, art);
             state.ApplyEffects(skillEffects);
             LegacySystem.ApplyCarried(state, legacyPicks);
-            AudioManager.Music("courtyard_night");
+            AudioManager.Music("title");
             Play(story.openingBeats, ChooseDisaster, SkipStory);
         }
 
@@ -539,7 +539,7 @@ namespace Wuxia
                 {
                     state.Story.disasterId = option.id;
                     state.ApplyEffects(option.effects);
-                    AudioManager.Music("disaster_" + option.id);
+                    AudioManager.Music(option.id == "treasure" ? "battle" : "sorrow");
                     Play(option.beats, () => ChooseResponse(option), SkipStory);
                 });
         }
@@ -595,7 +595,7 @@ namespace Wuxia
 
         private void ChooseLocation()
         {
-            AudioManager.Music("map_campaign");
+            AudioManager.Music("jianghu_map");
             var options = story.locations ?? Array.Empty<StoryLocation>();
             if (options.Length == 0) { Play(story.closingBeats, Finish, Finish); return; }
             ui.ShowCreation("立足之地", new[] { FormatStory(story.locationPrompt) }, null, SkipStory);

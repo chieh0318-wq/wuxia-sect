@@ -13,10 +13,7 @@ MonoBehaviour:
   m_Name: M2RuntimeAssets
   m_EditorClassIdentifier: Assembly-CSharp::Wuxia.M2RuntimeAssets
   map: {fileID: 2800000, guid: 6a1742590ec80964d82a337498b946b5, type: 3}
-  music:
-  - {fileID: 8300000, guid: ff6113170e4abc146a51ff37612e570c, type: 3}
-  - {fileID: 8300000, guid: 18eda7c0a825f764ab57d30ceebb7ed9, type: 3}
-  - {fileID: 8300000, guid: 05736f9b50846774ba02f28d5af49006, type: 3}
+  music: []
   sfx:
   - {fileID: 8300000, guid: f2324a50e71fb3241802a63d50cd106b, type: 3}
   - {fileID: 8300000, guid: aa42e0f30ee177d4981b7d26b182838a, type: 3}

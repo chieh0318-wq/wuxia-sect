@@ -41,7 +41,7 @@ namespace Wuxia
             Action<IEnumerator> captureRound = null)
         {
             CloseBattle();
-            AudioManager.Music("disaster_treasure");
+            AudioManager.Music("battle");
 
             var stats = state.HeroStats;
             var players = new List<BattleUnit>
@@ -511,7 +511,11 @@ namespace Wuxia
             {
                 CloseBattle();
                 AudioManager.Music("courtyard");
-                if (won) LegacySystem.AwardPoints(10);
+                if (won)
+                {
+                    AudioManager.Jingle("victory");
+                    LegacySystem.AwardPoints(10);
+                }
                 req.onComplete?.Invoke(won);
             }
         }

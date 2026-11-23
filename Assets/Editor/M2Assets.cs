@@ -33,7 +33,7 @@ namespace Wuxia.EditorTools
                 AssetDatabase.CreateAsset(assets,path);
             }
             assets.map = AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/Art/Map/world_map.jpg");
-            assets.music = Clips("Assets/Audio/Music");
+            assets.music = System.Array.Empty<AudioClip>();
             assets.sfx = Clips("Assets/Audio/Sfx");
             EditorUtility.SetDirty(assets);
             AssetDatabase.SaveAssets();

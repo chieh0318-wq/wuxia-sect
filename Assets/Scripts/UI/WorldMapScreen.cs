@@ -60,7 +60,7 @@ namespace Wuxia
             CenterOn(host.PartyNode);
             if (!traveling) status.text = $"隊伍駐於{data.NodeLabel(host.PartyNode)}。點選城寨查看守備與路線，點選旗幟查看勢力。";
             ApplyView();
-            AudioManager.Music("map");
+            AudioManager.Music("jianghu_map");
         }
 
         public void Close()

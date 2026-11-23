@@ -17,13 +17,12 @@ The six files under `Assets/Art/Fonts/Resources/Fonts/` are subsets built by `to
 
 ## Audio
 
+See [Audio licenses](LICENSES/AUDIO_LICENSES.md) for the Gemini-generated soundtrack.
+
 The WAV files below are original synthesized assets by Codex B. `tools/build_audio.py` generates them, and they are dedicated to the public domain under [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/).
 
 | File | Title |
 | --- | --- |
-| `Assets/Audio/Music/courtyard.wav` | Courtyard |
-| `Assets/Audio/Music/map.wav` | Across the Post Roads |
-| `Assets/Audio/Music/prologue.wav` | Parting at Dusk |
 | `Assets/Audio/Sfx/arrival.wav` | Arrival |
 | `Assets/Audio/Sfx/complete.wav` | Construction Complete |
 | `Assets/Audio/Sfx/departure.wav` | Departure |

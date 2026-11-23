@@ -25,9 +25,12 @@ namespace Wuxia
         Boss
     }
 
+    internal enum BattleGround { Road, MountainGate, Fortification }
+
     internal sealed class BattleRequest
     {
         public BattleEncounter encounter;
+        public BattleGround ground;
         public string enemyLeadPortrait = "npc_am01";
         public string enemyLeadName = "山賊頭目";
         public int enemyCount = 3;

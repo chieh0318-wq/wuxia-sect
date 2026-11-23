@@ -214,9 +214,15 @@ namespace Wuxia
 
         private static string OutlawGuard(MapNode node) => node.type is "capital" or "city" or "pass" ? "丙" : "丁";
 
-        internal static BattleRequest OutlawEncounter(MapNode node, MapFaction faction) =>
-            BattleRequest.MapAssault(faction.Label, faction.leader, faction.PortraitId,
-                Garrison(node), OutlawGuard(node) == "丙" ? .9f : .7f);
+        internal static BattleRequest OutlawEncounter(MapNode node, MapFaction faction)
+        {
+            bool fortified = OutlawGuard(node) == "丙";
+            var request = BattleRequest.MapAssault(faction.Label, faction.leader, faction.PortraitId,
+                Garrison(node), fortified ? .9f : .7f);
+            request.ground = fortified ? BattleGround.Fortification
+                : node.type == "sect" ? BattleGround.MountainGate : BattleGround.Road;
+            return request;
+        }
 
         private static string Defence(string type) => type switch
         {

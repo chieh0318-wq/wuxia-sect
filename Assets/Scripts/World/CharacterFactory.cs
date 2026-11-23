@@ -160,7 +160,6 @@ namespace Wuxia
                 sprite = StandeeSprite(texture);
                 standeeSprites.Add(texture, sprite);
             }
-            standeeShadow ??= CreateStandeeShadow();
 
             var body = new GameObject("Ink-wash standee").transform;
             body.SetParent(parent, false);
@@ -176,7 +175,7 @@ namespace Wuxia
             box.center = center;
             box.size = new Vector3(Mathf.Min(width, .95f), StandeeHeight, .12f);
             hit = box;
-            var shadow = AddStandeeLayer(parent, "Soft ground shadow", standeeShadow, Vector3.up * .004f,
+            var shadow = AddStandeeLayer(parent, "Soft ground shadow", StandeeShadow, Vector3.up * .004f,
                 new(.95f, .64f), new(.15f, .11f, .08f, .62f), -1);
             shadow.localRotation = Quaternion.Euler(90, 0, 0);
             return body;
@@ -198,6 +197,8 @@ namespace Wuxia
             layer.sortingOrder = order;
             return layer.transform;
         }
+
+        internal static Sprite StandeeShadow => standeeShadow ??= CreateStandeeShadow();
 
         private static Sprite CreateStandeeShadow()
         {

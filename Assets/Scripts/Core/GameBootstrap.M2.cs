@@ -94,6 +94,7 @@ namespace Wuxia
             if (controls != null) controls.enabled = false;
             ui.StartTurnBattle(state, new BattleRequest
             {
+                ground = BattleGround.MountainGate,
                 enemyLeadName = "黑風山賊頭目",
                 enemyCount = 3,
                 difficulty = 0.95f,

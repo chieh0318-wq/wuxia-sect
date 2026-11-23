@@ -241,6 +241,13 @@ namespace Wuxia
                     if (!shotsOk) yield break;
                     ui.CloseBattle();
 
+                    ui.StartTurnBattle(state, new BattleRequest { ground = BattleGround.MountainGate },
+                        this, routine => round = routine);
+                    yield return null;
+                    shotsOk = SaveShot("57_battle_p2_mountain_gate.png");
+                    if (!shotsOk) yield break;
+                    ui.CloseBattle();
+
                     var worldMap = WorldMapData.Load();
                     var hangu = worldMap.Nodes["hangu"];
                     var faction = worldMap.Controllers(hangu).First(entry => entry.Outlaw);

@@ -12,7 +12,7 @@ namespace Wuxia
         private sealed class BattleUnitView
         {
             public RectTransform Root;
-            public RawImage Art;
+            public RawImage Art, Shadow;
             public Image HpFill;
             public Text HpText, TargetArrow, Status;
             public Vector2 StandingPosition;
@@ -37,11 +37,22 @@ namespace Wuxia
             battleScreen = Panel("TurnBattle", canvas, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero);
             battleScreen.GetComponent<Image>().color = Color.black;
 
-            // Scenic arena background
-            var bgTex = Resources.Load<Texture2D>("WorldMap/battle_arena_bg") ?? UiKit.Backdrop();
+            string backdrop = req.ground switch
+            {
+                BattleGround.MountainGate => "battle_ground_mountain_gate",
+                BattleGround.Fortification => "battle_ground_fortification",
+                _ => "battle_ground_road"
+            };
+            var ground = Resources.Load<Texture2D>("Battle/" + backdrop);
             var bgRect = Rect("ArenaBg", battleScreen);
             Fill(bgRect);
-            AddImage(bgRect, bgTex);
+            var background = AddImage(bgRect, ground ?? Resources.Load<Texture2D>("WorldMap/battle_arena_bg"));
+            if (ground == null)
+            {
+                // Frame the original courtyard so its paving reaches both rows.
+                background.uvRect = new Rect(.10f, 0, .80f, .80f);
+                background.color = new Color(.82f, .79f, .75f);
+            }
 
             // ── TOP HUD: Left Player Lead | Center Round Medallion | Right Enemy Lead ──
             var lead = players[0];
@@ -58,16 +69,16 @@ namespace Wuxia
 
             // ── CENTER STAGE: Left Player Party & Right Enemy Squad ──
             var stage = Rect("Stage", battleScreen);
-            Anchor(stage, Vector2.zero, Vector2.one, new(0, 140), new(0, -110));
+            Fill(stage);
 
             bool busy = false;
             int targetIdx = 0;
             Action onTargetChanged = null;
-            Vector2[] pPositions = { new(-270, -54), new(-490, 18), new(-710, -38) };
+            Vector2[] pPositions = { new(-270, .275f), new(-490, .325f), new(-710, .275f) };
             for (int i = 0; i < players.Count; i++)
                 views.Add(players[i], SpawnBattleSprite(stage, players[i], pPositions[i], null));
 
-            Vector2[] ePositions = { new(175, -50), new(390, 25), new(605, -42), new(805, 35) };
+            Vector2[] ePositions = { new(175, .275f), new(390, .325f), new(605, .275f), new(805, .325f) };
             for (int i = 0; i < enemies.Count; i++)
             {
                 int idx = i;
@@ -78,6 +89,9 @@ namespace Wuxia
                     onTargetChanged?.Invoke();
                 }));
             }
+
+            foreach (var view in views.Values.OrderByDescending(view => view.Root.anchorMin.y))
+                view.Root.SetAsLastSibling();
 
             var logLines = new List<string>
             {
@@ -323,6 +337,7 @@ namespace Wuxia
                     unitView.Status.text = model.StatusText(u);
                     unitView.Status.transform.parent.gameObject.SetActive(unitView.Status.text.Length > 0);
                     unitView.Art.color = u.Alive ? Color.white : new Color(.4f, .4f, .4f, .25f);
+                    unitView.Shadow.color = new Color(.17f, .13f, .10f, u.Alive ? .68f : .17f);
                 }
             }
 
@@ -475,22 +490,35 @@ namespace Wuxia
         private BattleUnitView SpawnBattleSprite(RectTransform stage, BattleCombatant unit, Vector2 pos, Action onClick)
         {
             var rt = Rect("Unit_" + unit.name, stage);
-            Anchor(rt, new(.5f, .5f), new(.5f, .5f), pos - new Vector2(95, 150), pos + new Vector2(95, 150));
+            var groundAnchor = new Vector2(.5f, pos.y);
+            Anchor(rt, groundAnchor, groundAnchor, new(pos.x - 95, 0), new(pos.x + 95, 282));
+            rt.pivot = new Vector2(.5f, 0);
+            rt.anchoredPosition = new Vector2(pos.x, 0);
+            rt.localScale = Vector3.one * (pos.y > .3f ? .91f : 1f);
+
+            var shadowRect = Rect("ContactShadow", rt);
+            var feet = new Vector2(.5f, 0);
+            Anchor(shadowRect, feet, feet, new(-72, -13), new(72, 11));
+            var shadow = AddImage(shadowRect, CharacterFactory.StandeeShadow.texture);
 
             var spr = Rect("Sprite", rt);
-            Anchor(spr, Vector2.zero, Vector2.one, new(0, 18), new(0, -34));
             var bossStandee = !unit.isPlayer && unit.portraitId == "leader_heisong"
                 ? Resources.Load<Texture2D>("Standees/leader_heisong") : null;
             var tex = bossStandee != null ? bossStandee : unit.spriteId == null
                 ? CharacterFactory.StandeeTexture(unit.portraitId, unit.gender, portraitFallback: true)
                 : Resources.Load<Texture2D>("Battle/" + unit.spriteId);
-            var raw = AddImage(spr, tex);
-            if ((unit.spriteId == null || bossStandee != null) && tex != null)
+            bool battleCutout = unit.spriteId != null && bossStandee == null;
+            float width = 190, height = 248;
+            if (!battleCutout && tex != null)
             {
-                float scale = Mathf.Min(190f / tex.width, 248f / tex.height);
-                float halfWidth = tex.width * scale * .5f;
-                Anchor(spr, new(.5f, 0), new(.5f, 0), new(-halfWidth, 18), new(halfWidth, 18 + tex.height * scale));
+                float scale = Mathf.Min(width / tex.width, height / tex.height);
+                width = tex.width * scale;
+                height = tex.height * scale;
             }
+            // Battle cutouts have a 12 px transparent margin under the boots.
+            float padding = battleCutout ? height * (12f / 512f) : 2f;
+            Anchor(spr, feet, feet, new(-width / 2, -padding), new(width / 2, height - padding));
+            var raw = AddImage(spr, tex);
 
             if (onClick != null)
             {
@@ -519,7 +547,7 @@ namespace Wuxia
             nm.resizeTextForBestFit = false;
             Anchor(nm.rectTransform, Vector2.up, Vector2.one, new(2, -46), new(-2, -7));
 
-            var statusPlate = Panel("Statuses", rt, Vector2.zero, Vector2.right, new(1, -42), new(-1, 12), false);
+            var statusPlate = Panel("Statuses", rt, Vector2.zero, Vector2.right, new(1, -54), new(-1, -14), false);
             UiKit.Skin(statusPlate.GetComponent<Image>(), "Lacquer");
             var status = Label(statusPlate, "", 17, TextAnchor.MiddleCenter);
             status.color = new Color(.82f, .97f, .8f);
@@ -541,7 +569,7 @@ namespace Wuxia
 
             return new BattleUnitView
             {
-                Root = rt, Art = raw, HpFill = fImg, HpText = nm, Status = status,
+                Root = rt, Art = raw, Shadow = shadow, HpFill = fImg, HpText = nm, Status = status,
                 TargetArrow = arrow, StandingPosition = rt.anchoredPosition
             };
         }

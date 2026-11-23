@@ -16,6 +16,8 @@ namespace Wuxia
         public string element, enemyProfile;
         public BattleSkill intent;
         public BattleCombatant intentTarget;
+        /// <summary>v1124 C14: slot ("skill" / "ultimate") → battle_skills.json id from the arts this fighter knows.</summary>
+        public Dictionary<string, string> moves = new();
         public readonly Dictionary<string, int> statuses = new();
         public bool Alive => hp > 0;
     }
@@ -76,7 +78,9 @@ namespace Wuxia
                     speed = Math.Max(15, stats.Speed),
                     defense = Math.Max(8, stats.Attack / 3),
                     element = "木",
-                    dodge = stats.Dodge
+                    dodge = stats.Dodge,
+                    moves = MartialArts.Moves(state.ProtagonistArts,
+                        RankSystem.Major(state.Protagonist.lines, state.Protagonist.major)?.id, catalog.Skills.ContainsKey)
                 }
             };
             foreach (var d in state.Disciples.Where(member => member != null).Take(2))
@@ -98,7 +102,8 @@ namespace Wuxia
                     speed = derived.Speed,
                     defense = Math.Max(8, derived.Attack / 3),
                     element = "水",
-                    dodge = derived.Dodge
+                    dodge = derived.Dodge,
+                    moves = MartialArts.Moves(state.ArtsOf(d), RankSystem.BestCombat(lines)?.id, catalog.Skills.ContainsKey)
                 });
             }
 

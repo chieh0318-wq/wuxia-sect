@@ -227,7 +227,9 @@ namespace Wuxia
                 ui.ShowCreation(beat.title ?? line.title ?? "人物逸事", new[] { FormatQuestText(beat.summary) },
                     null, null, choices.Length == 0 ? () => Complete(null) : null);
                 foreach (var choice in choices)
-                    ui.CreationChoice(FormatQuestText(choice.text), "", null, () => Complete(choice));
+                    // v1124 B8: every questline choice shows its real effects (or a 「劇情：……」 hint).
+                    ui.CreationChoice(FormatQuestText(choice.text), "影響：" + EffectText.Choice(choice, line, state),
+                        null, () => Complete(choice));
             }
 
             void Complete(QuestChoice choice)

@@ -38,19 +38,36 @@ namespace Wuxia
                 hero.lastTrainingMonth = monthKey;
                 hero.trainingMonths++;
             }
-            var line = RankSystem.BestCombat(hero.lines);
+            // v1124 C12: the protagonist drills the chosen 主修; once it sits at its cap, the next combat line below cap.
+            var line = RankSystem.Major(hero.lines, hero.major);
+            if (line != null && RankSystem.Index(line.rank) >= RankSystem.Index(line.cap))
+                line = hero.lines.Where(entry => RankSystem.IsCombat(entry.id) &&
+                        RankSystem.Index(entry.rank) < RankSystem.Index(entry.cap))
+                    .OrderByDescending(entry => RankSystem.Index(entry.rank)).FirstOrDefault() ?? line;
             if (line == null)
                 return "";
             // 悟性 speeds study for everyone; 武力 adds a little to the protagonist's own martial study.
             float experience = Mathf.Max(.1f, 1 + Story.trainBonusPct / 100f) * ProductionMultiplier("teaching") *
                 Mathf.Max(.5f, 1 + .05f * AttributeBonus("wit"));
-            TrainLine(line, experience * Mathf.Max(.5f, 1 + .02f * AttributeBonus("str")));
+            TrainLine(line, experience * Mathf.Max(.5f, 1 + .02f * AttributeBonus("str")) * StudyMultiplier(line.id));
             foreach (var disciple in Disciples.Where(member => member.id != Story.delegateId))
                 TrainLine(RankSystem.BestCombat(disciple.lines), experience);
 
 
             return CheckMartialPath(false);
         }
+
+        /// <summary>v1124 C13: talent study speed, e.g. 劍癡 +30% on 劍, 天縱奇才 on every combat line.</summary>
+        internal float StudyMultiplier(string lineId)
+        {
+            var study = Protagonist.study ?? Array.Empty<StoryValue>();
+            int pct = ValueOf(study, lineId) + (RankSystem.IsCombat(lineId) ? ValueOf(study, "all") : 0)
+                + (lineId == Protagonist.major ? ValueOf(study, "martial") : 0);
+            return Mathf.Max(.25f, 1 + pct / 100f);
+        }
+
+        /// <summary>Study keys: "all" every combat line (ref ""), "martial" the 主修, otherwise a line id.</summary>
+        private static string StudyKey(string id) => string.IsNullOrEmpty(id) ? "all" : id;
 
         private static void TrainLine(SkillLine line, float experience)
         {
@@ -75,7 +92,7 @@ namespace Wuxia
             RankSystem.Shift(line, entry.capDelta, true);
             if (entry.oneTime)
                 Protagonist.breakthroughs = Protagonist.breakthroughs.Append(id).ToArray();
-            return $"突破：{entry.name}　{line.rank}／{line.cap}";
+            return $"突破：{entry.name}　{line.rank}／{line.cap}" + RecordArt(entry.art);
         }
 
         private string CheckMartialPath(bool monthEnd)
@@ -88,8 +105,8 @@ namespace Wuxia
                 .Any(art => hero.skills.Contains(art.id) && RankSystem.IsCombat(art.category));
             bool martialTalent = (M2Data.Load<TalentCatalog>("talents").talents ?? Array.Empty<CreationOption>())
                 .Any(talent => hero.talents.Contains(talent.id) && (talent.effects ?? Array.Empty<GameEffect>())
-                    .Any(effect => effect.key == "trainBonusPct" || effect.key == "rank" ||
-                        effect.key == "str" || RankSystem.IsCombat(effect.@ref)));
+                    .Any(effect => effect.key == "trainBonusPct" || effect.key == "rank" || effect.key == "studyPct" ||
+                        effect.key == "str" || effect.@ref == "martial" || RankSystem.IsCombat(effect.@ref)));
             if (!learnedCombat && !martialTalent)
                 return "";
 
@@ -120,7 +137,7 @@ namespace Wuxia
                     continue;
                 RankSystem.Shift(target, entry?.capDelta ?? 1, true);
                 hero.breakthroughs = hero.breakthroughs.Append(step.breakthrough).ToArray();
-                return $"突破：{entry?.name ?? "武學精進"}　{target.rank}／{target.cap}";
+                return $"突破：{entry?.name ?? "武學精進"}　{target.rank}／{target.cap}" + RecordArt(entry?.art);
             }
             return "";
         }

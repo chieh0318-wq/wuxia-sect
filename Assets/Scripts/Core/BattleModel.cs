@@ -77,7 +77,17 @@ namespace Wuxia
             StartRound();
         }
 
-        public BattleSkill Skill(string id) => catalog.Skills[id];
+        /// <summary>
+        /// The move behind a command id. v1124 C14: the acting fighter's own martial arts replace the generic
+        /// 「skill」/「ultimate」 slots (e.g. 回雪劍 for 許雁), so labels, costs and effects follow each character.
+        /// </summary>
+        public BattleSkill Skill(string id)
+        {
+            var actor = Finished || cursor >= order.Count ? null : order[cursor];
+            if (actor?.moves != null && actor.moves.TryGetValue(id, out var own) && catalog.Skills.TryGetValue(own, out var move))
+                return move;
+            return catalog.Skills[id];
+        }
         private IEnumerable<BattleStatus> Effects(BattleCombatant unit) =>
             unit.statuses.Keys.Select(id => catalog.Statuses[id]);
 

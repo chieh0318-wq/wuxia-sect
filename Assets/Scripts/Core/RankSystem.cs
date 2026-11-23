@@ -15,6 +15,8 @@ namespace Wuxia
     [Serializable] internal sealed class Breakthrough
     {
         public string id, name, type, target, requirement, desc;
+        /// <summary>v1124 C14: the martial art (martial_arts.json id) this breakthrough teaches.</summary>
+        public string art;
         public int capDelta, effectiveRankDelta;
         public float chance;
         public bool oneTime;
@@ -89,6 +91,28 @@ namespace Wuxia
                     cap = At(Index(ceiling)), progress = line?.progress ?? 0 };
             }).ToArray();
         }
+
+        /// <summary>
+        /// v1124 C13: the highest tier creation alone can reach (background + talents + starting arts). Anything at
+        /// S or above must come from 秘笈、奇遇、秘境 or the master's teaching during play.
+        /// </summary>
+        internal const string CreationCeiling = "A";
+
+        internal static void ClampCreation(SkillLine[] lines)
+        {
+            int ceiling = Index(CreationCeiling);
+            foreach (var line in lines ?? Array.Empty<SkillLine>())
+            {
+                if (line == null) continue;
+                line.cap = At(Math.Min(Index(line.cap), ceiling));
+                line.rank = At(Math.Min(Index(line.rank), Index(line.cap)));
+            }
+        }
+
+        /// <summary>v1124 C12: the protagonist's chosen 主修 line, falling back to the strongest combat line.</summary>
+        internal static SkillLine Major(SkillLine[] lines, string major) =>
+            (IsCombat(major) ? Array.Find(lines ?? Array.Empty<SkillLine>(), line => line?.id == major) : null)
+            ?? BestCombat(lines ?? Array.Empty<SkillLine>());
 
         internal static SkillLine BestCombat(SkillLine[] lines) =>
             lines.Where(line => IsCombat(line.id)).OrderByDescending(line => Index(line.rank))

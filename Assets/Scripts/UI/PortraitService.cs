@@ -39,6 +39,12 @@ namespace Wuxia
                 ?? (silhouette ??= CreateSilhouette());
         }
 
+        internal static string ResponseArt(string route, string response, string fallback)
+        {
+            string id = $"v1124_{route}_{response}";
+            return Story(id) != null ? id : fallback;
+        }
+
         public static Texture2D Story(string id) => string.IsNullOrWhiteSpace(id) ? null : FindTexture("story", id);
 
         private static Texture2D FindTexture(string folder, string id)

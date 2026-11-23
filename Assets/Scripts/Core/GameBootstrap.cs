@@ -10,6 +10,22 @@ namespace Wuxia
 {
     internal static class RuntimeEntry
     {
+        internal static bool MuteAudio { get; private set; }
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+        private static void MuteAutomationAudio()
+        {
+            string[] args = Environment.GetCommandLineArgs();
+            MuteAudio = Application.isBatchMode || args.Contains("-wuxiaCapture") ||
+                args.Contains("-wuxiaCaptureRes") || args.Contains("-wuxiaQuitAfter") ||
+                args.Contains("-runTests");
+            if (MuteAudio)
+            {
+                AudioListener.volume = 0;
+                AudioListener.pause = true;
+            }
+        }
+
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         private static void Boot()
         {
@@ -164,7 +180,7 @@ namespace Wuxia
                 var cameraObject = new GameObject("Main Camera");
                 cameraObject.tag = "MainCamera";
                 view = cameraObject.AddComponent<Camera>();
-                cameraObject.AddComponent<AudioListener>();
+                cameraObject.AddComponent<AudioListener>().enabled = !RuntimeEntry.MuteAudio;
             }
 
             view.clearFlags = CameraClearFlags.SolidColor;

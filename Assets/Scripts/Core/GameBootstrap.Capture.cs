@@ -228,17 +228,19 @@ namespace Wuxia
                 var original = (hero.gender, hero.lookId, hero.backgroundId, hero.title, hero.name, hero.portrait);
                 var examples = new[]
                 {
-                    ("女", "hero_f1", "fubing_orphan", "大師姐", "顧清霜", "68_hero_female_dashijie.png"),
-                    ("男", "hero_m1", "scholar_family", "少掌門", "顧行舟", "69_hero_male_shaozhangmen.png"),
-                    ("女", "hero_f6", "mountain_hunter", "大師姐", "沈青崖", "70_hero_female_mountain_hunter.png"),
-                    ("男", "hero_m9", "temple_foundling", "大師兄", "陸明川", "71_hero_male_temple_foundling.png")
+                    ("女", "hero_f1", "fubing_orphan", "大師姐", "大師姐", "68_hero_female_dashijie.png"),
+                    ("男", "hero_m1", "scholar_family", "少掌門", "少掌門", "69_hero_male_shaozhangmen.png"),
+                    ("女", "hero_f6", "mountain_hunter", "大師姐", "山野獵戶", "70_hero_female_mountain_hunter.png"),
+                    ("男", "hero_m9", "temple_foundling", "大師兄", "寺院棄嬰", "71_hero_male_temple_foundling.png")
                 };
                 try
                 {
                     foreach (var (gender, look, background, title, name, file) in examples)
                     {
                         (hero.gender, hero.lookId, hero.backgroundId, hero.title, hero.name, hero.portrait) =
-                            (gender, look, background, title, title + "・" + name, look);
+                            (gender, look, background, title, name, look);
+                        var standee = CharacterFactory.HeroStandee(gender, look, background, title);
+                        Debug.Log($"[Capture] Hero {look}/{background}/{title}: {standee.name}.");
                         ui.StartTurnBattle(state, new BattleRequest(), this);
                         yield return null;
                         shotsOk = SaveShot(file);

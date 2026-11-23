@@ -157,12 +157,13 @@ namespace Wuxia
         private static readonly HashSet<string> leftFacing = new()
         {
             "enemy_assassin", "enemy_axe", "enemy_scout", "leader_heisong",
-            "hero_f10", "hero_f3", "hero_f5", "hero_f6", "hero_f8", "hero_m1",
-            "hero_m4", "hero_m5", "hero_m9", "lin", "npc_af01", "npc_af02", "npc_af05",
-            "npc_am02", "npc_am04", "npc_am06", "npc_am08", "npc_ef03", "npc_em01",
-            "npc_em04", "npc_hu02", "npc_hu04", "npc_hu05", "npc_mer01", "npc_mer02",
-            "npc_monk02", "npc_off01", "npc_st02", "npc_st04", "npc_tao03", "npc_yf02",
-            "npc_yf04", "pei", "shen", "spec_fugitive", "spec_noble", "wei"
+            "hero_f10", "hero_f3", "hero_f5", "hero_f6", "hero_f6_mountain_hunter_dashijie", "hero_f8", "hero_m1",
+            "hero_m4", "hero_m5", "hero_m9", "npc_af01", "npc_af02", "npc_af05",
+            "npc_am02", "npc_am03", "npc_am04", "npc_am06", "npc_am08", "npc_ef03",
+            "npc_ef04", "npc_em01", "npc_em04", "npc_em05", "npc_hu02", "npc_hu04",
+            "npc_hu05", "npc_mer01", "npc_mer02", "npc_monk02", "npc_nun02", "npc_off01",
+            "npc_off02", "npc_st02", "npc_st04", "npc_tao01", "npc_tao03", "npc_yf02",
+            "npc_yf04", "pei", "spec_fugitive", "spec_noble", "wei"
         };
 
         internal static bool FlipStandee(Texture2D texture, bool faceRight) =>

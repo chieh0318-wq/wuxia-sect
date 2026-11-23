@@ -433,8 +433,10 @@ namespace Wuxia
                 body.verticalOverflow = VerticalWrapMode.Truncate;
                 body.lineSpacing = .94f;
             }
-            body.color = new Color(.96f, .89f, .75f);
+            body.color = CardText;
             body.resizeTextForBestFit = false;
+            if (rarity != null && icon != null)
+                body.verticalOverflow = VerticalWrapMode.Truncate;
             int tagTop = wideDescription ? 80 : 38;
             Anchor(body.rectTransform, Vector2.zero, Vector2.one, new(left, string.IsNullOrEmpty(tags) ? (storyChoice ? 34 : 8) : tagTop + 4),
                 new(-16, -46 - top));
@@ -721,11 +723,13 @@ namespace Wuxia
             var name = Label(nameplate, string.IsNullOrWhiteSpace(speaker) ? "旁白" : speaker, 30, TextAnchor.MiddleLeft);
             name.color = CardGold;
             Fill(name.rectTransform, 14);
-            storyText = Label(dock, "", 30);
+            storyText = Label(dock, "", 30, TextAnchor.UpperLeft);
+            storyText.color = CardText;
             storyText.font = UiKit.Font(string.IsNullOrEmpty(speaker) ? "Narration" : "Dialogue", font, text);
             name.font = UiKit.Font("Names", font, speaker);
             Anchor(storyText.rectTransform, Vector2.zero, Vector2.one, new(left, 52), new(-32, -74));
             var hint = Label(dock, "點擊或按空白鍵繼續", 20, TextAnchor.MiddleRight);
+            hint.color = CardMuted;
             Anchor(hint.rectTransform, Vector2.zero, Vector2.right, new(left, 12), new(-32, 42));
             var skipButton = Button(storyScreen, skipLabel, skip);
             Anchor(skipButton, Vector2.one, Vector2.one, new(-174, -74), new(-24, -24));

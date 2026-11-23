@@ -81,9 +81,10 @@ namespace Wuxia
                 resourceLabels[index] = value;
             }
             var ap = HudPlaque(top, "行動力", new(.665f, 0), new(.665f, 1), new(0, 8), new(290, -8));
+            AddCardIcon(ap, "hud_ap", 12, 28);
             apDisplay = Label(ap, "", 22, TextAnchor.MiddleLeft);
             apDisplay.color = lightInk;
-            Anchor(apDisplay.rectTransform, Vector2.zero, Vector2.one, new(18, 22), new(-12, -4));
+            Anchor(apDisplay.rectTransform, Vector2.zero, Vector2.one, new(48, 22), new(-12, -4));
             apHud = ap.gameObject.AddComponent<ApHud>();
             var apSources = Panel("行動力來源", ap, Vector2.zero, Vector2.right, new(-38, -150), new(38, -4), false);
             UiKit.Skin(apSources.GetComponent<Image>(), "Wood");

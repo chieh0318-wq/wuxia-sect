@@ -48,7 +48,9 @@ namespace Wuxia
                     float x = plaqueWidth + index * (width + arrow);
                     bool clickable = !node.researched && node.unlocked && node.research != null;
                     var card = Button(row, node.name, clickable ? node.research : null);
-                    card.GetComponent<Button>().interactable = clickable || node.researched;
+                    var selectable = card.GetComponent<Button>();
+                    selectable.interactable = clickable;
+                    if (!clickable) selectable.transition = Selectable.Transition.None;
                     Anchor(card, Vector2.zero, Vector2.up, new(x, 6), new(x + width, -6));
                     var image = card.GetComponent<Image>();
                     UiKit.Skin(image, node.researched ? "Selected" : node.unlocked ? "Vermilion" : "Wood");

@@ -220,7 +220,8 @@ namespace Wuxia
                 string speech = CastDialogue.CharacterSpeech(state, speakerId, FormatQuestText(part.text));
                 ui.ShowStoryBeat(FormatQuestText(part.speaker), speech, art, portrait,
                     part.portrait != "hero", ShowNext, ShowChoices, "前往抉擇", part.text, hero.gender == "女",
-                    speakerOnRight: !string.IsNullOrEmpty(portrait) && part.portrait != "hero"
+                    speakerOnRight: !string.IsNullOrEmpty(portrait) && part.portrait is not ("hero" or "master")
+                        && !portrait.StartsWith("friend_", StringComparison.Ordinal)
                         && !state.Disciples.Any(member => member.id == part.portrait || member.portrait == portrait));
             }
 

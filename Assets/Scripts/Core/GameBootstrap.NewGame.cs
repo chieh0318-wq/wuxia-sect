@@ -656,7 +656,7 @@ namespace Wuxia
                 ui.ShowStoryBeat(FormatStory(beat.speaker), FormatStory(beat.text), currentCg, portrait,
                     beat.portrait != "hero", ShowNext, skip, voiceText: beat.text, femaleHero: state.Protagonist.gender == "女",
                     speakerOnRight: !string.IsNullOrEmpty(portrait)
-                        && beat.portrait is not ("hero" or "lin" or "xu" or "elder" or "shifu")
+                        && beat.portrait is not ("hero" or "lin" or "xu" or "master")
                         && !portrait.StartsWith("friend_", StringComparison.Ordinal));
             }
         }

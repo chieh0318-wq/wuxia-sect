@@ -30,7 +30,7 @@ namespace Wuxia
         private Action inspectDisciple;
         private readonly Text toast;
         private readonly Font font;
-        private readonly List<(Transform target, Vector3 offset, RectTransform tag)> worldLabels = new();
+        private readonly List<(Transform target, Vector3 offset, RectTransform tag, bool building)> worldLabels = new();
         private readonly List<Rect> visibleTags = new();
 
         public bool ModalOpen => modal.gameObject.activeSelf;
@@ -257,7 +257,8 @@ namespace Wuxia
             }
             if (string.IsNullOrEmpty(detail))
                 return rect;
-            rect.GetComponent<LayoutElement>().preferredHeight = 122;
+            int captionHeight = label.Contains("\n") ? 58 : 38;
+            rect.GetComponent<LayoutElement>().preferredHeight = 84 + captionHeight;
             string cmdIcon = CommandIconFor(label);
             var iconTex = UiKit.Icon(cmdIcon);
             int textLeft = iconTex != null ? 74 : 22;
@@ -271,9 +272,9 @@ namespace Wuxia
             caption.alignment = TextAnchor.MiddleLeft;
             caption.fontSize = caption.resizeTextMaxSize = 22;
             caption.resizeTextMinSize = UiKit.MinBody;
-            Anchor(caption.rectTransform, Vector2.up, Vector2.one, new(textLeft, -38), new(-10, -6));
+            Anchor(caption.rectTransform, Vector2.up, Vector2.one, new(textLeft, -captionHeight), new(-10, -6));
             var divider = Rect("Card rule", rect);
-            Anchor(divider, Vector2.up, Vector2.one, new(textLeft, -41), new(-14, -40));
+            Anchor(divider, Vector2.up, Vector2.one, new(textLeft, -captionHeight - 3), new(-14, -captionHeight - 2));
             var rule = divider.gameObject.AddComponent<Image>();
             rule.color = new Color(.90f, .72f, .40f, .45f);
             rule.raycastTarget = false;
@@ -284,7 +285,7 @@ namespace Wuxia
             body.horizontalOverflow = HorizontalWrapMode.Wrap;
             body.resizeTextForBestFit = false;
             body.lineSpacing = 1.05f;
-            Anchor(body.rectTransform, Vector2.zero, Vector2.one, new(textLeft, 6), new(-10, -44));
+            Anchor(body.rectTransform, Vector2.zero, Vector2.one, new(textLeft, 6), new(-10, -captionHeight - 6));
             UiKit.AccentStripe(rect, selected ? UiKit.GoldAccent : run == null ? new Color(.45f, .40f, .34f) : UiKit.Crimson);
             return rect;
         }
@@ -661,7 +662,8 @@ namespace Wuxia
             var ink = Label(tag, name, size, TextAnchor.MiddleCenter);
             ink.color = new Color(.17f, .105f, .065f);
             Fill(ink.rectTransform, 3);
-            worldLabels.Add((target, offset, tag));
+            worldLabels.Add((target, offset, tag, building));
+            tag.gameObject.SetActive(building);
         }
 
         internal void RemoveWorldLabel(Transform target)
@@ -672,14 +674,16 @@ namespace Wuxia
             worldLabels.RemoveAt(index);
         }
 
-        public void PositionLabels(Camera camera)
+        public void PositionLabels(Camera camera, Transform hovered = null, Transform selected = null)
         {
             Camera projection = Canvas.renderMode == RenderMode.ScreenSpaceCamera ? camera : null;
             visibleTags.Clear();
-            foreach (var entry in worldLabels)
+            foreach (var entry in worldLabels.OrderBy(entry => entry.target == selected ? 0 : entry.target == hovered ? 1 : 2))
             {
                 Vector3 screen = camera.WorldToScreenPoint(entry.target.position + entry.offset);
-                bool visible = screen.z > 0 && screen.z < (entry.offset.y < 2.7f ? 39 : 57) &&
+                bool showTag = entry.building ? screen.z < (entry.offset.y < 2.7f ? 39 : 57) :
+                    entry.target == hovered || entry.target == selected;
+                bool visible = entry.target.gameObject.activeInHierarchy && showTag && screen.z > 0 &&
                     camera.pixelRect.Contains(screen);
                 if (visible)
                 {

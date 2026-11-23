@@ -211,6 +211,7 @@ namespace Wuxia
                 if (index == scene.Length) { ShowChoices(); return; }
                 var part = scene[index++];
                 if (!string.IsNullOrEmpty(part.image)) art = part.image;
+                if (art == "cg_friend_vow" && state.FriendId == "friend_m") art = "cg_friend_vow_m";
                 var hero = state.Protagonist;
                 string portrait = part.portrait == "hero" ? hero.portrait ?? hero.lookId :
                     PortraitService.StoryId(part.portrait, state.FriendId == "friend_m" ? "男" : "女");

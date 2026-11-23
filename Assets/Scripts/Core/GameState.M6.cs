@@ -281,7 +281,12 @@ namespace Wuxia
             return bonus;
         }
 
-        internal void GrantAp(int amount) => ActionPoints += Mathf.Max(0, amount);
+        internal void GrantAp(int amount)
+        {
+            int cap = ApMax;
+            ActionPoints = Mathf.Min(ActionPoints, cap);
+            ActionPoints += Mathf.Clamp(amount, 0, cap - ActionPoints);
+        }
 
         internal void Injure(int amount) => Protagonist.injury = Mathf.Clamp(Protagonist.injury + amount, 0, 9);
 

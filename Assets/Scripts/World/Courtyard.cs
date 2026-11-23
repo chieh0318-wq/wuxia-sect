@@ -16,6 +16,8 @@ namespace Wuxia
         private readonly Dictionary<Collider, DiscipleData> discipleTargets = new();
         private readonly Dictionary<string, Material> surfaces = new();
         private readonly List<Vector3> entrances = new();
+        private readonly List<Rect> buildingFootprints = new();
+        private readonly List<(Rect area, float height)> paving = new();
         private readonly Dictionary<string, (Transform root, float height)> landmarks = new();
         private readonly TangBuildingFactory halls;
         private readonly MaterialPropertyBlock paint = new();
@@ -154,6 +156,7 @@ namespace Wuxia
             building.SetParent(root, false);
             building.localPosition = new Vector3(slots[index].x, 0, slots[index].z);
             float w = data.size[0], h = data.size[1], d = data.size[2];
+            buildingFootprints.Add(new Rect(building.position.x - w / 2, building.position.z - d / 2, w, d));
             float labelHeight;
             if (data.id == "yard")
             {
@@ -189,12 +192,21 @@ namespace Wuxia
         {
             var person = new GameObject(data.name).transform;
             person.SetParent(root, false);
-            int order = discipleTargets.Count;
-            person.position = entrances.Count == 0 ? new Vector3(0, 0, -16) :
-                entrances[order % entrances.Count] + Vector3.right * (order % 2 == 0 ? -.45f : .45f);
-            var card = CharacterFactory.BuildStandee(data, person, out var hit);
+            int order = 0;
+            Vector3 spawn;
+            do
+            {
+                int column = order % 18;
+                float x = (column + 1) / 2 * (column % 2 == 0 ? -1.07f : 1.07f);
+                spawn = new Vector3(x, 0, -14f - order / 18 * .95f);
+                order++;
+            }
+            while (discipleTargets.Keys.Any(target =>
+                (target.transform.parent.position - spawn).sqrMagnitude < .9f));
+            person.position = spawn;
+            var figure = CharacterFactory.BuildStandee(data, person, out var hit);
             discipleTargets.Add(hit, data);
-            person.gameObject.AddComponent<DiscipleWalker>().Initialize(entrances, card);
+            person.gameObject.AddComponent<DiscipleWalker>().Initialize(entrances, buildingFootprints, Grounded, figure);
             ui.AddWorldLabel(person, CharacterFactory.StandeeLabelOffset, data.name, false);
         }
 
@@ -209,9 +221,19 @@ namespace Wuxia
             UnityEngine.Object.Destroy(person.gameObject);
         }
 
+        internal Vector3 Grounded(Vector3 position)
+        {
+            var point = new Vector2(position.x, position.z);
+            position.y = -.055f;
+            foreach (var (area, height) in paving)
+                if (area.Contains(point)) position.y = Mathf.Max(position.y, height);
+            return position;
+        }
+
         private void Path(float x, float z, float w, float d, bool raised = false)
         {
             float height = raised ? .12f : .027f;
+            paving.Add((new Rect(x - w / 2, z - d / 2, w, d), height + .0225f));
             Part("Stone curb", PrimitiveType.Cube, root, new(x, height - .064f, z),
                 new(w + .25f, .13f, d + .25f), Tint("#99988E"));
             Part("Stone paving", PrimitiveType.Cube, root, new(x, height, z), new(w, .045f, d),

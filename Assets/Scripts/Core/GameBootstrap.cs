@@ -267,7 +267,16 @@ namespace Wuxia
                     return;
                 }
             }
-            ui.PositionLabels(view);
+            Transform hovered = null;
+            if (!capturing && !ui.ModalOpen && !choosingBuilding &&
+                (EventSystem.current == null || !EventSystem.current.IsPointerOverGameObject()))
+            {
+                Physics.SyncTransforms();
+                if (Physics.Raycast(view.ScreenPointToRay(Input.mousePosition), out var hoverHit) &&
+                    world.TryGetDisciple(hoverHit.collider, out _))
+                    hovered = hoverHit.collider.transform.parent;
+            }
+            ui.PositionLabels(view, hovered, selectedCourtyardPerson);
             ui.PositionHighlight(tutorial?.Highlight, view, world);
             if (Input.GetKeyDown(KeyCode.Escape))
             {
@@ -299,6 +308,7 @@ namespace Wuxia
                 return;
 
             Physics.SyncTransforms();
+            selectedCourtyardPerson = null;
             if (Physics.Raycast(view.ScreenPointToRay(mouse), out var hit))
             {
                 if (world.TryGetSlot(hit.collider, out int index))
@@ -316,6 +326,7 @@ namespace Wuxia
                 }
                 if (!choosingBuilding && world.TryGetDisciple(hit.collider, out var disciple))
                 {
+                    selectedCourtyardPerson = hit.collider.transform.parent;
                     if (disciple.id == ProtagonistFigureId)
                         ShowProtagonist();
                     else
@@ -327,6 +338,7 @@ namespace Wuxia
             ui.CloseBuilding();
         }
 
+        private Transform selectedCourtyardPerson;
         private Material mountainSky;
 
         private void OnDestroy()
@@ -695,13 +707,13 @@ namespace Wuxia
             if (action.type == "recruit")
                 return CanUseAp(action) ? $"{action.name}　行動力 {action.apCost} 起" : $"{action.name}　行動力不足";
             int silver = action.cost.silver;
-            string resources = silver == 0 && action.cost.food == 0 ? "" : $"　{CostText(silver, action.cost.food)}";
+            string resources = silver == 0 && action.cost.food == 0 ? "" : $"\n{CostText(silver, action.cost.food)}";
             string reason = CanUseAp(action) ? "" : "（行動力不足）";
-            return $"{action.name}　行動力 {action.apCost}{resources}{reason}";
+            return $"{action.name}　行動力 {action.apCost}{reason}{resources}";
         }
 
         private static string CostText(int silver, int food) =>
-            food == 0 ? $"銀 {silver}" : $"銀 {silver}／糧 {food}";
+            food == 0 ? $"銀\u00A0{silver}" : $"銀\u00A0{silver}／糧\u00A0{food}";
 
         internal static string Changes(Yield effect)
         {

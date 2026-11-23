@@ -8,7 +8,7 @@ namespace Wuxia
 {
     public sealed class IntelPanel
     {
-        private const int ListWidth = 1480, ListHeight = 656, Columns = 2, Pitch = 746, CardHeight = 194;
+        private const int ListWidth = 1480, Columns = 2, Pitch = 746, CardHeight = 194, ListHeight = 3 * CardHeight;
         private readonly WorldMapData data;
         private readonly Action<MapFaction> focus;
         private readonly RectTransform root, rows;
@@ -93,7 +93,7 @@ namespace Wuxia
             }
             if (entries == 0)
                 MapUi.Text(rows, "目前沒有可查閱的情報。", 20, 10, 700, 52, 24, MapUi.Ink);
-            rows.sizeDelta = new Vector2(ListWidth, Mathf.Max(ListHeight, (entries + 1) / Columns * CardHeight));
+            rows.sizeDelta = new Vector2(ListWidth, Mathf.Max(ListHeight, (entries + Columns - 1) / Columns * CardHeight + 18));
             scroll.StopMovement();
             rows.anchoredPosition = Vector2.zero;
             scroll.verticalNormalizedPosition = 1;

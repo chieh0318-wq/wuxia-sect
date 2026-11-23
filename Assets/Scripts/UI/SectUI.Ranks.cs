@@ -13,9 +13,14 @@ namespace Wuxia
         {
             var close = ("關閉", (Action)(() => CloseModal()));
             ShowModal(name, new[] { title }, extra.HasValue ? new[] { extra.Value, close } : new[] { close });
-            Anchor(modalCard, new(.5f, .5f), new(.5f, .5f), new(-500, -390), new(500, 390));
+            Anchor(modalCard, new(.5f, .5f), new(.5f, .5f), new(-500, -460), new(500, 460));
+            var viewport = (RectTransform)modalList.parent;
+            Anchor(viewport, Vector2.zero, Vector2.one, new(32, 96), new(-48, -86));
+            characterDecoration = Rect("人物技能捲軸", modalCard);
+            Fill(characterDecoration);
+            AttachScrollbar(viewport, characterDecoration, Vector2.right, new(-40, 96), new(-26, -86));
             CharacterEquipment(portrait, gender, weapon, gear);
-            var profile = CreationRow("人物", 168);
+            var profile = CreationRow("人物", 151);
             var rank = RankSystem.Martial(lines, weaponDelta: weaponDelta);
             var rankLabel = Label(profile, "武學  " + RankSystem.Format(rank, RankSystem.Martial(lines, true)), 28);
             rankLabel.color = Color.Lerp(RankSystem.Color(rank), Ink, .35f);
@@ -39,7 +44,7 @@ namespace Wuxia
             var derived = stats ?? AttributeSystem.Derive(values, lines, weaponDelta);
             var summary = Label(profile, $"攻擊 {derived.Attack}　先手 {derived.Speed}　氣血 {derived.MaxHp}　內力 {derived.MaxQi}" +
                 $"　內功威力 {derived.QiPower}　閃避 {derived.Dodge:P0}　奇遇 {derived.Fortune:P0}", 20, TextAnchor.MiddleCenter);
-            Anchor(summary.rectTransform, Vector2.zero, Vector2.right, new(8, 4), new(-8, 46));
+            Anchor(summary.rectTransform, Vector2.zero, Vector2.right, new(8, 4), new(-8, 35));
             SkillColumns(lines);
         }
 

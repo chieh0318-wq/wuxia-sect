@@ -57,7 +57,15 @@ namespace Wuxia
             state.Protagonist.attrs = Enumerable.Repeat(characters.attrBase, AttributeSystem.Count).ToArray();
         }
 
-        internal void CaptureAppearance() => ChooseGender("男");
+        internal void CaptureAppearance()
+        {
+            var hero = state.Protagonist;
+            string gender = hero.gender == "女" ? "女" : "男";
+            hero.gender = gender;
+            if (string.IsNullOrWhiteSpace(hero.title)) hero.title = gender == "女" ? "大師姐" : "大師兄";
+            if (string.IsNullOrWhiteSpace(hero.name)) hero.name = SuggestedName();
+            ChooseAppearance();
+        }
         internal void CaptureFemaleAppearance() => ChooseGender("女");
         internal void CaptureSkipPrologue() => SkipStory();
         /// <summary>Capture: six offered talents with two picked, plus both skill families underneath.</summary>
@@ -159,14 +167,17 @@ namespace Wuxia
                 ChooseAppearance();
             });
             if (bgOptions.Length > 0)
-                ui.CreationGrid(3, (bgOptions.Length + 2) / 3, 158);
+            {
+                int columns = Mathf.Min(5, bgOptions.Length);
+                ui.CreationGrid(columns, (bgOptions.Length + columns - 1) / columns, 264);
+            }
             foreach (var option in bgOptions)
             {
                 ui.CreationChoice(option.name, option.desc, option.image, () =>
                 {
                     background = option;
                     ChooseAppearance();
-                }, picked: option == background, tags: Details(option));
+                }, picked: option == background, tags: Details(option), wideDescription: true);
             }
         }
 

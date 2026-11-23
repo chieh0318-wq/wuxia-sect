@@ -43,6 +43,10 @@ namespace Wuxia
         /// </summary>
         internal void CreationPortraitStrip(CharacterLook[] looks, CharacterLook selected, Action<CharacterLook> choose)
         {
+            characterDecoration = Rect("形貌與出身捲軸", modalCard);
+            Fill(characterDecoration);
+            AttachScrollbar((RectTransform)modalList.parent, characterDecoration, Vector2.right,
+                new(-422, 88), new(-410, -112));
             const int cols = 6;
             int rows = Mathf.Max(1, (looks.Length + cols - 1) / cols);
             const float cellH = 166f;
@@ -72,12 +76,14 @@ namespace Wuxia
                 caption.color = picked ? UiKit.HeaderGold : CardText;
                 Anchor(caption.rectTransform, Vector2.zero, Vector2.right, new(2, 2), new(-2, 30));
 
-                // Exact 3:4 portrait box (88 x 117) centered cleanly above caption
-                var art = Rect("Portrait", card);
-                Anchor(art, new(.5f, 1), new(.5f, 1), new(-44, -123), new(44, -6));
-                var tex = LookPortrait(current);
-                var raw = AddImage(art, tex);
-                FitCover(raw, tex, 88f / 117f);
+                var art = Rect("Standee preview", card);
+                Anchor(art, new(.5f, 1), new(.5f, 1), new(-52, -123), new(52, -6));
+                var tex = CharacterFactory.StandeeTexture(PortraitService.IdOrDefault(current.portrait, current.id), current.gender);
+                var figure = Rect("Full-body standee", art);
+                AddImage(figure, tex);
+                var fit = figure.gameObject.AddComponent<AspectRatioFitter>();
+                fit.aspectMode = AspectRatioFitter.AspectMode.FitInParent;
+                fit.aspectRatio = tex.width / (float)tex.height;
                 if (picked) Stamp(card, "選", 26);
             }
         }
@@ -147,7 +153,7 @@ namespace Wuxia
                 Anchor(c, new(0, .5f), new(0, .5f), new(14, -20), new(54, 20));
                 AddImage(c, coinTex);
             }
-            var ptsLbl = Label(ptsBox, $"先輩積分：{leftPoints} ／ {totalPoints}", 24, TextAnchor.MiddleLeft);
+            var ptsLbl = Label(ptsBox, $"剩餘 {leftPoints}／共 {totalPoints}", 24, TextAnchor.MiddleLeft);
             ptsLbl.color = UiKit.HeaderGold;
             ptsLbl.fontStyle = FontStyle.Bold;
             Anchor(ptsLbl.rectTransform, Vector2.zero, Vector2.one, new(64, 0), new(-12, 0));

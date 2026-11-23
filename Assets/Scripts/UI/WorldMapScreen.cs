@@ -21,6 +21,8 @@ namespace Wuxia
         private Text ap, status;
         private IntelPanel intel;
         private readonly List<(MapNode node, RectTransform plate, Text label, Vector2 point)> labels = new();
+        private readonly List<RectTransform> regionNames = new();
+        private RectTransform openedCard;
         private readonly List<(RectTransform marker, float size)> nodeMarkers = new();
         private readonly List<(RectTransform flag, Vector2 point, int seatOrder)> flags = new();
         private readonly List<Button> cardActions = new();
@@ -120,6 +122,7 @@ namespace Wuxia
                 Vector2 center = new(points.Average(point => point.x), points.Average(point => point.y));
                 var name = MapUi.Text(regions, region.Key, center.x - 90, center.y - 48, 180, 30, 20,
                     new Color(1, .95f, .82f, .62f), TextAnchor.MiddleCenter, "Names");
+                regionNames.Add(name.rectTransform);
                 var outline = name.gameObject.AddComponent<Outline>();
                 outline.effectColor = new Color(.10f, .08f, .05f, .55f);
                 outline.effectDistance = new Vector2(1, -1);
@@ -393,6 +396,19 @@ namespace Wuxia
                 flag.anchoredPosition = new Vector2(local.x,-local.y);
                 occupied.Add(bounds);
             }
+            Rect cardBounds = openedCard == null ? default :
+                new Rect(card.anchoredPosition.x - viewport.anchoredPosition.x,
+                    viewport.anchoredPosition.y - card.anchoredPosition.y, openedCard.rect.width, openedCard.rect.height);
+            bool IsVisible(Rect bounds) => bounds.xMin >= 3 && bounds.xMax <= ViewWidth - 3 &&
+                bounds.yMin >= 3 && bounds.yMax <= ViewHeight - 3 &&
+                (openedCard == null || !cardBounds.Overlaps(bounds));
+
+            foreach (var region in regionNames)
+            {
+                Vector2 topLeft = new(region.anchoredPosition.x, -region.anchoredPosition.y);
+                region.gameObject.SetActive(IsVisible(new Rect(topLeft * zoom + offset, region.sizeDelta * zoom)));
+            }
+
             foreach (var (node,plate,label,point) in labels.OrderBy(entry => entry.node.id == host?.PartyNode ? -1 : LabelPriority(entry.node)))
             {
                 plate.localScale = Vector3.one/zoom;
@@ -407,9 +423,8 @@ namespace Wuxia
                 if (LabelPriority(node) < 3 || seats.Contains(node.id) || zoom >= 1.7f || node.id == host?.PartyNode)
                     foreach (var position in candidates)
                     {
-                        var bounds = new Rect(marker+position,new Vector2(width,24));
-                        if (bounds.xMin < 0 || bounds.xMax > ViewWidth || bounds.yMin < 0 ||
-                            bounds.yMax > ViewHeight || occupied.Any(other => other.Overlaps(bounds))) continue;
+                        var bounds = new Rect(marker+position,new Vector2(width,30));
+                        if (!IsVisible(bounds) || occupied.Any(other => other.Overlaps(bounds))) continue;
                         Vector2 local = point + position/zoom;
                         plate.anchoredPosition = new Vector2(local.x,-local.y);
                         occupied.Add(bounds);
@@ -431,6 +446,8 @@ namespace Wuxia
         private void ClearCard()
         {
             MapUi.Clear(card);
+            openedCard = null;
+            LayoutLabels();
             cardActions.Clear();
             MapUi.Clear(routeLayer);
             focusMarker.gameObject.SetActive(false);
@@ -440,6 +457,8 @@ namespace Wuxia
         {
             ClearCard();
             var panel = MapUi.Kit(card,title,0,0,426,680,"Paper");
+            openedCard = panel;
+            LayoutLabels();
             MapUi.Text(panel,title,20,16,342,48,31,MapUi.Ink);
             MapUi.Text(panel,subtitle,20,66,382,32,19,MapUi.Red,TextAnchor.MiddleLeft,"Names");
             var divider = MapUi.Rect(panel,"Divider",20,100,386,8).gameObject.AddComponent<Image>();

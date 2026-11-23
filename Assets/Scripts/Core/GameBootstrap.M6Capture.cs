@@ -54,9 +54,11 @@ namespace Wuxia
             {
                 ui.CloseBuilding();
                 state.Apply(new Yield { silver = 120 });
-                state.GrantAp(8);
                 foreach (string id in new[] { "sword1", "sword2", "inner1", "craft1" })
+                {
+                    state.RefillAp();
                     state.Research(GameState.Tech(id));
+                }
                 if (!state.HasTech("sword2") || state.TechStatus(GameState.Tech("sword3")) != "[可研習]" ||
                     !state.TechStatus(GameState.Tech("outer2")).StartsWith("[需前置", StringComparison.Ordinal))
                     Debug.LogError("[Capture] M6 tech tree statuses are wrong.");

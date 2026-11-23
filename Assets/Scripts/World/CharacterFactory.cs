@@ -106,48 +106,80 @@ namespace Wuxia
             };
         }
 
-        public static GameObject Build(CharacterLook look) => CharacterModelFactory.Build(look);
+        private const float StandeeHeight = 1.85f;
+        private static readonly Dictionary<Texture2D, Sprite> standeeSprites = new();
+        private static readonly Dictionary<(string id, string gender), Texture2D> standeeTextures = new();
+        private static Sprite standeeShadow;
+        private static Dictionary<string, string> standeeFallbacks;
 
-        private const float StandeeWidth = 1.62f;
-        private const float StandeeHeight = StandeeWidth * 4 / 3;
-        private static readonly Dictionary<Texture2D, Sprite> standeePortraits = new();
-        private static Sprite standeeBacking, standeeShadow;
-
-        internal static Vector3 StandeeLabelOffset => Vector3.up * .18f +
-            CameraController.CourtyardRotation * (Vector3.up * (StandeeHeight + .18f));
-
-        internal static Transform BuildStandee(DiscipleData data, Transform parent, out Collider hit)
+        private static Dictionary<string, string> LoadStandeeFallbacks()
         {
-            var texture = PortraitService.Resolve(PortraitService.IdOrDefault(data.portrait, data.id), data.gender);
-            if (!standeePortraits.TryGetValue(texture, out var portrait))
+            var mapping = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            var source = Resources.Load<TextAsset>("Standees/fallbacks");
+            if (source == null) return mapping;
+            foreach (string line in source.text.Split('\n'))
             {
-                portrait = StandeeSprite(texture);
-                standeePortraits.Add(texture, portrait);
+                string[] fields = line.Trim().Split('\t');
+                if (fields.Length == 2)
+                    mapping[fields[0]] = fields[1];
             }
-            standeeBacking ??= StandeeSprite(Texture2D.whiteTexture);
+            return mapping;
+        }
+
+        internal static Vector3 StandeeLabelOffset =>
+            CameraController.CourtyardRotation * (Vector3.up * (StandeeHeight + .20f));
+
+        internal static Texture2D StandeeTexture(string id, string gender)
+        {
+            id = (PortraitService.StoryId(id, gender) ?? "").Trim().ToLowerInvariant();
+            int expression = id.IndexOf("__", StringComparison.Ordinal);
+            if (expression >= 0) id = id.Substring(0, expression);
+            var key = (id, gender);
+            if (standeeTextures.TryGetValue(key, out var texture)) return texture;
+
+            bool female = gender == "女" || id.StartsWith("hero_f") || id.StartsWith("npc_yf") ||
+                id.StartsWith("friend_f");
+            string sex = female ? "f" : "m";
+            string role = id == "hero" || id.StartsWith("hero_") ? "hero" : "ally";
+            standeeFallbacks ??= LoadStandeeFallbacks();
+            standeeFallbacks.TryGetValue(id, out string fallback);
+            texture = Resources.Load<Texture2D>("Standees/" + id) ??
+                (fallback == null ? null : Resources.Load<Texture2D>(fallback)) ??
+                Resources.Load<Texture2D>("Standees/hero_" + sex + "1") ??
+                Resources.Load<Texture2D>("Battle/" + role + "_" + sex);
+            standeeTextures.Add(key, texture);
+            return texture;
+        }
+
+        internal static Transform BuildStandee(DiscipleData data, Transform parent, out Collider hit,
+            Quaternion? rotation = null)
+        {
+            var texture = StandeeTexture(PortraitService.IdOrDefault(data.portrait, data.id), data.gender);
+            if (!standeeSprites.TryGetValue(texture, out var sprite))
+            {
+                sprite = StandeeSprite(texture);
+                standeeSprites.Add(texture, sprite);
+            }
             standeeShadow ??= CreateStandeeShadow();
 
-            var card = new GameObject("Ink-wash standee").transform;
-            card.SetParent(parent, false);
-            card.localPosition = Vector3.up * .18f;
-            card.rotation = CameraController.CourtyardRotation;
-            card.gameObject.AddComponent<UnityEngine.Rendering.SortingGroup>();
+            var body = new GameObject("Ink-wash standee").transform;
+            body.SetParent(parent, false);
+            body.localPosition = Vector3.up * .006f;
+            body.rotation = rotation ?? CameraController.CourtyardRotation;
+            body.gameObject.AddComponent<UnityEngine.Rendering.SortingGroup>();
 
-            float width = Mathf.Min(StandeeWidth, StandeeHeight * texture.width / texture.height);
-            float height = width * texture.height / texture.width;
+            float width = StandeeHeight * texture.width / texture.height;
             var center = Vector3.up * (StandeeHeight * .5f);
-            AddStandeeLayer(card, "Ink border", standeeBacking, center,
-                new(StandeeWidth + .08f, StandeeHeight + .08f), new(.19f, .15f, .12f), 0);
-            AddStandeeLayer(card, "Portrait", portrait, center, new(width, height), Color.white, 1);
+            AddStandeeLayer(body, "Figure", sprite, center, new(width, StandeeHeight), Color.white, 0);
 
-            var box = card.gameObject.AddComponent<BoxCollider>();
+            var box = body.gameObject.AddComponent<BoxCollider>();
             box.center = center;
-            box.size = new Vector3(StandeeWidth + .12f, StandeeHeight + .12f, .12f);
+            box.size = new Vector3(Mathf.Min(width, .95f), StandeeHeight, .12f);
             hit = box;
-            var shadow = AddStandeeLayer(parent, "Soft ground shadow", standeeShadow, Vector3.up * .16f,
-                new(2.05f, 1.28f), new(.15f, .11f, .08f, .62f), -1);
+            var shadow = AddStandeeLayer(parent, "Soft ground shadow", standeeShadow, Vector3.up * .004f,
+                new(.95f, .64f), new(.15f, .11f, .08f, .62f), -1);
             shadow.localRotation = Quaternion.Euler(90, 0, 0);
-            return card;
+            return body;
         }
 
         private static Sprite StandeeSprite(Texture2D texture) => Sprite.Create(texture,
@@ -283,7 +315,7 @@ namespace Wuxia
             }
         }
 
-        /// <summary>Simple primitive helper kept for the creation preview pedestal.</summary>
+        /// <summary>Primitive accessory helper for the legacy model factory.</summary>
         internal static GameObject Part(Transform parent, PrimitiveType shape, Vector3 position, Vector3 size, Color tint)
         {
             var part = GameObject.CreatePrimitive(shape);

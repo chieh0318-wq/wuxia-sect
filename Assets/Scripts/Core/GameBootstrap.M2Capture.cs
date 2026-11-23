@@ -66,43 +66,38 @@ namespace Wuxia
 
             var walkers = FindObjectsByType<DiscipleWalker>();
             foreach (var walker in walkers) walker.gameObject.SetActive(false);
-            var looks = new[]
-            {
-                CharacterFactory.ForStory("master"),
-                new CharacterLook { gender = "男", robeColor = "#536775", sashColor = "#754339", hairStyle = "topknot" },
-                new CharacterLook { gender = "女", hairStyle = "twinbuns",
-                    model = new CharacterModelSpec { style = "ruqun", robe = "#8D817B", robe2 = "#61766D", sash = "#725458" } },
-                CharacterFactory.ForStory("warlord")
-            };
-            var figures = new GameObject[looks.Length];
-            for (int i = 0; i < looks.Length; i++)
-            {
-                figures[i] = CharacterFactory.Build(looks[i]);
-                figures[i].transform.SetPositionAndRotation(new Vector3((i - 1.5f) * 1.03f, 0, -8.65f),
-                    Quaternion.Euler(0, (1.5f - i) * 18, 0));
-            }
             view.transform.position = new Vector3(0, 1.57f, -5.61f);
             view.transform.LookAt(new Vector3(0, .94f, -8.65f));
             view.fieldOfView = 42;
-            var bounce = new GameObject("Capture fill").AddComponent<Light>();
-            bounce.type = LightType.Directional;
-            bounce.color = new Color(1f, .96f, .90f);
-            bounce.intensity = .85f;
-            bounce.transform.rotation = Quaternion.Euler(21, 158, 0);
+            var hero = state.Protagonist;
+            var people = new[] {
+                new DiscipleData { id = ProtagonistFigureId, portrait = hero.portrait ?? hero.lookId ?? (hero.gender == "女" ? "hero_f1" : "hero_m1"),
+                    gender = hero.gender },
+                new DiscipleData { id = "lin", gender = "男" },
+                new DiscipleData { id = "xu", gender = "女" },
+                new DiscipleData { id = "master", gender = "男" }
+            };
+            var figures = new GameObject[people.Length];
+            for (int i = 0; i < people.Length; i++)
+            {
+                figures[i] = new GameObject("Close-up standee");
+                figures[i].transform.position = world.Grounded(new Vector3((i - 1.5f) * 1.03f, 0, -8.65f));
+                CharacterFactory.BuildStandee(people[i], figures[i].transform, out _, view.transform.rotation);
+            }
             yield return null;
             capture("23_characters_closeup.png");
             foreach (var figure in figures) Destroy(figure);
-            Destroy(bounce.gameObject);
 
             // Use the same fixed angle as gameplay, with the walkers passing through the frame.
-            controls.Frame(new Vector2(0, -9.9f), 9.4f);
+            controls.Frame(new Vector2(0, -11.4f), 11f);
             view.fieldOfView = 45;
             for (int i = 0; i < walkers.Length; i++)
             {
                 var walker = walkers[i];
                 walker.gameObject.SetActive(true);
-                Vector3 start = new Vector3((i % 4 - 1.5f) * 2.25f, 0, -12.5f + i / 4 * 3.4f);
-                walker.WalkForCapture(start, start + new Vector3(.65f, 0, 3f));
+                Vector3 start = new Vector3((i % 4 - 1.5f) * 2.45f + .3f, 0, -15.3f + i / 4 * 1.45f);
+                float direction = i / 4 % 2 == 0 ? 1 : -1;
+                walker.WalkForCapture(start, start + Vector3.right * direction * 2);
             }
             yield return new WaitForSecondsRealtime(.35f);
             ui.Canvas.enabled = true;

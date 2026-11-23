@@ -20,10 +20,10 @@ namespace Wuxia
     {
         private void CharacterEquipment(string portrait, string gender, string weapon, string[] gear = null)
         {
-            var row = CreationRow("裝備", 364);
+            var row = CreationRow("裝備", 312);
             var frame = Rect("肖像裱框", row);
-            // Exact 3:4 portrait frame (264 x 352) — eliminates squishing & dark letterboxing
-            Anchor(frame, new(.5f, .5f), new(.5f, .5f), new(-132, -176), new(132, 176));
+            // Exact 3:4 portrait frame (228 x 304) — eliminates squishing & dark letterboxing
+            Anchor(frame, new(.5f, .5f), new(.5f, .5f), new(-114, -152), new(114, 152));
             var backing = frame.gameObject.AddComponent<Image>();
             backing.color = UiKit.AntiqueGold;
             backing.raycastTarget = false;
@@ -33,7 +33,7 @@ namespace Wuxia
             Fill(art);
             var texture = PortraitService.Resolve(portrait, gender);
             var raw = AddImage(art, texture);
-            FitCover(raw, texture, 256f / 344f);
+            FitCover(raw, texture, 220f / 296f);
 
             string weaponName = RankSystem.Catalog.breakthroughs?.FirstOrDefault(
                 entry => entry.id == weapon && entry.type == "weapon")?.name ?? weapon;
@@ -47,12 +47,12 @@ namespace Wuxia
 
             void Slot(string label, string item, bool right, int index)
             {
-                float top = -10 - 116 * index;
+                float top = -8 - 99 * index;
                 var slot = Rect(label, row);
                 if (right)
-                    Anchor(slot, new(.5f, 1), Vector2.one, new(151, top - 104), new(-18, top));
+                    Anchor(slot, new(.5f, 1), Vector2.one, new(134, top - 94), new(-18, top));
                 else
-                    Anchor(slot, Vector2.up, new(.5f, 1), new(18, top - 104), new(-151, top));
+                    Anchor(slot, Vector2.up, new(.5f, 1), new(18, top - 94), new(-134, top));
                 UiKit.Skin(slot.gameObject.AddComponent<Image>(), "Wood");
                 var slotTex = UiKit.Icon(UiKit.SlotIcon(label));
                 if (slotTex != null)
@@ -68,7 +68,7 @@ namespace Wuxia
                 var value = Label(slot, string.IsNullOrEmpty(item) ? "未裝備" : item, 20, slotTex != null ? TextAnchor.MiddleLeft : TextAnchor.MiddleCenter);
                 value.color = string.IsNullOrEmpty(item) ? new Color(.86f, .76f, .61f) : new Color(.99f, .86f, .52f);
                 value.resizeTextMinSize = 18;
-                Anchor(value.rectTransform, Vector2.zero, Vector2.right, new(textLeft, 10), new(-12, 58));
+                Anchor(value.rectTransform, Vector2.zero, Vector2.right, new(textLeft, 10), new(-12, 49));
             }
         }
 

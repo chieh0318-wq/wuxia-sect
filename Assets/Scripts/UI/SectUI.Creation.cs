@@ -76,6 +76,8 @@ namespace Wuxia
             appearanceInput = null;
             var modalScroll = modalList.parent.GetComponent<ScrollRect>();
             modalScroll.verticalScrollbar = null;
+            modalScroll.StopMovement();
+            modalList.anchoredPosition = Vector2.zero;
             foreach (var decoration in new[] { creationBackdrop, creationPlaque, creationSummary, characterDecoration })
             {
                 if (decoration == null) continue;
@@ -360,7 +362,7 @@ namespace Wuxia
         }
 
         internal void CreationChoice(string label, string description, string image, Action run,
-            string rarity = null, bool picked = false, int? cost = null, bool banner = false, string tags = null)
+            string rarity = null, bool picked = false, int? cost = null, bool banner = false, string tags = null, bool wideDescription = false)
         {
             var item = Button(creationGrid == null ? modalList : creationGrid, label, run);
             item.GetComponent<Button>().interactable = run != null;
@@ -377,7 +379,7 @@ namespace Wuxia
                 _ => new Color(.93f, .92f, .87f)
             };
             bool hasBanner = art != null && banner;
-            int left = art == null || hasBanner ? 16 : creationGrid == null ? 200 : 196;
+            int left = art == null || hasBanner ? 16 : wideDescription ? 90 : creationGrid == null ? 200 : 196;
             int top = hasBanner ? 198 : 0;
             caption.alignment = TextAnchor.MiddleLeft;
             caption.resizeTextMinSize = 20;
@@ -416,20 +418,28 @@ namespace Wuxia
                 glow.effectDistance = new Vector2(2, 2);
             }
             var body = Label(item, description ?? "", 20);
+            if (wideDescription)
+            {
+                body.alignment = TextAnchor.UpperLeft;
+                body.horizontalOverflow = HorizontalWrapMode.Wrap;
+                body.verticalOverflow = VerticalWrapMode.Truncate;
+            }
             body.color = new Color(.96f, .89f, .75f);
             body.resizeTextForBestFit = false;
-            Anchor(body.rectTransform, Vector2.zero, Vector2.one, new(left, string.IsNullOrEmpty(tags) ? 8 : 42), new(-16, -46 - top));
+            int tagTop = wideDescription ? 80 : 38;
+            Anchor(body.rectTransform, Vector2.zero, Vector2.one, new(left, string.IsNullOrEmpty(tags) ? 8 : tagTop + 4),
+                new(-16, -46 - top));
             if (!string.IsNullOrEmpty(tags))
             {
                 var strip = Rect("Effect tags", item);
-                Anchor(strip, Vector2.zero, Vector2.right, new(left - 4, 8), new(-12, 38));
+                Anchor(strip, Vector2.zero, Vector2.right, new(left - 4, 8), new(-12, tagTop));
                 var wash = strip.gameObject.AddComponent<Image>();
                 wash.color = new Color(.05f, .04f, .03f, .38f);
                 wash.raycastTarget = false;
-                var chips = Label(strip, tags, 18, TextAnchor.MiddleLeft);
+                var chips = Label(strip, tags, 18, wideDescription ? TextAnchor.UpperLeft : TextAnchor.MiddleLeft);
                 chips.color = new Color(.99f, .80f, .45f);
                 chips.verticalOverflow = VerticalWrapMode.Overflow;
-                chips.horizontalOverflow = HorizontalWrapMode.Overflow;
+                chips.horizontalOverflow = wideDescription ? HorizontalWrapMode.Wrap : HorizontalWrapMode.Overflow;
                 chips.resizeTextForBestFit = false;
                 Anchor(chips.rectTransform, Vector2.zero, Vector2.one, new(8, 0), new(-6, 0));
                 var clip = strip.gameObject.AddComponent<RectMask2D>();

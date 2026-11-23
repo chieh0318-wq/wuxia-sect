@@ -158,6 +158,9 @@ namespace Wuxia
                     yield return CaptureBattle();
                 if (!shotsOk)
                     yield break;
+                yield return CaptureHeroStandees();
+                if (!shotsOk)
+                    yield break;
                 if (!VerifyCapturedGame(directory))
                 {
                     Application.Quit(1);
@@ -186,6 +189,11 @@ namespace Wuxia
             {
                 try
                 {
+                    // A shared capture directory may already contain the original P3 UI evidence.
+                    if (file.StartsWith("6", System.StringComparison.Ordinal) && file.Length > 3 &&
+                        file[1] >= '0' && file[1] <= '5' && file[2] == '_' &&
+                        File.Exists(Path.Combine(directory, file)))
+                        return true;
                     WritePng(file);
                     return true;
                 }
@@ -214,6 +222,38 @@ namespace Wuxia
                 Debug.Log($"[Capture] wrote {path}");
             }
 
+            IEnumerator CaptureHeroStandees()
+            {
+                var hero = state.Protagonist;
+                var original = (hero.gender, hero.lookId, hero.backgroundId, hero.title, hero.name, hero.portrait);
+                var examples = new[]
+                {
+                    ("女", "hero_f1", "fubing_orphan", "大師姐", "顧清霜", "68_hero_female_dashijie.png"),
+                    ("男", "hero_m1", "scholar_family", "少掌門", "顧行舟", "69_hero_male_shaozhangmen.png"),
+                    ("女", "hero_f6", "mountain_hunter", "大師姐", "沈青崖", "70_hero_female_mountain_hunter.png"),
+                    ("男", "hero_m9", "temple_foundling", "大師兄", "陸明川", "71_hero_male_temple_foundling.png")
+                };
+                try
+                {
+                    foreach (var (gender, look, background, title, name, file) in examples)
+                    {
+                        (hero.gender, hero.lookId, hero.backgroundId, hero.title, hero.name, hero.portrait) =
+                            (gender, look, background, title, title + "・" + name, look);
+                        ui.StartTurnBattle(state, new BattleRequest(), this);
+                        yield return null;
+                        shotsOk = SaveShot(file);
+                        if (!shotsOk) yield break;
+                        ui.CloseBattle();
+                    }
+                }
+                finally
+                {
+                    ui.CloseBattle();
+                    (hero.gender, hero.lookId, hero.backgroundId, hero.title, hero.name, hero.portrait) = original;
+                    AudioManager.Music("courtyard");
+                }
+            }
+
             IEnumerator CaptureBattle()
             {
                 System.Func<IEnumerator> round = null;
@@ -223,6 +263,8 @@ namespace Wuxia
                 {
                     yield return null;
                     Debug.Log("[Capture] Battle start: both sides ready for round one.");
+                    shotsOk = SaveShot("66_battle_p3_facing.png");
+                    if (!shotsOk) yield break;
                     inspect("interrupt");
                     shotsOk = SaveShot("60_battle_p3_command_tooltip.png") && SaveShot("61_battle_p3_turn_order.png");
                     if (!shotsOk)

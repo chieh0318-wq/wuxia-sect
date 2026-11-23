@@ -82,7 +82,9 @@ namespace Wuxia
             {
                 figures[i] = new GameObject("Close-up standee");
                 figures[i].transform.position = world.Grounded(new Vector3((i - 1.5f) * 1.03f, 0, -8.65f));
-                CharacterFactory.BuildStandee(people[i], figures[i].transform, out _, view.transform.rotation);
+                CharacterFactory.BuildStandee(people[i], figures[i].transform, out _, view.transform.rotation,
+                    i == 0 ? CharacterFactory.HeroStandee(hero.gender, hero.lookId ?? hero.portrait,
+                        hero.backgroundId, hero.title) : null);
             }
             yield return null;
             capture("23_characters_closeup.png");
@@ -91,6 +93,7 @@ namespace Wuxia
             // Use the same fixed angle as gameplay, with the walkers passing through the frame.
             controls.Frame(new Vector2(0, -11.4f), 11f);
             view.fieldOfView = 45;
+            var starts = new Vector3[walkers.Length];
             for (int i = 0; i < walkers.Length; i++)
             {
                 var walker = walkers[i];
@@ -98,10 +101,20 @@ namespace Wuxia
                 Vector3 start = new Vector3((i % 4 - 1.5f) * 2.45f + .3f, 0, -15.3f + i / 4 * 1.45f);
                 float direction = i / 4 % 2 == 0 ? 1 : -1;
                 walker.WalkForCapture(start, start + Vector3.right * direction * 2);
+                starts[i] = walker.transform.position;
             }
             yield return new WaitForSecondsRealtime(.35f);
             ui.Canvas.enabled = true;
             capture("25_courtyard_people.png");
+            int left = 0, right = 0;
+            for (int i = 0; i < walkers.Length; i++)
+            {
+                float screenX = Vector3.Dot(walkers[i].transform.position - starts[i], view.transform.right);
+                if (screenX < -.05f) left++;
+                if (screenX > .05f) right++;
+            }
+            Debug.Log($"[Capture] Courtyard travel: left={left}, right={right}.");
+            capture("67_courtyard_walk_facing.png");
         }
     }
 }

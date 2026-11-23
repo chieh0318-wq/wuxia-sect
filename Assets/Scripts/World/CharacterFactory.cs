@@ -156,7 +156,7 @@ namespace Wuxia
         // in their source textures. All other art is frontal or reads right.
         private static readonly HashSet<string> leftFacing = new()
         {
-            "enemy_assassin", "enemy_axe", "enemy_scout", "enemy_boss",
+            "enemy_assassin", "enemy_axe", "enemy_scout", "leader_heisong",
             "hero_f10", "hero_f3", "hero_f5", "hero_f6", "hero_f8", "hero_m1",
             "hero_m4", "hero_m5", "hero_m9", "lin", "npc_af01", "npc_af02", "npc_af05",
             "npc_am02", "npc_am04", "npc_am06", "npc_am08", "npc_ef03", "npc_em01",

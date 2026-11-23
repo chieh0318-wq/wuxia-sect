@@ -94,7 +94,6 @@ namespace Wuxia
             if (controls != null) controls.enabled = false;
             ui.StartTurnBattle(state, new BattleRequest
             {
-                title = "山門演武・實戰試煉",
                 enemyLeadName = "黑風山賊頭目",
                 enemyCount = 3,
                 difficulty = 0.95f,
@@ -118,21 +117,15 @@ namespace Wuxia
             }, this);
         }
 
-        private void StartMapAssaultBattle(string nodeId, string factionName, int garrison, float guard, System.Action<bool> done)
+        private void StartMapAssaultBattle(BattleRequest encounter, System.Action<bool> done)
         {
             if (state == null || ui.BattleOpen) return;
-            ui.StartTurnBattle(state, new BattleRequest
+            encounter.onComplete = won =>
             {
-                title = $"攻討 {factionName}",
-                enemyLeadName = factionName + "頭目",
-                enemyCount = garrison >= 45 ? 4 : 3,
-                difficulty = Mathf.Clamp(guard + 0.15f, 0.8f, 1.4f),
-                onComplete = won =>
-                {
-                    done?.Invoke(won);
-                    ui.Refresh(state);
-                }
-            }, this);
+                done?.Invoke(won);
+                ui.Refresh(state);
+            };
+            ui.StartTurnBattle(state, encounter, this);
         }
     }
 }

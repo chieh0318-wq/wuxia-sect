@@ -108,7 +108,7 @@ namespace Wuxia
 
         private const float StandeeHeight = 1.85f;
         private static readonly Dictionary<Texture2D, Sprite> standeeSprites = new();
-        private static readonly Dictionary<(string id, string gender), Texture2D> standeeTextures = new();
+        private static readonly Dictionary<(string id, string gender, bool portraitFallback), Texture2D> standeeTextures = new();
         private static Sprite standeeShadow;
         private static Dictionary<string, string> standeeFallbacks;
 
@@ -129,12 +129,12 @@ namespace Wuxia
         internal static Vector3 StandeeLabelOffset =>
             CameraController.CourtyardRotation * (Vector3.up * (StandeeHeight + .20f));
 
-        internal static Texture2D StandeeTexture(string id, string gender)
+        internal static Texture2D StandeeTexture(string id, string gender, bool portraitFallback = false)
         {
             id = (PortraitService.StoryId(id, gender) ?? "").Trim().ToLowerInvariant();
             int expression = id.IndexOf("__", StringComparison.Ordinal);
             if (expression >= 0) id = id.Substring(0, expression);
-            var key = (id, gender);
+            var key = (id, gender, portraitFallback);
             if (standeeTextures.TryGetValue(key, out var texture)) return texture;
 
             bool female = gender == "女" || id.StartsWith("hero_f") || id.StartsWith("npc_yf") ||
@@ -145,7 +145,7 @@ namespace Wuxia
             standeeFallbacks.TryGetValue(id, out string fallback);
             texture = Resources.Load<Texture2D>("Standees/" + id) ??
                 (fallback == null ? null : Resources.Load<Texture2D>(fallback)) ??
-                Resources.Load<Texture2D>("Standees/hero_" + sex + "1") ??
+                (portraitFallback ? PortraitService.Resolve(id, gender) : Resources.Load<Texture2D>("Standees/hero_" + sex + "1")) ??
                 Resources.Load<Texture2D>("Battle/" + role + "_" + sex);
             standeeTextures.Add(key, texture);
             return texture;

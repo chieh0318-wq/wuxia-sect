@@ -7,119 +7,28 @@ using UnityEngine.UI;
 
 namespace Wuxia
 {
-    internal sealed class BattleUnit
-    {
-        public string name, spriteId, portraitId, gender;
-        public bool isPlayer;
-        public int level, hp, maxHp, qi, maxQi, attack, speed;
-        public float dodge;
-        public bool defending;
-        public bool Alive => hp > 0;
-        public RectTransform root;
-        public RawImage spriteImage;
-        public Image hpFill;
-        public Text hpText;
-        public Image targetRing;
-        public Vector2 basePos;
-    }
-
-    internal sealed class BattleRequest
-    {
-        public string title = "山寨伏擊";
-        public string enemyLeadName = "山賊頭目";
-        public int enemyCount = 3;
-        public float difficulty = 1.0f;
-        public Action<bool> onComplete;
-    }
-
     public sealed partial class SectUI
     {
+        private sealed class BattleUnitView
+        {
+            public RectTransform Root;
+            public RawImage Art;
+            public Image HpFill;
+            public Text HpText, TargetArrow;
+            public Vector2 StandingPosition;
+        }
+
         private RectTransform battleScreen;
         internal bool BattleOpen => battleScreen != null;
 
         internal void StartTurnBattle(GameState state, BattleRequest req, MonoBehaviour runner,
-            Action<IEnumerator> captureRound = null)
+            Action<Func<IEnumerator>> captureRound = null)
         {
             CloseBattle();
-            AudioManager.Music("battle");
+            AudioManager.Music(req.MusicCue);
 
-            var stats = state.HeroStats;
-            var players = new List<BattleUnit>
-            {
-                new()
-                {
-                    name = state.Protagonist.name,
-                    spriteId = state.Protagonist.gender == "女" ? "hero_f" : "hero_m",
-                    portraitId = state.Protagonist.portrait ?? state.Protagonist.lookId,
-                    gender = state.Protagonist.gender,
-                    isPlayer = true,
-                    level = 10 + state.Year * 2 + state.TechCount,
-                    hp = stats.MaxHp, maxHp = stats.MaxHp,
-                    qi = stats.MaxQi, maxQi = stats.MaxQi,
-                    attack = Math.Max(28, stats.Attack),
-                    speed = Math.Max(15, stats.Speed),
-                    dodge = stats.Dodge
-                }
-            };
-            // Bring up to 2 disciples into the party
-            var allies = (state.Disciples ?? new List<DiscipleData>()).Take(2).ToArray();
-            for (int i = 0; i < allies.Length; i++)
-            {
-                var d = allies[i];
-                int dHp = Mathf.RoundToInt(stats.MaxHp * 0.72f);
-                int dQi = Mathf.RoundToInt(stats.MaxQi * 0.7f);
-                players.Add(new BattleUnit
-                {
-                    name = d.name,
-                    spriteId = d.gender == "女" ? "ally_f" : "ally_m",
-                    portraitId = d.portrait,
-                    gender = d.gender,
-                    isPlayer = true,
-                    level = 8 + state.Year,
-                    hp = dHp, maxHp = dHp, qi = dQi, maxQi = dQi,
-                    attack = Math.Max(22, Mathf.RoundToInt(stats.Attack * 0.75f)),
-                    speed = Math.Max(12, stats.Speed - 2),
-                    dodge = 0.08f
-                });
-            }
-
-            // Build enemy squad
-            var enemies = new List<BattleUnit>();
-            float diff = Mathf.Clamp(req.difficulty, 0.7f, 1.8f);
-            int bossHp = Mathf.RoundToInt(stats.MaxHp * 1.15f * diff);
-            enemies.Add(new BattleUnit
-            {
-                name = req.enemyLeadName,
-                spriteId = "enemy_boss",
-                portraitId = "npc_am01",
-                gender = "男",
-                isPlayer = false,
-                level = 10 + Mathf.RoundToInt(diff * 5),
-                hp = bossHp, maxHp = bossHp, qi = 100, maxQi = 100,
-                attack = Mathf.RoundToInt(stats.Attack * 0.72f * diff),
-                speed = Math.Max(10, stats.Speed - 3),
-                dodge = 0.05f
-            });
-            string[] minionSprites = { "enemy_scout", "enemy_axe", "enemy_assassin" };
-            string[] minionNames = { "山賊斥候", "山寨悍匪", "黑衣刺客" };
-            int count = Mathf.Clamp(req.enemyCount, 2, 4);
-            for (int i = 1; i < count; i++)
-            {
-                int mHp = Mathf.RoundToInt(stats.MaxHp * 0.58f * diff);
-                enemies.Add(new BattleUnit
-                {
-                    name = minionNames[(i - 1) % minionNames.Length],
-                    spriteId = minionSprites[(i - 1) % minionSprites.Length],
-                    portraitId = "npc_am02",
-                    gender = "男",
-                    isPlayer = false,
-                    level = 8 + Mathf.RoundToInt(diff * 4),
-                    hp = mHp, maxHp = mHp, qi = 60, maxQi = 60,
-                    attack = Mathf.RoundToInt(stats.Attack * 0.52f * diff),
-                    speed = Math.Max(10, stats.Speed - 4 + i),
-                    dodge = 0.06f
-                });
-            }
+            var (players, enemies) = BattleSetup.Create(state, req);
+            var views = new Dictionary<BattleCombatant, BattleUnitView>();
 
             battleScreen = Panel("TurnBattle", canvas, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero);
             battleScreen.GetComponent<Image>().color = Color.black;
@@ -132,9 +41,9 @@ namespace Wuxia
 
             // ── TOP HUD: Left Player Lead | Center Round Medallion | Right Enemy Lead ──
             var lead = players[0];
-            var boss = enemies[0];
+            var enemyLead = enemies[0];
             (Image pHp, Text pHpTxt, Image pQi, Text pQiTxt) = BuildLeadHud(battleScreen, lead, false);
-            (Image eHp, Text eHpTxt, Image eQi, Text eQiTxt) = BuildLeadHud(battleScreen, boss, true);
+            (Image eHp, Text eHpTxt, Image eQi, Text eQiTxt) = BuildLeadHud(battleScreen, enemyLead, true, req.IsBoss);
 
             var roundBadge = Panel("RoundBadge", battleScreen, new(.5f, 1), new(.5f, 1), new(-120, -78), new(120, -12), false);
             UiKit.Skin(roundBadge.GetComponent<Image>(), "Jade");
@@ -147,35 +56,55 @@ namespace Wuxia
             var stage = Rect("Stage", battleScreen);
             Anchor(stage, Vector2.zero, Vector2.one, new(0, 140), new(0, -110));
 
+            bool busy = false;
             int targetIdx = 0;
-            Vector2[] pPositions = { new(-340, -55), new(-520, -12), new(-660, 48) };
+            Vector2[] pPositions = { new(-270, -54), new(-490, 18), new(-710, -38) };
             for (int i = 0; i < players.Count; i++)
-                SpawnBattleSprite(stage, players[i], pPositions[i % pPositions.Length], null);
+                views.Add(players[i], SpawnBattleSprite(stage, players[i], pPositions[i], null));
 
-            Vector2[] ePositions = { new(430, 12), new(260, -58), new(210, 42), new(610, -45) };
+            Vector2[] ePositions = { new(175, -50), new(390, 25), new(605, -42), new(820, 35) };
             for (int i = 0; i < enemies.Count; i++)
             {
                 int idx = i;
-                SpawnBattleSprite(stage, enemies[i], ePositions[i % ePositions.Length], () =>
+                views.Add(enemies[i], SpawnBattleSprite(stage, enemies[i], ePositions[i], () =>
                 {
-                    if (!enemies[idx].Alive) return;
+                    if (busy || !enemies[idx].Alive) return;
                     targetIdx = idx;
-                    RefreshTargetRings();
-                });
+                    RefreshTargetArrows();
+                }));
             }
 
-            // ── LEFT VERTICAL TOOLBAR (背包 / x2加速 / 自動) ──
-            bool fastMode = false, autoMode = false, busy = false;
-            string selectedAction = "attack";
-            int roundNum = 1;
-            var actButtons = new Dictionary<string, (RectTransform rt, Outline ol)>();
             var logLines = new List<string>
             {
                 $"【系統】遭遇 {req.enemyLeadName} 一夥！請點擊下方指令出招。",
                 $"【系統】點擊右側敵人可切換集火目標。"
             };
-            Text logText = null;
 
+            // ── BOTTOM-LEFT COMBAT LOG ──
+            var logBox = Panel("CombatLog", battleScreen, Vector2.zero, Vector2.zero, new(20, 18), new(540, 152));
+            UiKit.Skin(logBox.GetComponent<Image>(), "Lacquer");
+            var viewport = Rect("Viewport", logBox);
+            Fill(viewport, 12);
+            viewport.gameObject.AddComponent<RectMask2D>();
+            var logText = Label(viewport, "", 18, TextAnchor.UpperLeft);
+            Anchor(logText.rectTransform, Vector2.up, Vector2.one, Vector2.zero, Vector2.zero);
+            logText.rectTransform.pivot = new(.5f, 1);
+            var scroll = logBox.gameObject.AddComponent<ScrollRect>();
+            scroll.viewport = viewport;
+            scroll.content = logText.rectTransform;
+            scroll.horizontal = false;
+            scroll.movementType = ScrollRect.MovementType.Clamped;
+            scroll.inertia = false;
+            logText.color = CardText;
+            logText.horizontalOverflow = HorizontalWrapMode.Wrap;
+            logText.resizeTextForBestFit = false;
+            UpdateLog();
+
+            // ── LEFT VERTICAL TOOLBAR (背包 / x2加速 / 自動) ──
+            bool fastMode = false, autoMode = false;
+            string selectedAction = "attack";
+            int roundNum = 1;
+            var actButtons = new Dictionary<string, (RectTransform rt, Outline ol)>();
             var sideBar = Panel("SideTools", battleScreen, new(0, .5f), new(0, .5f), new(20, -135), new(106, 135), false);
             UiKit.Skin(sideBar.GetComponent<Image>(), "Lacquer");
             var sideV = sideBar.gameObject.AddComponent<VerticalLayoutGroup>();
@@ -204,15 +133,6 @@ namespace Wuxia
                 if (autoMode && !busy) runner.StartCoroutine(ExecuteRound());
             });
             UiKit.Skin(autoBtn.GetComponent<Image>(), "Wood");
-
-            // ── BOTTOM-LEFT COMBAT LOG ──
-            var logBox = Panel("CombatLog", battleScreen, Vector2.zero, Vector2.zero, new(20, 18), new(540, 152), false);
-            UiKit.Skin(logBox.GetComponent<Image>(), "Lacquer");
-            logText = Label(logBox, string.Join("\n", logLines), 18, TextAnchor.UpperLeft);
-            logText.color = CardText;
-            logText.horizontalOverflow = HorizontalWrapMode.Wrap;
-            logText.resizeTextForBestFit = false;
-            Fill(logText.rectTransform, 12);
 
             // ── BOTTOM-CENTER 5 CIRCULAR ICON BUTTONS + GOLDEN EXECUTE BUTTON ──
             var actionDefs = new[]
@@ -281,15 +201,23 @@ namespace Wuxia
             Anchor(fleeBtn, Vector2.one, Vector2.one, new(-124, -148), new(-20, -104));
             UiKit.Skin(fleeBtn.GetComponent<Image>(), "Wood");
 
-            RefreshTargetRings();
+            RefreshTargetArrows();
             RefreshLeadHuds();
-            captureRound?.Invoke(ExecuteRound());
+            captureRound?.Invoke(ExecuteRound);
 
             void PushLog(string line)
             {
                 logLines.Add(line);
-                if (logLines.Count > 5) logLines.RemoveAt(0);
-                if (logText != null) logText.text = string.Join("\n", logLines);
+                if (logLines.Count > 40) logLines.RemoveAt(0);
+                UpdateLog();
+            }
+
+            void UpdateLog()
+            {
+                logText.text = string.Join("\n", logLines);
+                logText.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, logText.preferredHeight + 4);
+                scroll.StopMovement();
+                scroll.verticalNormalizedPosition = 0;
             }
 
             void RefreshActionButtons()
@@ -302,13 +230,12 @@ namespace Wuxia
                 }
             }
 
-            void RefreshTargetRings()
+            void RefreshTargetArrows()
             {
                 if (targetIdx < 0 || targetIdx >= enemies.Count || !enemies[targetIdx].Alive)
                     targetIdx = enemies.FindIndex(e => e.Alive);
                 for (int i = 0; i < enemies.Count; i++)
-                    if (enemies[i].targetRing != null)
-                        enemies[i].targetRing.enabled = i == targetIdx && enemies[i].Alive;
+                    views[enemies[i]].TargetArrow.enabled = i == targetIdx && enemies[i].Alive;
             }
 
             void RefreshLeadHuds()
@@ -317,22 +244,23 @@ namespace Wuxia
                 pHpTxt.text = $"{Math.Max(0, lead.hp)}/{lead.maxHp}";
                 pQi.fillAmount = Mathf.Clamp01(lead.qi / (float)Math.Max(1, lead.maxQi));
                 pQiTxt.text = $"{Math.Max(0, lead.qi)}/{lead.maxQi}";
-                eHp.fillAmount = Mathf.Clamp01(boss.hp / (float)Math.Max(1, boss.maxHp));
-                eHpTxt.text = $"{Math.Max(0, boss.hp)}/{boss.maxHp}";
-                eQi.fillAmount = Mathf.Clamp01(boss.qi / (float)Math.Max(1, boss.maxQi));
-                eQiTxt.text = $"{Math.Max(0, boss.qi)}/{boss.maxQi}";
+                eHp.fillAmount = Mathf.Clamp01(enemyLead.hp / (float)Math.Max(1, enemyLead.maxHp));
+                eHpTxt.text = $"{Math.Max(0, enemyLead.hp)}/{enemyLead.maxHp}";
+                eQi.fillAmount = Mathf.Clamp01(enemyLead.qi / (float)Math.Max(1, enemyLead.maxQi));
+                eQiTxt.text = $"{Math.Max(0, enemyLead.qi)}/{enemyLead.maxQi}";
                 foreach (var u in players.Concat(enemies))
                 {
-                    if (u.hpFill != null) u.hpFill.fillAmount = Mathf.Clamp01(u.hp / (float)Math.Max(1, u.maxHp));
-                    if (u.hpText != null) u.hpText.text = $"{u.name} ({Math.Max(0, u.hp)})";
-                    if (u.spriteImage != null) u.spriteImage.color = u.Alive ? Color.white : new Color(.4f, .4f, .4f, .25f);
+                    var unitView = views[u];
+                    unitView.HpFill.fillAmount = (float)u.hp / u.maxHp;
+                    unitView.HpText.text = $"{u.name}  {u.hp}/{u.maxHp}";
+                    unitView.Art.color = u.Alive ? Color.white : new Color(.4f, .4f, .4f, .25f);
                 }
             }
 
-            void ShowFloatText(BattleUnit u, string msg, Color color)
+            void ShowFloatText(BattleCombatant u, string msg, Color color)
             {
-                if (u?.root == null) return;
-                var ft = Label(u.root, msg, 30, TextAnchor.MiddleCenter);
+                if (u == null || views[u].Root == null) return;
+                var ft = Label(views[u].Root, msg, 30, TextAnchor.MiddleCenter);
                 ft.color = color;
                 ft.fontStyle = FontStyle.Bold;
                 var sh = ft.gameObject.AddComponent<Shadow>();
@@ -355,15 +283,17 @@ namespace Wuxia
                 if (rt != null) UnityEngine.Object.Destroy(rt.gameObject);
             }
 
-            IEnumerator Lunge(BattleUnit attacker, BattleUnit defender)
+            IEnumerator Lunge(BattleCombatant attacker, BattleCombatant defender)
             {
                 float step = fastMode ? 0.08f : 0.16f;
-                Vector2 dir = attacker.isPlayer ? Vector2.right * 90f : Vector2.left * 90f;
-                if (attacker.root != null) attacker.root.anchoredPosition = attacker.basePos + dir;
-                if (defender?.spriteImage != null) defender.spriteImage.color = new Color(1f, .45f, .45f);
+                var moving = views[attacker];
+                var hit = defender == null ? null : views[defender];
+                if (moving.Root != null)
+                    moving.Root.anchoredPosition = moving.StandingPosition + Vector2.right * (attacker.isPlayer ? 64f : -26f);
+                if (hit?.Art != null) hit.Art.color = new Color(1f, .45f, .45f);
                 yield return new WaitForSecondsRealtime(step);
-                if (attacker.root != null) attacker.root.anchoredPosition = attacker.basePos;
-                if (defender?.spriteImage != null && defender.Alive) defender.spriteImage.color = Color.white;
+                if (moving.Root != null) moving.Root.anchoredPosition = moving.StandingPosition;
+                if (hit?.Art != null && defender.Alive) hit.Art.color = Color.white;
             }
 
             IEnumerator ExecuteRound()
@@ -439,7 +369,7 @@ namespace Wuxia
                         }
                         else
                         {
-                            RefreshTargetRings();
+                            RefreshTargetArrows();
                             var target = targetIdx >= 0 && targetIdx < enemies.Count && enemies[targetIdx].Alive
                                 ? enemies[targetIdx] : enemies.FirstOrDefault(e => e.Alive);
                             if (target != null)
@@ -481,11 +411,10 @@ namespace Wuxia
                     }
 
                     RefreshLeadHuds();
-                    RefreshTargetRings();
+                    RefreshTargetArrows();
                     yield return new WaitForSecondsRealtime(wait);
                 }
 
-                busy = false;
                 if (!enemies.Any(e => e.Alive))
                 {
                     PushLog("【凱旋】敵寇盡數伏誅，此戰大獲全勝！");
@@ -501,6 +430,7 @@ namespace Wuxia
                     yield break;
                 }
 
+                busy = false;
                 roundNum++;
                 if (roundLabel != null) roundLabel.text = $"第 {roundNum} 回合";
                 if (autoMode && battleScreen != null)
@@ -514,13 +444,13 @@ namespace Wuxia
                 if (won)
                 {
                     AudioManager.Jingle("victory");
-                    LegacySystem.AwardPoints(10);
+                    if (captureRound == null) LegacySystem.AwardPoints(10);
                 }
                 req.onComplete?.Invoke(won);
             }
         }
 
-        private (Image hpFill, Text hpText, Image qiFill, Text qiText) BuildLeadHud(RectTransform parent, BattleUnit unit, bool right)
+        private (Image hpFill, Text hpText, Image qiFill, Text qiText) BuildLeadHud(RectTransform parent, BattleCombatant unit, bool right, bool boss = false)
         {
             var box = Panel(right ? "EnemyHud" : "PlayerHud", parent,
                 right ? Vector2.one : Vector2.up, right ? Vector2.one : Vector2.up,
@@ -538,7 +468,7 @@ namespace Wuxia
 
             int xL = right ? 16 : 92;
             int xR = right ? -92 : -16;
-            var nm = Label(box, $"{unit.name}　Lv.{unit.level}", 21, right ? TextAnchor.MiddleRight : TextAnchor.MiddleLeft);
+            var nm = Label(box, $"{(boss ? "強敵・" : "")}{unit.name}　Lv.{unit.level}", 21, right ? TextAnchor.MiddleRight : TextAnchor.MiddleLeft);
             nm.color = UiKit.HeaderGold;
             nm.fontStyle = FontStyle.Bold;
             Anchor(nm.rectTransform, Vector2.up, Vector2.one, new(xL, -34), new(xR, -6));
@@ -567,27 +497,23 @@ namespace Wuxia
             return (img, t);
         }
 
-        private void SpawnBattleSprite(RectTransform stage, BattleUnit unit, Vector2 pos, Action onClick)
+        private BattleUnitView SpawnBattleSprite(RectTransform stage, BattleCombatant unit, Vector2 pos, Action onClick)
         {
             var rt = Rect("Unit_" + unit.name, stage);
-            Anchor(rt, new(.5f, .5f), new(.5f, .5f), pos - new Vector2(130, 150), pos + new Vector2(130, 150));
-            unit.root = rt;
-            unit.basePos = rt.anchoredPosition;
-
-            // Target selection ring underneath enemy
-            var ring = Rect("TargetRing", rt);
-            Anchor(ring, new(.5f, 0), new(.5f, 0), new(-72, 12), new(72, 34));
-            var ringImg = ring.gameObject.AddComponent<Image>();
-            ringImg.color = new Color(1f, .82f, .28f, .70f);
-            ringImg.enabled = false;
-            unit.targetRing = ringImg;
+            Anchor(rt, new(.5f, .5f), new(.5f, .5f), pos - new Vector2(95, 150), pos + new Vector2(95, 150));
 
             var spr = Rect("Sprite", rt);
             Anchor(spr, Vector2.zero, Vector2.one, new(0, 18), new(0, -34));
-            var tex = Resources.Load<Texture2D>("Battle/" + unit.spriteId);
+            var tex = unit.spriteId == null
+                ? CharacterFactory.StandeeTexture(unit.portraitId, unit.gender, portraitFallback: true)
+                : Resources.Load<Texture2D>("Battle/" + unit.spriteId);
             var raw = AddImage(spr, tex);
-            if (tex != null) raw.color = Color.white;
-            unit.spriteImage = raw;
+            if (unit.spriteId == null && tex != null)
+            {
+                float scale = Mathf.Min(190f / tex.width, 248f / tex.height);
+                float halfWidth = tex.width * scale * .5f;
+                Anchor(spr, new(.5f, 0), new(.5f, 0), new(-halfWidth, 18), new(halfWidth, 18 + tex.height * scale));
+            }
 
             if (onClick != null)
             {
@@ -598,8 +524,10 @@ namespace Wuxia
             }
 
             // Overhead HP bar & nameplate
-            var barBg = Rect("HpBar", rt);
-            Anchor(barBg, new(.5f, 1), new(.5f, 1), new(-74, -26), new(74, -14));
+            var plate = Panel("Nameplate", rt, Vector2.up, Vector2.one, new(0, -37), new(0, 2), onClick != null);
+            UiKit.Skin(plate.GetComponent<Image>(), "Lacquer");
+            var barBg = Rect("HpBar", plate);
+            Anchor(barBg, new(.5f, 1), new(.5f, 1), new(-78, -35), new(78, -27));
             barBg.gameObject.AddComponent<Image>().color = new Color(.08f, .06f, .05f, .85f);
             var fill = Rect("Fill", barBg);
             Fill(fill, 2);
@@ -607,14 +535,30 @@ namespace Wuxia
             fImg.color = unit.isPlayer ? new Color(.35f, .82f, .38f) : new Color(.86f, .26f, .22f);
             fImg.type = Image.Type.Filled;
             fImg.fillMethod = Image.FillMethod.Horizontal;
-            unit.hpFill = fImg;
 
-            var nm = Label(rt, $"{unit.name} ({unit.hp})", 18, TextAnchor.MiddleCenter);
+            var nm = Label(plate, "", 18, TextAnchor.MiddleCenter);
             nm.color = Color.white;
-            var sh = nm.gameObject.AddComponent<Shadow>();
-            sh.effectColor = Color.black;
-            Anchor(nm.rectTransform, new(.5f, 1), new(.5f, 1), new(-110, -12), new(110, 14));
-            unit.hpText = nm;
+            nm.verticalOverflow = VerticalWrapMode.Truncate;
+            Anchor(nm.rectTransform, Vector2.up, Vector2.one, new(2, -26), new(-2, 0));
+
+            Text arrow = null;
+            if (onClick != null)
+            {
+                arrow = Label(rt, "▼", 30, TextAnchor.MiddleCenter);
+                arrow.color = UiKit.HeaderGold;
+                arrow.resizeTextForBestFit = false;
+                var outline = arrow.gameObject.AddComponent<Outline>();
+                outline.effectColor = Color.black;
+                outline.effectDistance = new Vector2(2, -2);
+                Anchor(arrow.rectTransform, new(.5f, 1), new(.5f, 1), new(-20, 0), new(20, 38));
+                arrow.enabled = false;
+            }
+
+            return new BattleUnitView
+            {
+                Root = rt, Art = raw, HpFill = fImg, HpText = nm,
+                TargetArrow = arrow, StandingPosition = rt.anchoredPosition
+            };
         }
 
         internal void CloseBattle()

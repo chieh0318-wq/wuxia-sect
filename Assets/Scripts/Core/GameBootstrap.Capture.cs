@@ -216,7 +216,7 @@ namespace Wuxia
 
             IEnumerator CaptureBattle()
             {
-                IEnumerator round = null;
+                System.Func<IEnumerator> round = null;
                 ui.StartTurnBattle(state, new BattleRequest(), this, routine => round = routine);
                 try
                 {
@@ -226,7 +226,7 @@ namespace Wuxia
                     if (!shotsOk)
                         yield break;
 
-                    yield return round;
+                    yield return round();
                     if (!ui.BattleOpen)
                     {
                         shotsOk = false;
@@ -235,8 +235,48 @@ namespace Wuxia
                         yield break;
                     }
 
+                    yield return new WaitForSecondsRealtime(.7f);
                     Debug.Log("[Capture] Battle mid: round one resolved, action buttons visible.");
                     shotsOk = SaveShot("51_battle_mid.png");
+                    if (!shotsOk) yield break;
+                    ui.CloseBattle();
+
+                    var worldMap = WorldMapData.Load();
+                    var hangu = worldMap.Nodes["hangu"];
+                    var faction = worldMap.Controllers(hangu).First(entry => entry.Outlaw);
+                    var boss = WorldMapScreen.OutlawEncounter(hangu, faction);
+                    bool? won = null;
+                    boss.onComplete = result => won = result;
+                    var randomState = Random.state;
+                    try
+                    {
+                        Random.InitState(318);
+                        ui.StartTurnBattle(state, boss, this, routine => round = routine);
+                        yield return null;
+                        string track = AudioManager.CurrentTrack;
+                        if (!boss.IsBoss || (track != "boss_a_g1" && track != "boss_b_g1"))
+                        {
+                            shotsOk = false;
+                            Debug.LogError($"[Capture] Expected a stronghold boss track, selected '{track}'.");
+                            Application.Quit(1);
+                            yield break;
+                        }
+                        Debug.Log($"[Capture] Stronghold boss {boss.enemyLeadName}, cue={boss.MusicCue}, track={track}.");
+                        shotsOk = SaveShot("52_battle_boss.png");
+                        if (!shotsOk) yield break;
+
+                        int rounds = 0;
+                        while (!won.HasValue && rounds < 10)
+                        {
+                            rounds++;
+                            yield return round();
+                        }
+                        Debug.Log($"[Capture] Boss pacing: {rounds} rounds, victory={won}.");
+                    }
+                    finally
+                    {
+                        Random.state = randomState;
+                    }
                 }
                 finally
                 {

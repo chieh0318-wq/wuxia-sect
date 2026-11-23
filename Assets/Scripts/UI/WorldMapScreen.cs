@@ -30,7 +30,7 @@ namespace Wuxia
         private float zoom = MinZoom, targetZoom = MinZoom;
         private bool traveling;
         private string selected;
-        internal event Action<string, string, int, float, Action<bool>> BattleRequested;
+        internal event Action<BattleRequest, Action<bool>> BattleRequested;
         private bool changingScreen, dragFromMap;
         private RectTransform focusMarker;
         private Vector2 focusedPoint;
@@ -213,6 +213,10 @@ namespace Wuxia
         }
 
         private static string OutlawGuard(MapNode node) => node.type is "capital" or "city" or "pass" ? "丙" : "丁";
+
+        internal static BattleRequest OutlawEncounter(MapNode node, MapFaction faction) =>
+            BattleRequest.MapAssault(faction.Label, faction.leader, faction.PortraitId,
+                Garrison(node), OutlawGuard(node) == "丙" ? .9f : .7f);
 
         private static string Defence(string type) => type switch
         {
@@ -556,7 +560,8 @@ namespace Wuxia
                 {
                     if (BattleRequested != null)
                     {
-                        BattleRequested.Invoke(node.id, faction.Label ?? "山賊頭目", garrison, guard, won =>
+                        var encounter = OutlawEncounter(node, faction);
+                        BattleRequested.Invoke(encounter, won =>
                         {
                             if (won)
                             {

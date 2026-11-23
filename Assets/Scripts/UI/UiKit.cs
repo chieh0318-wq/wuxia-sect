@@ -57,6 +57,49 @@ namespace Wuxia
         internal static Color Hex(string html) => ColorUtility.TryParseHtmlString(html, out var color) ? color : Color.magenta;
 
         private static readonly System.Collections.Generic.Dictionary<string, Sprite> themed = new();
+        private static readonly System.Collections.Generic.Dictionary<string, Texture2D> iconTexCache = new();
+        private static readonly System.Collections.Generic.Dictionary<string, Sprite> iconSpriteCache = new();
+
+        internal static Texture2D Icon(string name)
+        {
+            if (string.IsNullOrEmpty(name)) return null;
+            if (iconTexCache.TryGetValue(name, out var tex)) return tex;
+            tex = Resources.Load<Texture2D>("Icons/" + name);
+            iconTexCache[name] = tex;
+            return tex;
+        }
+
+        internal static Sprite IconSprite(string name)
+        {
+            if (string.IsNullOrEmpty(name)) return null;
+            if (iconSpriteCache.TryGetValue(name, out var sp) && sp != null) return sp;
+            var tex = Icon(name);
+            if (tex == null) return null;
+            sp = UnityEngine.Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), Vector2.one * .5f, 100);
+            iconSpriteCache[name] = sp;
+            return sp;
+        }
+
+        internal static string AttrIcon(int slot) => slot switch
+        {
+            0 => "attr_str", 1 => "attr_agi", 2 => "attr_con", 3 => "attr_qi",
+            4 => "attr_wit", 5 => "attr_cha", 6 => "attr_luk", _ => "attr_str"
+        };
+
+        internal static string SkillIcon(string id) => id switch
+        {
+            "fist" => "skill_fist", "blade" => "skill_blade", "sword" => "skill_sword",
+            "hidden" => "skill_hidden", "qinggong" => "skill_qinggong", "neigong" => "skill_neigong",
+            "polearm" => "skill_polearm", "medicine" => "skill_medicine", "alchemy" => "skill_alchemy",
+            "forging" => "skill_forging", "commerce" => "skill_commerce", "farming" => "skill_farming",
+            "construction" => "skill_construction", "teaching" => "skill_teaching", _ => "skill_sword"
+        };
+
+        internal static string SlotIcon(string slot) => slot switch
+        {
+            "武器" => "slot_weapon", "護腕" => "slot_bracer", "飾品" => "slot_trinket",
+            "冠帽" => "slot_hat", "衣袍" => "slot_robe", "履靴" => "slot_boots", _ => "slot_weapon"
+        };
 
         /// <summary>
         /// Theme sprites are generated at runtime so every screen picks up the lacquer/gold/xuan look without

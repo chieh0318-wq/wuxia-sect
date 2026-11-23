@@ -133,6 +133,8 @@ namespace Wuxia
         public string[] heldNodes = Array.Empty<string>();
         public float rumorBonus;
         public int lodgeMonth, realmsCleared;
+        /// <summary>M9: carried consumables & legacy items (id -> quantity).</summary>
+        public StoryValue[] inventory = Array.Empty<StoryValue>();
     }
 
     [Serializable] public sealed class StoryValue { public string id; public int value; }

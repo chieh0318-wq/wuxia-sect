@@ -20,21 +20,20 @@ namespace Wuxia
     {
         private void CharacterEquipment(string portrait, string gender, string weapon, string[] gear = null)
         {
-            var row = CreationRow("裝備", 356);
+            var row = CreationRow("裝備", 364);
             var frame = Rect("肖像裱框", row);
-            Anchor(frame, new(.5f, .5f), new(.5f, .5f), new(-133, -176), new(133, 176));
+            // Exact 3:4 portrait frame (264 x 352) — eliminates squishing & dark letterboxing
+            Anchor(frame, new(.5f, .5f), new(.5f, .5f), new(-132, -176), new(132, 176));
             var backing = frame.gameObject.AddComponent<Image>();
-            backing.color = new Color(.23f, .18f, .14f);
+            backing.color = UiKit.AntiqueGold;
             backing.raycastTarget = false;
             var inset = Rect("肖像內框", frame);
             Fill(inset, 4);
             var art = Rect("人物肖像", inset);
             Fill(art);
             var texture = PortraitService.Resolve(portrait, gender);
-            AddImage(art, texture);
-            var aspect = art.gameObject.AddComponent<AspectRatioFitter>();
-            aspect.aspectMode = AspectRatioFitter.AspectMode.FitInParent;
-            aspect.aspectRatio = texture.width / (float)texture.height;
+            var raw = AddImage(art, texture);
+            FitCover(raw, texture, 256f / 344f);
 
             string weaponName = RankSystem.Catalog.breakthroughs?.FirstOrDefault(
                 entry => entry.id == weapon && entry.type == "weapon")?.name ?? weapon;
@@ -55,13 +54,21 @@ namespace Wuxia
                 else
                     Anchor(slot, Vector2.up, new(.5f, 1), new(18, top - 104), new(-151, top));
                 UiKit.Skin(slot.gameObject.AddComponent<Image>(), "Wood");
-                var heading = Label(slot, label, 26, TextAnchor.MiddleCenter);
+                var slotTex = UiKit.Icon(UiKit.SlotIcon(label));
+                if (slotTex != null)
+                {
+                    var ic = Rect("SlotIcon", slot);
+                    Anchor(ic, new(0, .5f), new(0, .5f), new(14, -34), new(82, 34));
+                    AddImage(ic, slotTex);
+                }
+                int textLeft = slotTex != null ? 94 : 8;
+                var heading = Label(slot, label, 24, slotTex != null ? TextAnchor.MiddleLeft : TextAnchor.MiddleCenter);
                 heading.color = new Color(.96f, .87f, .69f);
-                Anchor(heading.rectTransform, Vector2.up, Vector2.one, new(8, -44), new(-8, -9));
-                var value = Label(slot, string.IsNullOrEmpty(item) ? "未裝備" : item, 21, TextAnchor.MiddleCenter);
+                Anchor(heading.rectTransform, Vector2.up, Vector2.one, new(textLeft, -46), new(-12, -10));
+                var value = Label(slot, string.IsNullOrEmpty(item) ? "未裝備" : item, 20, slotTex != null ? TextAnchor.MiddleLeft : TextAnchor.MiddleCenter);
                 value.color = string.IsNullOrEmpty(item) ? new Color(.86f, .76f, .61f) : new Color(.99f, .86f, .52f);
                 value.resizeTextMinSize = 18;
-                Anchor(value.rectTransform, Vector2.zero, Vector2.right, new(8, 6), new(-8, 60));
+                Anchor(value.rectTransform, Vector2.zero, Vector2.right, new(textLeft, 10), new(-12, 58));
             }
         }
 

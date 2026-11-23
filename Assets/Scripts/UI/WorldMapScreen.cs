@@ -28,6 +28,7 @@ namespace Wuxia
         private float zoom = MinZoom, targetZoom = MinZoom;
         private bool traveling;
         private string selected;
+        internal event Action<string, string, int, float, Action<bool>> BattleRequested;
         private bool changingScreen, dragFromMap;
         private RectTransform focusMarker;
         private Vector2 focusedPoint;
@@ -534,11 +535,29 @@ namespace Wuxia
                 float guard = OutlawGuard(node) == "丙" ? .9f : .7f;
                 var assault = MapUi.Button(panel, $"率眾攻討\n勝算 {host.AssaultChance(garrison, guard):P0}", 20, 610, 124, 48, () =>
                 {
-                    string result = host.Assault(node.id, faction.id, garrison, guard);
+                    if (BattleRequested != null)
+                    {
+                        BattleRequested.Invoke(node.id, faction.Label ?? "山賊頭目", garrison, guard, won =>
+                        {
+                            if (won)
+                            {
+                                string result = host.Assault(node.id, faction.id, garrison, 0.01f);
+                                status.text = result;
+                            }
+                            else
+                            {
+                                status.text = $"攻討{data.NodeLabel(node.id)}失利，暫退休整。";
+                            }
+                            UpdateAp();
+                            ShowNode(node);
+                        });
+                        return;
+                    }
+                    string resultFallback = host.Assault(node.id, faction.id, garrison, guard);
                     AudioManager.Play(host.HoldsNode(node.id) ? "complete" : "page");
                     UpdateAp();
                     ShowNode(node);
-                    status.text = result;
+                    status.text = resultFallback;
                 }, MapUi.Red, 15);
                 assault.interactable = host.ActionPoints >= 2;
                 cardActions.Add(assault);

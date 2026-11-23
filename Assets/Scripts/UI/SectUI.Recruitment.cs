@@ -23,8 +23,10 @@ namespace Wuxia
             var card = Panel(candidate.name, recruitGrid, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero);
             recruitGrid.GetComponent<LayoutElement>().preferredHeight = 574;
             var portrait = Rect("Portrait", card);
-            Anchor(portrait, Vector2.up, Vector2.up, new(18, -208), new(168, -18));
-            AddImage(portrait, PortraitService.Resolve(candidate.portrait, candidate.gender));
+            Anchor(portrait, Vector2.up, Vector2.up, new(18, -210), new(162, -18));
+            var pTex = PortraitService.Resolve(candidate.portrait, candidate.gender);
+            var pRaw = AddImage(portrait, pTex);
+            FitCover(pRaw, pTex, 144f / 192f);
             string best = RankSystem.Martial(candidate.lines);
             CardText($"{candidate.name}　{candidate.gender} {candidate.age}歲", 26, 186, 18, 18, 40);
             CardText(candidate.origin ?? "", 18, 186, 18, 56, 26); // ends above the 武學 badge (top 83)

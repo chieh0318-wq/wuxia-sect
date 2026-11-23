@@ -40,6 +40,8 @@ namespace Wuxia
         private int freeAttributes;
         private readonly int[] allocated = new int[AttributeSystem.Count];
         private GameEffect[] talentEffects = Array.Empty<GameEffect>(), skillEffects = Array.Empty<GameEffect>();
+        private readonly Dictionary<string, int> legacyPicks = new();
+        private LegacyItemDef legacyFocused;
 
         private string AttributeBenefit(int slot) =>
             characters.attributes?.FirstOrDefault(entry => entry?.id == AttributeSystem.Keys[slot])?.desc
@@ -137,38 +139,32 @@ namespace Wuxia
             hero.lookId = look.id;
             hero.look = look;
             hero.portrait = string.IsNullOrEmpty(look.portrait) ? look.id : look.portrait;
-            ui.ShowCreation("形貌與姓名", new[] { hero.title }, Back(Begin), ChooseBackground, ChooseBackground);
-            ui.CreationName(hero.name, value => hero.name = string.IsNullOrWhiteSpace(value) ? SuggestedName() : value.Trim(), SuggestedName);
-            ui.CreationTabs(new[] { "男", "女" }.Select(gender =>
-                (gender, gender == hero.gender, (Action)(() => ChooseGender(gender)))));
-            ui.CreationPortraits(looks, look, hero.title, appearancePage, page =>
-            {
-                appearancePage = page;
-                ChooseAppearance();
-            }, candidate =>
+
+            var bgOptions = characters.backgrounds ?? Array.Empty<CreationOption>();
+            background ??= bgOptions.FirstOrDefault();
+
+            ui.ShowCreation("形貌與出身", Array.Empty<string>(), Back(Begin), StartTalents, StartTalents);
+            ui.CreationSummary(Sheet(ChosenTalents, ChosenSkills, "出身"));
+            ui.CreationNameAndGender(hero.name, value => hero.name = string.IsNullOrWhiteSpace(value) ? SuggestedName() : value.Trim(),
+                SuggestedName, hero.gender, gender => { if (gender != hero.gender) ChooseGender(gender); });
+            ui.CreationPortraitStrip(looks, look, candidate =>
             {
                 look = candidate;
                 ChooseAppearance();
             });
-        }
-
-        private void ChooseBackground()
-        {
-            var options = characters.backgrounds ?? Array.Empty<CreationOption>();
-            background ??= options.FirstOrDefault();
-            ui.ShowCreation("出身", Array.Empty<string>(), Back(ChooseAppearance), StartTalents, StartTalents);
-            ui.CreationSummary(Sheet(ChosenTalents, ChosenSkills, "出身"));
-            if (options.Length > 0)
-                ui.CreationGrid(2, (options.Length + 1) / 2, 208);
-            foreach (var option in options)
+            if (bgOptions.Length > 0)
+                ui.CreationGrid(3, (bgOptions.Length + 2) / 3, 158);
+            foreach (var option in bgOptions)
             {
                 ui.CreationChoice(option.name, option.desc, option.image, () =>
-                    {
-                        background = option;
-                        ChooseBackground();
-                    }, picked: option == background, tags: Details(option));
+                {
+                    background = option;
+                    ChooseAppearance();
+                }, picked: option == background, tags: Details(option));
             }
         }
+
+        private void ChooseBackground() => ChooseAppearance();
 
         /// <summary>Back button for the pre-story creation steps (effects are only applied in StartStory, so going back is safe).</summary>
         private static (string, Action)[] Back(Action previous) => new[] { ("上一步", previous) };
@@ -183,40 +179,28 @@ namespace Wuxia
 
         private void StartTalents()
         {
-            // Keep the current draw and picks when returning from another step.
-            if (offered == null)
-                RollTalents();
+            // Point-buy mode: list ALL talents directly without random drawing.
+            offered = (talents.talents ?? Array.Empty<CreationOption>()).Where(x => x != null).ToArray();
             Restore(offered, state.Protagonist.talents);
             talentFilter = "";
-            ShowTalents();
+            ShowTalents(1f);
         }
 
         private void RollTalents()
         {
-            var pool = (talents.talents ?? Array.Empty<CreationOption>()).Where(x => x != null && !selected.Contains(x)).ToList();
-            var draw = new List<CreationOption>(selected);
-            while (draw.Count < 12 && pool.Count > 0)
-            {
-                int ticket = UnityEngine.Random.Range(0, pool.Sum(option => Math.Max(1, option.weight)));
-                int picked = 0;
-                while ((ticket -= Math.Max(1, pool[picked].weight)) >= 0)
-                    picked++;
-                draw.Add(pool[picked]);
-                pool.RemoveAt(picked);
-            }
-            offered = draw.ToArray();
+            offered = (talents.talents ?? Array.Empty<CreationOption>()).Where(x => x != null).ToArray();
         }
 
         private string talentFilter = "";
 
-        private void ShowTalents()
+        private void ShowTalents(float scrollPos = 1f)
         {
             var actions = new List<(string, Action)>
             {
                 ("上一步", () =>
                 {
                     state.Protagonist.talents = SelectedIds;
-                    ChooseBackground();
+                    ChooseAppearance();
                 }),
                 ("隨機推薦", () =>
                 {
@@ -224,33 +208,31 @@ namespace Wuxia
                     foreach (var option in offered.OrderBy(_ => UnityEngine.Random.value))
                         if (CanPick(option, talents.budget, talents.maxPicks))
                             selected.Add(option);
-                    ShowTalents();
+                    ShowTalents(1f);
+                }),
+                ("清空重選", () =>
+                {
+                    selected.Clear();
+                    ShowTalents(1f);
                 })
             };
-            if (talents.rerollFree <= 0 || rerolls > 0)
-                actions.Add(("免費重抽", () =>
-                {
-                    if (rerolls > 0) rerolls--;
-                    RollTalents();
-                    ShowTalents();
-                }));
             ui.ShowCreation("天賦", Array.Empty<string>(), actions, CompleteTalents, CompleteTalents);
             var sheet = Sheet(selected, ChosenSkills, "天賦");
             sheet.picksHeading = $"已選天賦　{selected.Count}／{talents.maxPicks}";
             ui.CreationSummary(sheet);
-            ui.CreationTabs(new[] { "", "common", "rare", "legendary" }.Select(key =>
-                (key.Length == 0 ? "全部" : RarityLabel(key), key == talentFilter,
-                    (Action)(() => { talentFilter = key; ShowTalents(); }))));
-            var visible = offered.Where(option => talentFilter.Length == 0 || option.rarity == talentFilter)
-                .OrderBy(option => option.rarity == "legendary" ? 0 : option.rarity == "rare" ? 1 : 2).ToArray();
-            if (visible.Length > 0)
-                ui.CreationGrid(3, (visible.Length + 2) / 3, 158);
-            else
-                ui.CreationChoice("這一輪沒有抽到這類天賦", "", null, null);
-            foreach (var option in visible)
-                ShowPick(option, RarityLabel(option.rarity), talents.budget, talents.maxPicks, ShowTalents);
-            // Both skill families, reflecting rank/cap effects of the talents picked so far.
+            // Pinned at the TOP (synchronized with 武學與技藝 so 14 skill bars are always visible while scrolling talents).
             ui.SkillTiles(PreviewLines(selected));
+            ui.CreationTabs(new[] { "", "legendary", "rare", "common", "negative" }.Select(key =>
+                (key.Length == 0 ? "全部" : key == "negative" ? "負面補點" : RarityLabel(key), key == talentFilter,
+                    (Action)(() => { talentFilter = key; ShowTalents(1f); }))));
+            var visible = offered.Where(option =>
+                    talentFilter.Length == 0
+                    || (talentFilter == "negative" ? option.cost < 0 : option.rarity == talentFilter && option.cost >= 0))
+                .OrderBy(option => option.cost < 0 ? 3 : option.rarity == "legendary" ? 0 : option.rarity == "rare" ? 1 : 2)
+                .ThenByDescending(option => option.cost).ToArray();
+            ui.CreationTalentScroll(visible, scrollPos, option =>
+                ShowPick(option, option.cost < 0 ? "負面" : RarityLabel(option.rarity), talents.budget, talents.maxPicks,
+                    () => ShowTalents(ui.TalentScrollPosition)));
         }
 
         /// <summary>
@@ -427,7 +409,7 @@ namespace Wuxia
             };
             ui.ShowCreation("屬性", new[] { $"可分配點數　{freeAttributes}／{characters.attrPoints}　　" +
                     $"每項基礎 {characters.attrBase}，最低 {characters.attrMin}（降低可退回點數），最高 {characters.attrMax}" },
-                actions, StartStory, StartStory);
+                actions, ShowLegacyShop, ShowLegacyShop);
             ui.CreationSummary(Sheet(ChosenTalents, ChosenSkills, "屬性"));
             var bonuses = EffectAttributes(Bonuses(ChosenTalents, ChosenSkills));
             var values = state.Protagonist.attrs = AttributeSystem.Normalize(state.Protagonist.attrs);
@@ -474,6 +456,45 @@ namespace Wuxia
             ShowAttributes();
         }
 
+        private void ShowLegacyShop()
+        {
+            legacyFocused ??= LegacySystem.Catalog[0];
+            int total = LegacySystem.TotalPoints;
+            int spent = legacyPicks.Sum(kv =>
+            {
+                var def = LegacySystem.Catalog.FirstOrDefault(x => x.id == kv.Key);
+                return def == null ? 0 : def.cost * kv.Value;
+            });
+            int left = total - spent;
+            var actions = new (string, Action)[]
+            {
+                ("上一步", ShowAttributes),
+                ("清空物資", () => { legacyPicks.Clear(); ShowLegacyShop(); }),
+                ("推薦攜帶", () =>
+                {
+                    legacyPicks.Clear();
+                    legacyPicks["leg_qingfeng"] = 1;
+                    legacyPicks["leg_robe"] = 1;
+                    legacyPicks["leg_boots"] = 1;
+                    legacyPicks["item_jinchuang"] = 2;
+                    legacyPicks["book_sword"] = 1;
+                    ShowLegacyShop();
+                })
+            };
+            ui.ShowCreation("先輩遺澤", Array.Empty<string>(), actions, StartStory, StartStory);
+            ui.CreationLegacyShop(total, left, legacyPicks, legacyFocused, (def, delta) =>
+            {
+                int cur = legacyPicks.TryGetValue(def.id, out var q) ? q : 0;
+                int next = Mathf.Clamp(cur + delta, 0, def.maxQty);
+                if (next == 0) legacyPicks.Remove(def.id);
+                else legacyPicks[def.id] = next;
+                ShowLegacyShop();
+            }, def =>
+            {
+                legacyFocused = def;
+            });
+        }
+
         private void StartStory()
         {
             state.Protagonist.backgroundId = background?.id;
@@ -483,6 +504,7 @@ namespace Wuxia
                          .Where(option => option != null && state.Protagonist.skills.Contains(option.id)))
                 RankSystem.Learn(state.Protagonist.lines, art);
             state.ApplyEffects(skillEffects);
+            LegacySystem.ApplyCarried(state, legacyPicks);
             AudioManager.Music("courtyard_night");
             Play(story.openingBeats, ChooseDisaster, SkipStory);
         }

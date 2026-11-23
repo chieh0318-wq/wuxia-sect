@@ -191,9 +191,19 @@ namespace Wuxia
         private static void HudIcon(RectTransform parent, string icon, int offset)
         {
             var rect = Rect(icon + " icon", parent);
-            Anchor(rect, new(0, .5f), new(0, .5f), new(offset, -17), new(offset + 34, 17));
+            Anchor(rect, new(0, .5f), new(0, .5f), new(offset, -19), new(offset + 38, 19));
+            string mapped = icon switch
+            {
+                "Silver" => "hud_silver",
+                "Food" => "hud_food",
+                "Reputation" => "hud_rep",
+                "Disciples" => "hud_disciple",
+                "Month" => "attr_luk",
+                _ => null
+            };
+            var painted = mapped != null ? UiKit.IconSprite(mapped) : null;
             var image = rect.gameObject.AddComponent<Image>();
-            image.sprite = UiKit.Sprite(icon);
+            image.sprite = painted ?? UiKit.Sprite(icon);
             image.enabled = image.sprite != null;
             image.raycastTarget = false;
         }
@@ -248,13 +258,22 @@ namespace Wuxia
             if (string.IsNullOrEmpty(detail))
                 return rect;
             rect.GetComponent<LayoutElement>().preferredHeight = 122;
+            string cmdIcon = CommandIconFor(label);
+            var iconTex = UiKit.Icon(cmdIcon);
+            int textLeft = iconTex != null ? 74 : 22;
+            if (iconTex != null)
+            {
+                var ic = Rect("CmdIcon", rect);
+                Anchor(ic, Vector2.up, Vector2.up, new(16, -68), new(64, -20));
+                AddImage(ic, iconTex);
+            }
             var caption = rect.GetComponentInChildren<Text>();
             caption.alignment = TextAnchor.MiddleLeft;
             caption.fontSize = caption.resizeTextMaxSize = 22;
             caption.resizeTextMinSize = UiKit.MinBody;
-            Anchor(caption.rectTransform, Vector2.up, Vector2.one, new(22, -38), new(-10, -6));
+            Anchor(caption.rectTransform, Vector2.up, Vector2.one, new(textLeft, -38), new(-10, -6));
             var divider = Rect("Card rule", rect);
-            Anchor(divider, Vector2.up, Vector2.one, new(22, -41), new(-14, -40));
+            Anchor(divider, Vector2.up, Vector2.one, new(textLeft, -41), new(-14, -40));
             var rule = divider.gameObject.AddComponent<Image>();
             rule.color = new Color(.90f, .72f, .40f, .45f);
             rule.raycastTarget = false;
@@ -265,9 +284,26 @@ namespace Wuxia
             body.horizontalOverflow = HorizontalWrapMode.Wrap;
             body.resizeTextForBestFit = false;
             body.lineSpacing = 1.05f;
-            Anchor(body.rectTransform, Vector2.zero, Vector2.one, new(22, 6), new(-10, -44));
+            Anchor(body.rectTransform, Vector2.zero, Vector2.one, new(textLeft, 6), new(-10, -44));
             UiKit.AccentStripe(rect, selected ? UiKit.GoldAccent : run == null ? new Color(.45f, .40f, .34f) : UiKit.Crimson);
             return rect;
+        }
+
+        private static string CommandIconFor(string label)
+        {
+            if (string.IsNullOrEmpty(label)) return null;
+            if (label.Contains("建造") || label.Contains("興建") || label.Contains("議事堂") || label.Contains("廂房")) return "skill_construction";
+            if (label.Contains("招") || label.Contains("弟子")) return "hud_disciple";
+            if (label.Contains("演武") || label.Contains("比武") || label.Contains("實戰") || label.Contains("戰鬥")) return "act_attack";
+            if (label.Contains("練") || label.Contains("修習") || label.Contains("武學")) return "skill_sword";
+            if (label.Contains("藏經") || label.Contains("研習") || label.Contains("功法")) return "item_manual_sword";
+            if (label.Contains("藥") || label.Contains("療傷") || label.Contains("丹")) return "skill_medicine";
+            if (label.Contains("鍛") || label.Contains("兵器")) return "skill_forging";
+            if (label.Contains("伙房") || label.Contains("糧")) return "hud_food";
+            if (label.Contains("茶寮") || label.Contains("打聽") || label.Contains("情報")) return "attr_wit";
+            if (label.Contains("秘境") || label.Contains("奇遇") || label.Contains("探索")) return "attr_luk";
+            if (label.Contains("商") || label.Contains("銀")) return "hud_silver";
+            return "act_skill";
         }
 
         private RectTransform mapButtons;

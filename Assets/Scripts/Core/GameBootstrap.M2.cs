@@ -31,6 +31,7 @@ namespace Wuxia
                 map = gameObject.AddComponent<WorldMapScreen>();
                 map.Closed += OnWorldMapClosed;
                 map.LeaderSelected += OpenMapLeader;
+                map.BattleRequested += StartMapAssaultBattle;
             }
             map.Open(state);
             controls.enabled = false;
@@ -62,6 +63,7 @@ namespace Wuxia
         private bool HandleWorldMapInput()
         {
             bool open = map != null && map.IsOpen;
+            if (ui.BattleOpen) return true;
             if (Input.GetKeyDown(KeyCode.M) && (open || !ui.ModalOpen))
             {
                 ToggleWorldMap();
@@ -82,5 +84,55 @@ namespace Wuxia
         }
 
         private void PlayCompletionAudio() => AudioManager.Play("complete");
+
+        private void StartSkirmishBattle()
+        {
+            if (state == null || ui.BattleOpen) return;
+            if (choosingBuilding) CancelBuild();
+            ui.CloseBuilding();
+            ui.CloseDialogue();
+            if (controls != null) controls.enabled = false;
+            ui.StartTurnBattle(state, new BattleRequest
+            {
+                title = "山門演武・實戰試煉",
+                enemyLeadName = "黑風山賊頭目",
+                enemyCount = 3,
+                difficulty = 0.95f,
+                onComplete = won =>
+                {
+                    if (controls != null) controls.enabled = true;
+                    if (won)
+                    {
+                        state.Apply(new Yield { silver = 18, reputation = 2 });
+                        ui.Refresh(state);
+                        ShowCommands();
+                        ui.Message("山門演武凱旋！獲得 銀兩 +18、聲望 +2、先輩積分 +10。");
+                    }
+                    else
+                    {
+                        ui.Refresh(state);
+                        ShowCommands();
+                        ui.Message("切磋點到為止，眾弟子收劍回院休整。");
+                    }
+                }
+            }, this);
+        }
+
+        private void StartMapAssaultBattle(string nodeId, string factionName, int garrison, float guard, System.Action<bool> done)
+        {
+            if (state == null || ui.BattleOpen) return;
+            ui.StartTurnBattle(state, new BattleRequest
+            {
+                title = $"攻討 {factionName}",
+                enemyLeadName = factionName + "頭目",
+                enemyCount = garrison >= 45 ? 4 : 3,
+                difficulty = Mathf.Clamp(guard + 0.15f, 0.8f, 1.4f),
+                onComplete = won =>
+                {
+                    done?.Invoke(won);
+                    ui.Refresh(state);
+                }
+            }, this);
+        }
     }
 }

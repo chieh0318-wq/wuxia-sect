@@ -349,6 +349,8 @@ namespace Wuxia
             commands.Add(("藏經閣科技樹", library
                 ? $"四脈十六門功法：已研習 {state.TechCount}／{GameState.TechTree.Length}，點擊開啟科技樹研習"
                 : "須先興建藏經閣", library ? ShowTechTree : null, false));
+            commands.Add(("山門演武・回合實戰", "親率弟子切磋實戰（不耗行動力），勝出可得銀兩、聲望與先輩積分",
+                () => StartSkirmishBattle(), false));
             foreach (string id in new[] { "secret_realm", "explore" })
             {
                 var action = state.Data.Actions.FirstOrDefault(entry => entry.id == id);

@@ -460,6 +460,54 @@
         "sash": "#B03A2E",
         "style": "jiaoling"
       }
+    },
+    {
+      "id": "hero_m11",
+      "gender": "男",
+      "label": "折扇公子",
+      "desc": "月白金邊錦袍，手持水墨折扇，舉止從容如名門世家公子，扇骨裡卻暗藏玄機。",
+      "portrait": "hero_m11",
+      "robeColor": "#E8E2D0",
+      "sashColor": "#C69B4B",
+      "hairStyle": "crown",
+      "skinTone": 0.35,
+      "build": 0.45
+    },
+    {
+      "id": "hero_m12",
+      "gender": "男",
+      "label": "江湖浪子",
+      "desc": "青布殘氅配竹節酒葫蘆，長髮隨風不羈，嘴角常掛一抹看透世事的灑脫笑意。",
+      "portrait": "hero_m12",
+      "robeColor": "#3A4E60",
+      "sashColor": "#8B4A2B",
+      "hairStyle": "loose",
+      "skinTone": 0.55,
+      "build": 0.55
+    },
+    {
+      "id": "hero_f11",
+      "gender": "女",
+      "label": "紅衣女俠",
+      "desc": "一襲朱紅勁裝配銀飾飄帶，眉宇英氣逼人，劍出如火，最見不得江湖不平事。",
+      "portrait": "hero_f11",
+      "robeColor": "#9E2A22",
+      "sashColor": "#D4AF37",
+      "hairStyle": "ponytail",
+      "skinTone": 0.4,
+      "build": 0.45
+    },
+    {
+      "id": "hero_f12",
+      "gender": "女",
+      "label": "藥谷醫仙",
+      "desc": "翠白羅裙腰懸碧玉藥葫蘆，神色溫婉清雅，既能妙手回春，亦懂以毒攻毒。",
+      "portrait": "hero_f12",
+      "robeColor": "#3E7A65",
+      "sashColor": "#E8E4D4",
+      "hairStyle": "bun",
+      "skinTone": 0.3,
+      "build": 0.4
     }
   ],
   "nameSuggestions": [

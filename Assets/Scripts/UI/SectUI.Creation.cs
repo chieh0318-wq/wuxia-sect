@@ -134,8 +134,15 @@ namespace Wuxia
             var attrs = AttributeSystem.Normalize(sheet.attrs);
             for (int index = 0; index < AttributeSystem.Count; index++)
             {
-                CardLabel(AttributeSystem.Names[index], 18, CardText, 18, y, -290, y - 24);
-                CardBar(card, 80, y - 9, -62, 8, attrs[index] / (float)AttributeSystem.Max,
+                var aIcon = UiKit.Icon(UiKit.AttrIcon(index));
+                if (aIcon != null)
+                {
+                    var ic = Rect("AttrIcon", card);
+                    Anchor(ic, Vector2.up, Vector2.up, new(16, y - 22), new(36, y - 2));
+                    AddImage(ic, aIcon);
+                }
+                CardLabel(AttributeSystem.Names[index], 18, CardText, aIcon != null ? 40 : 18, y, -270, y - 24);
+                CardBar(card, aIcon != null ? 92 : 80, y - 9, -62, 8, attrs[index] / (float)AttributeSystem.Max,
                     Color.Lerp(AttributeSystem.Tints[index], Color.white, .25f));
                 CardLabel(attrs[index].ToString(), 19, attrs[index] > AttributeSystem.Base ? CardGold :
                     attrs[index] < AttributeSystem.Base ? CardLow : CardText, 310, y, -18, y - 24, TextAnchor.MiddleRight);
@@ -228,9 +235,16 @@ namespace Wuxia
                     var tile = Panel(category.name, row, new(index / 7f, 1), new((index + 1) / 7f, 1),
                         new(3, -66 - family * 74), new(-3, -family * 74), false);
                     UiKit.Skin(tile.GetComponent<Image>(), "Wood");
+                    var sIcon = UiKit.Icon(UiKit.SkillIcon(category.id));
+                    if (sIcon != null)
+                    {
+                        var ic = Rect("SkillIcon", tile);
+                        Anchor(ic, Vector2.up, Vector2.up, new(6, -32), new(30, -8));
+                        AddImage(ic, sIcon);
+                    }
                     var name = Label(tile, category.name, 18, TextAnchor.MiddleLeft);
                     name.color = family == 0 ? new Color(.98f, .80f, .66f) : new Color(.78f, .90f, .78f);
-                    Anchor(name.rectTransform, Vector2.up, Vector2.one, new(10, -34), new(-6, -6));
+                    Anchor(name.rectTransform, Vector2.up, Vector2.one, new(sIcon != null ? 34 : 10, -34), new(-50, -6));
                     int rank = RankSystem.Index(line?.rank), cap = RankSystem.Index(line?.cap);
                     var tier = Label(tile, $"{RankSystem.At(rank)}/{RankSystem.At(cap)}", 19, TextAnchor.MiddleRight);
                     tier.color = Color.Lerp(RankSystem.Color(RankSystem.At(rank)), Color.white, .45f);
@@ -566,9 +580,19 @@ namespace Wuxia
             var sealInk = seal.gameObject.AddComponent<Image>();
             sealInk.color = tint;
             sealInk.raycastTarget = false;
-            var glyph = Label(seal, AttributeSystem.Glyphs[index], 32, TextAnchor.MiddleCenter);
-            glyph.color = new Color(1, .93f, .80f);
-            Fill(glyph.rectTransform);
+            var attrIcon = UiKit.Icon(UiKit.AttrIcon(index));
+            if (attrIcon != null)
+            {
+                var ic = Rect("AttrIcon", seal);
+                Fill(ic, 3);
+                AddImage(ic, attrIcon);
+            }
+            else
+            {
+                var glyph = Label(seal, AttributeSystem.Glyphs[index], 32, TextAnchor.MiddleCenter);
+                glyph.color = new Color(1, .93f, .80f);
+                Fill(glyph.rectTransform);
+            }
             var caption = Label(card, name, 27, TextAnchor.MiddleLeft);
             caption.color = CardText;
             Anchor(caption.rectTransform, Vector2.up, Vector2.up, new(90, -42), new(196, -6));

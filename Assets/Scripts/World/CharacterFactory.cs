@@ -211,6 +211,8 @@ namespace Wuxia
                 "大師姐" or "三師姐" => "dashijie",
                 "大師兄" or "三師兄" => "dashixiong",
                 "少掌門" => "shaozhangmen",
+                // v1124 B10: after the succession the 代掌門 keeps the senior-disciple outfit.
+                "代掌門" => gender == "女" ? "dashijie" : "dashixiong",
                 _ => null
             };
             string key = !string.IsNullOrEmpty(backgroundId)

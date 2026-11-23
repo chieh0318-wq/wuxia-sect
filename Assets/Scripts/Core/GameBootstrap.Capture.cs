@@ -65,6 +65,8 @@ namespace Wuxia
                     ("47_legacy_shop.png", creation.CaptureLegacyShop),
                     ("15_background.png", creation.CaptureBackground),
                     ("04_prologue_beat.png", creation.CapturePrologue),
+                    ("04b_succession.png", creation.CaptureSuccession),
+                    ("04c_friend_arrival.png", creation.CaptureFriendArrival),
                     ("05_disaster_choice.png", creation.CaptureDisaster),
                     ("16_response_choice.png", creation.CaptureResponse),
                     ("06_location_choice.png", creation.CaptureLocation),
@@ -151,6 +153,10 @@ namespace Wuxia
                     yield return new WaitForSecondsRealtime(2.8f);
                     if (!SaveShot("28_questline_beat.png")) yield break;
                     ui.CloseStoryBeat();
+                    // v1124 B8: the choice screen with its 「影響」 lines.
+                    PlayQuest(capturedQuest.line, capturedQuest.beat, choicesOnly: true);
+                    yield return new WaitForSecondsRealtime(.3f);
+                    if (!SaveShot("28b_questline_choices.png")) yield break;
                 }
                 ui.CloseModal(force: true);
                 yield return CaptureM2(file => shotsOk &= SaveShot(file));
@@ -408,6 +414,8 @@ namespace Wuxia
             }
         }
 
+        private (Questline line, QuestBeat beat) capturedQuest;
+
         private bool CaptureQuestline()
         {
             var fresh = new GameState(data);
@@ -433,6 +441,7 @@ namespace Wuxia
                 Debug.LogWarning("[Capture] 28_questline_beat skipped. No playable beat triggered in months 1–3.");
                 return false;
             }
+            capturedQuest = sample;
             PlayQuest(sample.line, sample.beat, preferExpression: true);
             return true;
         }

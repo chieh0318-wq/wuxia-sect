@@ -193,7 +193,7 @@ namespace Wuxia
                 quests, state.QuestStatus, back);
         }
 
-        private void PlayQuest(Questline line, QuestBeat beat, bool preferExpression = false)
+        private void PlayQuest(Questline line, QuestBeat beat, bool preferExpression = false, bool choicesOnly = false)
         {
             var scene = beat.scene.Where(part => !string.IsNullOrWhiteSpace(part?.text)).ToArray();
             var choices = (beat.choices ?? Array.Empty<QuestChoice>()).Where(choice =>
@@ -204,7 +204,8 @@ namespace Wuxia
             if (index < 0) index = 0;
             for (int prior = 0; prior < index; prior++)
                 if (!string.IsNullOrEmpty(scene[prior].image)) art = scene[prior].image;
-            ShowNext();
+            if (choicesOnly) ShowChoices();
+            else ShowNext();
 
             void ShowNext()
             {

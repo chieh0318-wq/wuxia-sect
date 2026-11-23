@@ -63,8 +63,9 @@ namespace Wuxia
             {
                 new()
                 {
-                    name = state.Protagonist.title == "少掌門" ? state.Protagonist.title
-                        : state.Protagonist.gender == "女" ? "三師姐" : "三師兄",
+                    // v1124 B10/A5: the battle HUD names the protagonist, never 「三師兄／三師姐」.
+                    name = !string.IsNullOrWhiteSpace(state.Protagonist.name) ? state.Protagonist.name
+                        : state.Protagonist.title,
                     standee = CharacterFactory.HeroOriginStandee(state.Protagonist.gender,
                         state.Protagonist.lookId ?? state.Protagonist.portrait,
                         state.Protagonist.backgroundId, state.Protagonist.title),

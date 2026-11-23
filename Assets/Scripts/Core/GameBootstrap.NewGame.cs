@@ -571,7 +571,8 @@ namespace Wuxia
             var options = disaster.responses ?? Array.Empty<StoryResponse>();
             if (options.Length == 0) { ChooseLocation(); return; }
             ui.ShowCreation("去留之策", new[] { FormatStory(disaster.responsePrompt) }, null, SkipStory);
-            ui.CreationGrid(3, (options.Length + 2) / 3, 376);
+            // v1124 B7: taller cards so the 「影響」 line and the full summary both fit.
+            ui.CreationGrid(3, (options.Length + 2) / 3, 600);
             foreach (var option in options)
                 ui.CreationChoice(option.name, WithImpact(FormatStory(option.summary), option.effects),
                     string.IsNullOrEmpty(option.image)

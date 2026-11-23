@@ -10,3 +10,4 @@
 *.mat text eol=lf
 *.anim text eol=lf
 *.controller text eol=lf
+/Assets/Resources/Battle/SkillFX/manifest.json -text !eol

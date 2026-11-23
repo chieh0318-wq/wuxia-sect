@@ -151,6 +151,7 @@ namespace Wuxia
         {
             if (instance == null) return;
             var clip = M2RuntimeAssets.Load()?.sfx?.FirstOrDefault(item => item != null && item.name == cue);
+            clip ??= Resources.Load<AudioClip>("Audio/Sfx/" + cue);
             if (clip == null) return;
             instance.effects.pitch = UnityEngine.Random.Range(.96f, 1.04f);
             instance.effects.PlayOneShot(clip);

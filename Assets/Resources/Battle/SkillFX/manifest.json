@@ -1,0 +1,227 @@
+{
+  "version": 1,
+  "style": "水墨、淡彩發光",
+  "sprites": {
+    "arc_thin": {
+      "path": "res://assets/art/skillfx/arc_thin.png",
+      "frames": 6,
+      "cell_size": 256,
+      "purpose": "arc_thin",
+      "source": "exec-de0b30ba-6322-48aa-8828-cce81679d50a.png",
+      "source_row": 0,
+      "alpha": "preserved RGBA",
+      "generated_by": "imagegen"
+    },
+    "arc_medium": {
+      "path": "res://assets/art/skillfx/arc_medium.png",
+      "frames": 6,
+      "cell_size": 256,
+      "purpose": "arc_medium",
+      "source": "exec-de0b30ba-6322-48aa-8828-cce81679d50a.png",
+      "source_row": 1,
+      "alpha": "preserved RGBA",
+      "generated_by": "imagegen"
+    },
+    "arc_heavy": {
+      "path": "res://assets/art/skillfx/arc_heavy.png",
+      "frames": 6,
+      "cell_size": 256,
+      "purpose": "arc_heavy",
+      "source": "exec-de0b30ba-6322-48aa-8828-cce81679d50a.png",
+      "source_row": 2,
+      "alpha": "preserved RGBA",
+      "generated_by": "imagegen"
+    },
+    "impact_cross": {
+      "path": "res://assets/art/skillfx/impact_cross.png",
+      "frames": 6,
+      "cell_size": 256,
+      "purpose": "impact_cross",
+      "source": "exec-de0b30ba-6322-48aa-8828-cce81679d50a.png",
+      "source_row": 3,
+      "alpha": "preserved RGBA",
+      "generated_by": "imagegen"
+    },
+    "ink_trail": {
+      "path": "res://assets/art/skillfx/ink_trail.png",
+      "frames": 6,
+      "cell_size": 256,
+      "purpose": "ink_trail",
+      "source": "exec-6f739edd-7baa-4879-8800-16af31fd7c19.png",
+      "source_row": 0,
+      "alpha": "preserved RGBA",
+      "generated_by": "imagegen"
+    },
+    "shock_ring": {
+      "path": "res://assets/art/skillfx/shock_ring.png",
+      "frames": 6,
+      "cell_size": 256,
+      "purpose": "shock_ring",
+      "source": "exec-6f739edd-7baa-4879-8800-16af31fd7c19.png",
+      "source_row": 1,
+      "alpha": "preserved RGBA",
+      "generated_by": "imagegen"
+    },
+    "ground_crack": {
+      "path": "res://assets/art/skillfx/ground_crack.png",
+      "frames": 6,
+      "cell_size": 256,
+      "purpose": "ground_crack",
+      "source": "exec-6f739edd-7baa-4879-8800-16af31fd7c19.png",
+      "source_row": 2,
+      "alpha": "preserved RGBA",
+      "generated_by": "imagegen"
+    },
+    "debris": {
+      "path": "res://assets/art/skillfx/debris.png",
+      "frames": 6,
+      "cell_size": 256,
+      "purpose": "debris",
+      "source": "exec-6f739edd-7baa-4879-8800-16af31fd7c19.png",
+      "source_row": 3,
+      "alpha": "preserved RGBA",
+      "generated_by": "imagegen"
+    },
+    "spear_beam": {
+      "path": "res://assets/art/skillfx/spear_beam.png",
+      "frames": 6,
+      "cell_size": 256,
+      "purpose": "spear_beam",
+      "source": "exec-ee4ea1e9-7bef-46d3-968c-5f942fd69817.png",
+      "source_row": 0,
+      "alpha": "preserved RGBA",
+      "generated_by": "imagegen"
+    },
+    "projectile_trail": {
+      "path": "res://assets/art/skillfx/projectile_trail.png",
+      "frames": 6,
+      "cell_size": 256,
+      "purpose": "projectile_trail",
+      "source": "exec-ee4ea1e9-7bef-46d3-968c-5f942fd69817.png",
+      "source_row": 1,
+      "alpha": "preserved RGBA",
+      "generated_by": "imagegen"
+    },
+    "seal_chain": {
+      "path": "res://assets/art/skillfx/seal_chain.png",
+      "frames": 6,
+      "cell_size": 256,
+      "purpose": "seal_chain",
+      "source": "exec-ee4ea1e9-7bef-46d3-968c-5f942fd69817.png",
+      "source_row": 2,
+      "alpha": "preserved RGBA",
+      "generated_by": "imagegen"
+    },
+    "heal_lotus": {
+      "path": "res://assets/art/skillfx/heal_lotus.png",
+      "frames": 6,
+      "cell_size": 256,
+      "purpose": "heal_lotus",
+      "source": "exec-ee4ea1e9-7bef-46d3-968c-5f942fd69817.png",
+      "source_row": 3,
+      "alpha": "preserved RGBA",
+      "generated_by": "imagegen"
+    },
+    "smoke": {
+      "path": "res://assets/art/skillfx/smoke.png",
+      "frames": 6,
+      "cell_size": 256,
+      "purpose": "smoke",
+      "source": "exec-82234937-4351-4533-ad87-9ed160b76ba3.png",
+      "source_row": 0,
+      "alpha": "preserved RGBA",
+      "generated_by": "imagegen"
+    },
+    "fire": {
+      "path": "res://assets/art/skillfx/fire.png",
+      "frames": 6,
+      "cell_size": 256,
+      "purpose": "fire",
+      "source": "exec-82234937-4351-4533-ad87-9ed160b76ba3.png",
+      "source_row": 1,
+      "alpha": "preserved RGBA",
+      "generated_by": "imagegen"
+    },
+    "water": {
+      "path": "res://assets/art/skillfx/water.png",
+      "frames": 6,
+      "cell_size": 256,
+      "purpose": "water",
+      "source": "exec-82234937-4351-4533-ad87-9ed160b76ba3.png",
+      "source_row": 2,
+      "alpha": "preserved RGBA",
+      "generated_by": "imagegen"
+    },
+    "lightning": {
+      "path": "res://assets/art/skillfx/lightning.png",
+      "frames": 6,
+      "cell_size": 256,
+      "purpose": "lightning",
+      "source": "exec-82234937-4351-4533-ad87-9ed160b76ba3.png",
+      "source_row": 3,
+      "alpha": "preserved RGBA",
+      "generated_by": "imagegen"
+    },
+    "wood": {
+      "path": "res://assets/art/skillfx/wood.png",
+      "frames": 6,
+      "cell_size": 256,
+      "purpose": "wood",
+      "source": "exec-876cde79-ee59-4bc4-a822-351811b0ea24.png",
+      "source_row": 0,
+      "alpha": "preserved RGBA",
+      "generated_by": "imagegen"
+    },
+    "metal": {
+      "path": "res://assets/art/skillfx/metal.png",
+      "frames": 6,
+      "cell_size": 256,
+      "purpose": "metal",
+      "source": "exec-876cde79-ee59-4bc4-a822-351811b0ea24.png",
+      "source_row": 1,
+      "alpha": "preserved RGBA",
+      "generated_by": "imagegen"
+    },
+    "palm": {
+      "path": "res://assets/art/skillfx/palm.png",
+      "frames": 6,
+      "cell_size": 256,
+      "purpose": "palm",
+      "source": "exec-876cde79-ee59-4bc4-a822-351811b0ea24.png",
+      "source_row": 2,
+      "alpha": "preserved RGBA",
+      "generated_by": "imagegen"
+    },
+    "poison": {
+      "path": "res://assets/art/skillfx/poison.png",
+      "frames": 6,
+      "cell_size": 256,
+      "purpose": "poison",
+      "source": "exec-876cde79-ee59-4bc4-a822-351811b0ea24.png",
+      "source_row": 3,
+      "alpha": "preserved RGBA",
+      "generated_by": "imagegen"
+    },
+    "name_banner": {
+      "path": "res://assets/art/skillfx/name_banner.png",
+      "frames": 6,
+      "cell_size": 256,
+      "purpose": "name_banner",
+      "source": "exec-bfbd734b-7237-4814-9667-690cd9238ce6.png",
+      "source_row": 0,
+      "alpha": "preserved RGBA",
+      "generated_by": "imagegen"
+    },
+    "ultimate_frame": {
+      "path": "res://assets/art/skillfx/ultimate_frame.png",
+      "frames": 6,
+      "cell_size": 256,
+      "purpose": "ultimate_frame",
+      "source": "exec-bfbd734b-7237-4814-9667-690cd9238ce6.png",
+      "source_row": 1,
+      "alpha": "preserved RGBA",
+      "generated_by": "imagegen"
+    }
+  },
+  "layout": "six horizontal frames per PNG; uniform 256px cells"
+}

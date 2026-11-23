@@ -470,16 +470,16 @@ namespace Wuxia
                 }
             }
 
-            void ShowFloatText(BattleCombatant u, string msg, Color color)
+            void ShowFloatText(BattleCombatant u, string msg, Color color, bool critical)
             {
                 if (u == null || views[u].Root == null) return;
-                var ft = Label(views[u].Root, msg, 30, TextAnchor.MiddleCenter);
+                var ft = Label(views[u].Root, critical ? "暴擊 " + msg : msg, critical ? 43 : 30, TextAnchor.MiddleCenter);
                 ft.color = color;
                 ft.fontStyle = FontStyle.Bold;
                 var sh = ft.gameObject.AddComponent<Shadow>();
                 sh.effectColor = Color.black;
                 sh.effectDistance = new Vector2(2, -2);
-                Anchor(ft.rectTransform, new(.5f, 1), new(.5f, 1), new(-90, -20), new(90, 30));
+                Anchor(ft.rectTransform, new(.5f, 1), new(.5f, 1), new(-125, -20), new(125, 38));
                 runner.StartCoroutine(FloatAndDestroy(ft.rectTransform, fastMode ? 0.35f : 0.65f));
             }
 
@@ -529,13 +529,15 @@ namespace Wuxia
                     foreach (var entry in events)
                     {
                         if (battleScreen != screen) yield break;
-                        if (entry.Actor != null)
-                            yield return Lunge(entry.Actor, entry.Hit ? entry.Target : null);
-                        if (battleScreen != screen) yield break;
                         PushLog(entry.Text);
                         if (entry.Float != null)
-                            ShowFloatText(entry.Target, entry.Float, entry.Hit ? UiKit.HeaderGold : new Color(.65f, .95f, 1f));
+                            ShowFloatText(entry.Target, entry.Float, entry.Critical ? new Color(1f, .51f, .26f)
+                                : entry.Hit ? UiKit.HeaderGold : new Color(.65f, .95f, 1f), entry.Critical);
                         if (entry.Cue != null) AudioManager.Play(entry.Cue);
+                        if (entry.Hit)
+                            yield return PlayImpact(stage, views[entry.Actor], views[entry.Target], entry, fastMode);
+                        else if (entry.Actor != null)
+                            yield return Lunge(entry.Actor, null);
                     }
                     RefreshBattle();
                     if (events.Count > 0) yield return new WaitForSecondsRealtime(fastMode || stopAfterRound ? .08f : .24f);
@@ -639,7 +641,10 @@ namespace Wuxia
             var tex = unit.standee ?? bossStandee ?? (unit.spriteId == null
                 ? CharacterFactory.StandeeTexture(unit.portraitId, unit.gender, portraitFallback: true)
                 : Resources.Load<Texture2D>("Battle/" + unit.spriteId));
-            bool battleCutout = unit.spriteId != null && bossStandee == null;
+            var pose = tex == null ? null : Resources.Load<Texture2D>(
+                (unit.spriteId != null && bossStandee == null ? "Battle/" : "Standees/") + tex.name + "_battle_right");
+            tex = pose ?? tex;
+            bool battleCutout = pose == null && unit.spriteId != null && bossStandee == null;
             float width = 190, height = 248;
             if (!battleCutout && tex != null)
             {
@@ -651,7 +656,7 @@ namespace Wuxia
             float padding = battleCutout ? height * (12f / 512f) : 2f;
             Anchor(spr, feet, feet, new(-width / 2, -padding), new(width / 2, height - padding));
             var raw = AddImage(spr, tex);
-            if (CharacterFactory.FlipStandee(tex, unit.isPlayer))
+            if (pose != null ? !unit.isPlayer : CharacterFactory.FlipStandee(tex, unit.isPlayer))
                 raw.uvRect = new Rect(1, 0, -1, 1);
 
             if (onClick != null)

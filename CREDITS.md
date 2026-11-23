@@ -75,3 +75,10 @@ Quaternius released all three Standard packs under CC0 1.0. Licence files accomp
 - Modular Character Outfits – Fantasy provides the peasant trousers and footwear. [Quaternius](https://quaternius.com/packs/modularcharacteroutfitsfantasy.html)
 
 The Tang outer garments and hair ornaments were made for this project.
+
+## Battle Phase 4
+
+The following ink-wash sequences and original synthesized hit sounds come from the user’s 照夜棧 game prototype.
+
+- Skill FX: arc_heavy.png, arc_medium.png, arc_thin.png, debris.png, fire.png, ground_crack.png, heal_lotus.png, impact_cross.png, ink_trail.png, lightning.png, metal.png, name_banner.png, palm.png, poison.png, projectile_trail.png, seal_chain.png, shock_ring.png, smoke.png, spear_beam.png, ultimate_frame.png, water.png, wood.png, manifest.json.
+- Hit SFX: hit_fist.wav, hit_guard.wav, swing_fist.wav.

@@ -176,6 +176,18 @@ namespace Wuxia
             string look = lookId != null && lookId.StartsWith(prefix, StringComparison.Ordinal) &&
                 int.TryParse(lookId.Substring(prefix.Length), out int number) && number >= 1 && number <= 12
                 ? prefix + number : prefix + "1";
+            string outfit = (backgroundId, sex) switch
+            {
+                ("fubing_orphan", "f") => "hero_f1_fubing_orphan_dashijie",
+                ("scholar_family", "m") => "hero_m1_scholar_family_shaozhangmen",
+                ("mountain_hunter", "f") => "hero_f6_mountain_hunter_dashijie",
+                ("temple_foundling", "m") => "hero_m9_temple_foundling_dashixiong",
+                (null, _) or ("", _) => null,
+                _ => "outfit_" + sex + "_" + backgroundId
+            };
+            if (outfit != null && Resources.Load<Texture2D>("Standees/" + outfit) is Texture2D outfitTexture)
+                return outfitTexture;
+
             string identity = title switch
             {
                 "大師姐" => "dashijie",

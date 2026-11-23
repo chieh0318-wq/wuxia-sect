@@ -41,7 +41,8 @@ namespace Wuxia
     {
         public string Text, Float, Cue;
         public BattleCombatant Actor, Target;
-        public bool Hit;
+        public bool Hit, Critical;
+        public BattleSkill Skill;
     }
 
     internal sealed class BattleModel
@@ -288,7 +289,7 @@ namespace Wuxia
             if (move.power == 0)
             {
                 Apply(actor, move.status);
-                Emit($"{actor.name} 施展{move.label}。", target: actor, floating: move.label, cue: "page");
+                Emit($"{actor.name} 施展{move.label}。", target: actor, floating: move.label, cue: "page", skill: move);
                 return;
             }
 
@@ -309,12 +310,14 @@ namespace Wuxia
                 int counter = Counter(move.element, victim.element);
                 double multiplier = counter > 0 ? 1.25 : counter < 0 ? .8 : 1;
                 float reduction = Effects(victim).Aggregate(1f, (value, effect) => value * effect.incoming);
+                double roll = random.NextDouble();
+                bool critical = roll >= .92;
                 int amount = Math.Max(1, (int)Math.Round(move.power * attack * attack / (attack + defense) *
-                    multiplier * reduction * (.95 + random.NextDouble() * .1)));
+                    multiplier * reduction * (.95 + roll * .1) * (critical ? 1.5 : 1)));
                 victim.hp = Math.Max(0, victim.hp - amount);
                 string element = counter > 0 ? " 剋制！" : counter < 0 ? " 被剋" : "";
                 Emit($"{actor.name}・{move.label} → {victim.name} {amount} 傷害。{element}",
-                    actor, victim, $"-{amount}{element}", move.all ? "complete" : "page", true);
+                    actor, victim, $"-{amount}{element}", hit: true, skill: move, critical: critical);
                 if (!victim.Alive) victim.intent = null;
                 if (!victim.Alive) continue;
                 if (move.id == "interrupt" && victim.intent != null)
@@ -342,7 +345,7 @@ namespace Wuxia
         }
 
         private void Emit(string text, BattleCombatant actor = null, BattleCombatant target = null,
-            string floating = null, string cue = null, bool hit = false) =>
-            events.Add(new BattleEvent { Text = text, Actor = actor, Target = target, Float = floating, Cue = cue, Hit = hit });
+            string floating = null, string cue = null, bool hit = false, BattleSkill skill = null, bool critical = false) =>
+            events.Add(new BattleEvent { Text = text, Actor = actor, Target = target, Float = floating, Cue = cue, Hit = hit, Skill = skill, Critical = critical });
     }
 }

@@ -9,7 +9,7 @@ namespace Wuxia
         // Presentation runs on an unscaled clock. Holding the contact frame locally
         // leaves Unity's time scale, menu transitions and capture timing intact.
         private IEnumerator PlayImpact(RectTransform stage, BattleUnitView attacker, BattleUnitView target,
-            BattleEvent entry, bool fast)
+            BattleEvent entry, int speed, bool firstBigMove, System.Action<BattleEvent> capture)
         {
             bool heavy = entry.Skill?.telegraph == true || entry.Skill?.all == true;
             bool guarded = entry.Target.statuses.ContainsKey("guard");
@@ -28,10 +28,11 @@ namespace Wuxia
             var ink = Strip(heavy ? "shock_ring" : "ink_trail", center, heavy ? 380 : 245, Color.white);
             var impact = Strip(elementSheet, center, heavy ? 308 : 205, tint);
             var stagePosition = stage.anchoredPosition;
+            var stageScale = stage.localScale;
             var targetColor = target.Art.color;
-            float hold = fast ? .035f : .065f;
-            float duration = heavy ? .46f : .30f;
-            if (fast) duration *= .60f;
+            float tempo = Mathf.Sqrt(speed);
+            float hold = (heavy ? .085f : .060f) / tempo;
+            float duration = (firstBigMove ? .54f : heavy ? .32f : .28f) / tempo;
             float direction = entry.Actor.isPlayer ? 1 : -1;
             AudioManager.Play("swing_fist");
             attacker.Root.anchoredPosition += Vector2.right * (30 * direction);
@@ -43,15 +44,22 @@ namespace Wuxia
                 float progress = Mathf.Clamp01((time - hold) / (duration - hold));
                 float shake = time < hold ? 0 : Mathf.Sin(progress * 36) * (1 - progress) * (heavy ? 16 : 8);
                 stage.anchoredPosition = stagePosition + new Vector2(shake, shake * .27f);
+                if (firstBigMove) stage.localScale = stageScale * (1 + .037f * (1 - progress));
                 target.Art.color = Color.Lerp(tint, targetColor, progress);
                 if (time >= hold) attacker.Root.anchoredPosition = attacker.StandingPosition;
                 SetFrame(blade, progress, direction < 0);
                 SetFrame(ink, progress, direction < 0);
                 SetFrame(impact, progress, false);
+                if (progress >= .36f && capture != null)
+                {
+                    capture(entry);
+                    capture = null;
+                }
                 yield return null;
             }
             if (stage == null) yield break;
             stage.anchoredPosition = stagePosition;
+            stage.localScale = stageScale;
             attacker.Root.anchoredPosition = attacker.StandingPosition;
             target.Art.color = targetColor;
             if (blade != null) Object.Destroy(blade.gameObject);
@@ -72,6 +80,23 @@ namespace Wuxia
                 SetFrame(image, 0, false);
                 return image;
             }
+        }
+
+        private IEnumerator PlayRecovery(BattleUnitView unit)
+        {
+            var texture = Resources.Load<Texture2D>("Battle/SkillFX/heal_lotus");
+            if (texture == null) yield break;
+            var rect = Rect("Recovery", unit.Root);
+            var center = new Vector2(.5f, .45f);
+            Anchor(rect, center, center, new(-112, -112), new(112, 112));
+            var art = AddImage(rect, texture);
+            art.raycastTarget = false;
+            for (float elapsed = 0; elapsed < .34f && art != null; elapsed += Time.unscaledDeltaTime)
+            {
+                SetFrame(art, elapsed / .34f, false);
+                yield return null;
+            }
+            if (art != null) Object.Destroy(art.gameObject);
         }
 
         private static void SetFrame(RawImage strip, float progress, bool flip)

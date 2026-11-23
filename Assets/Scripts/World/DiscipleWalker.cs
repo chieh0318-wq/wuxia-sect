@@ -15,6 +15,7 @@ namespace Wuxia
         private static readonly HashSet<DiscipleWalker> ActiveWalkers = new();
         private Transform body;
         private SpriteRenderer figureRenderer;
+        private Sprite walkingSprite;
 
         private void OnEnable() => ActiveWalkers.Add(this);
         private void OnDisable() => ActiveWalkers.Remove(this);
@@ -30,6 +31,7 @@ namespace Wuxia
             transform.position = grounded(transform.position);
             body = figure;
             figureRenderer = body.GetComponentInChildren<SpriteRenderer>();
+            walkingSprite = CharacterFactory.WalkingStandee(figureRenderer.sprite);
             restingPosition = body.localPosition;
             destination = new Vector3(transform.position.x, 0, transform.position.z);
             pause = UnityEngine.Random.Range(0.5f, 2.5f);
@@ -77,7 +79,10 @@ namespace Wuxia
             }
             float screenX = Vector3.Dot(next - flat, body.right);
             if (Mathf.Abs(screenX) > .00001f)
-                figureRenderer.flipX = CharacterFactory.FlipStandee(figureRenderer.sprite.texture, screenX > 0);
+            {
+                figureRenderer.sprite = walkingSprite;
+                figureRenderer.flipX = CharacterFactory.FlipStandee(walkingSprite.texture, screenX > 0);
+            }
             body.localPosition = restingPosition + Vector3.up * (Mathf.Abs(Mathf.Sin(Time.time * 13)) * .022f);
             transform.position = grounded(next);
         }

@@ -161,6 +161,8 @@ namespace Wuxia
                 yield return CaptureHeroStandees();
                 if (!shotsOk)
                     yield break;
+                yield return CaptureOriginCourtyard();
+                if (!shotsOk) yield break;
                 if (!VerifyCapturedGame(directory))
                 {
                     Application.Quit(1);
@@ -222,6 +224,48 @@ namespace Wuxia
                 Debug.Log($"[Capture] wrote {path}");
             }
 
+            IEnumerator CaptureOriginCourtyard()
+            {
+                var walkers = FindObjectsByType<DiscipleWalker>();
+                foreach (var walker in walkers) walker.gameObject.SetActive(false);
+                controls.Frame(new Vector2(0, -11.4f), 9f);
+                view.fieldOfView = 45;
+                var examples = new[]
+                {
+                    ("女", "hero_f1", "fubing_orphan", "大師姐", true, "77_courtyard_p4_orphan.png"),
+                    ("男", "hero_m9", "temple_foundling", "大師兄", false, "78_courtyard_p4_temple.png")
+                };
+                try
+                {
+                    foreach (var (gender, look, origin, title, faceRight, file) in examples)
+                    {
+                        var figure = new GameObject("Origin outfit capture");
+                        try
+                        {
+                            figure.transform.position = world.Grounded(new Vector3(0, 0, -12.3f));
+                            var outfit = CharacterFactory.HeroStandee(gender, look, origin, title);
+                            var body = CharacterFactory.BuildStandee(new DiscipleData { id = look, gender = gender },
+                                figure.transform, out _, standee: outfit);
+                            var renderer = body.GetComponentInChildren<SpriteRenderer>();
+                            renderer.sprite = CharacterFactory.WalkingStandee(renderer.sprite);
+                            renderer.flipX = CharacterFactory.FlipStandee(renderer.sprite.texture, faceRight);
+                            yield return null;
+                            shotsOk = SaveShot(file);
+                            if (!shotsOk) yield break;
+                        }
+                        finally
+                        {
+                            Destroy(figure);
+                        }
+                    }
+                }
+                finally
+                {
+                    foreach (var walker in walkers)
+                        if (walker != null) walker.gameObject.SetActive(true);
+                }
+            }
+
             IEnumerator CaptureHeroStandees()
             {
                 var hero = state.Protagonist;
@@ -260,12 +304,14 @@ namespace Wuxia
             {
                 System.Func<IEnumerator> round = null;
                 System.Action<string> inspect = null;
-                ui.StartTurnBattle(state, new BattleRequest(), this, routine => round = routine, action => inspect = action);
+                bool hitShot = false, critShot = false, bossShot = false;
+                ui.StartTurnBattle(state, new BattleRequest(), this, routine => round = routine, action => inspect = action,
+                    CaptureImpact, captureCommand: _ => "attack");
                 try
                 {
                     yield return null;
                     Debug.Log("[Capture] Battle start: both sides ready for round one.");
-                    shotsOk = SaveShot("66_battle_p3_facing.png");
+                    shotsOk = SaveShot("72_battle_p4_facing.png");
                     if (!shotsOk) yield break;
                     inspect("interrupt");
                     shotsOk = SaveShot("60_battle_p3_command_tooltip.png") && SaveShot("61_battle_p3_turn_order.png");
@@ -304,7 +350,8 @@ namespace Wuxia
                     try
                     {
                         Random.InitState(318);
-                        ui.StartTurnBattle(state, boss, this, routine => round = routine);
+                        ui.StartTurnBattle(state, boss, this, routine => round = routine, captureImpact: CaptureImpact,
+                            captureCommand: turn => turn == 2 ? "defend" : null);
                         yield return null;
                         string track = AudioManager.CurrentTrack;
                         if (!boss.IsBoss || (track != "boss_a_g1" && track != "boss_b_g1"))
@@ -340,6 +387,16 @@ namespace Wuxia
                 {
                     ui.CloseBattle();
                     AudioManager.Music("courtyard");
+                }
+
+                void CaptureImpact(BattleEvent entry)
+                {
+                    if (!hitShot && !entry.Critical && entry.Actor.isPlayer && shotsOk)
+                        shotsOk = hitShot = SaveShot("73_battle_p4_hit.png");
+                    if (!critShot && entry.Critical && shotsOk)
+                        shotsOk = critShot = SaveShot("74_battle_p4_crit.png");
+                    if (!bossShot && entry.Actor.enemyProfile == "boss" && entry.Skill?.telegraph == true && shotsOk)
+                        shotsOk = bossShot = SaveShot("75_battle_p4_boss_move.png");
                 }
             }
         }

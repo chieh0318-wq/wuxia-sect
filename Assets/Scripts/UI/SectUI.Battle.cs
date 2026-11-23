@@ -24,7 +24,7 @@ namespace Wuxia
         internal bool BattleOpen => battleScreen != null;
 
         internal void StartTurnBattle(GameState state, BattleRequest req, MonoBehaviour runner,
-            Action<Func<IEnumerator>> captureRound = null, Action<Action<string>> captureInspect = null)
+            Action<Func<IEnumerator>> captureRound = null, Action<Action<string>> captureInspect = null, Action<BattleEvent> captureImpact = null, Func<int, string> captureCommand = null)
         {
             CloseBattle();
             AudioManager.Music(req.MusicCue);
@@ -72,6 +72,9 @@ namespace Wuxia
             // ── CENTER STAGE: Left Player Party & Right Enemy Squad ──
             var stage = Rect("Stage", battleScreen);
             Fill(stage);
+            var floatLayer = Rect("FloatingBattleFeedback", battleScreen);
+            Fill(floatLayer);
+            var playedBigMoves = new HashSet<string>();
 
             bool busy = false;
             int targetIdx = 0;
@@ -121,7 +124,8 @@ namespace Wuxia
             logText.resizeTextForBestFit = false;
             UpdateLog();
 
-            bool fastMode = false, autoMode = false;
+            int speed = 1;
+            bool autoMode = false;
             string selectedAction = "attack";
             string inspectedAction = selectedAction;
             int activeTab = 0;
@@ -141,9 +145,9 @@ namespace Wuxia
             RectTransform speedBtn = null, autoBtn = null;
             speedBtn = Button(sideBar, "x1 速度", () =>
             {
-                fastMode = !fastMode;
-                speedBtn.GetComponentInChildren<Text>().text = fastMode ? "x2 加速" : "x1 速度";
-                UiKit.Skin(speedBtn.GetComponent<Image>(), fastMode ? "Selected" : "Wood");
+                speed = speed % 3 + 1;
+                speedBtn.GetComponentInChildren<Text>().text = speed == 1 ? "x1 速度" : $"x{speed} 加速";
+                UiKit.Skin(speedBtn.GetComponent<Image>(), speed > 1 ? "Selected" : "Wood");
             });
             UiKit.Skin(speedBtn.GetComponent<Image>(), "Wood");
             autoBtn = Button(sideBar, "自動", () =>
@@ -473,14 +477,19 @@ namespace Wuxia
             void ShowFloatText(BattleCombatant u, string msg, Color color, bool critical)
             {
                 if (u == null || views[u].Root == null) return;
-                var ft = Label(views[u].Root, critical ? "暴擊 " + msg : msg, critical ? 43 : 30, TextAnchor.MiddleCenter);
+                var unitView = views[u];
+                var anchor = new Vector2(.5f, unitView.Root.anchorMin.y);
+                var position = unitView.StandingPosition + Vector2.up * 315;
+                var ft = Label(floatLayer, critical ? "暴擊 " + msg : msg, critical ? 49 : 36, TextAnchor.MiddleCenter);
+                ft.raycastTarget = false;
                 ft.color = color;
                 ft.fontStyle = FontStyle.Bold;
                 var sh = ft.gameObject.AddComponent<Shadow>();
                 sh.effectColor = Color.black;
                 sh.effectDistance = new Vector2(2, -2);
-                Anchor(ft.rectTransform, new(.5f, 1), new(.5f, 1), new(-125, -20), new(125, 38));
-                runner.StartCoroutine(FloatAndDestroy(ft.rectTransform, fastMode ? 0.35f : 0.65f));
+                Anchor(ft.rectTransform, anchor, anchor, position + new Vector2(-160, -30),
+                    position + new Vector2(160, 30));
+                runner.StartCoroutine(FloatAndDestroy(ft.rectTransform, .70f / Mathf.Sqrt(speed)));
             }
 
             IEnumerator FloatAndDestroy(RectTransform rt, float dur)
@@ -498,7 +507,7 @@ namespace Wuxia
 
             IEnumerator Lunge(BattleCombatant attacker, BattleCombatant defender)
             {
-                float step = fastMode ? 0.08f : 0.16f;
+                float step = .16f / speed;
                 var moving = views[attacker];
                 var hit = defender == null ? null : views[defender];
                 if (moving.Root != null)
@@ -521,7 +530,9 @@ namespace Wuxia
                     if (model.NeedsCommand && command == null)
                     {
                         if (!autoMode && !stopAfterRound) break;
-                        (command, target) = model.AutoCommand(target);
+                        command = captureCommand?.Invoke(model.Round);
+                        if (command == null || model.Reason(command, target) != "")
+                            (command, target) = model.AutoCommand(target);
                     }
 
                     var events = model.Step(command, target);
@@ -535,12 +546,19 @@ namespace Wuxia
                                 : entry.Hit ? UiKit.HeaderGold : new Color(.65f, .95f, 1f), entry.Critical);
                         if (entry.Cue != null) AudioManager.Play(entry.Cue);
                         if (entry.Hit)
-                            yield return PlayImpact(stage, views[entry.Actor], views[entry.Target], entry, fastMode);
+                        {
+                            bool firstBigMove = (entry.Skill?.all == true || entry.Skill?.telegraph == true)
+                                && playedBigMoves.Add(entry.Skill.id);
+                            yield return PlayImpact(stage, views[entry.Actor], views[entry.Target], entry,
+                                speed, firstBigMove, captureImpact);
+                        }
                         else if (entry.Actor != null)
                             yield return Lunge(entry.Actor, null);
+                        else if (entry.Float?.StartsWith("+", StringComparison.Ordinal) == true)
+                            yield return PlayRecovery(views[entry.Target]);
                     }
                     RefreshBattle();
-                    if (events.Count > 0) yield return new WaitForSecondsRealtime(fastMode || stopAfterRound ? .08f : .24f);
+                    if (events.Count > 0) yield return new WaitForSecondsRealtime(stopAfterRound ? .08f : .24f / speed);
                     if (stopAfterRound && model.Round != startingRound) break;
                 }
 
@@ -641,22 +659,21 @@ namespace Wuxia
             var tex = unit.standee ?? bossStandee ?? (unit.spriteId == null
                 ? CharacterFactory.StandeeTexture(unit.portraitId, unit.gender, portraitFallback: true)
                 : Resources.Load<Texture2D>("Battle/" + unit.spriteId));
-            var pose = tex == null ? null : Resources.Load<Texture2D>(
-                (unit.spriteId != null && bossStandee == null ? "Battle/" : "Standees/") + tex.name + "_battle_right");
-            tex = pose ?? tex;
-            bool battleCutout = pose == null && unit.spriteId != null && bossStandee == null;
-            float width = 190, height = 248;
-            if (!battleCutout && tex != null)
+            var (pose, nativeRight) = CharacterFactory.BattlePose(tex,
+                unit.spriteId != null && bossStandee == null ? "Battle/" : "Standees/",
+                unit.gender, unit.isPlayer, unit.standee != null);
+            tex = pose;
+            float width = 222, height = 248;
+            if (tex != null)
             {
                 float scale = Mathf.Min(width / tex.width, height / tex.height);
                 width = tex.width * scale;
                 height = tex.height * scale;
             }
-            // Battle cutouts have a 12 px transparent margin under the boots.
-            float padding = battleCutout ? height * (12f / 512f) : 2f;
+            const float padding = 2f;
             Anchor(spr, feet, feet, new(-width / 2, -padding), new(width / 2, height - padding));
             var raw = AddImage(spr, tex);
-            if (pose != null ? !unit.isPlayer : CharacterFactory.FlipStandee(tex, unit.isPlayer))
+            if (nativeRight != unit.isPlayer)
                 raw.uvRect = new Rect(1, 0, -1, 1);
 
             if (onClick != null)

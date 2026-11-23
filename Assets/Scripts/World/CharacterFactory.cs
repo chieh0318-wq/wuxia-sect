@@ -166,6 +166,41 @@ namespace Wuxia
             "npc_yf04", "pei", "spec_fugitive", "spec_noble", "wei"
         };
 
+        // The reusable origin art was authored before the battle-pose naming rule.
+        private static readonly Dictionary<string, bool> authoredOutfitFacingRight = new()
+        {
+            ["hero_f1_fubing_orphan_dashijie"] = true,
+            ["hero_m1_scholar_family_shaozhangmen"] = true,
+            ["hero_f6_mountain_hunter_dashijie"] = false,
+            ["hero_m9_temple_foundling_dashixiong"] = true
+        };
+
+        internal static (Texture2D texture, bool faceRight) BattlePose(Texture2D idle, string folder,
+            string gender, bool ally, bool hero)
+        {
+            if (idle != null)
+            {
+                string id = idle.name;
+                if (id.EndsWith("_battle_right", StringComparison.Ordinal) ||
+                    id.StartsWith("outfit_", StringComparison.Ordinal))
+                    return (idle, true);
+                var pose = Resources.Load<Texture2D>(folder + id + "_battle_right");
+                if (pose != null) return (pose, true);
+                if (authoredOutfitFacingRight.TryGetValue(id, out var nativeRight)) return (idle, nativeRight);
+            }
+
+            // Preserve the silhouette direction in older saves and for party members
+            // who have no individual combat artwork yet.
+            if (!ally) return (Resources.Load<Texture2D>("Battle/enemy_boss_battle_right"), true);
+            string sex = gender == "女" ? "f" : "m";
+            if (hero)
+                return (Resources.Load<Texture2D>("Standees/hero_" + sex + "1_battle_right") ??
+                    Resources.Load<Texture2D>("Standees/" + (sex == "f"
+                        ? "hero_f1_fubing_orphan_dashijie" : "hero_m1_scholar_family_shaozhangmen")), true);
+            return (Resources.Load<Texture2D>("Battle/ally_" + sex + "_battle_right") ??
+                Resources.Load<Texture2D>("Standees/" + (sex == "f" ? "xu" : "lin") + "_battle_right"), true);
+        }
+
         internal static bool FlipStandee(Texture2D texture, bool faceRight) =>
             texture != null && leftFacing.Contains(texture.name) == faceRight;
 
@@ -229,6 +264,19 @@ namespace Wuxia
                 new(.95f, .64f), new(.15f, .11f, .08f, .62f), -1);
             shadow.localRotation = Quaternion.Euler(90, 0, 0);
             return body;
+        }
+
+        internal static Sprite WalkingStandee(Sprite idle)
+        {
+            if (idle == null || idle.texture.name.EndsWith("_battle_right", StringComparison.Ordinal)) return idle;
+            var pose = Resources.Load<Texture2D>("Standees/" + idle.texture.name + "_battle_right");
+            if (pose == null) return idle;
+            if (!standeeSprites.TryGetValue(pose, out var sprite))
+            {
+                sprite = StandeeSprite(pose);
+                standeeSprites.Add(pose, sprite);
+            }
+            return sprite;
         }
 
         private static Sprite StandeeSprite(Texture2D texture) => Sprite.Create(texture,

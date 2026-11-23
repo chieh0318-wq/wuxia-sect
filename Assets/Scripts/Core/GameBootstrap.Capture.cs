@@ -65,6 +65,7 @@ namespace Wuxia
                     ("47_legacy_shop.png", creation.CaptureLegacyShop),
                     ("15_background.png", creation.CaptureBackground),
                     ("04_prologue_beat.png", creation.CapturePrologue),
+                    ("04a_prologue_right.png", creation.CaptureOpposingSpeaker),
                     ("04b_succession.png", creation.CaptureSuccession),
                     ("04c_friend_arrival.png", creation.CaptureFriendArrival),
                     ("05_disaster_choice.png", creation.CaptureDisaster),
@@ -82,6 +83,9 @@ namespace Wuxia
                             next.Story.locationId = site.id;
                             next.Story.mapNode = site.node;
                         }
+                        next.Protagonist.name = "盧凝雪";
+                        next.Protagonist.gender = "女";
+                        next.Protagonist.portrait = next.Protagonist.lookId = "hero_f1";
                         EnterCourtyard(next, true);
                         controls.enabled = false;
                         tutorial?.ChooseForCapture();

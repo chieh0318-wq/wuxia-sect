@@ -44,8 +44,10 @@ namespace Wuxia
                 Color seal = taken ? new Color(.42f, .40f, .37f) : site.Guarded ? MapUi.Red : MapUi.Paper;
                 MapUi.Panel(marker, "印框", 0, 0, 30, 30, taken ? MapUi.Ink : new Color(.93f, .76f, .30f)).GetComponent<Image>().raycastTarget = false;
                 MapUi.Panel(marker, "印面", 3, 3, 24, 24, seal).GetComponent<Image>().raycastTarget = false;
-                MapUi.Text(marker, taken ? "取" : "寶", 0, 0, 30, 30, 18, taken || site.Guarded ? MapUi.Paper : MapUi.Red,
-                    TextAnchor.MiddleCenter, "Names");
+                var emblem = MapUi.Rect(marker, "寶物秘境圖示", 4, 4, 22, 22).gameObject.AddComponent<RawImage>();
+                emblem.texture = UiKit.Icon(site.Guarded ? "realm_guardian" : "realm_treasure");
+                emblem.color = taken ? new Color(.58f, .58f, .58f) : Color.white;
+                emblem.raycastTarget = false;
                 marker.SetAsLastSibling();
             }
         }

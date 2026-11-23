@@ -145,17 +145,17 @@ namespace Wuxia
 
         private void DialogueBox(SceneLine line, float y = 708, float height = 268)
         {
-            var paper = MapUi.Docket(page, "對白", 300, y, 1320, height);
+            var paper = MapUi.Kit(page, "對白", 300, y, 1320, height, "Lacquer");
             bool narrator = line.side == "narrator" || string.IsNullOrEmpty(line.name);
             if (!narrator)
             {
-                var plate = MapUi.Kit(page, "名牌", line.side == "right" ? 1240 : 330, y - 50, 360, 64, "Wood");
+                var plate = MapUi.Kit(page, "名牌", line.side == "right" ? 1240 : 330, y - 50, 360, 64, "Plaque");
                 MapUi.Text(plate, line.name, 14, 2, 332, 40, 30, MapUi.Paper, TextAnchor.MiddleCenter, "Names");
                 if (!string.IsNullOrEmpty(line.subtitle))
                     MapUi.Text(plate, line.subtitle, 14, 38, 332, 24, 18, MapUi.Gold, TextAnchor.MiddleCenter);
             }
             var text = MapUi.Text(paper, line.text, 44, narrator ? 30 : 36, 1232, height - 60, 32,
-                narrator ? new Color(.28f, .24f, .19f) : MapUi.Ink, TextAnchor.UpperLeft, "Narration");
+                MapUi.Ink, TextAnchor.UpperLeft, narrator ? "Narration" : "Dialogue");
             text.lineSpacing = 1.1f;
             if (narrator) text.fontStyle = FontStyle.Italic;
         }
@@ -184,7 +184,7 @@ namespace Wuxia
                 button.name = "場景選項:" + choice.label;
                 button.interactable = string.IsNullOrEmpty(choice.block) && choice.run != null;
                 float x = 20;
-                var icon = UiKit.Icon(choice.icon);
+                var icon = UiKit.Icon(choice.icon ?? "realm_explore");
                 if (icon != null)
                 {
                     var image = MapUi.Rect(button.transform, "icon", 18, 18, 56, 56).gameObject.AddComponent<RawImage>();

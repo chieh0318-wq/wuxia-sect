@@ -50,7 +50,10 @@ namespace Wuxia
                         image.raycastTarget = false;
                     }
                 }
-                MapUi.Text(card, hall.name, 20, 196, cardW - 150, 48, 34, MapUi.Red, TextAnchor.MiddleLeft, "Titles");
+                var badge = MapUi.Rect(card, "堂口圖示", 20, 201, 34, 34).gameObject.AddComponent<RawImage>();
+                badge.texture = UiKit.Icon(hall.icon);
+                badge.raycastTarget = false;
+                MapUi.Text(card, hall.name, 62, 196, cardW - 192, 48, 34, MapUi.Red, TextAnchor.MiddleLeft, "Titles");
                 MapUi.Text(card, hall.level, cardW - 140, 200, 120, 40, 22, hall.founded ? MapUi.Jade : MapUi.Ink, TextAnchor.MiddleRight);
                 var desc = MapUi.Text(card, hall.desc, 20, 244, cardW - 40, 84, 18, MapUi.Ink, TextAnchor.UpperLeft, "Narration");
                 desc.resizeTextForBestFit = true;

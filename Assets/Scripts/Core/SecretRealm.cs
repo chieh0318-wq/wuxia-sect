@@ -51,7 +51,7 @@ namespace Wuxia
             new()
             {
                 id = "sword_tomb", name = "《前朝藏劍古塚》", gearSlot = "武器", line = "sword", scene = "realm_sword_tomb", bossStage = 2,
-                boss = new RealmBattle { lead = "披甲劍俑", portrait = "npc_am01", standee = "Battle/enemy_boss", count = 3, difficulty = 1.15f, boss = true, minions = new[] { "石俑", "石俑" } },
+                boss = new RealmBattle { lead = "披甲劍俑", portrait = "npc_am01", standee = "Realms/guardian_sword_figure", count = 3, difficulty = 1.15f, boss = true, minions = new[] { "石俑", "石俑" } },
                 intro = "崤函古道旁的荒塚，傳說埋著前朝劍聖的佩劍。塚口的石碑上刻著八個字：「劍在人在，劍亡人亡」。",
                 stages = new[]
                 {

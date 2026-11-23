@@ -91,6 +91,12 @@ namespace Wuxia
             Debug.Log($"[Capture] Voice: beat clip={clip ?? "none"} loaded={(clip != null && Resources.Load<AudioClip>("Audio/Voice/" + clip) != null)}" +
                 $" voicedBeats={voiced} playlist={AudioManager.PlaylistSummary}");
         }
+        internal void CaptureOpposingSpeaker()
+        {
+            var beats = story.disasters.First(entry => entry.id == "treasure").beats;
+            CaptureBeats(beats, Array.FindIndex(beats, beat => beat.portrait == "elder_villain"));
+        }
+
         internal void CaptureDisaster() => ChooseDisaster();
         internal void CaptureLocation() => ChooseLocation(previewFirst: true);
         internal void CaptureBackground() => ChooseBackground();

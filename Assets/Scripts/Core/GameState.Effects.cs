@@ -80,6 +80,18 @@ namespace Wuxia
                             }
                         }
                         break;
+                    // v1124 C15–C18: realm / hall rewards.
+                    case "item": LegacySystem.AddInventory(Story, effect.@ref, value); break;
+                    case "gear": EquipOrStore(MakeGear(effect.@ref, value)); break;
+                    case "progress": StudyLine(effect.@ref, effect.value); break;
+                    case "injury":
+                        if (value > 0) Injure(value);
+                        else Protagonist.injury = Mathf.Max(0, Protagonist.injury + value);
+                        break;
+                    case "heal": for (int i = 0; i < Mathf.Max(1, value); i++) RecoverInjuries(); break;
+                    case "discipleProgress":
+                        foreach (var pupil in Disciples) TrainLine(RankSystem.BestCombat(pupil.lines), effect.value);
+                        break;
                     default: Debug.LogWarning($"[Effects] Unknown key {effect.key}"); break;
                 }
             }

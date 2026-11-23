@@ -52,6 +52,13 @@ namespace Wuxia
                     string who = PersonName(effect.@ref, state);
                     return value > 0 ? $"{who}加入同門" : value < 0 ? $"{who}離開同門" : "";
                 case "flag": return "";
+                // v1124 C15–C18: realm / hall rewards.
+                case "item": return $"{ItemName(effect.@ref)} ×{value}";
+                case "gear": return $"{GameState.GearGrades[Mathf.Clamp(value, 0, GameState.GearGrades.Length - 1)]}{effect.@ref}一件";
+                case "progress": return $"{LineName(effect.@ref)}修習進度 +{raw:0.#}";
+                case "injury": return value > 0 ? $"主角傷勢 +{value}" : $"主角傷勢 {value}";
+                case "heal": return "全門療傷";
+                case "discipleProgress": return $"弟子武學進度 +{raw:0.#}";
             }
             int slot = AttributeSystem.Index(effect.key);
             return slot >= 0 ? $"{AttributeSystem.Names[slot]} {signed}" : "";
@@ -90,6 +97,12 @@ namespace Wuxia
             string label = level switch { 1 => "易", 2 => "中", 3 => "難", _ => "極難" };
             return new string('★', level) + new string('☆', 4 - level) + "　" + label;
         }
+
+        internal static string ItemName(string id) =>
+            System.Array.Find(LegacySystem.Catalog, item => item.id == id)?.name ?? id switch
+            {
+                "item_jinchuang" => "金創靈藥", "item_jiuzhuan" => "九轉回元丹", _ => id
+            };
 
         internal static string FactionName(string id)
         {

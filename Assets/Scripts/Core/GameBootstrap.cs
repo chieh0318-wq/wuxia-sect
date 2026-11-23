@@ -273,6 +273,7 @@ namespace Wuxia
                 ui.UpdateStoryBeat();
                 return;
             }
+            if (ui.SceneOpen) return; // v1124 C15–C18: scene pages own the input
             if (HandleWorldMapInput()) return; // M2-B map input
             if (!capturing && !ui.ModalOpen && !ui.DialogueOpen && !choosingBuilding)
             {
@@ -383,8 +384,14 @@ namespace Wuxia
             commands.Add(("藏經閣科技樹", library
                 ? $"四脈十六門功法：已研習 {state.TechCount}／{GameState.TechTree.Length}，點擊開啟科技樹研習"
                 : "須先興建藏經閣", library ? ShowTechTree : null, false));
-            commands.Add(("山門演武・回合實戰", "親率弟子切磋實戰（不耗行動力），勝出可得銀兩、聲望與先輩積分",
-                () => StartSkirmishBattle(), false));
+            // v1124 C17: 山門演武 is now sparring between fellow disciples (costs AP); C18: the 堂口 page.
+            bool maySpar = state.ActionPoints >= state.SparApCost && state.Food >= state.SparFoodCost;
+            commands.Add(($"山門演武・同門切磋　行動力 {state.SparApCost}", "選派同門兩人對練或多人混戰：勝者進境多、全員小幅成長，好感隨之變化",
+                maySpar ? StartSparring : null, false));
+            int halls = HallCatalog.Data.halls.Count(hall => state.HallLevel(hall.id) > 0);
+            int ready = HallCatalog.Data.halls.Count(hall => state.HallLevel(hall.id) == 0 && state.HallUnlocked(hall));
+            commands.Add(("山門堂口", $"練武堂、鑄造堂、藥堂、客堂、傳功閣：已建 {halls}／{HallCatalog.Data.halls.Length}" +
+                (ready > 0 ? $"，{ready} 處可興建" : "，隨聲望與劇情逐步解鎖"), OpenHalls, ready > 0));
             foreach (string id in new[] { "secret_realm", "explore" })
             {
                 var action = state.Data.Actions.FirstOrDefault(entry => entry.id == id);
@@ -457,6 +464,13 @@ namespace Wuxia
                 ui.Refresh(state);
                 ShowCommands();
                 EnterSecretRealm("循著江湖傳聞");
+                return;
+            }
+            if (action.id == "explore")
+            {
+                // v1124 C15: 山道巡訪 plays as a scene (encounter, optional battle, rewards).
+                ui.Refresh(state);
+                ExploreRoad(action);
                 return;
             }
             float rumor = action.id == "explore" ? state.ConsumeRumors() : 0;

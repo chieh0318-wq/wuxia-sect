@@ -1,0 +1,391 @@
+{
+  "note": "v1124 C15/C16. scenes: background placeholders (Resources/Realms/<id>, fallback used until P2 paints them). roadEvents: 山道巡訪 encounters. treasures: fixed one-time 寶物秘境 on the world map. Effect keys follow GameEffect plus item(ref item id, value qty), gear(ref slot, value grade 0-3), progress(ref line or martial, value), injury(value).",
+  "scenes": [
+    { "id": "realm_mountain_road", "fallback": "Battle/battle_ground_road", "caption": "崤山山道" },
+    { "id": "realm_ancient_stele", "fallback": "Story/cg_crossroads", "caption": "荒山古碑" },
+    { "id": "realm_village_edge", "fallback": "Story/cg_ruins", "caption": "山村邊緣" },
+    { "id": "realm_sword_tomb", "fallback": "Story/cg_ruins", "caption": "前朝藏劍古塚" },
+    { "id": "realm_ice_cave", "fallback": "Story/cg_new_mountain", "caption": "太白寒玉洞窟" },
+    { "id": "realm_bandit_vault", "fallback": "Battle/battle_ground_fortification", "caption": "黑風嶺密庫" },
+    { "id": "realm_immortal_go", "fallback": "Story/cg_peace", "caption": "終南仙人棋坪" },
+    { "id": "realm_taoist_ruin", "fallback": "Story/cg_elder_hall", "caption": "終南古觀" },
+    { "id": "realm_elixir_room", "fallback": "Story/cg_new_mountain", "caption": "太乙丹房" },
+    { "id": "realm_battlefield", "fallback": "Battle/battle_ground_fortification", "caption": "雁門古戰場" },
+    { "id": "realm_sword_mound", "fallback": "Battle/battle_ground_mountain_gate", "caption": "七星劍冢" },
+    { "id": "realm_cliff_carving", "fallback": "Story/cg_crossroads", "caption": "泰山御風石刻" },
+    { "id": "realm_dragon_cave", "fallback": "Story/cg_ruins", "caption": "太行應龍洞" },
+    { "id": "realm_thousand_buddha", "fallback": "Story/cg_elder_hall", "caption": "峨眉千佛洞" },
+    { "id": "realm_garden_villa", "fallback": "Story/cg_peace", "caption": "寒山別院" },
+    { "id": "realm_old_forge", "fallback": "Battle/battle_ground_fortification", "caption": "磁山劍爐" },
+    { "id": "realm_desert_grotto", "fallback": "Story/cg_world_map_intro", "caption": "鳴沙古窟" },
+    { "id": "realm_cloud_tea", "fallback": "Story/cg_peace", "caption": "華頂雲霧茶洞" },
+    { "id": "realm_fire_cave", "fallback": "Story/cg_treasure_attack", "caption": "祝融峰火洞" },
+    { "id": "sect_halls", "fallback": "Story/cg_elder_hall", "caption": "山門堂口" },
+    { "id": "sect_sparring", "fallback": "Battle/battle_ground_mountain_gate", "caption": "演武場" }
+  ],
+  "roadEvents": [
+    {
+      "id": "road_robbery",
+      "title": "山道遇劫",
+      "scene": "realm_mountain_road",
+      "weight": 12,
+      "speaker": { "name": "趙掌櫃", "subtitle": "洛陽綢緞商", "portrait": "npc_mer02", "gender": "男" },
+      "lines": [
+        { "speaker": "narrator", "text": "轉過山坳，前頭傳來哭喊。三五個蒙面漢子攔下一輛驢車，正把綢緞一匹匹往肩上扛。" },
+        { "speaker": "npc", "text": "這位{俠}——救命啊！這批貨是要送到長安的，丟了我全家老小都得上街討飯！" }
+      ],
+      "choices": [
+        { "label": "拔劍救人", "type": "battle", "text": "山賊不過烏合之眾，正好替鄉里除害。",
+          "battle": { "lead": "攔路山賊頭目", "portrait": "npc_em03", "count": 3, "difficulty": 0.85, "minions": ["山賊嘍囉", "山賊刀手"] },
+          "success": "山賊丟下綢緞四散逃竄。趙掌櫃千恩萬謝，硬是塞來一袋碎銀。", "failure": "山賊人多勢眾，你護著掌櫃且戰且退，總算把人救下，貨卻丟了大半。",
+          "successEffects": [ { "key": "silver", "value": 20 }, { "key": "reputation", "value": 3 } ],
+          "failureEffects": [ { "key": "reputation", "value": 1 }, { "key": "injury", "value": 1 } ] },
+        { "label": "報出門派名號喝退", "type": "check", "attr": "cha", "text": "崤山劍門的名號，在這一帶還算響亮。",
+          "success": "「崤山劍門在此，誰敢放肆！」山賊面面相覷，扛著綢緞的手一鬆，轉身就跑。", "failure": "山賊頭目冷笑一聲：「崤山劍門？早就散了吧！」你只得動手，帶了點傷才把人趕走。",
+          "successEffects": [ { "key": "reputation", "value": 2 }, { "key": "silver", "value": 8 } ],
+          "failureEffects": [ { "key": "reputation", "value": 1 }, { "key": "injury", "value": 1 } ] },
+        { "label": "悄悄繞道", "type": "plain", "text": "門派元氣未復，不宜多生事端。",
+          "success": "你壓低斗笠，從林間小路繞了過去。身後的哭喊聲漸漸聽不見了。",
+          "successEffects": [ { "key": "reputation", "value": -1 } ] }
+      ]
+    },
+    {
+      "id": "road_herbalist",
+      "title": "崖上採藥人",
+      "scene": "realm_village_edge",
+      "weight": 10,
+      "speaker": { "name": "藥農老秦", "subtitle": "崤山採藥人", "portrait": "npc_am05", "gender": "男" },
+      "lines": [
+        { "speaker": "narrator", "text": "半山的斷崖上，一個老藥農腰繫麻繩懸在半空，繩子被岩角磨得只剩幾股。" },
+        { "speaker": "npc", "text": "上頭那株崖柏底下長著一棵老參，我盯了它三年……誒，繩子、繩子要斷了！" }
+      ],
+      "choices": [
+        { "label": "施展輕功攀崖救人", "type": "check", "attr": "agi", "text": "踏著岩縫借力，把人和參一起帶上來。",
+          "success": "你足尖連點岩壁，一手撈住老秦，一手摘下老參。老秦把半截參鬚和兩瓶自製的金創藥都塞給了你。", "failure": "岩石鬆動，你和老秦一起滑下半丈，好不容易才攀住樹根，手掌磨得血肉模糊。",
+          "successEffects": [ { "key": "item", "ref": "item_jinchuang", "value": 2 }, { "key": "reputation", "value": 1 } ],
+          "failureEffects": [ { "key": "item", "ref": "item_jinchuang", "value": 1 }, { "key": "injury", "value": 1 } ] },
+        { "label": "以內力拉住麻繩", "type": "check", "attr": "qi", "text": "運氣於掌，硬生生把人拉上來。",
+          "success": "你氣沉丹田，一寸一寸把老秦拽了上來。老秦喘過氣來，教了你一套山裡人調息的土法子。", "failure": "麻繩在你掌中崩斷，你撲身抓住老秦的手腕，兩人都摔得不輕。",
+          "successEffects": [ { "key": "progress", "ref": "neigong", "value": 1.5 }, { "key": "reputation", "value": 1 } ],
+          "failureEffects": [ { "key": "injury", "value": 1 } ] }
+      ]
+    },
+    {
+      "id": "road_wounded_swordsman",
+      "title": "落難刀客",
+      "scene": "realm_mountain_road",
+      "weight": 8,
+      "speaker": { "name": "厲三刀", "subtitle": "落魄刀客", "portrait": "npc_ym05", "gender": "男" },
+      "lines": [
+        { "speaker": "narrator", "text": "破廟門口靠著一個渾身是血的刀客，刀卻握得死緊。見你走近，他抬起頭，眼裡全是戒備。" },
+        { "speaker": "npc", "text": "你是哪條道上的？要是衝著我這把刀來，就先問過它。" }
+      ],
+      "choices": [
+        { "label": "贈藥療傷", "type": "plain", "text": "花些銀兩買藥，先救人再說。", "cost": { "silver": 6 },
+          "success": "你替他敷藥包紮。厲三刀沉默半晌，從懷裡摸出一本被血浸透的刀譜：「欠人情的滋味不好受，這個拿去。」",
+          "successEffects": [ { "key": "art", "ref": "tiedan_dao", "value": 1 }, { "key": "reputation", "value": 1 } ] },
+        { "label": "應他所請，過招一試", "type": "battle", "text": "刀客受了傷仍不肯低頭，只服打贏他的人。",
+          "battle": { "lead": "厲三刀", "portrait": "npc_ym05", "count": 2, "difficulty": 0.9, "minions": ["厲三刀的跟班"] },
+          "success": "十招之後，你的劍尖停在他喉前一寸。厲三刀大笑：「好！這本刀譜跟著你，總比爛在我手裡強。」", "failure": "厲三刀雖然帶傷，刀勢依舊狠辣，你被逼退數步。他收刀冷哼：「回去再練十年。」",
+          "successEffects": [ { "key": "art", "ref": "tiedan_dao", "value": 1 }, { "key": "progress", "ref": "blade", "value": 1 } ],
+          "failureEffects": [ { "key": "progress", "ref": "martial", "value": 0.5 } ] }
+      ]
+    },
+    {
+      "id": "road_stele",
+      "title": "荒山古碑",
+      "scene": "realm_ancient_stele",
+      "weight": 9,
+      "lines": [
+        { "speaker": "narrator", "text": "亂草叢中立著一方殘碑，碑文多已剝落，只剩一道道深淺不一的刻痕——那不像是字，倒像是劍痕。" },
+        { "speaker": "hero", "text": "這刻痕的走勢……有人曾在這裡練過劍。而且，不是一般人。" }
+      ],
+      "choices": [
+        { "label": "靜心參悟劍痕", "type": "check", "attr": "wit", "text": "盤膝坐下，順著刻痕推演出招的路數。",
+          "success": "日影西斜時，你忽然看懂了——那是一式劍招的起手與收勢。你的主修武學隱隱有所精進。", "failure": "刻痕看得越久越是凌亂，你頭痛欲裂，只記下了零碎的幾筆。",
+          "successEffects": [ { "key": "progress", "ref": "martial", "value": 2 }, { "key": "insightChance", "value": 0.02 } ],
+          "failureEffects": [ { "key": "progress", "ref": "martial", "value": 0.5 } ] },
+        { "label": "拓下碑文帶回山門", "type": "plain", "text": "交給藏經閣慢慢參詳。", "cost": { "silver": 2 },
+          "success": "你買來紙墨把殘碑拓了下來。門中弟子圍著拓片議論了好幾天。",
+          "successEffects": [ { "key": "reputation", "value": 2 }, { "key": "trainBonusPct", "value": 2 } ] }
+      ]
+    },
+    {
+      "id": "road_tiger",
+      "title": "猛虎下山",
+      "scene": "realm_village_edge",
+      "weight": 7,
+      "speaker": { "name": "獵戶阿牛", "subtitle": "山下獵戶", "portrait": "npc_hu03", "gender": "男" },
+      "lines": [
+        { "speaker": "narrator", "text": "山下村口一陣騷亂。一頭吊睛白額的大蟲叼走了羊圈裡的羔羊，正往林子裡退。" },
+        { "speaker": "npc", "text": "那畜生上個月傷了兩個人，再不除掉，村裡就沒人敢上山砍柴了！" }
+      ],
+      "choices": [
+        { "label": "追進林子除虎", "type": "battle", "text": "猛虎傷人，不能不管。",
+          "battle": { "lead": "吊睛白額虎", "portrait": "beast_tiger", "standee": "Realms/beast_tiger", "count": 1, "difficulty": 1.0, "boss": false },
+          "success": "猛虎倒在溪邊。村民敲鑼打鼓把虎抬回村裡，硬是要你收下一車糧食。", "failure": "猛虎兇性大發，你被抓傷了肩頭，眼睜睜看著牠竄進深山。",
+          "successEffects": [ { "key": "food", "value": 15 }, { "key": "reputation", "value": 4 } ],
+          "failureEffects": [ { "key": "injury", "value": 2 } ] },
+        { "label": "教村民設陷阱", "type": "check", "attr": "wit", "text": "依山勢佈下絆索與陷坑。",
+          "success": "第三天夜裡，猛虎落進了陷坑。村民從此把崤山劍門的弟子當自家人。", "failure": "陷阱被猛虎識破，反倒踩壞了村民的菜園。",
+          "successEffects": [ { "key": "food", "value": 8 }, { "key": "reputation", "value": 2 } ],
+          "failureEffects": [ { "key": "reputation", "value": -1 } ] }
+      ]
+    },
+    {
+      "id": "road_daoist",
+      "title": "樓觀道人",
+      "scene": "realm_mountain_road",
+      "weight": 6,
+      "speaker": { "name": "清虛子", "subtitle": "樓觀道弟子", "portrait": "npc_tao02", "gender": "男" },
+      "lines": [
+        { "speaker": "narrator", "text": "山道上迎面來了一位背負長劍的年輕道人，見了你的劍穗，便停步打個稽首。" },
+        { "speaker": "npc", "text": "貧道清虛子，奉師命下山採買丹砂。聽說崤山劍門遭了變故，不知貴派如今可還安好？" }
+      ],
+      "choices": [
+        { "label": "坦誠相告，結個善緣", "type": "check", "attr": "cha", "text": "門派的難處，不必諱言。",
+          "success": "清虛子聽完，鄭重地說：「回觀之後，貧道定將貴派近況稟告師尊。」", "failure": "清虛子聽得心不在焉，只客套了幾句便告辭了。",
+          "successEffects": [ { "key": "relation", "ref": "louguan", "value": 6 }, { "key": "reputation", "value": 1 } ],
+          "failureEffects": [ { "key": "relation", "ref": "louguan", "value": 1 } ] },
+        { "label": "請教劍理", "type": "check", "attr": "wit", "text": "道家劍法以柔克剛，正可他山之石。",
+          "success": "兩人在松下拆了幾十招。清虛子的劍意綿長，你從中悟到了些許劍理。", "failure": "清虛子的劍理玄之又玄，你聽得似懂非懂。",
+          "successEffects": [ { "key": "progress", "ref": "sword", "value": 1.5 }, { "key": "relation", "ref": "louguan", "value": 2 } ],
+          "failureEffects": [ { "key": "progress", "ref": "sword", "value": 0.5 } ] }
+      ]
+    }
+  ],
+  "treasures": [
+    {
+      "id": "tr_zhongnan_guan", "name": "終南古觀遺刻", "node": "zhongnan", "dx": 26, "dy": -30,
+      "kind": "guarded", "treasureType": "manual", "treasure": "《純陽無極功》石刻", "scene": "realm_taoist_ruin",
+      "intro": "終南山深處有一座傾頹的古觀，正殿後的石壁上刻滿了蝌蚪般的古篆。傳說那是一門純陽內功的總綱，可守觀的老道從不讓人靠近。",
+      "stages": [
+        { "text": "古觀山門前的石階長滿青苔，石階兩旁立著七尊石像，每一尊的手勢都不一樣。",
+          "choices": [
+            { "label": "照著石像手勢運氣", "attr": "qi", "text": "七尊石像的手勢，恰是一套周天行氣的次序。", "success": "真氣依次流過七處大穴，山門內傳來一聲古鐘，彷彿在迎你入內。", "failure": "行氣到第五處便岔了氣，胸口一陣翻湧。" },
+            { "label": "細看石像底座刻字", "attr": "wit", "text": "底座上也許留著前人的提示。", "success": "底座上刻著「純陽不息」四字，你恍然明白入觀的規矩。", "failure": "刻字早已模糊，你只能硬闖進去。" }
+          ] }
+      ],
+      "guardian": { "name": "守碑道人", "subtitle": "古觀最後的守觀人", "portrait": "npc_tao03", "gender": "男", "count": 3, "difficulty": 1.35, "boss": true,
+        "minions": ["守觀道童", "守觀道童"],
+        "lines": [
+          { "speaker": "guardian", "text": "此碑守了一百二十年，來過的人不下三十個，沒有一個看得懂。" },
+          { "speaker": "guardian", "text": "看得懂又如何？純陽之功，心術不正者練之必遭反噬。你要看碑，先過老道這一關。" }
+        ],
+        "win": "老道收掌而退，長嘆一聲：「劍門後繼有人。」他讓開身子，石壁上的古篆在夕陽下泛著金光。",
+        "lose": "老道一掌把你推出觀門：「功力未到，看了也是白看。改日再來。」" },
+      "rewards": [ { "key": "art", "ref": "chunyang_wuji", "value": 1 }, { "key": "qi", "value": 1 }, { "key": "reputation", "value": 4 } ]
+    },
+    {
+      "id": "tr_taibai_elixir", "name": "太乙丹房遺址", "node": "taibai", "dx": -34, "dy": -28,
+      "kind": "explore", "treasureType": "pill", "treasure": "九轉回元丹・《太乙還丹術》", "scene": "realm_elixir_room",
+      "intro": "太白山的積雪下埋著一座前朝方士的丹房。採藥人說，雪化的時候，能聞到山腹裡飄出的藥香。",
+      "stages": [
+        { "text": "雪坡下露出半扇石門，門縫裡結滿冰稜，寒風從裡面呼呼地往外吹。",
+          "choices": [
+            { "label": "以根骨硬抗寒風", "attr": "con", "text": "裹緊衣衫，一步步走進去。", "success": "你頂著寒風走過甬道，凍得發紫的手指終於摸到了丹房的門環。", "failure": "寒氣入骨，你在甬道裡跌了好幾跤。" },
+            { "label": "以內力融開冰稜", "attr": "qi", "text": "掌心吐出暖勁，冰稜一根根化成水。", "success": "冰稜滴滴答答化盡，石門應手而開。", "failure": "真氣耗得太快，你只融開一條窄縫，硬擠了進去。" }
+          ] },
+        { "text": "丹房正中擺著一座三足丹爐，爐旁的木架上排著數十個小瓷瓶，大多已經碎了。牆上掛著一卷發黃的帛書。",
+          "choices": [
+            { "label": "辨識藥氣，找出完好的丹瓶", "attr": "wit", "text": "憑藥香判斷哪幾瓶還能用。", "success": "你挑出三瓶封口完好的丹藥，又小心捲起牆上的帛書。", "failure": "你拿錯了一瓶，被嗆得頭暈眼花，好在帛書還完好。" },
+            { "label": "碰碰運氣", "attr": "luk", "text": "隨手揀幾瓶看看。", "success": "隨手一摸，三瓶都是上品。", "failure": "打開的幾瓶早就壞了，只剩帛書可取。" }
+          ] }
+      ],
+      "rewards": [ { "key": "item", "ref": "item_jiuzhuan", "value": 3 }, { "key": "art", "ref": "taiyi_huandan", "value": 1 } ]
+    },
+    {
+      "id": "tr_yanmen_battlefield", "name": "雁門古戰場", "node": "yanmen", "dx": 28, "dy": -34,
+      "kind": "guarded", "treasureType": "manual", "treasure": "《霸王戟》殘譜・神兵", "scene": "realm_battlefield",
+      "intro": "雁門關外的荒原上，埋著前朝一場大戰的萬千屍骨。牧人說，月夜裡能看見一桿長戟插在土丘頂上，戟旁總圍著一群狼。",
+      "stages": [
+        { "text": "荒原上狂風怒號，白骨與斷戟半埋在沙土裡。遠處土丘上，果然有什麼東西在月光下閃著寒光。",
+          "choices": [
+            { "label": "循著狼跡潛行", "attr": "agi", "text": "順風潛近，不驚動狼群。", "success": "你伏在亂石後一路摸到了土丘腳下。", "failure": "一根枯骨被你踩斷，四周的狼嚎此起彼落。" },
+            { "label": "點火驅狼", "attr": "wit", "text": "狼怕火，先燒一圈火牆。", "success": "火光一起，散在外圍的狼紛紛退開。", "failure": "風向突變，火頭差點燒到自己。" }
+          ] }
+      ],
+      "guardian": { "name": "雪原狼王", "subtitle": "古戰場的主人", "portrait": "beast_wolf_king", "standee": "Realms/beast_wolf_king", "gender": "男", "count": 3, "difficulty": 1.3, "boss": true,
+        "minions": ["荒原餓狼", "荒原餓狼"],
+        "lines": [
+          { "speaker": "narrator", "text": "一頭比牛犢還大的白狼從土丘後緩緩走出，獨眼裡映著月光。牠身後，長戟上的紅纓早已褪成了灰色。" }
+        ],
+        "win": "狼王倒地，群狼哀嚎著散去。你從土裡拔出長戟，戟桿裡藏著一卷油布包裹的戟譜。",
+        "lose": "狼群前仆後繼，你只能背靠著亂石殺出一條血路退走。" },
+      "rewards": [ { "key": "art", "ref": "bawang_ji", "value": 1 }, { "key": "gear", "ref": "武器", "value": 3 }, { "key": "reputation", "value": 5 } ]
+    },
+    {
+      "id": "tr_jianmen_mound", "name": "七星劍冢", "node": "jianmen", "dx": -30, "dy": -30,
+      "kind": "guarded", "treasureType": "manual", "treasure": "《龍泉七星劍》秘笈", "scene": "realm_sword_mound",
+      "intro": "劍門關的峭壁上有七個排成北斗之形的山洞，當地人叫它七星劍冢。冢裡住著一位不知年歲的守劍人，凡來求劍的，都要先接他七劍。",
+      "stages": [
+        { "text": "棧道貼著絕壁蜿蜒而上，木板朽爛，腳下是千丈深谷。",
+          "choices": [
+            { "label": "施展輕功飛渡", "attr": "agi", "text": "不踩朽板，借著崖壁上的鐵環縱躍。", "success": "你如猿猴般盪過棧道，落在第一個山洞口。", "failure": "一塊木板應聲斷裂，你險險抓住鐵環，手臂被拉傷。" },
+            { "label": "穩紮穩打", "attr": "con", "text": "試過每一塊木板再落腳。", "success": "花了一個時辰，總算平安上了洞口。", "failure": "走到一半，腳下一軟，你膝蓋重重磕在石上。" }
+          ] }
+      ],
+      "guardian": { "name": "守劍人", "subtitle": "七星劍冢", "portrait": "npc_am07", "gender": "男", "count": 2, "difficulty": 1.4, "boss": true,
+        "minions": ["劍冢劍僮"],
+        "lines": [
+          { "speaker": "guardian", "text": "崤山劍門？你們的祖師爺當年也來過，接了我師父五劍。" },
+          { "speaker": "guardian", "text": "七劍接得下，劍譜你拿走。接不下，留下你的劍。" }
+        ],
+        "win": "第七劍過後，守劍人的劍斷成兩截。他看著斷劍笑了：「比你祖師爺多兩劍。」說罷從北斗第七洞取出一卷劍譜。",
+        "lose": "第五劍上，你的劍被挑飛。守劍人把劍插回你腳邊：「劍先還你，練好了再來。」" },
+      "rewards": [ { "key": "art", "ref": "longquan_qixing", "value": 1 }, { "key": "cap", "ref": "sword", "value": 1 }, { "key": "reputation", "value": 4 } ]
+    },
+    {
+      "id": "tr_taishan_carving", "name": "泰山御風石刻", "node": "taishan", "dx": 26, "dy": -32,
+      "kind": "explore", "treasureType": "manual", "treasure": "《御風劍》石刻", "scene": "realm_cliff_carving",
+      "intro": "泰山十八盤盡頭的後崖上，有人在絕壁刻下一套劍法。石刻只在雲海翻湧時看得清，因為劍意就藏在雲氣的流動裡。",
+      "stages": [
+        { "text": "後崖雲霧繚繞，石刻時隱時現。風很大，吹得人站不穩。",
+          "choices": [
+            { "label": "迎風而立，觀雲悟劍", "attr": "wit", "text": "看雲氣怎麼繞過石刻的每一道刻痕。", "success": "雲開的剎那，你看懂了第一式：劍隨風走，不與風爭。", "failure": "雲霧遮住了大半石刻，你只看到零碎的幾筆。" },
+            { "label": "攀上崖壁近看", "attr": "agi", "text": "貼著石壁一寸寸看過去。", "success": "你攀到石刻旁，用手指順著刻痕描了一遍。", "failure": "一陣狂風把你吹離崖壁，好在抓住了一根老松。" }
+          ] },
+        { "text": "日出時分，雲海被染成金紅。整面石刻忽然清晰起來，像是一位劍客正御風而舞。",
+          "choices": [
+            { "label": "拔劍隨石刻起舞", "attr": "agi", "text": "身隨劍走，劍隨風走。", "success": "一套劍法舞罷，你衣袂飄飄，竟似要隨風而去。", "failure": "舞到一半便亂了步法，但劍意已記在心裡。" },
+            { "label": "以內力貫通劍意", "attr": "qi", "text": "閉目運氣，讓劍意在經脈中流轉。", "success": "真氣與劍意合而為一，你睜開眼，石刻上的每一劍都清清楚楚。", "failure": "劍意太過飄忽，真氣抓不住它。" }
+          ] }
+      ],
+      "rewards": [ { "key": "art", "ref": "yufeng_jian", "value": 1 }, { "key": "agi", "value": 1 } ]
+    },
+    {
+      "id": "tr_taihang_dragon", "name": "太行應龍洞", "node": "taihang", "dx": 30, "dy": -26,
+      "kind": "guarded", "treasureType": "manual", "treasure": "《應龍掌》真傳", "scene": "realm_dragon_cave",
+      "intro": "太行山的瀑布後面有一座山洞，洞口刻著一條張牙舞爪的應龍。洞裡隱居著一位拳師，據說他一掌能把瀑布打斷三息。",
+      "stages": [
+        { "text": "瀑布轟鳴，水簾後面隱約可見洞口。水勢極猛，常人一靠近就會被沖下深潭。",
+          "choices": [
+            { "label": "以武力硬闖水簾", "attr": "str", "text": "雙掌護頭，硬生生衝過瀑布。", "success": "水勢打在你身上如萬斤重錘，你咬牙一步跨進了洞口。", "failure": "你被沖進深潭，嗆了好幾口水才爬上岸，換個時辰再闖。" },
+            { "label": "等水勢稍緩", "attr": "luk", "text": "瀑布每隔一陣總會小一些。", "success": "正午時分，上游一塊巨石擋住了水流，水簾一下薄了許多。", "failure": "等到天黑也不見水勢變小，只好硬闖。" }
+          ] }
+      ],
+      "guardian": { "name": "應龍拳師", "subtitle": "隱世拳師", "portrait": "npc_am09", "gender": "男", "count": 1, "difficulty": 1.5, "boss": true,
+        "lines": [
+          { "speaker": "guardian", "text": "這二十年，你是第四個闖進來的。前三個，一個斷了手，兩個再也不敢練拳。" },
+          { "speaker": "guardian", "text": "我不收徒弟。但你要是能在我掌下站滿三十招，這套掌法，我教你。" }
+        ],
+        "win": "三十招過去，你仍站著。拳師盯著你看了很久，終於點頭：「坐下吧，從第一掌教起。」",
+        "lose": "第十七招，你被一掌震出水簾，跌進深潭。洞裡傳來拳師的聲音：「根基還差得遠。」" },
+      "rewards": [ { "key": "art", "ref": "yinglong_zhang", "value": 1 }, { "key": "str", "value": 1 }, { "key": "reputation", "value": 3 } ]
+    },
+    {
+      "id": "tr_emei_buddha", "name": "峨眉千佛洞", "node": "emei", "dx": -30, "dy": -30,
+      "kind": "guarded", "treasureType": "manual", "treasure": "《千手觀音鏢》鏢譜", "scene": "realm_thousand_buddha",
+      "intro": "峨眉後山的千佛洞裡供著一尊千手觀音，每一隻手裡都捏著一枚銅鏢。看守佛洞的是一位蒙面女鏢客，她的鏢從不落空。",
+      "stages": [
+        { "text": "洞中千佛林立，佛像的眼睛似乎都在盯著你。地上散落著被銅鏢釘住的枯葉。",
+          "choices": [
+            { "label": "屏息細聽機關聲", "attr": "wit", "text": "銅鏢機關發動前總有細微的聲響。", "success": "你聽出機關的節奏，在鏢雨的間隙中穿行而過。", "failure": "你慢了半拍，一枚銅鏢擦過臂膀。" },
+            { "label": "以身法閃避", "attr": "agi", "text": "鏢來，閃開便是。", "success": "你身形如風，銅鏢全都落在你身後。", "failure": "鏢雨太密，你身上多了三道血痕。" }
+          ] }
+      ],
+      "guardian": { "name": "蒙面女鏢客", "subtitle": "千佛洞守洞人", "portrait": "npc_yf07", "gender": "女", "count": 2, "difficulty": 1.35, "boss": true,
+        "minions": ["持弩侍女"],
+        "lines": [
+          { "speaker": "guardian", "text": "千手觀音，一手一鏢。我在這裡守了十年，還沒人見過第一千枚鏢長什麼樣。" },
+          { "speaker": "guardian", "text": "你想看？那就別眨眼。" }
+        ],
+        "win": "最後一枚鏢被你用劍鞘擋下。女鏢客摘下面紗，笑了：「十年了，終於可以下山了。」她把鏢譜放在觀音像的掌心，轉身離去。",
+        "lose": "你肩頭中了一鏢，鏢上沒有餵毒。女鏢客的聲音從暗處傳來：「下回再來，就沒這麼客氣了。」" },
+      "rewards": [ { "key": "art", "ref": "qianshou_biao", "value": 1 }, { "key": "gear", "ref": "護腕", "value": 2 } ]
+    },
+    {
+      "id": "tr_suzhou_villa", "name": "寒山別院", "node": "suzhou", "dx": 28, "dy": -28,
+      "kind": "explore", "treasureType": "manual", "treasure": "《蘭花拂穴手》秘笈", "scene": "realm_garden_villa",
+      "intro": "蘇州城外寒山寺旁有一座荒廢的別院，原是一位江南名家的宅子。名家無後，臨終前把畢生所學藏在院中某處，留下一句話：「花開時自見。」",
+      "stages": [
+        { "text": "別院的園子荒了多年，假山、迴廊、月洞門錯落有致，卻怎麼走都像在繞圈子。",
+          "choices": [
+            { "label": "推敲園林布局", "attr": "wit", "text": "江南園林講究移步換景，迷宮或許就藏在景致裡。", "success": "你發現每座月洞門都對著一叢蘭花，循著蘭花走，迴廊便到了盡頭。", "failure": "你繞了一個下午，最後在荷花池邊歇腳時才找到出路。" },
+            { "label": "向寺裡的老僧打聽", "attr": "cha", "text": "寒山寺的僧人或許知道些什麼。", "success": "老僧笑道：「那位施主最愛蘭花。」一句話便點醒了你。", "failure": "老僧只是念佛，什麼都不肯說。" }
+          ] },
+        { "text": "書房的窗台上擺著一盆枯死的蘭花，盆底壓著一張字條：「拂之即開。」",
+          "choices": [
+            { "label": "以指風輕拂花盆", "attr": "agi", "text": "或許拂的是穴，不是花。", "success": "你指尖一拂，花盆下的暗格應聲彈開，裡面是一冊用蘭花紋綢布包好的秘笈。", "failure": "拂了幾次都不對，最後是不小心碰翻花盆才找到暗格。" },
+            { "label": "以內力探查暗格", "attr": "qi", "text": "掌貼窗台，感受下面是否空心。", "success": "窗台下果然是空的，你輕輕一按，暗格滑了出來。", "failure": "內力震得太猛，窗台裂了一道縫，好在秘笈無損。" }
+          ] }
+      ],
+      "rewards": [ { "key": "art", "ref": "lanhua_fuxue", "value": 1 }, { "key": "cha", "value": 1 }, { "key": "silver", "value": 30 } ]
+    },
+    {
+      "id": "tr_cishan_forge", "name": "磁山古劍爐", "node": "cishan", "dx": 26, "dy": -30,
+      "kind": "explore", "treasureType": "weapon", "treasure": "神兵・《匠神淬刃訣》遺稿", "scene": "realm_old_forge",
+      "intro": "磁山鐵冶的老礦工說，礦坑最深處有一座前朝龍泉匠人留下的劍爐，爐火熄了一百年，爐膛裡還留著最後一爐沒出爐的劍。",
+      "stages": [
+        { "text": "廢棄的礦坑又黑又窄，坑道兩旁的磁石把你的劍吸得嗡嗡作響。",
+          "choices": [
+            { "label": "以根骨硬撐，摸黑前進", "attr": "con", "text": "坑道裡瘴氣瀰漫，只能憑一口氣撐過去。", "success": "你閉氣走過最深的一段，眼前忽然出現一點紅光。", "failure": "瘴氣入肺，你咳得彎下腰，歇了好久才繼續走。" },
+            { "label": "順著磁石的方向走", "attr": "wit", "text": "磁石吸劍的方向，或許就指向劍爐。", "success": "劍尖始終指著同一個方向，你跟著它找到了劍爐。", "failure": "磁石把你帶進了死路，繞了好大一圈。" }
+          ] },
+        { "text": "劍爐巨大如屋，爐膛裡的劍胚早已和鐵渣熔在一起。爐旁的石案上，整整齊齊放著一疊油紙包好的手稿。",
+          "choices": [
+            { "label": "以武力撬開爐膛", "attr": "str", "text": "劍胚還在，或許還能用。", "success": "你撬開爐膛，取出一柄通體烏黑的劍胚，劍身上隱隱有龍紋。", "failure": "爐壁崩塌，你被燙傷了手，只搶出半截劍胚。" },
+            { "label": "先讀手稿再動手", "attr": "wit", "text": "匠人留下的手稿，也許寫著開爐的法門。", "success": "照著手稿的法子，劍胚完完整整地出了爐。", "failure": "手稿字跡潦草，你看得半懂不懂，劍胚出爐時崩了一個口。" }
+          ] }
+      ],
+      "rewards": [ { "key": "gear", "ref": "武器", "value": 3 }, { "key": "art", "ref": "jiangshen_cuiren", "value": 1 } ]
+    },
+    {
+      "id": "tr_shazhou_grotto", "name": "鳴沙古窟", "node": "shazhou", "dx": 28, "dy": -30,
+      "kind": "guarded", "treasureType": "chance", "treasure": "金絲寶甲・突破機緣", "scene": "realm_desert_grotto",
+      "intro": "敦煌鳴沙山下的一座古窟被流沙掩埋了數百年，今年一場大風把窟門吹了出來。窟裡的壁畫上畫著一位將軍披甲飛天，而窟底住著一隻比人還大的金背巨蠍。",
+      "stages": [
+        { "text": "流沙在腳下流動，每走一步都會陷得更深。遠處的鳴沙發出低沉的轟鳴。",
+          "choices": [
+            { "label": "以輕功踏沙而行", "attr": "agi", "text": "腳不沾沙，就不會陷下去。", "success": "你身輕如燕，沙面上只留下一串淺淺的腳印。", "failure": "流沙吞沒了你的小腿，掙扎半天才脫身。" },
+            { "label": "找當地嚮導帶路", "attr": "cha", "text": "敦煌的駝夫最熟這片沙海。", "success": "一位粟特駝夫帶你繞開了流沙，還分了你一壺水。", "failure": "駝夫收了錢卻半路跑了。" }
+          ] }
+      ],
+      "guardian": { "name": "金背巨蠍", "subtitle": "古窟之主", "portrait": "beast_scorpion", "standee": "Realms/beast_scorpion", "gender": "男", "count": 3, "difficulty": 1.3, "boss": true,
+        "minions": ["沙蠍", "沙蠍"],
+        "lines": [
+          { "speaker": "narrator", "text": "窟底的沙堆動了。一對巨鉗從沙裡伸出來，接著是金光閃閃的背甲，和一條高高翹起的毒尾。" }
+        ],
+        "win": "巨蠍的毒尾被你一劍斬斷。窟底的石棺裡，一副金絲寶甲完好如新，壁畫上的將軍彷彿在向你點頭。",
+        "lose": "巨蠍的毒尾擦過你的手臂，你只能帶傷退出古窟。" },
+      "rewards": [ { "key": "gear", "ref": "衣袍", "value": 3 }, { "key": "cap", "ref": "martial", "value": 1 }, { "key": "reputation", "value": 3 } ]
+    },
+    {
+      "id": "tr_tiantai_tea", "name": "華頂雲霧茶洞", "node": "tiantai", "dx": 26, "dy": -32,
+      "kind": "explore", "treasureType": "chance", "treasure": "突破機緣・雲霧茶", "scene": "realm_cloud_tea",
+      "intro": "天台山華頂峰上有一個終年雲霧不散的山洞，洞裡長著幾株野茶樹。相傳飲了那茶的人，能在一夜之間打通周身經脈。",
+      "stages": [
+        { "text": "華頂峰的雲霧濃得化不開，伸手不見五指。山路上掛著鈴鐺，是採茶人留下的路標。",
+          "choices": [
+            { "label": "循著鈴聲前進", "attr": "wit", "text": "鈴聲的高低遠近，就是路。", "success": "你閉眼聽鈴，一步不差地走到了茶洞口。", "failure": "風把鈴聲吹亂了，你在霧裡迷了好幾個時辰。" },
+            { "label": "隨緣而行", "attr": "luk", "text": "有緣自能遇到。", "success": "霧中忽然出現一隻白鶴，領著你走到了洞口。", "failure": "你在霧裡兜了一大圈，又回到了原處。" }
+          ] },
+        { "text": "洞中幾株老茶樹的葉子泛著銀光。洞壁上刻著四個字：「靜心方飲」。",
+          "choices": [
+            { "label": "打坐靜心後煮茶", "attr": "qi", "text": "先讓真氣平靜下來。", "success": "一盞茶下肚，一股清氣從丹田直衝百會，你感到某處關竅豁然打通。", "failure": "心浮氣躁，茶的效力只發揮了一半。" },
+            { "label": "以悟性參悟刻字", "attr": "wit", "text": "靜心，靜的是什麼心？", "success": "你明白了：靜的不是心，是求。放下求茶之念，再飲時，一切了然。", "failure": "想得越多心越亂。" }
+          ] }
+      ],
+      "rewards": [ { "key": "cap", "ref": "martial", "value": 1 }, { "key": "progress", "ref": "martial", "value": 2 }, { "key": "wit", "value": 1 } ]
+    },
+    {
+      "id": "tr_hengshan_fire", "name": "祝融峰火洞", "node": "hengshan", "dx": 28, "dy": -30,
+      "kind": "guarded", "treasureType": "pill", "treasure": "赤陽火靈丹", "scene": "realm_fire_cave",
+      "intro": "衡山祝融峰下有一座常年冒著熱氣的火洞，洞中長著一株赤陽火靈芝，百年一開。守著它的，是一條通體赤紅的火蟒。",
+      "stages": [
+        { "text": "洞中熱浪逼人，地面燙得穿著靴子都站不住，岩縫裡不時噴出硫磺氣。",
+          "choices": [
+            { "label": "以根骨硬抗熱浪", "attr": "con", "text": "運氣護體，硬走過去。", "success": "你渾身冒汗，卻一步沒停，走到了洞底。", "failure": "熱浪灼傷了你的臉頰和手背。" },
+            { "label": "以內力運寒勁護體", "attr": "qi", "text": "以陰柔內力抵消熱氣。", "success": "一層薄薄的寒氣裹住全身，熱浪近不了身。", "failure": "寒熱相激，你一陣頭暈。" }
+          ] }
+      ],
+      "guardian": { "name": "赤焰火蟒", "subtitle": "火洞守護獸", "portrait": "beast_fire_python", "standee": "Realms/beast_fire_python", "gender": "男", "count": 1, "difficulty": 1.45, "boss": true,
+        "lines": [
+          { "speaker": "narrator", "text": "火靈芝旁盤著一條水桶粗的赤蟒，鱗片紅得像燒透的炭。牠抬起頭，吐出的信子帶著火星。" }
+        ],
+        "win": "火蟒倒在熔岩邊。你小心翼翼地採下火靈芝，帶回山門煉成了三枚赤陽火靈丹。",
+        "lose": "火蟒噴出的熱氣把你逼出了洞口，衣襟都燒焦了。" },
+      "rewards": [ { "key": "item", "ref": "item_jiuzhuan", "value": 3 }, { "key": "con", "value": 2 }, { "key": "reputation", "value": 3 } ]
+    }
+  ]
+}

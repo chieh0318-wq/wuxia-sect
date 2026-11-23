@@ -32,6 +32,7 @@ namespace Wuxia
                 map.Closed += OnWorldMapClosed;
                 map.LeaderSelected += OpenMapLeader;
                 map.BattleRequested += StartMapAssaultBattle;
+                map.TreasureRequested += EnterTreasure; // v1124 C16
             }
             map.Open(state);
             controls.enabled = false;

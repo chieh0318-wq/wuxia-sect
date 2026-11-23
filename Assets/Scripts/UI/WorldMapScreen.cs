@@ -65,6 +65,7 @@ namespace Wuxia
                 host.PartyNode = data.Nodes.ContainsKey(host.StartNode ?? "") ? host.StartNode : data.DefaultNode;
             SyncParty();
             UpdateAp();
+            RefreshTreasures(); // v1124 C16
             CenterOn(host.PartyNode);
             if (!traveling) status.text = $"隊伍駐於{data.NodeLabel(host.PartyNode)}。點選城寨查看守備與路線，點選旗幟查看勢力。";
             if (!traveling && host is GameState game && game.PendingDiploEvent != null)
@@ -164,6 +165,7 @@ namespace Wuxia
                     flags.Add((Banner(faction),p,n));
                 }
             }
+            BuildTreasures(); // v1124 C16 寶物秘境 seals
             focusMarker = MapUi.Rect(map,"Selected seat",0,0,36,36);
             var focusText = MapUi.Text(focusMarker,"◯",0,0,36,36,32,MapUi.Red,TextAnchor.MiddleCenter);
             focusText.fontStyle = FontStyle.Bold;
@@ -408,6 +410,7 @@ namespace Wuxia
             party.localScale = Vector3.one/zoom;
             focusMarker.localScale = Vector3.one/zoom;
             focusMarker.anchoredPosition = new Vector2(focusedPoint.x - 18 / zoom, -focusedPoint.y + 18 / zoom);
+            LayoutTreasures(); // v1124 C16
             Vector2 offset = new((ViewWidth-MapWidth*zoom)/2+pan.x,(ViewHeight-MapHeight*zoom)/2-pan.y);
             if (party.gameObject.activeSelf && data.Nodes.TryGetValue(host?.PartyNode ?? "",out var partyNode))
                 occupied.Add(new Rect(Position(partyNode)*zoom + offset + new Vector2(-30.5f,3.5f),new Vector2(23,23)));
@@ -780,6 +783,7 @@ namespace Wuxia
         {
             focusedPoint = Position(node);
             focusMarker.anchoredPosition = new Vector2(focusedPoint.x - 18 / zoom, -focusedPoint.y + 18 / zoom);
+            LayoutTreasures(); // v1124 C16
             focusMarker.gameObject.SetActive(true);
         }
 

@@ -801,6 +801,13 @@ namespace Wuxia
                 AdvanceStory();
         }
 
+        internal void RevealStoryForCapture()
+        {
+            if (storyScreen == null) return;
+            storyStart = Time.unscaledTime - storyPages[storyPage].Length / CharactersPerSecond - .1f;
+            UpdateStoryBeat();
+        }
+
         private void AdvanceStory()
         {
             if (storyText.text.Length < storyPages[storyPage].Length)

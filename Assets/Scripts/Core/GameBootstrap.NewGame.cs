@@ -93,8 +93,8 @@ namespace Wuxia
         }
         internal void CaptureOpposingSpeaker()
         {
-            var beats = story.disasters.First(entry => entry.id == "treasure").beats;
-            CaptureBeats(beats, Array.FindIndex(beats, beat => beat.portrait == "elder_villain"));
+            var beats = story.disasters.First(entry => entry.id == "betrayal").beats;
+            CaptureBeats(beats, Array.FindIndex(beats, beat => beat.portrait == "rival_head"));
         }
 
         internal void CaptureDisaster() => ChooseDisaster();
@@ -549,8 +549,15 @@ namespace Wuxia
             state.ApplyEffects(new[] { new GameEffect { key = "flag", @ref = "acting_head", value = 1 } });
         }
 
-        internal void CaptureSuccession() => CaptureBeats(story.successionBeats, 3);
-        internal void CaptureFriendArrival() => CaptureBeats(story.friendBeats, 3);
+        internal void CaptureSuccession() => CaptureBeats(story.successionBeats, 1);
+
+        internal void CaptureFriendArrival()
+        {
+            state.Protagonist.gender = "女";
+            state.Protagonist.name = "盧凝雪";
+            state.Protagonist.portrait = state.Protagonist.lookId = "hero_f1";
+            CaptureBeats(story.friendBeats, 2);
+        }
 
         private void CaptureBeats(StoryBeat[] beats, int index)
         {

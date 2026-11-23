@@ -141,7 +141,8 @@ namespace Wuxia
                 foreach (var step in steps)
                 {
                     step.show();
-                    yield return new WaitForSecondsRealtime(step.filename == "04_prologue_beat.png" ? 2.8f : .15f);
+                    yield return new WaitForSecondsRealtime(.3f);
+                    ui.RevealStoryForCapture();
                     if (!SaveShot(step.filename))
                         yield break;
                     if (step.filename == "30_exit_confirmation.png" &&

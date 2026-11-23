@@ -37,7 +37,8 @@ namespace Wuxia
         private RectTransform battleScreen;
         internal bool BattleOpen => battleScreen != null;
 
-        internal void StartTurnBattle(GameState state, BattleRequest req, MonoBehaviour runner)
+        internal void StartTurnBattle(GameState state, BattleRequest req, MonoBehaviour runner,
+            Action<IEnumerator> captureRound = null)
         {
             CloseBattle();
             AudioManager.Music("disaster_treasure");
@@ -282,6 +283,7 @@ namespace Wuxia
 
             RefreshTargetRings();
             RefreshLeadHuds();
+            captureRound?.Invoke(ExecuteRound());
 
             void PushLog(string line)
             {

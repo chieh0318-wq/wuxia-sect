@@ -34,6 +34,7 @@ namespace Wuxia
             var pixels = new Texture2D(width, height, TextureFormat.RGB24, false);
             var canvas = ui.Canvas;
             RenderTexture previous = RenderTexture.active;
+            bool shotsOk = true;
             try
             {
                 controls.enabled = false;
@@ -61,6 +62,7 @@ namespace Wuxia
                     ("03_talents.png", creation.CaptureTalents),
                     ("13_skills.png", creation.CaptureSkills),
                     ("14_attributes.png", creation.CaptureAttributes),
+                    ("47_legacy_shop.png", creation.CaptureLegacyShop),
                     ("15_background.png", creation.CaptureBackground),
                     ("04_prologue_beat.png", creation.CapturePrologue),
                     ("05_disaster_choice.png", creation.CaptureDisaster),
@@ -150,9 +152,10 @@ namespace Wuxia
                     if (!SaveShot("28_questline_beat.png")) yield break;
                     ui.CloseStoryBeat();
                 }
-                bool shotsOk = true;
                 ui.CloseModal(force: true);
                 yield return CaptureM2(file => shotsOk &= SaveShot(file));
+                if (shotsOk)
+                    yield return CaptureBattle();
                 if (!shotsOk)
                     yield break;
                 if (!VerifyCapturedGame(directory))
@@ -210,7 +213,39 @@ namespace Wuxia
                 File.WriteAllBytes(path, pixels.EncodeToPNG());
                 Debug.Log($"[Capture] wrote {path}");
             }
+
+            IEnumerator CaptureBattle()
+            {
+                IEnumerator round = null;
+                ui.StartTurnBattle(state, new BattleRequest(), this, routine => round = routine);
+                try
+                {
+                    yield return null;
+                    Debug.Log("[Capture] Battle start: both sides ready for round one.");
+                    shotsOk = SaveShot("50_battle_start.png");
+                    if (!shotsOk)
+                        yield break;
+
+                    yield return round;
+                    if (!ui.BattleOpen)
+                    {
+                        shotsOk = false;
+                        Debug.LogError("[Capture] Battle ended before the mid-battle shot.");
+                        Application.Quit(1);
+                        yield break;
+                    }
+
+                    Debug.Log("[Capture] Battle mid: round one resolved, action buttons visible.");
+                    shotsOk = SaveShot("51_battle_mid.png");
+                }
+                finally
+                {
+                    ui.CloseBattle();
+                    AudioManager.Music("courtyard");
+                }
+            }
         }
+
         private bool CaptureQuestline()
         {
             var fresh = new GameState(data);

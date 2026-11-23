@@ -87,6 +87,11 @@ namespace Wuxia
                 state.Apply(new Yield { silver = 40 });
                 state.GrantAp(2);
                 Debug.Log("[Capture] M6 forge: " + state.ForgeGear());
+                foreach (string slot in GameState.GearSlots)
+                    if (state.Equipped(slot) == null)
+                        state.EquipOrStore(GameState.MakeGear(slot, 0));
+                int equipped = GameState.GearSlots.Count(slot => state.Equipped(slot) != null);
+                Debug.Log($"[Capture] Hero gear: {equipped}/{GameState.GearSlots.Length} slots equipped.");
                 ShowProtagonist();
             })
         };

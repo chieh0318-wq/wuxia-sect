@@ -88,6 +88,12 @@ namespace Wuxia
         internal void CaptureBackground() => ChooseBackground();
         internal void CaptureSkills() => CompleteTalents();
         internal void CaptureAttributes() => CompleteSkills();
+        internal void CaptureLegacyShop()
+        {
+            RecommendLegacyPicks();
+            Debug.Log($"[Capture] Legacy shop opened with {legacyPicks.Count} recommended selections.");
+        }
+
         internal void CaptureResponse()
         {
             if (story.disasters?.FirstOrDefault() is StoryDisaster disaster)
@@ -470,16 +476,7 @@ namespace Wuxia
             {
                 ("上一步", ShowAttributes),
                 ("清空物資", () => { legacyPicks.Clear(); ShowLegacyShop(); }),
-                ("推薦攜帶", () =>
-                {
-                    legacyPicks.Clear();
-                    legacyPicks["leg_qingfeng"] = 1;
-                    legacyPicks["leg_robe"] = 1;
-                    legacyPicks["leg_boots"] = 1;
-                    legacyPicks["item_jinchuang"] = 2;
-                    legacyPicks["book_sword"] = 1;
-                    ShowLegacyShop();
-                })
+                ("推薦攜帶", RecommendLegacyPicks)
             };
             ui.ShowCreation("先輩遺澤", Array.Empty<string>(), actions, StartStory, StartStory);
             ui.CreationLegacyShop(total, left, legacyPicks, legacyFocused, (def, delta) =>
@@ -493,6 +490,17 @@ namespace Wuxia
             {
                 legacyFocused = def;
             });
+        }
+
+        private void RecommendLegacyPicks()
+        {
+            legacyPicks.Clear();
+            legacyPicks["leg_qingfeng"] = 1;
+            legacyPicks["leg_robe"] = 1;
+            legacyPicks["leg_boots"] = 1;
+            legacyPicks["item_jinchuang"] = 2;
+            legacyPicks["book_sword"] = 1;
+            ShowLegacyShop();
         }
 
         private void StartStory()

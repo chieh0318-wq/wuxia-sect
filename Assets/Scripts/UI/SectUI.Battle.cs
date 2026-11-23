@@ -473,11 +473,13 @@ namespace Wuxia
 
             var spr = Rect("Sprite", rt);
             Anchor(spr, Vector2.zero, Vector2.one, new(0, 18), new(0, -34));
-            var tex = unit.spriteId == null
+            var bossStandee = !unit.isPlayer && unit.portraitId == "leader_heisong"
+                ? Resources.Load<Texture2D>("Standees/leader_heisong") : null;
+            var tex = bossStandee != null ? bossStandee : unit.spriteId == null
                 ? CharacterFactory.StandeeTexture(unit.portraitId, unit.gender, portraitFallback: true)
                 : Resources.Load<Texture2D>("Battle/" + unit.spriteId);
             var raw = AddImage(spr, tex);
-            if (unit.spriteId == null && tex != null)
+            if ((unit.spriteId == null || bossStandee != null) && tex != null)
             {
                 float scale = Mathf.Min(190f / tex.width, 248f / tex.height);
                 float halfWidth = tex.width * scale * .5f;

@@ -636,9 +636,9 @@ namespace Wuxia
             var spr = Rect("Sprite", rt);
             var bossStandee = !unit.isPlayer && unit.portraitId == "leader_heisong"
                 ? Resources.Load<Texture2D>("Standees/leader_heisong") : null;
-            var tex = bossStandee != null ? bossStandee : unit.spriteId == null
+            var tex = unit.standee ?? bossStandee ?? (unit.spriteId == null
                 ? CharacterFactory.StandeeTexture(unit.portraitId, unit.gender, portraitFallback: true)
-                : Resources.Load<Texture2D>("Battle/" + unit.spriteId);
+                : Resources.Load<Texture2D>("Battle/" + unit.spriteId));
             bool battleCutout = unit.spriteId != null && bossStandee == null;
             float width = 190, height = 248;
             if (!battleCutout && tex != null)
@@ -651,6 +651,8 @@ namespace Wuxia
             float padding = battleCutout ? height * (12f / 512f) : 2f;
             Anchor(spr, feet, feet, new(-width / 2, -padding), new(width / 2, height - padding));
             var raw = AddImage(spr, tex);
+            if (CharacterFactory.FlipStandee(tex, unit.isPlayer))
+                raw.uvRect = new Rect(1, 0, -1, 1);
 
             if (onClick != null)
             {

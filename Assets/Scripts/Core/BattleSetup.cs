@@ -8,6 +8,7 @@ namespace Wuxia
     internal sealed class BattleCombatant
     {
         public string name, spriteId, portraitId, gender;
+        public Texture2D standee;
         public bool isPlayer;
         public int level, hp, maxHp, qi, maxQi, attack, speed;
         public float dodge;
@@ -61,7 +62,9 @@ namespace Wuxia
                 new()
                 {
                     name = state.Protagonist.name,
-                    spriteId = state.Protagonist.gender == "女" ? "hero_f" : "hero_m",
+                    standee = CharacterFactory.HeroStandee(state.Protagonist.gender,
+                        state.Protagonist.lookId ?? state.Protagonist.portrait,
+                        state.Protagonist.backgroundId, state.Protagonist.title),
                     portraitId = state.Protagonist.portrait ?? state.Protagonist.lookId,
                     gender = state.Protagonist.gender,
                     isPlayer = true,

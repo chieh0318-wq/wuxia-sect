@@ -108,7 +108,7 @@ namespace Wuxia
 
         private const float StandeeHeight = 1.85f;
         private static readonly Dictionary<Texture2D, Sprite> standeeSprites = new();
-        private static readonly Dictionary<(string id, string gender, bool portraitFallback), Texture2D> standeeTextures = new();
+        private static readonly Dictionary<(string id, string gender, bool portraitFallback, string heroFallback), Texture2D> standeeTextures = new();
         private static Sprite standeeShadow;
         private static Dictionary<string, string> standeeFallbacks;
 
@@ -129,12 +129,12 @@ namespace Wuxia
         internal static Vector3 StandeeLabelOffset =>
             CameraController.CourtyardRotation * (Vector3.up * (StandeeHeight + .20f));
 
-        internal static Texture2D StandeeTexture(string id, string gender, bool portraitFallback = false)
+        internal static Texture2D StandeeTexture(string id, string gender, bool portraitFallback = false, string heroFallback = null)
         {
             id = (PortraitService.StoryId(id, gender) ?? "").Trim().ToLowerInvariant();
             int expression = id.IndexOf("__", StringComparison.Ordinal);
             if (expression >= 0) id = id.Substring(0, expression);
-            var key = (id, gender, portraitFallback);
+            var key = (id, gender, portraitFallback, heroFallback);
             if (standeeTextures.TryGetValue(key, out var texture)) return texture;
 
             bool female = gender == "女" || id.StartsWith("hero_f") || id.StartsWith("npc_yf") ||
@@ -144,6 +144,7 @@ namespace Wuxia
             standeeFallbacks ??= LoadStandeeFallbacks();
             standeeFallbacks.TryGetValue(id, out string fallback);
             texture = Resources.Load<Texture2D>("Standees/" + id) ??
+                (heroFallback == null ? null : Resources.Load<Texture2D>("Standees/" + heroFallback)) ??
                 (fallback == null ? null : Resources.Load<Texture2D>(fallback)) ??
                 (portraitFallback ? PortraitService.Resolve(id, gender) : Resources.Load<Texture2D>("Standees/hero_" + sex + "1")) ??
                 Resources.Load<Texture2D>("Battle/" + role + "_" + sex);
@@ -151,10 +152,46 @@ namespace Wuxia
             return texture;
         }
 
-        internal static Transform BuildStandee(DiscipleData data, Transform parent, out Collider hit,
-            Quaternion? rotation = null)
+        // The existing ink-wash bodies are mostly frontal. These silhouettes read left
+        // in their source textures. All other art is frontal or reads right.
+        private static readonly HashSet<string> leftFacing = new()
         {
-            var texture = StandeeTexture(PortraitService.IdOrDefault(data.portrait, data.id), data.gender);
+            "enemy_assassin", "enemy_axe", "enemy_scout", "enemy_boss",
+            "hero_f10", "hero_f3", "hero_f5", "hero_f6", "hero_f8", "hero_m1",
+            "hero_m4", "hero_m5", "hero_m9", "lin", "npc_af01", "npc_af02", "npc_af05",
+            "npc_am02", "npc_am04", "npc_am06", "npc_am08", "npc_ef03", "npc_em01",
+            "npc_em04", "npc_hu02", "npc_hu04", "npc_hu05", "npc_mer01", "npc_mer02",
+            "npc_monk02", "npc_off01", "npc_st02", "npc_st04", "npc_tao03", "npc_yf02",
+            "npc_yf04", "pei", "shen", "spec_fugitive", "spec_noble", "wei"
+        };
+
+        internal static bool FlipStandee(Texture2D texture, bool faceRight) =>
+            texture != null && leftFacing.Contains(texture.name) == faceRight;
+
+        internal static Texture2D HeroStandee(string gender, string lookId, string backgroundId, string title)
+        {
+            string sex = gender == "女" ? "f" : "m";
+            string prefix = "hero_" + sex;
+            string look = lookId != null && lookId.StartsWith(prefix, StringComparison.Ordinal) &&
+                int.TryParse(lookId.Substring(prefix.Length), out int number) && number >= 1 && number <= 12
+                ? prefix + number : prefix + "1";
+            string identity = title switch
+            {
+                "大師姐" => "dashijie",
+                "大師兄" => "dashixiong",
+                "少掌門" => "shaozhangmen",
+                _ => null
+            };
+            string key = !string.IsNullOrEmpty(backgroundId)
+                ? look + "_" + backgroundId + (identity == null ? "" : "_" + identity)
+                : look + (identity == null ? "" : "_" + identity);
+            return StandeeTexture(key, gender, heroFallback: look);
+        }
+
+        internal static Transform BuildStandee(DiscipleData data, Transform parent, out Collider hit,
+            Quaternion? rotation = null, Texture2D standee = null)
+        {
+            var texture = standee ?? StandeeTexture(PortraitService.IdOrDefault(data.portrait, data.id), data.gender);
             if (!standeeSprites.TryGetValue(texture, out var sprite))
             {
                 sprite = StandeeSprite(texture);

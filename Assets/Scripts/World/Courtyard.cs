@@ -188,7 +188,7 @@ namespace Wuxia
             StaticBatchingUtility.Combine(building.gameObject);
         }
 
-        public void SpawnDisciple(DiscipleData data)
+        public void SpawnDisciple(DiscipleData data, Texture2D standee = null)
         {
             var person = new GameObject(data.name).transform;
             person.SetParent(root, false);
@@ -204,7 +204,7 @@ namespace Wuxia
             while (discipleTargets.Keys.Any(target =>
                 (target.transform.parent.position - spawn).sqrMagnitude < .9f));
             person.position = spawn;
-            var figure = CharacterFactory.BuildStandee(data, person, out var hit);
+            var figure = CharacterFactory.BuildStandee(data, person, out var hit, standee: standee);
             discipleTargets.Add(hit, data);
             person.gameObject.AddComponent<DiscipleWalker>().Initialize(entrances, buildingFootprints, Grounded, figure);
             ui.AddWorldLabel(person, CharacterFactory.StandeeLabelOffset, data.name, false);

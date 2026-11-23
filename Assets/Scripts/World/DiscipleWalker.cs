@@ -76,7 +76,8 @@ namespace Wuxia
                 return;
             }
             float screenX = Vector3.Dot(next - flat, body.right);
-            if (Mathf.Abs(screenX) > .001f) figureRenderer.flipX = screenX < 0;
+            if (Mathf.Abs(screenX) > .00001f)
+                figureRenderer.flipX = CharacterFactory.FlipStandee(figureRenderer.sprite.texture, screenX > 0);
             body.localPosition = restingPosition + Vector3.up * (Mathf.Abs(Mathf.Sin(Time.time * 13)) * .022f);
             transform.position = grounded(next);
         }

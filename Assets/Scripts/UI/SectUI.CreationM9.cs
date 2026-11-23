@@ -41,7 +41,8 @@ namespace Wuxia
         /// Compact 6×2 portrait grid (all 12 portraits visible at once, exact 3:4 aspect ratio, never squished)
         /// decoupled from background selection so both fit on one unified screen.
         /// </summary>
-        internal void CreationPortraitStrip(CharacterLook[] looks, CharacterLook selected, Action<CharacterLook> choose)
+        internal void CreationPortraitStrip(CharacterLook[] looks, CharacterLook selected, string backgroundId, string title,
+            Action<CharacterLook> choose)
         {
             characterDecoration = Rect("形貌與出身捲軸", modalCard);
             Fill(characterDecoration);
@@ -78,7 +79,7 @@ namespace Wuxia
 
                 var art = Rect("Standee preview", card);
                 Anchor(art, new(.5f, 1), new(.5f, 1), new(-52, -123), new(52, -6));
-                var tex = CharacterFactory.StandeeTexture(PortraitService.IdOrDefault(current.portrait, current.id), current.gender);
+                var tex = CharacterFactory.HeroStandee(current.gender, current.id, backgroundId, title);
                 var figure = Rect("Full-body standee", art);
                 AddImage(figure, tex);
                 var fit = figure.gameObject.AddComponent<AspectRatioFitter>();

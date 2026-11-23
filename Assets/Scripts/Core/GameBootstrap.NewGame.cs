@@ -161,7 +161,7 @@ namespace Wuxia
             ui.CreationSummary(Sheet(ChosenTalents, ChosenSkills, "出身"));
             ui.CreationNameAndGender(hero.name, value => hero.name = string.IsNullOrWhiteSpace(value) ? SuggestedName() : value.Trim(),
                 SuggestedName, hero.gender, gender => { if (gender != hero.gender) ChooseGender(gender); });
-            ui.CreationPortraitStrip(looks, look, candidate =>
+            ui.CreationPortraitStrip(looks, look, background?.id, hero.title, candidate =>
             {
                 look = candidate;
                 ChooseAppearance();

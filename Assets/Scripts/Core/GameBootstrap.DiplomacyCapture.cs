@@ -70,29 +70,58 @@ namespace Wuxia
                     Debug.LogError("[Diplomacy] Faction card has no usable 外交 button.");
                     ok = false;
                 }
-                Shot("00_faction_card.png");
+                Shot("10_map_faction_card.png");
 
                 cardButton?.onClick.Invoke();
                 yield return null;
                 var panel = map.CaptureDiplomacy;
                 var randomState = Random.state;
                 Random.InitState(1123);
+                panel.Select(GameState.FindFaction("shaolin"));
+                yield return null;
+                Shot("11_diplomacy_roster.png");
+                panel.Select(faction);
+                Click("外交:gift");
+                yield return null;
+                Shot("12_action_grid_advisors.png");
+                var kang = state.Disciples.FirstOrDefault(d => d.id == "kang");
+                int priorLoyalty = kang?.loyalty ?? 0;
+                Check(kang != null, "Kang is available for affinity comparisons");
+                if (kang != null)
+                {
+                    SetKangAffinity(10);
+                    Click("外交:gift");
+                    yield return null;
+                    Shot("22_affinity_low_advisors.png");
+                    SetKangAffinity(85);
+                    Click("外交:gift");
+                    yield return null;
+                    Shot("23_affinity_high_advisors.png");
+                    kang.loyalty = priorLoyalty;
+                }
+                panel.ShowVictoryTab();
+                yield return null;
+                Shot("13_victory_road.png");
+                panel.Select(faction);
+                yield return null;
                 int ap = state.ActionPoints, silver = state.Silver, before = state.Attitude(faction);
                 Click("外交:gift");
+                Click("入席議事");
                 yield return null;
                 Check(state.ActionPoints == ap && state.Silver == silver, "council preview is free");
                 Click("再議");
                 yield return null;
                 Check(!panel.EventOpen && state.ActionPoints == ap && state.Silver == silver, "cancelling council is free");
                 Click("外交:gift");
+                Click("入席議事");
                 yield return null;
-                Shot("01_council.png");
+                Shot("17_council_home_hall.png");
                 yield return AdvanceTo("使者抵達");
                 Check(state.ActionPoints == ap - 1 && state.Silver == silver - 25 && state.Attitude(faction) == before,
                     "dispatch pays base costs without settling");
                 Click("對話繼續");
                 yield return null;
-                Shot("02_envoy_arrival.png");
+                Shot("18_visit_daoist_wulong.png");
                 yield return AdvanceTo("答覆");
                 Shot("03_reply_choices.png");
                 Click("答覆:lavish");
@@ -100,7 +129,10 @@ namespace Wuxia
                 Check(state.Silver == silver - 40 && state.Attitude(faction) == before, "choice pays its extra silver before settlement");
                 Click("對話繼續");
                 yield return null;
-                Shot("04_leader_reaction.png");
+                var nextLabel = overlay.GetComponentsInChildren<Button>().First(b => b.name == "對話繼續")
+                    .GetComponentInChildren<Text>().text;
+                Check(nextLabel == "繼續", "leader reaction advances with 繼續");
+                Shot("19_reaction_continue_label.png");
                 yield return AdvanceTo("結局");
                 Shot("05_narrated_outcome.png");
                 Check(state.Attitude(faction) == before, "narrated outcome precedes settlement");
@@ -110,15 +142,25 @@ namespace Wuxia
                 Random.state = randomState;
 
                 Check(state.RollDiploEvent("birthday"), "birthday event can be generated");
+                // Pin this capture to the Emei incident to verify its nun envoy and abbess separately.
+                state.Story.diploEventTarget = "emei";
                 panel.ShowEvent();
                 yield return null;
-                Shot("06_event_arrival.png");
+                Check(ShowsPortrait("使者來報", "npc_nun01") && !ShowsPortrait("使者來報", "leader_emei") &&
+                    TalkPage("使者來報").GetComponentsInChildren<Text>().Any(label => label.text == "峨眉劍宗使者"),
+                    "Emei birthday announcement pairs the envoy name with the envoy portrait");
+                Shot("20_event_envoy_portrait.png");
                 var host = state.PendingDiploTarget;
                 int eventBefore = host == null ? 0 : state.Attitude(host);
                 silver = state.Silver;
                 yield return AdvanceTo("答覆");
                 Click("答覆:lavish");
                 yield return null;
+                Click("對話繼續");
+                yield return null;
+                Check(ShowsPortrait("對方回應", "leader_emei") && !ShowsPortrait("對方回應", "npc_nun01"),
+                    "Emei birthday reaction uses the speaking abbess's portrait");
+                Shot("24_event_abbess_portrait.png");
                 yield return AdvanceTo(null);
                 Check(host != null && state.PendingDiploEvent == null && state.Silver == silver - 30 &&
                     state.Attitude(host) == Mathf.Min(100, eventBefore + 12), "birthday event settles through conversation");
@@ -139,6 +181,12 @@ namespace Wuxia
                 Check(state.ActionPoints == ap - relief.ap - 1 && state.Attitude(vassal) == Mathf.Min(100, vassalBefore + reliefGain + 5),
                     "leading relief reuses the original option and adds its surcharge and effects");
 
+                RectTransform TalkPage(string stage) => overlay.GetComponentsInChildren<RectTransform>()
+                    .FirstOrDefault(rect => rect.name == stage && rect.parent.name == "外交急報");
+
+                bool ShowsPortrait(string stage, string id) => TalkPage(stage)?.GetComponentsInChildren<RawImage>()
+                    .Any(img => img.texture != null && img.texture.name == id) == true;
+
                 void Click(string buttonName)
                 {
                     var button = overlay.GetComponentsInChildren<Button>().FirstOrDefault(b => b.name == buttonName);
@@ -149,7 +197,7 @@ namespace Wuxia
                 IEnumerator AdvanceTo(string stage)
                 {
                     bool Arrived() => stage == null ? !panel.EventOpen :
-                        overlay.GetComponentsInChildren<RectTransform>().Any(rect => rect.name == stage && rect.parent.name == "外交急報");
+                        TalkPage(stage) != null;
                     for (int i = 0; i < 20 && !Arrived(); i++)
                     {
                         Click("對話繼續");
@@ -166,6 +214,62 @@ namespace Wuxia
                 }
                 map.Close();
                 overlay.renderMode = RenderMode.ScreenSpaceOverlay;
+
+                var sectCanvas = ui.Canvas;
+                sectCanvas.enabled = true;
+                sectCanvas.renderMode = RenderMode.ScreenSpaceCamera;
+                sectCanvas.worldCamera = view;
+                sectCanvas.planeDistance = view.nearClipPlane + .11f;
+                ShowSect();
+                yield return new WaitForSecondsRealtime(.5f);
+                Shot("14_sect_management.png");
+                ui.CloseModal(force: true);
+                if (kang != null)
+                {
+                    state.RefillAp();
+                    SetKangAffinity(10);
+                    Random.InitState(1123);
+                    Speak(kang);
+                    yield return null;
+                    Shot("15_affinity_low_courtyard.png");
+                    state.RefillAp();
+                    SetKangAffinity(85);
+                    Random.InitState(1123);
+                    Speak(kang);
+                    yield return null;
+                    Shot("16_affinity_high_courtyard.png");
+                    kang.loyalty = priorLoyalty;
+                    ui.CloseDialogue();
+                }
+
+                var board = MapUi.Docket(sectCanvas.transform, "戰鬥立牌", 313, 100, 1294, 880, false);
+                MapUi.Text(board, "盟軍戰鬥立牌　／　朝右", 50, 22, 1194, 64, 40, MapUi.Gold, TextAnchor.MiddleCenter);
+                Standee("wei", "魏老七", 124);
+                Standee("cui", "崔鈺", 700);
+                yield return null;
+                Shot("21_standees_right.png");
+                Destroy(board.gameObject);
+                sectCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
+
+                void SetKangAffinity(int score)
+                {
+                    kang.loyalty = score - state.CharacterRelation(kang.id);
+                    Check(CastDialogue.Score(state, kang) == score, "capture affinity: " + score);
+                }
+
+                void Standee(string id, string name, float x)
+                {
+                    var texture = Resources.Load<Texture2D>("Standees/" + id + "_battle_right");
+                    Check(texture != null, "right-facing standee exists for " + name);
+                    if (texture == null) return;
+                    const float height = 686;
+                    float width = height * texture.width / texture.height;
+                    var image = MapUi.Rect(board, name, x + (470 - width) / 2, 96, width, height)
+                        .gameObject.AddComponent<RawImage>();
+                    image.texture = texture;
+                    image.raycastTarget = false;
+                    MapUi.Text(board, name, x, 797, 470, 55, 32, MapUi.Paper, TextAnchor.MiddleCenter);
+                }
             }
             finally
             {

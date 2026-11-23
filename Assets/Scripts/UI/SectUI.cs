@@ -352,6 +352,61 @@ namespace Wuxia
             detailsList.anchoredPosition = Vector2.zero;
         }
 
+        internal void ShowSectLedger(GameState state)
+        {
+            ShowModal("", Array.Empty<string>(), new[] { ("收卷", (Action)(() => CloseModal())) });
+            Anchor(modalCard, Vector2.one * .5f, Vector2.one * .5f, new(-660, -394), new(660, 394));
+            characterDecoration = MapUi.Docket(modalCard, "門派政務", 0, 0, 1320, 702, false);
+            var page = characterDecoration;
+            MapUi.Text(page, $"{state.SectLabel}　門派政務", 38, 20, 800, 64, 40, MapUi.Gold);
+            MapUi.Text(page, state.Date, 890, 27, 392, 52, 23, MapUi.Paper, TextAnchor.MiddleRight);
+            var affairs = MapUi.Docket(page, "門務", 30, 99, 444, 573);
+            MapUi.Text(affairs, "門務簿", 24, 16, 396, 62, 30, MapUi.Red);
+            MapUi.Text(affairs, $"床位 {state.Beds}　弟子 {state.Disciples.Count}\n銀兩 {state.Silver}　聲望 {state.Reputation}",
+                24, 84, 396, 80, 24, MapUi.Ink, TextAnchor.UpperLeft);
+            var works = LedgerScroll(affairs, 22, 181, 400, 358);
+            int workY = 0;
+            foreach (var building in state.Buildings.Where(b => b != null).GroupBy(b => b.id))
+            {
+                var entry = building.First();
+                var slip = MapUi.Kit(works, entry.name, 0, workY, 394, 48, "Wood", false);
+                MapUi.Text(slip, entry.name, 15, 0, 238, 48, 21, MapUi.Paper);
+                MapUi.Text(slip, $"{building.Count()} 處", 250, 0, 121, 48, 19, MapUi.Gold, TextAnchor.MiddleRight);
+                workY += 54;
+            }
+            works.sizeDelta = new Vector2(400, workY);
+
+            var registry = MapUi.Docket(page, "弟子", 495, 99, 795, 573);
+            MapUi.Text(registry, "弟子名冊", 24, 16, 600, 62, 30, MapUi.Red);
+            var roster = LedgerScroll(registry, 20, 86, 755, 459);
+            int memberY = 0;
+            foreach (var member in state.Disciples)
+            {
+                var slip = MapUi.Kit(roster, member.name, 0, memberY, 750, 104, "Wood", false);
+                MapUi.Portrait(slip, PortraitService.Resolve(PortraitService.IdOrDefault(member.portrait, member.id), member.gender),
+                    12, 8, 70, 88);
+                MapUi.Text(slip, member.name + "　" + member.title, 100, 8, 430, 38, 24, MapUi.Paper, role: "Names");
+                MapUi.Text(slip, member.trait, 100, 48, 430, 43, 20, MapUi.Gold);
+                MapUi.Text(slip, $"好感 {CastDialogue.Score(state, member)}", 544, 20, 180, 60, 21, MapUi.Paper, TextAnchor.MiddleRight);
+                memberY += 112;
+            }
+            roster.sizeDelta = new Vector2(755, memberY);
+
+            RectTransform LedgerScroll(Transform parent, float x, float y, float width, float height)
+            {
+                var viewport = MapUi.Panel(parent, "卷內", x, y, width, height, new Color(.27f, .19f, .13f, .10f));
+                viewport.gameObject.AddComponent<RectMask2D>();
+                var contents = MapUi.Rect(viewport, "卷頁", 0, 0, width, 0);
+                var scroll = viewport.gameObject.AddComponent<ScrollRect>();
+                scroll.viewport = viewport;
+                scroll.content = contents;
+                scroll.horizontal = false;
+                scroll.movementType = ScrollRect.MovementType.Clamped;
+                scroll.scrollSensitivity = 45;
+                return contents;
+            }
+        }
+
         public void ShowModal(string title, IEnumerable<string> lines,
             IEnumerable<(string label, Action run)> buttons = null, bool dismissible = true, Action closed = null)
         {

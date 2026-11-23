@@ -69,7 +69,8 @@ namespace Wuxia
                     continue;
                 }
                 string hint = persona?.hint?.Get(cast.role);
-                if (!string.IsNullOrEmpty(hint)) yield return Line(id, hint);
+                if (!string.IsNullOrEmpty(hint))
+                    yield return Line(id, CastDialogue.CharacterSpeech(state, id, hint));
                 var choices = scene.advisors.Where(a => a.role == cast.role && (a.tier == tier || a.tier == "any")
                     && (a.band == band || a.band == "any")).ToArray();
                 int Priority(TalkAdvice a) => (a.tier == tier ? 2 : 0) + (a.band == band ? 1 : 0);
@@ -81,7 +82,7 @@ namespace Wuxia
             }
             foreach (var entry in CastDialogue.Data.interjections)
                 if (available.Any(member => member.id == entry.id) && UnityEngine.Random.value < .25f)
-                    yield return Line(entry.id, CastDialogue.Pick(entry.lines));
+                    yield return Line(entry.id, CastDialogue.CharacterSpeech(state, entry.id, CastDialogue.Pick(entry.lines)));
         }
 
         private void Dispatch()
@@ -159,8 +160,9 @@ namespace Wuxia
             if (incident != null)
             {
                 var member = state.Disciples.FirstOrDefault(d => d.injury < 3 && CastDialogue.Find(d.id)?.role == choice.aftermath?.role);
-                string note = member == null ? null : CastDialogue.Score(state, member) < 15
-                    ? CastDialogue.Find(member.id)?.aftermath?.success?.frosty : choice.aftermath?.text;
+                string note = null;
+                if (member != null)
+                    note = CastDialogue.CharacterSpeech(state, member.id, choice.aftermath?.text);
                 Play("結局", new[] { Line("narrator", incident.options[choice.index].result), Line(member?.id, note) },
                     () => finish(state.ResolveDiploEvent(choice.index, choice, prepaid: true)), true);
                 return;
@@ -201,11 +203,11 @@ namespace Wuxia
                 if (index >= lines.Length) { next(); return; }
                 var line = lines[index];
                 var page = Page(stage, abroad, line.speaker);
-                var paper = MapUi.Kit(page, "對白", 264, 500, 1016, 276, "Paper");
+                var paper = MapUi.Docket(page, "對白", 264, 500, 1016, 276);
                 MapUi.Text(paper, Speaker(line.speaker), 34, 16, 900, 44, 32, MapUi.Red, role: "Names");
                 MapUi.Text(paper, Format(line), 36, 78, 944, 145, 32, MapUi.Ink, TextAnchor.UpperLeft, "Narration");
                 string label = index + 1 < lines.Length ? "繼續" : stage == "結局" ? "收卷" :
-                    council && incident == null ? "遣使" : "答覆";
+                    council && incident == null ? "遣使" : "繼續";
                 var advance = MapUi.Button(page, label, 1266, 808, 204, 50, () => Draw(index + 1), MapUi.Red, 24);
                 advance.name = "對話繼續";
                 var pageTurn = paper.gameObject.AddComponent<Button>();
@@ -224,10 +226,17 @@ namespace Wuxia
             MapUi.Clear(overlay);
             overlay.gameObject.SetActive(true);
             overlay.SetAsLastSibling();
-            var page = MapUi.Kit(overlay, stage, 26, 18, 1548, 864, "Teal");
+            var page = MapUi.Docket(overlay, stage, 26, 18, 1548, 864, false);
             var backdrop = MapUi.Rect(page, "殿內", 18, 78, 1512, 766).gameObject.AddComponent<RawImage>();
-            backdrop.texture = Resources.Load<Texture2D>("Story/cg_elder_hall");
-            backdrop.color = new Color(.65f, .57f, .46f, .68f);
+            var venue = Resources.Load<Texture2D>("DiplomacyVenues/" + Venue(abroad));
+            backdrop.texture = venue;
+            if (venue != null)
+            {
+                float crop = 1512f * venue.height / (766f * venue.width);
+                backdrop.uvRect = crop <= 1 ? new Rect((1 - crop) / 2, 0, crop, 1)
+                    : new Rect(0, (1 - 1 / crop) / 2, 1, 1 / crop);
+            }
+            backdrop.color = new Color(.86f, .83f, .78f);
             backdrop.raycastTarget = false;
             var head = MapUi.Kit(page, "刊首", 18, 10, 1512, 68, "Wood");
             MapUi.Text(head, (action?.name ?? incident.title) + "　・　" + stage, 24, 0, 770, 68, 36, MapUi.Paper);
@@ -242,7 +251,10 @@ namespace Wuxia
                 PortraitService.Resolve(portrait, left?.gender ?? hero.gender));
             if (abroad)
             {
-                Card(1196, leader, target.Label + "　" + leaderTitle, PortraitService.Resolve(target.PortraitId));
+                bool messenger = speaker == "messenger" || (incident != null && speaker != "leader");
+                Card(1196, messenger ? Speaker("messenger") : leader,
+                    messenger ? "來使" : target.Label + "　" + leaderTitle,
+                    PortraitService.Resolve(messenger ? MessengerPortrait() : target.PortraitId));
                 int attitude = state.Attitude(target);
                 MapUi.Text(page, $"態度　{Diplomacy.AttitudeLabel(attitude)} {attitude:+0;-0;0}", 1196, 440, 292, 36,
                     21, MapUi.Paper, TextAnchor.MiddleCenter);
@@ -262,6 +274,37 @@ namespace Wuxia
                 MapUi.Text(plaque, subtitle, 6, 43, 280, 30, 18, MapUi.Gold, TextAnchor.MiddleCenter);
             }
         }
+
+        private string Venue(bool abroad)
+        {
+            if (!abroad) return "home";
+            return target.id switch
+            {
+                "wulong" or "louguan" => "daoist",
+                "shaolin" => "buddhist",
+                "nongchao" or "yanbang" => "guild",
+                _ => target.type switch
+                {
+                    "merchant" => "guild",
+                    "court" => "courthouse",
+                    "military" => "office",
+                    "foreign" => "yurt",
+                    "bandit" or "outlaw" => "stockade",
+                    _ => "sword"
+                }
+            };
+        }
+
+        private string MessengerPortrait() => target.id == "emei" ? "npc_nun01" : Venue(true) switch
+        {
+            "daoist" => "npc_tao01",
+            "buddhist" => "npc_monk01",
+            "guild" => "npc_mer01",
+            "courthouse" or "office" => "npc_off01",
+            "yurt" => "npc_mer02",
+            "stockade" => "npc_em05",
+            _ => "npc_ym01"
+        };
 
         private string Speaker(string id) => id switch
         {

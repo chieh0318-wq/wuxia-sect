@@ -391,7 +391,7 @@ namespace Wuxia
                 if (action != null)
                     commands.Add((ActionLabel(action), action.summary, CanUseAp(action) ? () => RunAction(action) : null, false));
             }
-            commands.Add(("查看門派", $"{HousingInfo()}　轄下據點 {state.Story.heldNodes?.Length ?? 0} 處", ShowSect, false));
+            commands.Add(("門派政務", $"{HousingInfo()}　轄下據點 {state.Story.heldNodes?.Length ?? 0} 處", ShowSect, false));
             commands.Add(("主角", $"{state.Protagonist.name}：武學、屬性與六件裝備（裝備庫 {state.Story.armoury?.Length ?? 0} 件）",
                 ShowProtagonist, false));
             ui.ShowCommands("指令", commands);
@@ -641,7 +641,7 @@ namespace Wuxia
             var castLines = CastDialogue.Find(disciple.id)?.daily?.Get(CastDialogue.Tier(CastDialogue.Score(state, disciple)));
             text = CastDialogue.Format(state, CastDialogue.Pick(castLines) ?? text, disciple.id);
             if (state.Story.delegateId == disciple.id)
-                text = "正在代行掌門門務。";
+                text = CastDialogue.CharacterSpeech(state, disciple.id, "門務暫由我料理。");
             ui.ShowDialogue(disciple, text, () => ShowDisciple(disciple));
             tutorial?.Record("talk_disciple");
         }
@@ -670,15 +670,7 @@ namespace Wuxia
                 hero.weapon, state.WeaponRankDelta(hero.weapon), gear: state.GearLabels(storyWeapon), stats: state.HeroStats);
         }
 
-        private void ShowSect()
-        {
-            ui.ShowModal(state.Data.Start.sectName, new[]
-            {
-                state.Date, HousingInfo(),
-                $"院中建築　{state.Buildings.Count(b => b != null)}／{state.Buildings.Length}",
-                $"弟子　{string.Join("、", state.Disciples.Select(d => d.name))}"
-            });
-        }
+        private void ShowSect() => ui.ShowSectLedger(state);
 
         private string HousingInfo()
         {

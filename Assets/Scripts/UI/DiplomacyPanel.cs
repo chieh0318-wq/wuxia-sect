@@ -13,7 +13,7 @@ namespace Wuxia
     public sealed class DiplomacyPanel
     {
         private const int RowHeight = 66, ListWidth = 450, ListHeight = 700;
-        private static readonly Color Soft = new(.66f, .55f, .38f, .14f), Jade = new(.20f, .39f, .28f);
+        private static readonly Color Soft = new(.83f, .72f, .55f), Jade = new(.20f, .39f, .28f);
         private readonly WorldMapData data;
         private readonly Action changed;
         private readonly RectTransform root, listView, rows, detail, side, wide, overlay;
@@ -21,6 +21,7 @@ namespace Wuxia
         private readonly Button factionsTab, victoryTab;
         private GameState state;
         private MapFaction selected;
+        private DiploAction selectedAction;
         private string result = "";
         private bool victoryView;
         private DiplomacyTalk talk;
@@ -34,15 +35,16 @@ namespace Wuxia
         {
             this.data = data;
             this.changed = changed;
-            root = MapUi.Kit(parent, "外交折衝", 0, 0, 1600, 900, "Teal");
+            root = MapUi.Docket(parent, "外交折衝", 0, 0, 1600, 900, false);
             var masthead = MapUi.Kit(root, "刊首", 12, 8, 1576, 80, "Wood");
             MapUi.Text(masthead, "外交折衝", 27, 6, 250, 68, 36, MapUi.Paper);
             header = MapUi.Text(masthead, "", 290, 14, 1066, 52, 20, MapUi.Paper, TextAnchor.MiddleLeft, "Numbers");
             MapUi.Button(masthead, "返回地圖", 1376, 16, 176, 48, Close, MapUi.Red);
-            MapUi.Kit(root, "外交卷冊", 14, 99, 1572, 784, "Paper", false);
+            MapUi.Docket(root, "外交卷冊", 14, 99, 1572, 784);
             factionsTab = MapUi.Button(root, "諸勢力", 34, 113, 180, 44, () => { victoryView = false; Refresh(); });
             victoryTab = MapUi.Button(root, "勝利之路", 224, 113, 180, 44, () => { victoryView = true; Refresh(); });
 
+            MapUi.Kit(root, "名冊", 26, 158, 466, 716, "Wood", false);
             listView = MapUi.Panel(root, "名冊視窗", 34, 166, ListWidth, ListHeight, Soft);
             listView.gameObject.AddComponent<RectMask2D>();
             rows = MapUi.Rect(listView, "名冊", 0, 0, ListWidth, 0);
@@ -67,6 +69,7 @@ namespace Wuxia
             selected = focus ?? selected ?? Roster().FirstOrDefault();
             victoryView = false;
             result = "";
+            selectedAction = GameState.DiploActionById("gift");
             root.gameObject.SetActive(true);
             root.SetAsLastSibling();
             overlay.gameObject.SetActive(false);
@@ -97,24 +100,11 @@ namespace Wuxia
             Refresh();
         }
 
-        /// <summary>Runs one action on the selected faction (also used by the capture checks).</summary>
-        internal string Act(string id)
-        {
-            var action = GameState.DiploActionById(id);
-            if (action == null || selected == null || state == null) return null;
-            result = state.DiploAct(action, selected);
-            AudioManager.Play(result.Contains("成功") ? "complete" : "page");
-            changed?.Invoke();
-            Refresh();
-            if (state.ClaimDiplomaticVictory()) ShowVictoryProclamation();
-            return result;
-        }
-
         private void BeginTalk(DiploAction action)
         {
             if (talk != null || state.DiploBlock(action, selected) != null) return;
             var scene = DiplomacyDialogue.Data.actions.FirstOrDefault(entry => entry.id == action.id && entry.options.Length > 0);
-            if (scene == null) { Act(action.id); return; }
+            if (scene == null) return;
             OpenTalk(scene, selected, action, null);
         }
 
@@ -178,13 +168,14 @@ namespace Wuxia
                 int ties = state.Ties(faction.id);
                 bool chosen = faction == selected;
                 var row = MapUi.Button(rows, "", 0, index * RowHeight, ListWidth - 14, RowHeight - 6, () => Select(faction),
-                    chosen ? new Color(.61f, .24f, .17f, .22f) : new Color(1, .98f, .92f, .35f));
+                    chosen ? new Color(.89f, .68f, .48f) : index % 2 == 0 ? MapUi.Paper : new Color(.90f, .82f, .68f));
                 row.name = "勢力:" + faction.id;
                 var rect = (RectTransform)row.transform;
+                MapUi.Portrait(rect, known ? PortraitService.Resolve(faction.PortraitId) : null, 17, 5, 45, 50);
                 MapUi.Panel(rect, "旗色", 6, 8, 8, RowHeight - 22, faction.Tint).GetComponent<Image>().raycastTarget = false;
-                MapUi.Text(rect, faction.Label, 22, 2, 196, 30, 21, MapUi.Ink, TextAnchor.MiddleLeft, "Names");
+                MapUi.Text(rect, faction.Label, 70, 2, 164, 30, 21, chosen ? MapUi.Red : MapUi.Ink, TextAnchor.MiddleLeft, "Names");
                 string tags = ties != 0 ? "・" + string.Join("・", Diplomacy.TieNames(ties).Split('・').Take(2)) : "";
-                MapUi.Text(rect, (known ? Diplomacy.GroupName(faction) : "未探明") + tags, 22, 32, 230, 26, 18,
+                MapUi.Text(rect, (known ? Diplomacy.GroupName(faction) : "未探明") + tags, 70, 32, 176, 26, 18,
                     (ties & (Diplomacy.Alliance | Diplomacy.Vassal | Diplomacy.Merged)) != 0 ? Jade : MapUi.Red);
                 MapUi.Text(rect, known ? $"{Diplomacy.AttitudeLabel(attitude)} {attitude:+0;-0;0}" : "態度 ？", 238, 2, 190, 30, 19,
                     known ? Diplomacy.AttitudeColor(attitude) : MapUi.Ink, TextAnchor.MiddleRight, "Numbers");
@@ -203,14 +194,6 @@ namespace Wuxia
                 attitude >= 0 ? Jade : MapUi.Red);
             bar.GetComponent<Image>().raycastTarget = false;
             MapUi.Panel(parent, "中線", x + half - 1, y - 3, 2, height + 6, MapUi.Ink).GetComponent<Image>().raycastTarget = false;
-        }
-
-        private static void Progress(Transform parent, float x, float y, float width, float height, float ratio, bool done)
-        {
-            MapUi.Panel(parent, "進度槽", x, y, width, height, new Color(.45f, .37f, .27f, .35f)).GetComponent<Image>().raycastTarget = false;
-            if (ratio > 0)
-                MapUi.Panel(parent, "進度", x, y, width * Mathf.Clamp01(ratio), height, done ? Jade : MapUi.Red)
-                    .GetComponent<Image>().raycastTarget = false;
         }
 
         // ---- Selected faction ------------------------------------------------------------------
@@ -249,75 +232,97 @@ namespace Wuxia
                 0, 228, 630, 28, 18, MapUi.Ink);
             MapUi.Panel(detail, "分隔", 0, 262, 630, 2, new Color(.65f, .51f, .34f)).GetComponent<Image>().raycastTarget = false;
 
+            MapUi.Kit(detail, "行動卷", -8, 266, 646, 365, "Wood", false);
             var actions = Diplomacy.Data.actions ?? Array.Empty<DiploAction>();
             for (int i = 0; i < actions.Length && i < 9; i++)
             {
                 var action = actions[i];
-                float x = i % 3 * 214, y = 272 + i / 3 * 124;
+                float x = i % 3 * 214, y = 276 + i / 3 * 114;
                 string block = state.DiploBlock(action, faction);
-                var button = MapUi.Button(detail, action.name, x, y, 202, 48, () => BeginTalk(action), block == null ? MapUi.Red : null, 21);
+                var button = MapUi.Button(detail, action.name, x, y, 202, 48, () => SelectAction(action), action == selectedAction ? MapUi.Red : null, 21);
                 button.name = "外交:" + action.id;
-                button.interactable = block == null;
                 string cost = $"行動力{action.ap}" + (action.silver > 0 ? $"・銀兩{action.silver}" : "") +
                     (action.reputation > 0 ? $"・聲望{action.reputation}" : "");
-                MapUi.Text(detail, cost, x, y + 52, 202, 26, 18, MapUi.Ink, TextAnchor.MiddleCenter, "Numbers");
+                MapUi.Text(detail, cost, x, y + 52, 202, 26, 18, MapUi.Paper, TextAnchor.MiddleCenter, "Numbers");
                 MapUi.Text(detail, block == null ? $"成功率 {state.DiploChance(action, faction):P0}" : block, x, y + 80, 202, 28, 18,
-                    block == null ? Jade : MapUi.Red, TextAnchor.MiddleCenter);
+                    block == null ? MapUi.Gold : new Color(.96f, .62f, .50f), TextAnchor.MiddleCenter);
             }
             string note = string.IsNullOrEmpty(result)
-                ? "點選行動按鈕執行。成功率 = 基礎 ＋ 使者口才 ＋ 態度 ＋ 聲威差（5%～95%）；失敗會降低態度。" : result;
+                ? selectedAction?.desc ?? "" : result;
             MapUi.Kit(detail, "結果", 0, 650, 630, 104, "Wood", false);
-            MapUi.Text(detail, note, 16, 658, 600, 92, 19, MapUi.Paper, TextAnchor.UpperLeft, "Narration");
+            MapUi.Text(detail, note, 16, 660, 420, 85, 19, MapUi.Paper, TextAnchor.UpperLeft, "Narration");
+            if (selectedAction != null)
+            {
+                var enter = MapUi.Button(detail, "入席議事", 454, 675, 160, 52, () => BeginTalk(selectedAction), MapUi.Red);
+                enter.interactable = state.DiploBlock(selectedAction, faction) == null;
+            }
         }
 
         // ---- Victory summary -------------------------------------------------------------------
 
+        private void SelectAction(DiploAction action)
+        {
+            selectedAction = action;
+            result = "";
+            DrawDetail();
+            DrawSide();
+        }
+
         private void DrawSide()
         {
             MapUi.Clear(side);
-            var v = state.Victory;
-            var rules = v.Rules;
-            MapUi.Panel(side, "底", 0, 0, 410, 760, Soft).GetComponent<Image>().raycastTarget = false;
-            MapUi.Text(side, "勝利之路", 16, 4, 380, 42, 27, MapUi.Ink);
-            int y = 50;
-            Section("武力征服・以武立威", v.Conquest);
-            Row($"轄下據點 {v.Held}／{rules.conquestNodes}", v.Held / (float)rules.conquestNodes, v.Held >= rules.conquestNodes);
-            Row($"聲望 {v.Reputation}／{rules.conquestReputation}", v.Reputation / (float)rules.conquestReputation, v.Reputation >= rules.conquestReputation);
-            y += 8;
-            Section("外交勝利・江湖盟主", v.Diplomatic);
-            Row($"歸心勢力 {v.Loyal}／{rules.loyalNeeded}（結義＋附庸＋併入）", v.Loyal / (float)rules.loyalNeeded, v.Loyal >= rules.loyalNeeded);
-            Row($"附庸／併入 {v.Subjects}／{rules.subjectNeeded}", v.Subjects / (float)rules.subjectNeeded, v.Subjects >= rules.subjectNeeded);
-            Row($"聲望 {v.Reputation}／{rules.reputationNeeded}", v.Reputation / (float)rules.reputationNeeded, v.Reputation >= rules.reputationNeeded);
-            var loyal = data.Factions.Where(Diplomacy.Jianghu)
-                .Where(f => (state.Ties(f.id) & (Diplomacy.Alliance | Diplomacy.Vassal | Diplomacy.Merged)) != 0).Select(f => f.Label).ToArray();
-            MapUi.Text(side, "已歸心：" + (loyal.Length > 0 ? string.Join("、", loyal) : "尚無"), 16, y, 380, 56, 18, MapUi.Ink, TextAnchor.UpperLeft);
-            y += 64;
-            MapUi.Panel(side, "分隔", 16, y, 378, 2, new Color(.65f, .51f, .34f)).GetComponent<Image>().raycastTarget = false;
-            y += 10;
-            MapUi.Text(side, "外交急報", 16, y, 380, 32, 22, MapUi.Red);
-            y += 36;
-            var pending = state.PendingDiploEvent;
-            if (pending != null)
+            var docket = MapUi.Docket(side, "席前進言", 0, 0, 410, 516, false);
+            MapUi.Text(docket, "席前進言　／　" + selectedAction?.name, 20, 13, 370, 52, 27, MapUi.Gold);
+            if (selected != null && selectedAction != null)
             {
-                MapUi.Text(side, $"{pending.title}——{state.PendingDiploTarget?.Label}", 16, y, 380, 30, 20, MapUi.Ink, TextAnchor.MiddleLeft, "Names");
-                var open = MapUi.Button(side, "處理急報", 16, y + 36, 378, 46, ShowEvent, MapUi.Red, 21);
-                open.name = "處理急報";
+                var available = state.Disciples.Where(d => d.injury < 3).ToArray();
+                var disciple = available.Where(d => CastDialogue.Find(d.id)?.role?.StartsWith("disciple_pro_", StringComparison.Ordinal) == true)
+                    .OrderBy(d => d.id != "kang").FirstOrDefault();
+                int y = 70;
+                foreach (var id in new[] { "lin", "xu", disciple?.id })
+                {
+                    var member = available.FirstOrDefault(d => d.id == id);
+                    if (member == null) continue;
+                    var paper = MapUi.Kit(docket, member.name, 12, y, 386, 138, "Xuan", false);
+                    MapUi.Portrait(paper, PortraitService.Resolve(PortraitService.IdOrDefault(member.portrait, member.id), member.gender),
+                        10, 12, 76, 112);
+                    MapUi.Text(paper, member.name + "　" + member.title, 98, 10, 274, 30, 22, MapUi.Red);
+                    MapUi.Text(paper, Preview(member), 98, 46, 274, 82, 18, MapUi.Ink, TextAnchor.UpperLeft, "Narration");
+                    y += 145;
+                }
             }
-            else
-                MapUi.Text(side, "目前沒有待決急報。\n每月結算時可能傳來壽宴、求援或來投。", 16, y, 380, 80, 18, MapUi.Ink, TextAnchor.UpperLeft);
 
-            void Section(string title, bool done)
+            var report = MapUi.Docket(side, "急報與局勢", 0, 528, 410, 232);
+            var v = state.Victory;
+            MapUi.Text(report, "勝利之路", 20, 12, 368, 34, 23, MapUi.Red);
+            MapUi.Text(report, $"據點 {v.Held}／{v.Rules.conquestNodes}　歸心 {v.Loyal}／{v.Rules.loyalNeeded}",
+                20, 50, 370, 34, 19, MapUi.Ink);
+            MapUi.Text(report, "外交急報", 20, 96, 368, 34, 23, MapUi.Red);
+            var pending = state.PendingDiploEvent;
+            if (pending == null) MapUi.Text(report, "目前沒有待決急報。", 20, 136, 368, 40, 19, MapUi.Ink);
+            else
             {
-                MapUi.Text(side, title, 16, y, 270, 32, 22, MapUi.Red, TextAnchor.MiddleLeft, "Names");
-                MapUi.Text(side, done ? "已達成" : "進行中", 286, y, 108, 32, 19, done ? Jade : MapUi.Ink, TextAnchor.MiddleRight);
-                y += 36;
+                MapUi.Text(report, $"{pending.title}・{state.PendingDiploTarget?.Label}", 20, 130, 368, 34, 19, MapUi.Ink);
+                MapUi.Button(report, "處理急報", 20, 173, 370, 42, ShowEvent, MapUi.Red);
             }
-            void Row(string label, float ratio, bool done)
-            {
-                MapUi.Text(side, label, 16, y, 380, 26, 18, MapUi.Ink, TextAnchor.MiddleLeft, "Numbers");
-                Progress(side, 16, y + 28, 378, 10, ratio, done);
-                y += 46;
-            }
+        }
+
+        private string Preview(DiscipleData member)
+        {
+            var cast = CastDialogue.Find(member.id);
+            string tier = CastDialogue.Tier(CastDialogue.Score(state, member));
+            int attitude = state.Attitude(selected);
+            string band = attitude < 0 ? "cold" : attitude < 25 ? "neutral" : "warm";
+            var scene = DiplomacyDialogue.Data.actions.FirstOrDefault(entry => entry.id == selectedAction.id);
+            var advice = scene?.advisors.Where(a => a.role == cast?.role && (a.tier == tier || a.tier == "any")
+                && (a.band == band || a.band == "any")).OrderByDescending(a => (a.tier == tier ? 2 : 0) + (a.band == band ? 1 : 0))
+                .FirstOrDefault();
+            string line = tier == "frosty" ? $"「{selectedAction.name}」？" + cast?.advisorVoice?.frosty?.advisor : advice?.text;
+            if (string.IsNullOrWhiteSpace(line))
+                line = "先看清對方的條件，再決定要不要遣使。";
+            return CastDialogue.Format(state, Diplomacy.Fill(line, selected), member.id)
+                .Replace("{faction}", selected.Label).Replace("{silver}", selectedAction.silver.ToString())
+                .Replace("{seat}", data.NodeLabel(selected.seat));
         }
 
         /// <summary>勝利之路 tab: the conquest and diplomatic routes as two equal columns.</summary>
@@ -355,7 +360,7 @@ namespace Wuxia
         private void Column(float x, string route, string title, bool done, string rule, (string label, float ratio, bool done)[] bars,
             (string name, string tag, bool good)[] chips, string note)
         {
-            var box = MapUi.Kit(wide, route, x, 0, 754, 700, "Wood", false);
+            var box = MapUi.Docket(wide, route, x, 0, 754, 700, false);
             MapUi.Text(box, route, 28, 14, 300, 50, 34, MapUi.Gold);
             MapUi.Text(box, "「" + title + "」", 230, 14, 300, 50, 30, MapUi.Paper, TextAnchor.MiddleLeft, "Names");
             MapUi.Text(box, done ? "已達成" : "進行中", 560, 18, 166, 44, 24, done ? new Color(.55f, .85f, .62f) : MapUi.Gold, TextAnchor.MiddleRight);
@@ -375,7 +380,7 @@ namespace Wuxia
             foreach (var (name, tag, good) in chips.Take(15))
             {
                 float cx = 28 + index % 3 * 234, cy = y + index / 3 * 50;
-                var chip = MapUi.Panel(box, name, cx, cy, 224, 42, good ? new Color(.20f, .39f, .28f, .85f) : new Color(.93f, .86f, .73f, .16f));
+                var chip = MapUi.Kit(box, name, cx, cy, 224, 42, good ? "Jade" : "Wood", false);
                 chip.GetComponent<Image>().raycastTarget = false;
                 MapUi.Text(chip, name, 10, 0, 130, 42, 19, MapUi.Paper, TextAnchor.MiddleLeft, "Names");
                 MapUi.Text(chip, tag, 130, 0, 86, 42, 18, good ? new Color(.85f, .95f, .80f) : MapUi.Gold, TextAnchor.MiddleRight);
@@ -392,7 +397,7 @@ namespace Wuxia
             MapUi.Clear(overlay);
             overlay.gameObject.SetActive(true);
             overlay.SetAsLastSibling();
-            var scroll = MapUi.Kit(overlay, title, 360, 140, 880, 620, "Paper");
+            var scroll = MapUi.Docket(overlay, title, 360, 140, 880, 620);
             MapUi.Text(scroll, title, 40, 24, 560, 56, 36, MapUi.Ink);
             MapUi.Text(scroll, subtitle, 40, 82, 800, 30, 20, MapUi.Red, TextAnchor.MiddleLeft, "Names");
             var divider = MapUi.Rect(scroll, "Divider", 40, 116, 800, 8).gameObject.AddComponent<Image>();

@@ -168,6 +168,24 @@ namespace Wuxia
             return cast?.address?.Get(Tier(disciple == null ? cast.startLoyalty : Score(state, disciple))) ?? state.Protagonist.title;
         }
 
+        internal static string CharacterSpeech(GameState state, string id, string text)
+        {
+            var member = state.Disciples.FirstOrDefault(d => d.id == id);
+            if (member == null || Find(id) == null || string.IsNullOrWhiteSpace(text)) return text;
+            string tier = Tier(Score(state, member));
+            string opening = (id, tier) switch
+            {
+                ("lin", "frosty") => "{call}，話我只交代一次。",
+                ("xu", "frosty") => "{call}，公事說完，我便告退。",
+                ("han" or "wei", "frosty") => "若大師兄在，我自會與他細商。眼下只說這一件。",
+                ("kang" or "cui", "frosty") => "這事原該由許師姐定奪。眼下我只把話帶到。",
+                (_, "low") => "{call}，這話還請你自己斟酌。",
+                (_, "high") => "{call}，有事儘管算上我。",
+                _ => "{call}，且聽我說。"
+            };
+            return Format(state, opening + text, id);
+        }
+
         internal static string Format(GameState state, string text, string speaker = null)
         {
             var hero = state.Protagonist;

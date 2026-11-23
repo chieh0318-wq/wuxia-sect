@@ -48,6 +48,21 @@ namespace Wuxia
             return rect;
         }
 
+        internal static RectTransform Docket(Transform parent, string name, float x, float y, float w, float h,
+            bool paper = true)
+        {
+            var frame = Kit(parent, name, x, y, w, h, "Lacquer");
+            if (paper) Kit(frame, "卷面", 8, 8, w - 16, h - 16, "Xuan", false);
+            for (int end = 0; end < 2; end++)
+            {
+                var rail = Kit(frame, "卷軸", 5, end == 0 ? 4 : h - 12, w - 10, 8, "Wood", false);
+                var braid = Rect(rail, "織錦", 0, 1, w - 10, 6).gameObject.AddComponent<Image>();
+                braid.sprite = UiKit.Sprite("Divider");
+                braid.raycastTarget = false;
+            }
+            return frame;
+        }
+
         internal static Text Text(Transform parent,string label,float x,float y,float w,float h,int size,
             Color color,TextAnchor alignment = TextAnchor.MiddleLeft,string role = null)
         {

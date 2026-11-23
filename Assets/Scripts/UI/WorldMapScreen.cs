@@ -105,7 +105,7 @@ namespace Wuxia
             backdrop.anchorMin = Vector2.zero;
             backdrop.anchorMax = Vector2.one;
             backdrop.offsetMin = backdrop.offsetMax = Vector2.zero;
-            frame = MapUi.Kit(canvas.transform,"Map frame",0,0,1600,900,"Teal");
+            frame = MapUi.Docket(canvas.transform,"Map frame",0,0,1600,900,false);
             frame.anchorMin = frame.anchorMax = frame.pivot = new Vector2(.5f,.5f);
             frame.anchoredPosition = Vector2.zero;
             var top = MapUi.Kit(frame,"Map top bar",12,8,1576,64,"Wood");
@@ -487,12 +487,13 @@ namespace Wuxia
         private RectTransform Card(string title,string subtitle)
         {
             ClearCard();
-            var panel = MapUi.Kit(card,title,0,0,426,680,"Paper");
+            var panel = MapUi.Docket(card,title,0,0,426,680);
+            MapUi.Kit(panel, "門楣", 9, 9, 408, 94, "Wood", false);
             openedCard = panel;
             LayoutLabels();
             cardFaction = null;
-            MapUi.Text(panel,title,20,16,342,48,31,MapUi.Ink);
-            MapUi.Text(panel,subtitle,20,66,382,32,19,MapUi.Red,TextAnchor.MiddleLeft,"Names");
+            MapUi.Text(panel,title,20,16,342,48,31,MapUi.Paper);
+            MapUi.Text(panel,subtitle,20,66,382,32,19,MapUi.Gold,TextAnchor.MiddleLeft,"Names");
             var divider = MapUi.Rect(panel,"Divider",20,100,386,8).gameObject.AddComponent<Image>();
             divider.sprite = UiKit.Sprite("Divider");
             divider.raycastTarget = false;
@@ -675,7 +676,7 @@ namespace Wuxia
             cardFaction = faction;
             string attitude = host is GameState game ? $" {game.Attitude(faction):+0;-0;0}" : "";
             MapUi.Text(panel,"關係　"+faction.RelationWith(shift)+attitude,20,105,176,32,21,stance);
-            var talks = MapUi.Button(panel,"外交",200,105,96,34,() => OpenDiplomacy(faction),MapUi.Red);
+            var talks = MapUi.Button(panel,"外交",200,107,96,36,() => OpenDiplomacy(faction),MapUi.Red);
             talks.name = "門派外交";
             talks.interactable = host is GameState;
             if (!known)
@@ -692,12 +693,13 @@ namespace Wuxia
                 scout.interactable = host.ActionPoints >= 1;
                 return;
             }
-            MapUi.Text(panel,$"首領　{faction.leader ?? "—"}",20,149,274,32,22,MapUi.Ink);
+            MapUi.Portrait(panel, PortraitService.Resolve(faction.PortraitId), 20, 149, 100, 119);
+            MapUi.Text(panel,$"首領　{faction.leader ?? "—"}",133,149,274,32,22,MapUi.Ink);
             MapUi.Button(panel,"掌門",303,105,103,34,() => LeaderSelected?.Invoke(faction),MapUi.Red);
-            MapUi.Text(panel,RankSystem.FormatKnown(faction.leaderRank,faction.leaderCap),20,183,386,30,24,RankSystem.Color(faction.leaderRank));
+            MapUi.Text(panel,RankSystem.FormatKnown(faction.leaderRank,faction.leaderCap),133,183,270,30,22,RankSystem.Color(faction.leaderRank));
             if (!string.IsNullOrEmpty(faction.leaderWeapon))
-                MapUi.Text(panel,"神兵　"+faction.WeaponLabel,155,183,249,30,19,MapUi.Red);
-            MapUi.Text(panel,$"聲望 {faction.reputation}　弟子 {faction.disciples}　銀兩 {faction.money}",20,229,386,39,19,MapUi.Ink);
+                MapUi.Text(panel,"神兵　"+faction.WeaponLabel,133,213,270,24,18,MapUi.Red);
+            MapUi.Text(panel,$"聲望 {faction.reputation}　弟子 {faction.disciples}　銀兩 {faction.money}",133,239,270,29,18,MapUi.Ink);
             MapUi.Text(panel,"絕學　"+faction.Arts,20,276,386,54,19,MapUi.Ink,TextAnchor.UpperLeft);
             bool hasLines = faction.leaderLines?.Any(line => line != null) == true;
             MapUi.Text(panel,faction.desc ?? "",20,337,386,hasLines ? 104 : 212,20,MapUi.Ink,TextAnchor.UpperLeft,"Narration");

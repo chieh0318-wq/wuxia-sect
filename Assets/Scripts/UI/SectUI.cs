@@ -244,6 +244,43 @@ namespace Wuxia
             }
         }
 
+        internal void ShowCommandCategories(
+            (string name, string detail, (string label, string detail, Action run, bool selected)[] entries)[] categories)
+        {
+            DrawCategories();
+
+            void DrawCategories()
+            {
+                Clear(commandList);
+                SetCommandsPanelHeight(780);
+                AddLine(commandList, "門派事務", 28);
+                foreach (var category in categories)
+                {
+                    var entry = CommandCard(commandList, category.name, category.detail, () => Expand(category), false);
+                    entry.GetComponent<LayoutElement>().preferredHeight = 96;
+                    if (category.name == "建造") targets["cmd_build"] = entry;
+                    if (category.name == "人事") targets["cmd_recruit"] = entry;
+                }
+            }
+
+            void Expand((string name, string detail, (string label, string detail, Action run, bool selected)[] entries) category)
+            {
+                ShowCommands("門派事務・" + category.name, new[] { ("返回分類", "查看其他門派事務", (Action)DrawCategories, false) }
+                    .Concat(category.entries));
+                if (category.name == "建造" && commandList.childCount > 2)
+                    targets["cmd_build"] = (RectTransform)commandList.GetChild(commandList.childCount - category.entries.Length);
+                if (category.name == "人事" && commandList.childCount > 2)
+                    targets["cmd_recruit"] = (RectTransform)commandList.GetChild(commandList.childCount - category.entries.Length);
+            }
+        }
+
+        internal void OpenCommandCategoryForCapture(string category)
+        {
+            var button = commandList.GetComponentsInChildren<Button>()
+                .FirstOrDefault(entry => entry.name == category);
+            button?.onClick.Invoke();
+        }
+
         private RectTransform CommandCard(RectTransform parent, string label, string detail, Action run, bool selected)
         {
             var rect = Button(parent, label, run);
@@ -293,6 +330,11 @@ namespace Wuxia
         private static string CommandIconFor(string label)
         {
             if (string.IsNullOrEmpty(label)) return null;
+            if (label == "人事") return "hud_disciple";
+            if (label.Contains("探險")) return "realm_explore";
+            if (label.Contains("外交")) return "faction_court";
+            if (label.Contains("征伐") || label.Contains("地圖")) return "faction_sect";
+            if (label.Contains("主角")) return "attr_cha";
             if (label.Contains("建造") || label.Contains("興建") || label.Contains("議事堂") || label.Contains("廂房")) return "skill_construction";
             if (label.Contains("招") || label.Contains("弟子")) return "hud_disciple";
             if (label.Contains("演武") || label.Contains("比武") || label.Contains("實戰") || label.Contains("戰鬥")) return "act_attack";
@@ -302,7 +344,8 @@ namespace Wuxia
             if (label.Contains("鍛") || label.Contains("兵器")) return "skill_forging";
             if (label.Contains("伙房") || label.Contains("糧")) return "hud_food";
             if (label.Contains("茶寮") || label.Contains("打聽") || label.Contains("情報")) return "attr_wit";
-            if (label.Contains("秘境") || label.Contains("奇遇") || label.Contains("探索")) return "attr_luk";
+            if (label.Contains("秘境")) return "realm_treasure";
+            if (label.Contains("山道") || label.Contains("奇遇") || label.Contains("探索")) return "realm_explore";
             if (label.Contains("商") || label.Contains("銀")) return "hud_silver";
             return "act_skill";
         }
@@ -387,7 +430,10 @@ namespace Wuxia
                     12, 8, 70, 88);
                 MapUi.Text(slip, member.name + "　" + member.title, 100, 8, 430, 38, 24, MapUi.Paper, role: "Names");
                 MapUi.Text(slip, member.trait, 100, 48, 430, 43, 20, MapUi.Gold);
-                MapUi.Text(slip, $"好感 {CastDialogue.Score(state, member)}", 544, 20, 180, 60, 21, MapUi.Paper, TextAnchor.MiddleRight);
+                var affinity = MapUi.Rect(slip, "好感", 557, 37, 26, 26).gameObject.AddComponent<RawImage>();
+                affinity.texture = UiKit.Icon("hud_affinity");
+                affinity.raycastTarget = false;
+                MapUi.Text(slip, $"好感 {CastDialogue.Score(state, member)}", 590, 20, 134, 60, 21, MapUi.Paper);
                 memberY += 112;
             }
             roster.sizeDelta = new Vector2(755, memberY);

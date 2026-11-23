@@ -137,7 +137,7 @@ namespace Wuxia
                 button.interactable = block == null;
                 button.name = "答覆:" + choice.id;
                 MapUi.Text(button.transform, choice.label, 24, 4, 966, 36, 27, MapUi.Paper);
-                MapUi.Text(button.transform, string.Join("　・　", costs), 24, 40, 966, 32, 19, MapUi.Gold);
+                MapUi.Text(button.transform, "影響　" + string.Join("　・　", costs), 24, 40, 966, 32, 19, MapUi.Gold);
             }
             if (incident != null)
                 MapUi.Button(page, "稍後處理", 1266, 808, 204, 50, () => finish(null));
@@ -203,9 +203,11 @@ namespace Wuxia
                 if (index >= lines.Length) { next(); return; }
                 var line = lines[index];
                 var page = Page(stage, abroad, line.speaker);
-                var paper = MapUi.Docket(page, "對白", 264, 500, 1016, 276);
-                MapUi.Text(paper, Speaker(line.speaker), 34, 16, 900, 44, 32, MapUi.Red, role: "Names");
-                MapUi.Text(paper, Format(line), 36, 78, 944, 145, 32, MapUi.Ink, TextAnchor.UpperLeft, "Narration");
+                bool onRight = line.speaker is "leader" or "messenger";
+                var paper = MapUi.Kit(page, "對白", onRight ? 48 : 376, 480, 1124, 310, "Lacquer");
+                var plaque = MapUi.Kit(paper, "名牌", 32, -22, 340, 62, "Plaque");
+                MapUi.Text(plaque, Speaker(line.speaker), 16, 4, 308, 54, 32, MapUi.Gold, role: "Names");
+                MapUi.Text(paper, Format(line), 36, 68, 1052, 218, 28, MapUi.Paper, TextAnchor.UpperLeft, "Narration");
                 string label = index + 1 < lines.Length ? "繼續" : stage == "結局" ? "收卷" :
                     council && incident == null ? "遣使" : "繼續";
                 var advance = MapUi.Button(page, label, 1266, 808, 204, 50, () => Draw(index + 1), MapUi.Red, 24);

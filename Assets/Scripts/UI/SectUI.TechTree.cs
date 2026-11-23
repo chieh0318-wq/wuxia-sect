@@ -63,10 +63,11 @@ namespace Wuxia
                     var caption = card.GetComponentInChildren<Text>();
                     caption.alignment = TextAnchor.MiddleLeft;
                     caption.resizeTextMaxSize = 22;
-                    Anchor(caption.rectTransform, Vector2.up, Vector2.one, new(12, -34), new(-8, -4));
+                    AddCardIcon(card, UiKit.TechIcon(branch.name, index), 10, 38);
+                    Anchor(caption.rectTransform, Vector2.up, Vector2.one, new(54, -34), new(-8, -4));
                     var cost = Label(card, $"第{"一二三四"[Mathf.Clamp(index, 0, 3)]}重　{node.cost}", 18, TextAnchor.MiddleLeft);
                     cost.color = new Color(.95f, .82f, .62f);
-                    Anchor(cost.rectTransform, Vector2.up, Vector2.one, new(12, -58), new(-8, -34));
+                    Anchor(cost.rectTransform, Vector2.up, Vector2.one, new(54, -58), new(-8, -34));
                     var effect = Label(card, node.effect, 18);
                     effect.color = new Color(1f, .93f, .80f);
                     effect.horizontalOverflow = HorizontalWrapMode.Wrap;

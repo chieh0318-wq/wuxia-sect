@@ -219,7 +219,9 @@ namespace Wuxia
                     c.id == part.portrait?.Split(new[] { "__" }, StringSplitOptions.None)[0] || c.name == part.speaker)?.id;
                 string speech = CastDialogue.CharacterSpeech(state, speakerId, FormatQuestText(part.text));
                 ui.ShowStoryBeat(FormatQuestText(part.speaker), speech, art, portrait,
-                    part.portrait != "hero", ShowNext, ShowChoices, "前往抉擇", part.text, hero.gender == "女");
+                    part.portrait != "hero", ShowNext, ShowChoices, "前往抉擇", part.text, hero.gender == "女",
+                    speakerOnRight: !string.IsNullOrEmpty(portrait) && part.portrait != "hero"
+                        && !state.Disciples.Any(member => member.id == part.portrait || member.portrait == portrait));
             }
 
             void ShowChoices()
@@ -227,7 +229,7 @@ namespace Wuxia
                 ui.ShowCreation(beat.title ?? line.title ?? "人物逸事", new[] { FormatQuestText(beat.summary) },
                     null, null, choices.Length == 0 ? () => Complete(null) : null);
                 foreach (var choice in choices)
-                    ui.CreationChoice(FormatQuestText(choice.text), "", null, () => Complete(choice));
+                    ui.CreationChoice(FormatQuestText(choice.text), "", null, () => Complete(choice), reserveEffect: true);
             }
 
             void Complete(QuestChoice choice)
@@ -249,7 +251,7 @@ namespace Wuxia
         {
             var hero = state.Protagonist;
             var friend = StoryCharacters.FirstOrDefault(person => person.id == state.FriendId);
-            return (text ?? "").Replace("{title}", hero.title).Replace("{name}", hero.name)
+            return (text ?? "").Replace("{title}", UiKit.HeroTitle(hero)).Replace("{name}", hero.name)
                 .Replace("{sect}", state.Data.Start.sectName).Replace("{friend}", friend?.name ?? "故友")
                 .Replace("{he}", hero.gender == "女" ? "她" : "他");
         }

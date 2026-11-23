@@ -28,11 +28,11 @@ namespace Wuxia
             var rand = Button(row, "隨機姓名", () => { input.text = suggest(); changed(input.text); });
             Anchor(rand, Vector2.right, Vector2.one, new(-380, 4), new(-236, -4));
 
-            var male = Button(row, "男・三師兄", () => chooseGender("男"));
+            var male = Button(row, "男", () => chooseGender("男"));
             UiKit.Skin(male.GetComponent<Image>(), currentGender == "男" ? "Selected" : "Wood");
             Anchor(male, Vector2.right, Vector2.one, new(-226, 4), new(-116, -4));
 
-            var female = Button(row, "女・三師姐", () => chooseGender("女"));
+            var female = Button(row, "女", () => chooseGender("女"));
             UiKit.Skin(female.GetComponent<Image>(), currentGender == "女" ? "Selected" : "Wood");
             Anchor(female, Vector2.right, Vector2.one, new(-110, 4), new(0, -4));
         }
@@ -92,7 +92,7 @@ namespace Wuxia
         /// <summary>Scrollable 3-column talent pane docked below pinned SkillTiles (matches CreationArts height/UX).</summary>
         internal void CreationTalentScroll(CreationOption[] options, float scrollPos, Action<CreationOption> draw)
         {
-            var row = CreationRow("可選天賦捲軸", 442);
+            var row = CreationRow("可選天賦捲軸", 412);
             var pane = Panel("天賦列表框", row, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero);
             var content = ScrollList(pane, new(12, 12), new(-28, -12));
             var scroll = content.parent.GetComponent<ScrollRect>();
@@ -272,6 +272,113 @@ namespace Wuxia
                         ql.color = UiKit.HeaderGold;
                         Fill(ql.rectTransform);
                     }
+                }
+            }
+        }
+
+        internal void CreationSelectedTalents(string heading, (CreationOption option, Action remove)[] picks)
+        {
+            var scroll = (RectTransform)modalList.parent;
+            scroll.offsetMin = new Vector2(scroll.offsetMin.x, 174);
+            characterDecoration = Panel("已選天賦", modalCard, Vector2.zero, Vector2.right,
+                new(36, 84), new(-36, 164), false);
+            UiKit.Skin(characterDecoration.GetComponent<Image>(), "Lacquer");
+            var title = Label(characterDecoration, heading, 22, TextAnchor.MiddleLeft);
+            title.color = CardGold;
+            Anchor(title.rectTransform, Vector2.zero, Vector2.up, new(20, 0), new(214, 0));
+            if (picks.Length == 0)
+            {
+                var hint = Label(characterDecoration, "點選上方天賦加入", 18, TextAnchor.MiddleLeft);
+                hint.color = CardMuted;
+                Anchor(hint.rectTransform, Vector2.zero, Vector2.one, new(220, 0), new(-10, 0));
+                return;
+            }
+            var row = Rect("Selected talent icons", characterDecoration);
+            Anchor(row, Vector2.zero, Vector2.one, new(216, 8), new(-12, -8));
+            var layout = row.gameObject.AddComponent<HorizontalLayoutGroup>();
+            layout.spacing = 8;
+            layout.childControlWidth = layout.childControlHeight = true;
+            layout.childForceExpandWidth = false;
+            layout.childForceExpandHeight = true;
+            foreach (var (option, remove) in picks)
+            {
+                var button = Button(row, option.name, remove);
+                var size = button.GetComponent<LayoutElement>();
+                size.minWidth = 0;
+                size.preferredWidth = 148;
+                button.GetComponent<Button>().interactable = remove != null;
+                UiKit.Skin(button.GetComponent<Image>(), "Wood");
+                AddCardIcon(button, UiKit.TalentIcon(option), 8, 30);
+                var caption = button.GetComponentInChildren<Text>();
+                caption.text = remove == null ? option.name : option.name + " ×";
+                caption.resizeTextMinSize = 18;
+                caption.resizeTextMaxSize = 20;
+                Anchor(caption.rectTransform, Vector2.zero, Vector2.one, new(42, 5), new(-5, -5));
+            }
+        }
+
+        internal void ShowSettlementMap(GameState state, StoryLocation[] sites, string prompt,
+            Action<StoryLocation> confirm, Action skip, bool previewFirst = false)
+        {
+            var data = WorldMapData.Load();
+            StoryLocation focused = previewFirst ? sites.FirstOrDefault() : null;
+            Draw();
+
+            void Draw()
+            {
+                ShowCreation("立足之地", new[] { prompt },
+                    focused == null ? null : new[] { ("確認立足", (Action)(() => confirm(focused))) }, skip);
+                var row = CreationRow("山門選址", 656);
+                var map = Rect("候選地圖", row);
+                Anchor(map, Vector2.zero, new(.69f, 1), Vector2.zero, new(-12, 0));
+                var paint = AddImage(map, Resources.Load<Texture2D>("WorldMap/world_map_san10") ?? M2RuntimeAssets.Load()?.map);
+                paint.color = paint.texture == null ? MapUi.Paper : Color.white;
+                foreach (var site in sites)
+                {
+                    if (!data.Nodes.TryGetValue(site.node ?? "", out var node)) continue;
+                    var point = data.Bounds.Uv(node);
+                    var marker = Button(map, site.name, () => { focused = site; Draw(); });
+                    var label = marker.GetComponentInChildren<Text>();
+                    label.resizeTextMaxSize = 20;
+                    Anchor(marker, point, point, new(-60, -20), new(60, 20));
+                    UiKit.Skin(marker.GetComponent<Image>(), site == focused ? "Selected" : "Plaque");
+                    marker.SetAsLastSibling();
+                }
+
+                var detail = Panel("選址詳情", row, new(.69f, 0), Vector2.one, Vector2.zero, Vector2.zero, false);
+                UiKit.Skin(detail.GetComponent<Image>(), "Wood");
+                if (focused == null)
+                {
+                    Write("點選地圖上的地點，查看地勢、資源與附近勢力。", 24, 22, 150, CardText);
+                    return;
+                }
+                Write($"{focused.name}　{focused.region}", 28, 16, 60, CardGold);
+                Write("物產　" + focused.resources, 20, 62, 102, CardText);
+                Write(focused.bonusText, 21, 110, 245, CardGold);
+                Write(focused.desc, 20, 246, 374, CardMuted);
+                Write("附近勢力・目前關係", 22, 378, 415, CardGold);
+                if (data.Nodes.TryGetValue(focused.node ?? "", out var selectedNode))
+                {
+                    var point = data.Bounds.Uv(selectedNode);
+                    var neighbors = data.Factions.Where(f => data.Nodes.ContainsKey(f.seat ?? ""))
+                        .OrderBy(f => (data.Bounds.Uv(data.Nodes[f.seat]) - point).sqrMagnitude).Take(4);
+                    int top = 428;
+                    foreach (var faction in neighbors)
+                    {
+                        int score = state.Attitude(faction);
+                        string relation = score >= 25 ? "友好" : score <= -25 ? "敵對" : "中立";
+                        Write($"{faction.Label}　{relation} {score:+0;-0;0}", 20, top, top + 37, CardText);
+                        top += 39;
+                    }
+                }
+
+                void Write(string value, int size, int top, int bottom, Color color)
+                {
+                    var label = Label(detail, value ?? "", size, TextAnchor.UpperLeft);
+                    label.color = color;
+                    label.horizontalOverflow = HorizontalWrapMode.Wrap;
+                    label.verticalOverflow = VerticalWrapMode.Truncate;
+                    Anchor(label.rectTransform, Vector2.up, Vector2.one, new(18, -bottom), new(-18, -top));
                 }
             }
         }

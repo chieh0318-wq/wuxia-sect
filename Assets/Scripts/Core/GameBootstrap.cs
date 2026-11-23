@@ -372,29 +372,37 @@ namespace Wuxia
 
         private void ShowCommands()
         {
-            var commands = new List<(string, string, System.Action, bool)>();
-            foreach (string type in new[] { "build", "recruit" })
+            var categories = new (string name, string detail, (string label, string detail, System.Action run, bool selected)[] entries)[]
             {
-                var action = state.Data.Actions.FirstOrDefault(entry => entry.type == type);
-                if (action != null)
-                    commands.Add((ActionLabel(action), action.summary, CanUseAp(action) ? () => RunAction(action) : null, false));
-            }
-            bool library = state.BuildingLevel("library") > 0;
-            commands.Add(("藏經閣科技樹", library
-                ? $"四脈十六門功法：已研習 {state.TechCount}／{GameState.TechTree.Length}，點擊開啟科技樹研習"
-                : "須先興建藏經閣", library ? ShowTechTree : null, false));
-            commands.Add(("山門演武・回合實戰", "親率弟子切磋實戰（不耗行動力），勝出可得銀兩、聲望與先輩積分",
-                () => StartSkirmishBattle(), false));
-            foreach (string id in new[] { "secret_realm", "explore" })
-            {
-                var action = state.Data.Actions.FirstOrDefault(entry => entry.id == id);
-                if (action != null)
-                    commands.Add((ActionLabel(action), action.summary, CanUseAp(action) ? () => RunAction(action) : null, false));
-            }
-            commands.Add(("門派政務", $"{HousingInfo()}　轄下據點 {state.Story.heldNodes?.Length ?? 0} 處", ShowSect, false));
-            commands.Add(("主角", $"{state.Protagonist.name}：武學、屬性與六件裝備（裝備庫 {state.Story.armoury?.Length ?? 0} 件）",
-                ShowProtagonist, false));
-            ui.ShowCommands("指令", commands);
+                ("建造", "興建宗門設施", Matching(action => action.type == "build")),
+                ("人事", "招募弟子、查閱門派與主角資料", Matching(action => action.type == "recruit").Concat(new[]
+                {
+                    ("門派政務　行動力 0", $"{HousingInfo()}　轄下據點 {state.Story.heldNodes?.Length ?? 0} 處", (System.Action)ShowSect, false),
+                    ("主角　行動力 0", $"{state.Protagonist.name}的武學、屬性與裝備", (System.Action)ShowProtagonist, false)
+                }).ToArray()),
+                ("探險", "走訪山道，探尋秘境", Matching(action => action.id is "explore" or "secret_realm")),
+                ("外交", "拜會各方勢力", new[]
+                {
+                    ("開啟江湖外交　行動力 0", "查看勢力關係，派使後依所選交涉扣除行動力",
+                        (System.Action)(() => { ToggleWorldMap(); if (map != null && map.IsOpen) map.OpenDiplomacy(null); }), false)
+                }),
+                ("征伐", "前往江湖地圖調兵行軍", new[]
+                {
+                    ("開啟江湖地圖　行動力 0", "點選據點查看路線與出兵條件", (System.Action)ToggleWorldMap, false)
+                }),
+                ("修練", "研習藏經閣功法，或在山門切磋", new[]
+                {
+                    ("藏經閣科技樹　行動力 0", state.BuildingLevel("library") > 0
+                        ? $"已研習 {state.TechCount}／{GameState.TechTree.Length}，研習資費標於各節點" : "須先興建藏經閣",
+                        state.BuildingLevel("library") > 0 ? (System.Action)ShowTechTree : null, false),
+                    ("山門演武　行動力 0", "率弟子切磋，勝出可得銀兩、聲望與先輩積分", (System.Action)(() => StartSkirmishBattle()), false)
+                })
+            };
+            ui.ShowCommandCategories(categories);
+
+            (string label, string detail, System.Action run, bool selected)[] Matching(System.Func<ActionData, bool> filter) =>
+                state.Data.Actions.Where(filter).Select(action =>
+                    (ActionLabel(action), action.summary, CanUseAp(action) ? (System.Action)(() => RunAction(action)) : null, false)).ToArray();
         }
 
         private void ShowBuilding(BuildingData building)
@@ -666,7 +674,7 @@ namespace Wuxia
             var hero = state.Protagonist;
             string storyWeapon = RankSystem.Catalog.breakthroughs?.FirstOrDefault(
                 entry => entry.id == hero.weapon && entry.type == "weapon")?.name ?? hero.weapon;
-            ui.ShowCharacter(hero.name, hero.title, hero.gender, PortraitService.IdOrDefault(hero.portrait, hero.lookId), hero.attrs, hero.lines,
+            ui.ShowCharacter(hero.name, UiKit.HeroTitle(hero) == hero.name ? "" : UiKit.HeroTitle(hero), hero.gender, PortraitService.IdOrDefault(hero.portrait, hero.lookId), hero.attrs, hero.lines,
                 hero.weapon, state.WeaponRankDelta(hero.weapon), gear: state.GearLabels(storyWeapon), stats: state.HeroStats);
         }
 

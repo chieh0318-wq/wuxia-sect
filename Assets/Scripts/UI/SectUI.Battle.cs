@@ -31,6 +31,8 @@ namespace Wuxia
 
             var catalog = new BattleCatalog();
             var (players, enemies) = BattleSetup.Create(state, req, catalog);
+            if (players.Count > 0)
+                players[0].name = state.Protagonist.name;
             int seed = captureSeed ?? UnityEngine.Random.Range(0, int.MaxValue);
             var model = new BattleModel(players, enemies, catalog, seed,
                 () => MedicineCount("item_jiuzhuan") > 0 || MedicineCount("item_jinchuang") > 0,
@@ -622,12 +624,12 @@ namespace Wuxia
             nm.fontStyle = FontStyle.Bold;
             Anchor(nm.rectTransform, Vector2.up, Vector2.one, new(xL, -34), new(xR, -6));
 
-            var (hpFill, hpTxt) = BattleBar(box, xL, -58, xR, -38, new Color(.82f, .24f, .20f));
-            var (qiFill, qiTxt) = BattleBar(box, xL, -82, xR, -62, new Color(.22f, .54f, .86f));
+            var (hpFill, hpTxt) = BattleBar(box, xL, -58, xR, -38, new Color(.82f, .24f, .20f), "hud_health");
+            var (qiFill, qiTxt) = BattleBar(box, xL, -82, xR, -62, new Color(.22f, .54f, .86f), "attr_qi");
             return (hpFill, hpTxt, qiFill, qiTxt);
         }
 
-        private (Image fill, Text txt) BattleBar(RectTransform parent, float xL, float yB, float xR, float yT, Color color)
+        private (Image fill, Text txt) BattleBar(RectTransform parent, float xL, float yB, float xR, float yT, Color color, string icon)
         {
             var bg = Rect("BarBg", parent);
             Anchor(bg, Vector2.up, Vector2.one, new(xL, yB), new(xR, yT));
@@ -639,6 +641,9 @@ namespace Wuxia
             img.type = Image.Type.Filled;
             img.fillMethod = Image.FillMethod.Horizontal;
             img.fillAmount = 1f;
+            var symbol = Rect("Meter icon", bg);
+            Anchor(symbol, Vector2.zero, Vector2.up, new(4, 0), new(24, 0));
+            AddImage(symbol, UiKit.Icon(icon));
             var t = Label(bg, "", 18, TextAnchor.MiddleCenter);
             t.color = Color.white;
             t.fontStyle = FontStyle.Bold;

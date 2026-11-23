@@ -86,6 +86,7 @@ namespace Wuxia
                         tutorial?.Record("camera_move");
                         tutorial?.Record("camera_zoom");
                     }),
+                    ("07b_commands_expanded.png", () => ui.OpenCommandCategoryForCapture("探險")),
                     ("08_building_panel.png", () =>
                     {
                         var hall = System.Array.Find(state.Buildings, building => building?.id == "hall");

@@ -92,7 +92,7 @@ namespace Wuxia
                 $" voicedBeats={voiced} playlist={AudioManager.PlaylistSummary}");
         }
         internal void CaptureDisaster() => ChooseDisaster();
-        internal void CaptureLocation() => ChooseLocation();
+        internal void CaptureLocation() => ChooseLocation(previewFirst: true);
         internal void CaptureBackground() => ChooseBackground();
         internal void CaptureSkills() => CompleteTalents();
         internal void CaptureAttributes() => CompleteSkills();
@@ -104,7 +104,7 @@ namespace Wuxia
 
         internal void CaptureResponse()
         {
-            if (story.disasters?.FirstOrDefault() is StoryDisaster disaster)
+            if (story.disasters?.FirstOrDefault(entry => entry.id == "plague") is StoryDisaster disaster)
                 ChooseResponse(disaster);
         }
 
@@ -114,8 +114,8 @@ namespace Wuxia
             ui.ShowCreation("同門排行", new[] { "師父門下，你排行第三，卻是同輩中最出挑的一個。同門該怎麼稱呼你？" },
                 null, ChooseAppearance);
             ui.CreationGrid(2, 1, 540);
-            ui.CreationIdentity("三師兄", "hero_m1", "男", () => ChooseGender("男"));
-            ui.CreationIdentity("三師姐", "hero_f1", "女", () => ChooseGender("女"));
+            ui.CreationIdentity("男俠", "hero_m1", "男", () => ChooseGender("男"));
+            ui.CreationIdentity("女俠", "hero_f1", "女", () => ChooseGender("女"));
         }
 
         private void ChooseGender(string gender)
@@ -236,7 +236,13 @@ namespace Wuxia
             ui.ShowCreation("天賦", Array.Empty<string>(), actions, CompleteTalents, CompleteTalents);
             var sheet = Sheet(selected, ChosenSkills, "天賦");
             sheet.picksHeading = $"已選天賦　{selected.Count}／{talents.maxPicks}";
-            ui.CreationSummary(sheet);
+            ui.CreationSummary(sheet, showPicks: false);
+            ui.CreationSelectedTalents(sheet.picksHeading, selected.Select(option =>
+                (option, Spent - option.cost <= talents.budget ? (Action)(() =>
+                {
+                    selected.Remove(option);
+                    ShowTalents(ui.TalentScrollPosition);
+                }) : null)).ToArray());
             // Pinned at the TOP (synchronized with 武學與技藝 so 14 skill bars are always visible while scrolling talents).
             ui.SkillTiles(PreviewLines(selected));
             ui.CreationTabs(new[] { "", "legendary", "rare", "common", "negative" }.Select(key =>
@@ -288,7 +294,8 @@ namespace Wuxia
                 if (picked) selected.Remove(option);
                 else selected.Add(option);
                 redraw();
-            } : null, option.rarity ?? "common", picked, option.cost, tags: Details(option));
+            } : null, option.rarity ?? "common", picked, option.cost, tags: Details(option),
+                icon: UiKit.TalentIcon(option));
         }
 
         /// <summary>Gameplay effects of an option as a compact tag line (「武力 +2・身法 +2」).</summary>
@@ -361,7 +368,7 @@ namespace Wuxia
                 RankSystem.Learn(lines, art);
             var sheet = new CreationSheet
             {
-                name = hero.name, title = hero.title, portrait = hero.portrait ?? hero.lookId, gender = hero.gender,
+                name = hero.name, title = UiKit.HeroTitle(hero) == hero.name ? "" : UiKit.HeroTitle(hero), portrait = hero.portrait ?? hero.lookId, gender = hero.gender,
                 background = background?.name, attrs = attrs, lines = lines,
                 picksHeading = step == "技藝" ? "已習技藝" : "已選天賦"
             };
@@ -552,9 +559,8 @@ namespace Wuxia
             ui.CreationGrid(3, (options.Length + 2) / 3, 376);
             foreach (var option in options)
                 ui.CreationChoice(option.name, FormatStory(option.summary),
-                    string.IsNullOrEmpty(option.image)
-                        ? option.beats?.FirstOrDefault(beat => !string.IsNullOrEmpty(beat.image))?.image
-                        : option.image, () =>
+                    PortraitService.ResponseArt(disaster.id, option.id, option.image
+                        ?? option.beats?.FirstOrDefault(beat => !string.IsNullOrEmpty(beat.image))?.image), () =>
                 {
                     SetResponse(option);
                     if (option.id == "independent")
@@ -593,20 +599,18 @@ namespace Wuxia
             state.ApplyEffects(option.effects);
         }
 
-        private void ChooseLocation()
+        private void ChooseLocation() => ChooseLocation(previewFirst: false);
+
+        private void ChooseLocation(bool previewFirst)
         {
             AudioManager.Music("jianghu_map");
             var options = story.locations ?? Array.Empty<StoryLocation>();
             if (options.Length == 0) { Play(story.closingBeats, Finish, Finish); return; }
-            ui.ShowCreation("立足之地", new[] { FormatStory(story.locationPrompt) }, null, SkipStory);
-            ui.CreationGrid(2, (options.Length + 1) / 2, 216);
-            foreach (var option in options)
-                // Text-only cards; the gameplay bonus goes before the flavour text so it can never be the clipped line.
-                ui.CreationChoice($"{option.name}　{option.region}", $"{option.resources}\n{option.bonusText}\n{option.desc}", null, () =>
-                {
-                    SetLocation(option);
-                    Play(story.closingBeats, Finish, Finish);
-                });
+            ui.ShowSettlementMap(state, options, FormatStory(story.locationPrompt), option =>
+            {
+                SetLocation(option);
+                Play(story.closingBeats, Finish, Finish);
+            }, SkipStory, previewFirst);
         }
 
         private void SetLocation(StoryLocation option)
@@ -650,7 +654,10 @@ namespace Wuxia
                 if (!string.IsNullOrEmpty(beat.image))
                     currentCg = beat.image;
                 ui.ShowStoryBeat(FormatStory(beat.speaker), FormatStory(beat.text), currentCg, portrait,
-                    beat.portrait != "hero", ShowNext, skip, voiceText: beat.text, femaleHero: state.Protagonist.gender == "女");
+                    beat.portrait != "hero", ShowNext, skip, voiceText: beat.text, femaleHero: state.Protagonist.gender == "女",
+                    speakerOnRight: !string.IsNullOrEmpty(portrait)
+                        && beat.portrait is not ("hero" or "lin" or "xu" or "elder" or "shifu")
+                        && !portrait.StartsWith("friend_", StringComparison.Ordinal));
             }
         }
 
@@ -660,7 +667,7 @@ namespace Wuxia
             return characters.storyCharacters?.FirstOrDefault(entry => entry.id == id);
         }
 
-        private string FormatStory(string text) => CastDialogue.Format(state, text).Replace("{title}", state.Protagonist.title)
+        private string FormatStory(string text) => CastDialogue.Format(state, text).Replace("{title}", UiKit.HeroTitle(state.Protagonist))
             .Replace("{name}", state.Protagonist.name)
             .Replace("{friend}", Friend()?.name ?? "故友").Replace("{he}", state.Protagonist.gender == "女" ? "她" : "他");
 

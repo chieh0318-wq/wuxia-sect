@@ -675,7 +675,10 @@ namespace Wuxia
                 current == "hostile" ? MapUi.Red : MapUi.Ink;
             cardFaction = faction;
             string attitude = host is GameState game ? $" {game.Attitude(faction):+0;-0;0}" : "";
-            MapUi.Text(panel,"關係　"+faction.RelationWith(shift)+attitude,20,105,176,32,21,stance);
+            var icon = MapUi.Rect(panel, "勢力圖示", 20, 107, 28, 28).gameObject.AddComponent<RawImage>();
+            icon.texture = UiKit.Icon(UiKit.FactionIcon(faction));
+            icon.raycastTarget = false;
+            MapUi.Text(panel,"關係　"+faction.RelationWith(shift)+attitude,54,105,142,32,19,stance);
             var talks = MapUi.Button(panel,"外交",200,107,96,36,() => OpenDiplomacy(faction),MapUi.Red);
             talks.name = "門派外交";
             talks.interactable = host is GameState;
@@ -699,7 +702,18 @@ namespace Wuxia
             MapUi.Text(panel,RankSystem.FormatKnown(faction.leaderRank,faction.leaderCap),133,183,270,30,22,RankSystem.Color(faction.leaderRank));
             if (!string.IsNullOrEmpty(faction.leaderWeapon))
                 MapUi.Text(panel,"神兵　"+faction.WeaponLabel,133,213,270,24,18,MapUi.Red);
-            MapUi.Text(panel,$"聲望 {faction.reputation}　弟子 {faction.disciples}　銀兩 {faction.money}",133,239,270,29,18,MapUi.Ink);
+            var stats = new[]
+            {
+                ("hud_rep", faction.reputation), ("hud_disciple", faction.disciples), ("hud_silver", faction.money)
+            };
+            for (int index = 0; index < stats.Length; index++)
+            {
+                int x = 133 + 91 * index;
+                var symbol = MapUi.Rect(panel, "勢力資源", x, 243, 22, 22).gameObject.AddComponent<RawImage>();
+                symbol.texture = UiKit.Icon(stats[index].Item1);
+                symbol.raycastTarget = false;
+                MapUi.Text(panel, stats[index].Item2.ToString(), x + 26, 239, 63, 29, 18, MapUi.Ink);
+            }
             MapUi.Text(panel,"絕學　"+faction.Arts,20,276,386,54,19,MapUi.Ink,TextAnchor.UpperLeft);
             bool hasLines = faction.leaderLines?.Any(line => line != null) == true;
             MapUi.Text(panel,faction.desc ?? "",20,337,386,hasLines ? 104 : 212,20,MapUi.Ink,TextAnchor.UpperLeft,"Narration");

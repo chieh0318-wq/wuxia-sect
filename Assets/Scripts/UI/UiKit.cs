@@ -95,6 +95,43 @@ namespace Wuxia
             "construction" => "skill_construction", "teaching" => "skill_teaching", _ => "skill_sword"
         };
 
+        internal static string FactionIcon(MapFaction faction) => Diplomacy.Group(faction) switch
+        {
+            "jianghu" => "faction_sect",
+            "bandit" => "faction_bandit",
+            _ => "faction_court"
+        };
+
+        internal static string TechIcon(string branch, int index)
+        {
+            string[] icons = branch.Contains("劍") ? new[] { "skill_sword", "item_manual_sword", "act_attack", "act_ultimate" }
+                : branch.Contains("外功") ? new[] { "skill_fist", "skill_blade", "skill_hidden", "skill_polearm" }
+                : branch.Contains("內功") ? new[] { "skill_neigong", "skill_qinggong", "item_manual_qi", "attr_qi" }
+                : new[] { "skill_construction", "skill_farming", "skill_medicine", "skill_forging" };
+            return icons[Mathf.Clamp(index, 0, icons.Length - 1)];
+        }
+
+        internal static string HeroTitle(ProtagonistData hero) =>
+            string.IsNullOrWhiteSpace(hero.title) || hero.title is "三師兄" or "三師姐" ? hero.name : hero.title;
+
+        internal static string TalentIcon(CreationOption option)
+        {
+            var effect = option.effects != null && option.effects.Length > 0 ? option.effects[0] : null;
+            if (effect == null) return "act_skill";
+            return effect.key switch
+            {
+                "str" => "attr_str", "agi" => "attr_agi", "con" => "attr_con", "qi" => "attr_qi",
+                "wit" => "attr_wit", "cha" => "attr_cha", "luk" => "attr_luk",
+                "silver" or "buildCostPct" or "recruitCostPct" => "hud_silver",
+                "loyaltyAll" => "hud_loyalty", "relation" => "hud_affinity",
+                "food" => "hud_food", "apMax" => "hud_ap", "reputation" => "hud_rep",
+                "recruitPoolSize" or "followers" => "hud_disciple",
+                "rank" or "lineRank" or "cap" => SkillIcon(effect.@ref),
+                "noGraveInjury" => "skill_medicine",
+                _ => "act_skill"
+            };
+        }
+
         internal static string SlotIcon(string slot) => slot switch
         {
             "武器" => "slot_weapon", "護腕" => "slot_bracer", "飾品" => "slot_trinket",

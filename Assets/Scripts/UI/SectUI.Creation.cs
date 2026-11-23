@@ -93,7 +93,7 @@ namespace Wuxia
         private static readonly Color CardLow = new(.95f, .58f, .48f);
 
         /// <summary>Live character summary card docked on the right of every creation step.</summary>
-        internal void CreationSummary(CreationSheet sheet)
+        internal void CreationSummary(CreationSheet sheet, bool showPicks = true)
         {
             const int width = 372;
             creationListWidth -= width + 20;
@@ -178,6 +178,7 @@ namespace Wuxia
             }
             y -= 3 * 28 + 8;
 
+            if (!showPicks) return;
             CardHeading(sheet.picksHeading ?? "已選", y);
             y -= 32;
             var picks = CardLabel(sheet.picks.Count == 0 ? "尚未選擇" : string.Join("　", sheet.picks), 18,
@@ -362,7 +363,8 @@ namespace Wuxia
         }
 
         internal void CreationChoice(string label, string description, string image, Action run,
-            string rarity = null, bool picked = false, int? cost = null, bool banner = false, string tags = null, bool wideDescription = false)
+            string rarity = null, bool picked = false, int? cost = null, bool banner = false, string tags = null, bool wideDescription = false, string icon = null,
+            bool reserveEffect = false)
         {
             var item = Button(creationGrid == null ? modalList : creationGrid, label, run);
             item.GetComponent<Button>().interactable = run != null;
@@ -380,7 +382,13 @@ namespace Wuxia
             };
             bool hasBanner = art != null && banner;
             int left = art == null || hasBanner ? 16 : wideDescription ? 90 : creationGrid == null ? 200 : 196;
+            if (icon != null && art == null)
+            {
+                left = 58;
+                AddCardIcon(item, icon, 16, 36);
+            }
             int top = hasBanner ? 198 : 0;
+            bool storyChoice = reserveEffect || (art != null && rarity == null && !cost.HasValue);
             caption.alignment = TextAnchor.MiddleLeft;
             caption.resizeTextMinSize = 20;
             Anchor(caption.rectTransform, Vector2.up, Vector2.one, new(left, -44 - top),
@@ -428,8 +436,15 @@ namespace Wuxia
             body.color = new Color(.96f, .89f, .75f);
             body.resizeTextForBestFit = false;
             int tagTop = wideDescription ? 80 : 38;
-            Anchor(body.rectTransform, Vector2.zero, Vector2.one, new(left, string.IsNullOrEmpty(tags) ? 8 : tagTop + 4),
+            Anchor(body.rectTransform, Vector2.zero, Vector2.one, new(left, string.IsNullOrEmpty(tags) ? (storyChoice ? 34 : 8) : tagTop + 4),
                 new(-16, -46 - top));
+            if (storyChoice && string.IsNullOrEmpty(tags))
+            {
+                var effect = Label(item, "", 18, TextAnchor.MiddleLeft);
+                effect.name = "影響";
+                effect.color = CardGold;
+                Anchor(effect.rectTransform, Vector2.zero, Vector2.right, new(left, 6), new(-16, 30));
+            }
             if (!string.IsNullOrEmpty(tags))
             {
                 var strip = Rect("Effect tags", item);
@@ -658,7 +673,7 @@ namespace Wuxia
         internal bool StoryOpen => storyScreen != null;
 
         internal void ShowStoryBeat(string speaker, string text, string image, string portrait, bool required,
-            Action next, Action skip, string skipLabel = "略過", string voiceText = null, bool femaleHero = false)
+            Action next, Action skip, string skipLabel = "略過", string voiceText = null, bool femaleHero = false, bool speakerOnRight = false)
         {
             CloseModal(force: true);
             var previousImage = storyScreen != null ? storyArt.texture as Texture2D : null;
@@ -676,22 +691,36 @@ namespace Wuxia
             storyArt = AddImage(Rect("Illustration", storyScreen), nextImage);
             storyArt.enabled = storyArt.texture != null;
             Fill(storyArt.rectTransform);
-            var dock = Panel("Dialogue", storyScreen, new(.5f, 0), new(.5f, 0), new(-680, 60), new(680, 314));
+            bool hasPortrait = !string.IsNullOrEmpty(portrait);
+            var staging = Rect("Speaker staging", storyScreen);
+            Anchor(staging, Vector2.zero, Vector2.right,
+                new(hasPortrait && !speakerOnRight ? 330 : 68, 66),
+                new(hasPortrait && speakerOnRight ? -330 : -68, 414));
+            if (hasPortrait)
+            {
+                var side = new Vector2(speakerOnRight ? 1 : 0, 0);
+                float portraitX = speakerOnRight ? -444 : 44;
+                var figure = Panel("Speaker portrait", storyScreen, side, side,
+                    new(portraitX, 70), new(portraitX + 400, 650), false);
+                UiKit.Skin(figure.GetComponent<Image>(), "Lacquer");
+                var head = Rect("Portrait art", figure);
+                Fill(head, 9);
+                var texture = PortraitService.Resolve(portrait, required: required);
+                var raw = AddImage(head, texture);
+                FitCover(raw, texture, 382f / 562f);
+            }
+            var dock = Panel("Dialogue", staging, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero);
+            UiKit.Skin(dock.GetComponent<Image>(), "Lacquer");
             var press = dock.gameObject.AddComponent<Button>();
             press.transition = Selectable.Transition.None;
             press.onClick.AddListener(AdvanceStory);
 
-            bool hasPortrait = !string.IsNullOrEmpty(portrait);
-            if (hasPortrait)
-            {
-                var head = Rect("Speaker portrait", dock);
-                Anchor(head, Vector2.zero, Vector2.up, new(18, 20), new(186, -20));
-                var raw = AddImage(head, PortraitService.Resolve(portrait, required: required));
-                raw.enabled = raw.texture != null;
-            }
-            int left = hasPortrait ? 206 : 32;
-            var name = Label(dock, speaker, 30, TextAnchor.MiddleLeft);
-            Anchor(name.rectTransform, Vector2.up, Vector2.one, new(left, -66), new(-32, -14));
+            const int left = 42;
+            var nameplate = Panel("Speaker nameplate", dock, Vector2.up, Vector2.up, new(30, -54), new(402, 12), false);
+            UiKit.Skin(nameplate.GetComponent<Image>(), "Plaque");
+            var name = Label(nameplate, string.IsNullOrWhiteSpace(speaker) ? "旁白" : speaker, 30, TextAnchor.MiddleLeft);
+            name.color = CardGold;
+            Fill(name.rectTransform, 14);
             storyText = Label(dock, "", 30);
             storyText.font = UiKit.Font(string.IsNullOrEmpty(speaker) ? "Narration" : "Dialogue", font, text);
             name.font = UiKit.Font("Names", font, speaker);
@@ -700,11 +729,20 @@ namespace Wuxia
             Anchor(hint.rectTransform, Vector2.zero, Vector2.right, new(left, 12), new(-32, 42));
             var skipButton = Button(storyScreen, skipLabel, skip);
             Anchor(skipButton, Vector2.one, Vector2.one, new(-174, -74), new(-24, -24));
-            storyPages = Paginate(text, 33, 3);
+            storyPages = Paginate(text, 43, 5);
             storyNext = next;
             storyPage = 0;
             storyStart = artStart = Time.unscaledTime;
             UpdateStoryBeat();
+        }
+
+        private static void AddCardIcon(RectTransform parent, string id, float x, float size)
+        {
+            var texture = UiKit.Icon(id);
+            if (texture == null) return;
+            var image = Rect("Icon", parent);
+            Anchor(image, Vector2.up, Vector2.up, new(x, -8 - size), new(x + size, -8));
+            AddImage(image, texture);
         }
 
         private static RawImage AddImage(RectTransform parent, Texture2D texture)

@@ -48,7 +48,7 @@
     {
       "id": "guest_hall", "name": "客堂", "icon": "skill_commerce", "art": "Halls/guest_hall",
       "desc": "一進清幽的院落，專門接待來訪的江湖朋友與各派使者。茶香與消息，都從這裡流進山門。",
-      "requires": { "reputation": 25, "knownFactions": 4 },
+      "requires": { "reputation": 25, "building": "teahouse" },
       "cost": { "silver": 60, "food": 10 }, "ap": 1,
       "maxLevel": 2, "levelCost": { "silver": 90, "food": 10 }, "levelReputation": 45,
       "monthly": [ { "key": "silver", "value": 3 }, { "key": "reputation", "value": 1 } ],

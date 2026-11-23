@@ -6,12 +6,12 @@ using UnityEngine;
 namespace Wuxia
 {
     /// <summary>One tactical option on a secret-realm floor, tested against a protagonist attribute.</summary>
-    internal sealed class RealmChoice
+    [Serializable] internal sealed class RealmChoice
     {
         public string label, attr, text, success, failure;
     }
 
-    internal sealed class RealmStage
+    [Serializable] internal sealed class RealmStage
     {
         public string title, text;
         public RealmChoice[] choices;
@@ -105,7 +105,7 @@ namespace Wuxia
             new()
             {
                 id = "black_wind", name = "《黑風嶺密庫》", gearSlot = "衣袍", line = "fist", scene = "realm_bandit_vault", bossStage = 2,
-                boss = new RealmBattle { lead = "黑風老寨主", portrait = "npc_em06", count = 3, difficulty = 1.1f, boss = true, minions = new[] { "黑風殘匪", "黑風殘匪" } },
+                boss = new RealmBattle { lead = "黑風老寨主", portrait = "npc_am03", count = 3, difficulty = 1.1f, boss = true, minions = new[] { "黑風殘匪", "黑風殘匪" } },
                 intro = "黑風嶺的山賊被官軍剿滅之後，他們十年劫掠來的財寶卻始終沒找著。有人說，密庫就在嶺後的斷崖底下。",
                 stages = new[]
                 {

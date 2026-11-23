@@ -126,7 +126,12 @@ namespace Wuxia
                             ?? StoryCharacters.FirstOrDefault();
                         if (person != null) ShowCharacterDetail(person, ShowCharacterDirectory);
                     })
-                }.Concat(M6CaptureSteps()).ToArray();
+                }.Concat(M6CaptureSteps()).Concat(V1124CaptureSteps()).ToArray();
+                // "-wuxiaCaptureOnly 8" runs just the shots whose file names start with that prefix (v1124 P1B-2: 80–89).
+                int only = System.Array.IndexOf(args, "-wuxiaCaptureOnly");
+                string prefix = only >= 0 && only + 1 < args.Length ? args[only + 1] : null;
+                if (prefix != null)
+                    steps = steps.Where(step => step.filename.StartsWith(prefix, System.StringComparison.Ordinal)).ToArray();
 
                 foreach (var step in steps)
                 {
@@ -147,6 +152,13 @@ namespace Wuxia
                         Application.Quit(1);
                         yield break;
                     }
+                }
+                if (ui.SceneOpen) ui.Scene.Close(); // v1124: leave no scene page over the later shots
+                if (prefix != null)
+                {
+                    Debug.Log($"[Capture] only '{prefix}': {steps.Length} shots done.");
+                    Application.Quit(0);
+                    yield break;
                 }
                 if (CaptureQuestline())
                 {

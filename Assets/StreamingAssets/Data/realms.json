@@ -7,21 +7,21 @@
     { "id": "realm_sword_tomb", "fallback": "Story/cg_ruins", "caption": "前朝藏劍古塚" },
     { "id": "realm_ice_cave", "fallback": "Story/cg_new_mountain", "caption": "太白寒玉洞窟" },
     { "id": "realm_bandit_vault", "fallback": "Battle/battle_ground_fortification", "caption": "黑風嶺密庫" },
-    { "id": "realm_immortal_go", "fallback": "Story/cg_peace", "caption": "終南仙人棋坪" },
-    { "id": "realm_taoist_ruin", "fallback": "Story/cg_elder_hall", "caption": "終南古觀" },
+    { "id": "realm_immortal_go", "fallback": "Story/cg_crossroads", "caption": "終南仙人棋坪" },
+    { "id": "realm_taoist_ruin", "fallback": "DiplomacyVenues/daoist", "caption": "終南古觀" },
     { "id": "realm_elixir_room", "fallback": "Story/cg_new_mountain", "caption": "太乙丹房" },
     { "id": "realm_battlefield", "fallback": "Battle/battle_ground_fortification", "caption": "雁門古戰場" },
     { "id": "realm_sword_mound", "fallback": "Battle/battle_ground_mountain_gate", "caption": "七星劍冢" },
     { "id": "realm_cliff_carving", "fallback": "Story/cg_crossroads", "caption": "泰山御風石刻" },
     { "id": "realm_dragon_cave", "fallback": "Story/cg_ruins", "caption": "太行應龍洞" },
-    { "id": "realm_thousand_buddha", "fallback": "Story/cg_elder_hall", "caption": "峨眉千佛洞" },
-    { "id": "realm_garden_villa", "fallback": "Story/cg_peace", "caption": "寒山別院" },
+    { "id": "realm_thousand_buddha", "fallback": "DiplomacyVenues/buddhist", "caption": "峨眉千佛洞" },
+    { "id": "realm_garden_villa", "fallback": "DiplomacyVenues/sword", "caption": "寒山別院" },
     { "id": "realm_old_forge", "fallback": "Battle/battle_ground_fortification", "caption": "磁山劍爐" },
-    { "id": "realm_desert_grotto", "fallback": "Story/cg_world_map_intro", "caption": "鳴沙古窟" },
-    { "id": "realm_cloud_tea", "fallback": "Story/cg_peace", "caption": "華頂雲霧茶洞" },
-    { "id": "realm_fire_cave", "fallback": "Story/cg_treasure_attack", "caption": "祝融峰火洞" },
-    { "id": "sect_halls", "fallback": "Story/cg_elder_hall", "caption": "山門堂口" },
-    { "id": "sect_sparring", "fallback": "Battle/battle_ground_mountain_gate", "caption": "演武場" }
+    { "id": "realm_desert_grotto", "fallback": "Battle/battle_ground_road", "caption": "鳴沙古窟" },
+    { "id": "realm_cloud_tea", "fallback": "Story/cg_new_mountain", "caption": "華頂雲霧茶洞" },
+    { "id": "realm_fire_cave", "fallback": "Story/cg_ruins", "caption": "祝融峰火洞" },
+    { "id": "sect_halls", "fallback": "DiplomacyVenues/home", "caption": "山門堂口" },
+    { "id": "sect_sparring", "fallback": "Story/cg_peace", "caption": "演武場" }
   ],
   "roadEvents": [
     {
@@ -36,7 +36,7 @@
       ],
       "choices": [
         { "label": "拔劍救人", "type": "battle", "text": "山賊不過烏合之眾，正好替鄉里除害。",
-          "battle": { "lead": "攔路山賊頭目", "portrait": "npc_em03", "count": 3, "difficulty": 0.85, "minions": ["山賊嘍囉", "山賊刀手"] },
+          "battle": { "lead": "攔路山賊頭目", "portrait": "npc_am06", "count": 3, "difficulty": 0.85, "minions": ["山賊嘍囉", "山賊刀手"] },
           "success": "山賊丟下綢緞四散逃竄。趙掌櫃千恩萬謝，硬是塞來一袋碎銀。", "failure": "山賊人多勢眾，你護著掌櫃且戰且退，總算把人救下，貨卻丟了大半。",
           "successEffects": [ { "key": "silver", "value": 20 }, { "key": "reputation", "value": 3 } ],
           "failureEffects": [ { "key": "reputation", "value": 1 }, { "key": "injury", "value": 1 } ] },
@@ -54,7 +54,7 @@
       "title": "崖上採藥人",
       "scene": "realm_village_edge",
       "weight": 10,
-      "speaker": { "name": "藥農老秦", "subtitle": "崤山採藥人", "portrait": "npc_am05", "gender": "男" },
+      "speaker": { "name": "藥農老秦", "subtitle": "崤山採藥人", "portrait": "npc_em03", "gender": "男" },
       "lines": [
         { "speaker": "narrator", "text": "半山的斷崖上，一個老藥農腰繫麻繩懸在半空，繩子被岩角磨得只剩幾股。" },
         { "speaker": "npc", "text": "上頭那株崖柏底下長著一棵老參，我盯了它三年……誒，繩子、繩子要斷了！" }
@@ -75,7 +75,7 @@
       "title": "落難刀客",
       "scene": "realm_mountain_road",
       "weight": 8,
-      "speaker": { "name": "厲三刀", "subtitle": "落魄刀客", "portrait": "npc_ym05", "gender": "男" },
+      "speaker": { "name": "厲三刀", "subtitle": "落魄刀客", "portrait": "npc_am09", "gender": "男" },
       "lines": [
         { "speaker": "narrator", "text": "破廟門口靠著一個渾身是血的刀客，刀卻握得死緊。見你走近，他抬起頭，眼裡全是戒備。" },
         { "speaker": "npc", "text": "你是哪條道上的？要是衝著我這把刀來，就先問過它。" }
@@ -85,7 +85,7 @@
           "success": "你替他敷藥包紮。厲三刀沉默半晌，從懷裡摸出一本被血浸透的刀譜：「欠人情的滋味不好受，這個拿去。」",
           "successEffects": [ { "key": "art", "ref": "tiedan_dao", "value": 1 }, { "key": "reputation", "value": 1 } ] },
         { "label": "應他所請，過招一試", "type": "battle", "text": "刀客受了傷仍不肯低頭，只服打贏他的人。",
-          "battle": { "lead": "厲三刀", "portrait": "npc_ym05", "count": 2, "difficulty": 0.9, "minions": ["厲三刀的跟班"] },
+          "battle": { "lead": "厲三刀", "portrait": "npc_am09", "count": 2, "difficulty": 0.9, "minions": ["厲三刀的跟班"] },
           "success": "十招之後，你的劍尖停在他喉前一寸。厲三刀大笑：「好！這本刀譜跟著你，總比爛在我手裡強。」", "failure": "厲三刀雖然帶傷，刀勢依舊狠辣，你被逼退數步。他收刀冷哼：「回去再練十年。」",
           "successEffects": [ { "key": "art", "ref": "tiedan_dao", "value": 1 }, { "key": "progress", "ref": "blade", "value": 1 } ],
           "failureEffects": [ { "key": "progress", "ref": "martial", "value": 0.5 } ] }
@@ -115,7 +115,7 @@
       "title": "猛虎下山",
       "scene": "realm_village_edge",
       "weight": 7,
-      "speaker": { "name": "獵戶阿牛", "subtitle": "山下獵戶", "portrait": "npc_hu03", "gender": "男" },
+      "speaker": { "name": "獵戶阿牛", "subtitle": "山下獵戶", "portrait": "npc_am05", "gender": "男" },
       "lines": [
         { "speaker": "narrator", "text": "山下村口一陣騷亂。一頭吊睛白額的大蟲叼走了羊圈裡的羔羊，正往林子裡退。" },
         { "speaker": "npc", "text": "那畜生上個月傷了兩個人，再不除掉，村裡就沒人敢上山砍柴了！" }
@@ -137,7 +137,7 @@
       "title": "樓觀道人",
       "scene": "realm_mountain_road",
       "weight": 6,
-      "speaker": { "name": "清虛子", "subtitle": "樓觀道弟子", "portrait": "npc_tao02", "gender": "男" },
+      "speaker": { "name": "清虛子", "subtitle": "樓觀道弟子", "portrait": "npc_tao01", "gender": "男" },
       "lines": [
         { "speaker": "narrator", "text": "山道上迎面來了一位背負長劍的年輕道人，見了你的劍穗，便停步打個稽首。" },
         { "speaker": "npc", "text": "貧道清虛子，奉師命下山採買丹砂。聽說崤山劍門遭了變故，不知貴派如今可還安好？" }
@@ -166,7 +166,7 @@
             { "label": "細看石像底座刻字", "attr": "wit", "text": "底座上也許留著前人的提示。", "success": "底座上刻著「純陽不息」四字，你恍然明白入觀的規矩。", "failure": "刻字早已模糊，你只能硬闖進去。" }
           ] }
       ],
-      "guardian": { "name": "守碑道人", "subtitle": "古觀最後的守觀人", "portrait": "npc_tao03", "gender": "男", "count": 3, "difficulty": 1.35, "boss": true,
+      "guardian": { "name": "守碑道人", "subtitle": "古觀最後的守觀人", "portrait": "npc_tao02", "gender": "男", "count": 3, "difficulty": 1.35, "boss": true,
         "minions": ["守觀道童", "守觀道童"],
         "lines": [
           { "speaker": "guardian", "text": "此碑守了一百二十年，來過的人不下三十個，沒有一個看得懂。" },
@@ -264,7 +264,7 @@
             { "label": "等水勢稍緩", "attr": "luk", "text": "瀑布每隔一陣總會小一些。", "success": "正午時分，上游一塊巨石擋住了水流，水簾一下薄了許多。", "failure": "等到天黑也不見水勢變小，只好硬闖。" }
           ] }
       ],
-      "guardian": { "name": "應龍拳師", "subtitle": "隱世拳師", "portrait": "npc_am09", "gender": "男", "count": 1, "difficulty": 1.5, "boss": true,
+      "guardian": { "name": "應龍拳師", "subtitle": "隱世拳師", "portrait": "npc_em06", "gender": "男", "count": 1, "difficulty": 1.5, "boss": true,
         "lines": [
           { "speaker": "guardian", "text": "這二十年，你是第四個闖進來的。前三個，一個斷了手，兩個再也不敢練拳。" },
           { "speaker": "guardian", "text": "我不收徒弟。但你要是能在我掌下站滿三十招，這套掌法，我教你。" }
@@ -284,7 +284,7 @@
             { "label": "以身法閃避", "attr": "agi", "text": "鏢來，閃開便是。", "success": "你身形如風，銅鏢全都落在你身後。", "failure": "鏢雨太密，你身上多了三道血痕。" }
           ] }
       ],
-      "guardian": { "name": "蒙面女鏢客", "subtitle": "千佛洞守洞人", "portrait": "npc_yf07", "gender": "女", "count": 2, "difficulty": 1.35, "boss": true,
+      "guardian": { "name": "蒙面女鏢客", "subtitle": "千佛洞守洞人", "portrait": "npc_af08", "gender": "女", "count": 2, "difficulty": 1.35, "boss": true,
         "minions": ["持弩侍女"],
         "lines": [
           { "speaker": "guardian", "text": "千手觀音，一手一鏢。我在這裡守了十年，還沒人見過第一千枚鏢長什麼樣。" },

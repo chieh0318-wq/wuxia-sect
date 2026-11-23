@@ -52,13 +52,17 @@ namespace Wuxia
                 }
                 MapUi.Text(card, hall.name, 20, 196, cardW - 150, 48, 34, MapUi.Red, TextAnchor.MiddleLeft, "Titles");
                 MapUi.Text(card, hall.level, cardW - 140, 200, 120, 40, 22, hall.founded ? MapUi.Jade : MapUi.Ink, TextAnchor.MiddleRight);
-                var desc = MapUi.Text(card, hall.desc, 20, 246, cardW - 40, 110, 18, MapUi.Ink, TextAnchor.UpperLeft, "Narration");
+                var desc = MapUi.Text(card, hall.desc, 20, 244, cardW - 40, 84, 18, MapUi.Ink, TextAnchor.UpperLeft, "Narration");
                 desc.resizeTextForBestFit = true;
                 desc.resizeTextMinSize = 15;
                 desc.resizeTextMaxSize = 18;
                 desc.verticalOverflow = VerticalWrapMode.Truncate;
-                MapUi.Text(card, hall.summary, 20, 356, cardW - 40, 72, 18, MapUi.Jade, TextAnchor.UpperLeft);
-                float y = 434;
+                var summary = MapUi.Text(card, hall.summary, 20, 332, cardW - 40, 100, 18, MapUi.Jade, TextAnchor.UpperLeft);
+                summary.resizeTextForBestFit = true;
+                summary.resizeTextMinSize = 14;
+                summary.resizeTextMaxSize = 18;
+                summary.verticalOverflow = VerticalWrapMode.Truncate;
+                float y = 440;
                 if (!hall.founded)
                 {
                     MapUi.Text(card, "解鎖條件", 20, y, cardW - 40, 30, 20, MapUi.Red);
@@ -72,12 +76,16 @@ namespace Wuxia
                 }
                 foreach (var (label, tip, run) in hall.functions)
                 {
-                    var button = MapUi.Button(card, "", 20, y, cardW - 40, 80, () => run?.Invoke(), null);
+                    var button = MapUi.Button(card, "", 20, y, cardW - 40, 100, () => run?.Invoke(), null);
                     button.name = "堂口指令:" + label;
                     button.interactable = run != null;
                     MapUi.Text(button.transform, label, 14, 4, cardW - 68, 34, 23, MapUi.Paper, TextAnchor.MiddleLeft, "Names");
-                    MapUi.Text(button.transform, tip, 14, 38, cardW - 68, 38, 16, MapUi.Gold, TextAnchor.UpperLeft);
-                    y += 88;
+                    var tipText = MapUi.Text(button.transform, tip, 14, 38, cardW - 68, 58, 16, MapUi.Gold, TextAnchor.UpperLeft);
+                    tipText.resizeTextForBestFit = true;
+                    tipText.resizeTextMinSize = 13;
+                    tipText.resizeTextMaxSize = 16;
+                    tipText.verticalOverflow = VerticalWrapMode.Truncate;
+                    y += 108;
                 }
                 if (hall.build.HasValue)
                 {

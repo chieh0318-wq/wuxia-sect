@@ -40,10 +40,12 @@ namespace Wuxia
             {
                 foreach (Transform child in marker) Destroy(child.gameObject);
                 bool taken = Claimed(site);
-                Color seal = taken ? new Color(.42f, .40f, .37f) : site.Guarded ? MapUi.Red : new Color(.72f, .56f, .22f);
-                MapUi.Panel(marker, "印框", 0, 0, 30, 30, MapUi.Ink).GetComponent<Image>().raycastTarget = false;
-                MapUi.Panel(marker, "印面", 2, 2, 26, 26, seal).GetComponent<Image>().raycastTarget = false;
-                MapUi.Text(marker, taken ? "取" : "寶", 0, 0, 30, 30, 18, MapUi.Paper, TextAnchor.MiddleCenter, "Names");
+                // Gold-rimmed seals so they read apart from the faction flags: cream = explore, vermilion = guarded, grey = taken.
+                Color seal = taken ? new Color(.42f, .40f, .37f) : site.Guarded ? MapUi.Red : MapUi.Paper;
+                MapUi.Panel(marker, "印框", 0, 0, 30, 30, taken ? MapUi.Ink : new Color(.93f, .76f, .30f)).GetComponent<Image>().raycastTarget = false;
+                MapUi.Panel(marker, "印面", 3, 3, 24, 24, seal).GetComponent<Image>().raycastTarget = false;
+                MapUi.Text(marker, taken ? "取" : "寶", 0, 0, 30, 30, 18, taken || site.Guarded ? MapUi.Paper : MapUi.Red,
+                    TextAnchor.MiddleCenter, "Names");
                 marker.SetAsLastSibling();
             }
         }
@@ -93,9 +95,6 @@ namespace Wuxia
                 y += 38;
             }
             var intro = MapUi.Text(panel, site.intro, 20, y, 386, 150, 18, MapUi.Ink, TextAnchor.UpperLeft, "Narration");
-            intro.resizeTextForBestFit = true;
-            intro.resizeTextMinSize = 14;
-            intro.resizeTextMaxSize = 18;
             intro.verticalOverflow = VerticalWrapMode.Truncate;
             y += 156;
             MapUi.Text(panel, "取得", 20, y, 60, 26, 18, MapUi.Red);

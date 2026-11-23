@@ -364,7 +364,7 @@ namespace Wuxia
 
         internal void CreationChoice(string label, string description, string image, Action run,
             string rarity = null, bool picked = false, int? cost = null, bool banner = false, string tags = null, bool wideDescription = false, string icon = null,
-            bool reserveEffect = false)
+            bool reserveEffect = false, string effect = null)
         {
             var item = Button(creationGrid == null ? modalList : creationGrid, label, run);
             item.GetComponent<Button>().interactable = run != null;
@@ -388,7 +388,7 @@ namespace Wuxia
                 AddCardIcon(item, icon, 16, 36);
             }
             int top = hasBanner ? 198 : 0;
-            bool storyChoice = reserveEffect || (art != null && rarity == null && !cost.HasValue);
+            bool storyChoice = reserveEffect || !string.IsNullOrEmpty(effect) || (art != null && rarity == null && !cost.HasValue);
             caption.alignment = TextAnchor.MiddleLeft;
             caption.resizeTextMinSize = 20;
             Anchor(caption.rectTransform, Vector2.up, Vector2.one, new(left, -44 - top),
@@ -438,14 +438,16 @@ namespace Wuxia
             if (rarity != null && icon != null)
                 body.verticalOverflow = VerticalWrapMode.Truncate;
             int tagTop = wideDescription ? 80 : 38;
-            Anchor(body.rectTransform, Vector2.zero, Vector2.one, new(left, string.IsNullOrEmpty(tags) ? (storyChoice ? 34 : 8) : tagTop + 4),
+            Anchor(body.rectTransform, Vector2.zero, Vector2.one, new(left, string.IsNullOrEmpty(tags) ? (storyChoice ? 52 : 8) : tagTop + 4),
                 new(-16, -46 - top));
             if (storyChoice && string.IsNullOrEmpty(tags))
             {
-                var effect = Label(item, "", 18, TextAnchor.MiddleLeft);
-                effect.name = "影響";
-                effect.color = CardGold;
-                Anchor(effect.rectTransform, Vector2.zero, Vector2.right, new(left, 6), new(-16, 30));
+                var impact = Label(item, string.IsNullOrEmpty(effect) ? "" : $"影響：{effect}", 18, TextAnchor.MiddleLeft);
+                impact.name = "影響";
+                impact.color = CardGold;
+                impact.resizeTextMinSize = 15;
+                impact.resizeTextMaxSize = 18;
+                Anchor(impact.rectTransform, Vector2.zero, Vector2.right, new(left, 6), new(-16, 50));
             }
             if (!string.IsNullOrEmpty(tags))
             {

@@ -65,6 +65,8 @@ namespace Wuxia
                     ("47_legacy_shop.png", creation.CaptureLegacyShop),
                     ("15_background.png", creation.CaptureBackground),
                     ("04_prologue_beat.png", creation.CapturePrologue),
+                    ("04b_succession.png", creation.CaptureSuccession),
+                    ("04c_friend_arrival.png", creation.CaptureFriendArrival),
                     ("05_disaster_choice.png", creation.CaptureDisaster),
                     ("16_response_choice.png", creation.CaptureResponse),
                     ("06_location_choice.png", creation.CaptureLocation),
@@ -125,7 +127,12 @@ namespace Wuxia
                             ?? StoryCharacters.FirstOrDefault();
                         if (person != null) ShowCharacterDetail(person, ShowCharacterDirectory);
                     })
-                }.Concat(M6CaptureSteps()).ToArray();
+                }.Concat(M6CaptureSteps()).Concat(V1124CaptureSteps()).ToArray();
+                // "-wuxiaCaptureOnly 8" runs just the shots whose file names start with that prefix (v1124 P1B-2: 80–89).
+                int only = System.Array.IndexOf(args, "-wuxiaCaptureOnly");
+                string prefix = only >= 0 && only + 1 < args.Length ? args[only + 1] : null;
+                if (prefix != null)
+                    steps = steps.Where(step => step.filename.StartsWith(prefix, System.StringComparison.Ordinal)).ToArray();
 
                 foreach (var step in steps)
                 {
@@ -147,11 +154,22 @@ namespace Wuxia
                         yield break;
                     }
                 }
+                if (ui.SceneOpen) ui.Scene.Close(); // v1124: leave no scene page over the later shots
+                if (prefix != null)
+                {
+                    Debug.Log($"[Capture] only '{prefix}': {steps.Length} shots done.");
+                    Application.Quit(0);
+                    yield break;
+                }
                 if (CaptureQuestline())
                 {
                     yield return new WaitForSecondsRealtime(2.8f);
                     if (!SaveShot("28_questline_beat.png")) yield break;
                     ui.CloseStoryBeat();
+                    // v1124 B8: the choice screen with its 「影響」 lines.
+                    PlayQuest(capturedQuest.line, capturedQuest.beat, choicesOnly: true);
+                    yield return new WaitForSecondsRealtime(.3f);
+                    if (!SaveShot("28b_questline_choices.png")) yield break;
                 }
                 ui.CloseModal(force: true);
                 yield return CaptureM2(file => shotsOk &= SaveShot(file));
@@ -409,6 +427,8 @@ namespace Wuxia
             }
         }
 
+        private (Questline line, QuestBeat beat) capturedQuest;
+
         private bool CaptureQuestline()
         {
             var fresh = new GameState(data);
@@ -434,6 +454,7 @@ namespace Wuxia
                 Debug.LogWarning("[Capture] 28_questline_beat skipped. No playable beat triggered in months 1–3.");
                 return false;
             }
+            capturedQuest = sample;
             PlayQuest(sample.line, sample.beat, preferExpression: true);
             return true;
         }

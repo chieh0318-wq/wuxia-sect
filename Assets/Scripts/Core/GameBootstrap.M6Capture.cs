@@ -85,6 +85,7 @@ namespace Wuxia
             }),
             ("45_m6_hero_gear.png", () =>
             {
+                if (ui.SceneOpen) ui.Scene.Close(); // v1124 C15: the realm reward page is a scene now
                 ui.CloseModal(force: true);
                 state.Apply(new Yield { silver = 40 });
                 state.GrantAp(2);

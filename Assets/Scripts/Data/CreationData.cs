@@ -55,6 +55,8 @@ namespace Wuxia
     [Serializable] internal sealed class TalentCatalog
     {
         public int budget = 20, maxPicks = 8, rerollFree;
+        /// <summary>v1124 C13: explains the creation ceiling (開局上限至多 A) for the talent screen.</summary>
+        public string ceilingNote;
         public CreationOption[] talents;
     }
 
@@ -65,12 +67,17 @@ namespace Wuxia
     {
         public StoryBeat[] beats;
         public string responsePrompt;
+        /// <summary>v1124: 1 易 … 4 極難, authored in prologue.json and shown as a badge on the card.</summary>
+        public int difficulty;
         public StoryResponse[] responses;
     }
     [Serializable] internal sealed class StoryLocation : CreationOption { public string node, region, resources, bonusText; }
     [Serializable] internal sealed class PrologueData
     {
         public StoryBeat[] openingBeats, closingBeats;
+        /// <summary>v1124: 接任代掌門 (after the master vanishes) and the childhood friend's arrival as 軍師.</summary>
+        public StoryBeat[] successionBeats, friendBeats;
+        public string actingTitle = "代掌門";
         public string disasterPrompt, locationPrompt;
         public StoryDisaster[] disasters;
         public StoryLocation[] locations;
@@ -87,6 +94,12 @@ namespace Wuxia
         public int martialTraining, trainingMonths, lastTrainingMonth, injury;
         public string weapon;
         public string[] breakthroughs = Array.Empty<string>();
+        /// <summary>v1124 C12: the chosen 主修 combat line; 「主修武學」 talents (ref "martial") land here.</summary>
+        public string major = "sword";
+        /// <summary>v1124 C13: per-line study speed in percent (id "" = every combat line).</summary>
+        public StoryValue[] study = Array.Empty<StoryValue>();
+        /// <summary>v1124 C14: martial arts learned after creation (秘笈、奇遇、秘境、師承), ids from martial_arts.json.</summary>
+        public string[] arts = Array.Empty<string>();
         public CharacterLook look;
         /// <summary>Worn gear, at most one item per slot (武器 護腕 飾品 冠帽 衣袍 履靴).</summary>
         public GearItem[] gear = Array.Empty<GearItem>();

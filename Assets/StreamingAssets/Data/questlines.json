@@ -156,6 +156,11 @@
                   "key": "charRelation",
                   "value": 5,
                   "ref": "xu"
+                },
+                {
+                  "key": "art",
+                  "value": 1,
+                  "ref": "anxi_zhendao"
                 }
               ],
               "setFlag": "master_xiao_clue",
@@ -1711,6 +1716,11 @@
                   "key": "insightChance",
                   "value": 0.02,
                   "ref": ""
+                },
+                {
+                  "key": "art",
+                  "value": 1,
+                  "ref": "art_2bcbe4bd"
                 }
               ],
               "setFlag": "xu_library",
@@ -2736,6 +2746,11 @@
                   "key": "reputation",
                   "value": 3,
                   "ref": ""
+                },
+                {
+                  "key": "art",
+                  "value": 1,
+                  "ref": "yanmen_qiang"
                 }
               ],
               "setFlag": "wei_veterans",

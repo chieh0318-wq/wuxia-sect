@@ -6,12 +6,12 @@ using UnityEngine;
 namespace Wuxia
 {
     /// <summary>One tactical option on a secret-realm floor, tested against a protagonist attribute.</summary>
-    internal sealed class RealmChoice
+    [Serializable] internal sealed class RealmChoice
     {
         public string label, attr, text, success, failure;
     }
 
-    internal sealed class RealmStage
+    [Serializable] internal sealed class RealmStage
     {
         public string title, text;
         public RealmChoice[] choices;
@@ -22,6 +22,10 @@ namespace Wuxia
     {
         public string id, name, intro, gearSlot, line;
         public RealmStage[] stages;
+        /// <summary>v1124 C15: realms.json scene id (background) and the floor whose guardian can be fought for real.</summary>
+        public string scene;
+        public int bossStage = -1;
+        public RealmBattle boss;
     }
 
     /// <summary>An in-progress delve: floor index, successful checks and the running log.</summary>
@@ -46,7 +50,8 @@ namespace Wuxia
         {
             new()
             {
-                id = "sword_tomb", name = "《前朝藏劍古塚》", gearSlot = "武器", line = "sword",
+                id = "sword_tomb", name = "《前朝藏劍古塚》", gearSlot = "武器", line = "sword", scene = "realm_sword_tomb", bossStage = 2,
+                boss = new RealmBattle { lead = "披甲劍俑", portrait = "npc_am01", standee = "Battle/enemy_boss", count = 3, difficulty = 1.15f, boss = true, minions = new[] { "石俑", "石俑" } },
                 intro = "崤函古道旁的荒塚，傳說埋著前朝劍聖的佩劍。塚口的石碑上刻著八個字：「劍在人在，劍亡人亡」。",
                 stages = new[]
                 {
@@ -72,7 +77,8 @@ namespace Wuxia
             },
             new()
             {
-                id = "jade_cave", name = "《太白寒玉洞窟》", gearSlot = "飾品", line = "neigong",
+                id = "jade_cave", name = "《太白寒玉洞窟》", gearSlot = "飾品", line = "neigong", scene = "realm_ice_cave", bossStage = 1,
+                boss = new RealmBattle { lead = "雪白冰蟒", portrait = "beast_ice_python", standee = "Realms/beast_ice_python", count = 1, difficulty = 1.1f, boss = true },
                 intro = "太白山積雪終年不化，獵戶說山腹裡有一座冰洞，洞中寒玉能讓習武之人內力倍增，可進去的人多半沒再出來。",
                 stages = new[]
                 {
@@ -98,7 +104,8 @@ namespace Wuxia
             },
             new()
             {
-                id = "black_wind", name = "《黑風嶺密庫》", gearSlot = "衣袍", line = "fist",
+                id = "black_wind", name = "《黑風嶺密庫》", gearSlot = "衣袍", line = "fist", scene = "realm_bandit_vault", bossStage = 2,
+                boss = new RealmBattle { lead = "黑風老寨主", portrait = "npc_am03", count = 3, difficulty = 1.1f, boss = true, minions = new[] { "黑風殘匪", "黑風殘匪" } },
                 intro = "黑風嶺的山賊被官軍剿滅之後，他們十年劫掠來的財寶卻始終沒找著。有人說，密庫就在嶺後的斷崖底下。",
                 stages = new[]
                 {
@@ -124,7 +131,8 @@ namespace Wuxia
             },
             new()
             {
-                id = "immortal_go", name = "《仙人弈棋殘局》", gearSlot = "冠帽", line = "qinggong",
+                id = "immortal_go", name = "《仙人弈棋殘局》", gearSlot = "冠帽", line = "qinggong", scene = "realm_immortal_go", bossStage = 1,
+                boss = new RealmBattle { lead = "終南白猿", portrait = "beast_white_ape", standee = "Realms/beast_white_ape", count = 1, difficulty = 1.0f },
                 intro = "終南山深處有一塊石坪，坪上刻著一局殘棋。樵夫說每逢月圓，便有兩位白衣老者在此對弈，破局者可得仙緣。",
                 stages = new[]
                 {

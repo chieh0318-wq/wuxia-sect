@@ -273,6 +273,7 @@ namespace Wuxia
                 ui.UpdateStoryBeat();
                 return;
             }
+            if (ui.SceneOpen) return; // v1124 C15–C18: scene pages own the input
             if (HandleWorldMapInput()) return; // M2-B map input
             if (!capturing && !ui.ModalOpen && !ui.DialogueOpen && !choosingBuilding)
             {
@@ -372,9 +373,13 @@ namespace Wuxia
 
         private void ShowCommands()
         {
+            bool maySpar = state.ActionPoints >= state.SparApCost && state.Food >= state.SparFoodCost;
+            int halls = HallCatalog.Data.halls.Count(hall => state.HallLevel(hall.id) > 0);
+            int ready = HallCatalog.Data.halls.Count(hall => state.HallLevel(hall.id) == 0 && state.HallUnlocked(hall));
             var categories = new (string name, string detail, (string label, string detail, System.Action run, bool selected)[] entries)[]
             {
-                ("建造", "興建宗門設施", Matching(action => action.type == "build")),
+                ("建造", "興建宗門設施", Matching(action => action.type == "build").Append(
+                    ("山門堂口　行動力 0", $"已建 {halls}／{HallCatalog.Data.halls.Length}，{ready} 處可興建", (System.Action)OpenHalls, ready > 0)).ToArray()),
                 ("人事", "招募弟子、查閱門派與主角資料", Matching(action => action.type == "recruit").Concat(new[]
                 {
                     ("門派政務　行動力 0", $"{HousingInfo()}　轄下據點 {state.Story.heldNodes?.Length ?? 0} 處", (System.Action)ShowSect, false),
@@ -395,7 +400,7 @@ namespace Wuxia
                     ("藏經閣科技樹　行動力 0", state.BuildingLevel("library") > 0
                         ? $"已研習 {state.TechCount}／{GameState.TechTree.Length}，研習資費標於各節點" : "須先興建藏經閣",
                         state.BuildingLevel("library") > 0 ? (System.Action)ShowTechTree : null, false),
-                    ("山門演武　行動力 0", "率弟子切磋，勝出可得銀兩、聲望與先輩積分", (System.Action)(() => StartSkirmishBattle()), false)
+                    ($"山門演武　行動力 {state.SparApCost}", "選派同門對練，提升武學與好感", maySpar ? (System.Action)StartSparring : null, false)
                 })
             };
             ui.ShowCommandCategories(categories);
@@ -465,6 +470,13 @@ namespace Wuxia
                 ui.Refresh(state);
                 ShowCommands();
                 EnterSecretRealm("循著江湖傳聞");
+                return;
+            }
+            if (action.id == "explore")
+            {
+                // v1124 C15: 山道巡訪 plays as a scene (encounter, optional battle, rewards).
+                ui.Refresh(state);
+                ExploreRoad(action);
                 return;
             }
             float rumor = action.id == "explore" ? state.ConsumeRumors() : 0;

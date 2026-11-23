@@ -12,10 +12,35 @@
     { "speaker": "大師兄　林照", "portrait": "lin", "image": "", "text": "……是。師父放心，我盯著。" },
     { "speaker": "", "portrait": "", "image": "", "text": "三個月過去，又是三個月。石階生了青苔，師父始終沒有回來。山下驛路上的馬蹄聲，卻一夜比一夜急。" }
   ],
+  "successionBeats": [
+    { "speaker": "", "portrait": "", "image": "cg_succession", "text": "師父音訊全無，已近半年。這天清早晨鐘敲過，同門沒有去演武場，而是一個接一個進了正殿。" },
+    { "speaker": "二師姐　許雁", "portrait": "xu", "image": "", "text": "師父臨走時說，門中事務交給{name}。這半年山門是誰守的、帳是誰管的、晨課是誰帶的，大家都看在眼裡。我提議——請{name}暫代掌門，等師父回來。" },
+    { "speaker": "", "portrait": "", "image": "", "text": "殿裡靜了好一會兒。有人點頭，也有人悄悄往林照那邊看。" },
+    { "speaker": "藥房執事　韓守拙", "portrait": "han", "image": "", "text": "……論入門先後，大師兄在前；論資歷，二師姐管了七年藏經閣。我不是說{name}不好，只是這個位子，原該是大師兄或二師姐的。" },
+    { "speaker": "外門弟子　康瑟", "portrait": "kang", "image": "", "text": "我也這麼想。不過——二師姐自己都推了{name}，我沒話說。帳上的事我照舊盯著，一文錢也不會少。" },
+    { "speaker": "大師兄　林照", "portrait": "lin", "image": "", "text": "{name}，別擺那張臉，又不是叫你去送死。師父把事交給你，不交給我，自有他的道理。我服的是師父，不是你——往後你哪裡做錯了，我第一個說。" },
+    { "speaker": "大師兄　林照", "portrait": "lin", "image": "", "text": "……可劍門要撐下去，總得有人站在前頭挨罵。那就你吧。後面，我替你看著。" },
+    { "speaker": "二師姐　許雁", "portrait": "xu", "image": "", "text": "{name}，別逞強。累了就說一聲，帳我替你分一半；師弟妹的功課，我也替你盯著。" },
+    { "speaker": "{name}", "portrait": "hero", "image": "", "text": "我只是暫代。等師父回來，這個位子原樣還給他。在那之前——{sect}一個人都不能少。" },
+    { "speaker": "藥房執事　韓守拙", "portrait": "han", "image": "", "text": "……代掌門。我說話直，你別往心裡去。要練功、要幹活，叫我便是。" },
+    { "speaker": "", "portrait": "", "image": "", "text": "從這天起，山上的人改了口。{name}成了{sect}的代掌門；不服的人還有，卻沒有一個人下山。" }
+  ],
+  "friendBeats": [
+    { "speaker": "", "portrait": "", "image": "cg_friend_arrival", "text": "接任後第三天，山道上來了一匹瘦馬。馬上的人風塵僕僕，背上一張舊桐木琴——是{friend}。" },
+    { "speaker": "大師兄　林照", "portrait": "lin", "image": "", "text": "又是謝家的人。三天兩頭往劍門跑，這回又帶了什麼曲子來？" },
+    { "speaker": "{friend}", "portrait": "friend", "image": "", "text": "不帶曲子，帶了我自己。洛陽城裡都傳遍了：崤山劍門掌門失蹤，山門無主，佩刀的生面孔在山下打轉。我把城裡的差事辭了，連夜趕來。" },
+    { "speaker": "", "portrait": "", "image": "", "text": "{friend}不是崤山劍門的弟子，沒拜過師父，也沒練過一天崤山劍。只是與{name}在洛陽同一條巷子裡長大；{name}八歲被師父領上山後，{friend}便隔三差五上山蹭飯、看劍，順手把劍門的帳理得清清楚楚。" },
+    { "speaker": "{name}", "portrait": "hero", "image": "", "text": "你不是劍門的人，不必蹚這渾水。" },
+    { "speaker": "{friend}", "portrait": "friend", "image": "", "text": "我不是劍門的人，可我們是一起長大的。你管劍，我管帳、管糧、管那些看不見的刀子。劍門眼下缺的不是一把劍，是一個替你算路的人。" },
+    { "speaker": "二師姐　許雁", "portrait": "xu", "image": "", "text": "……也好。帳房那一攤，往後總算有人分著擔了。" },
+    { "speaker": "{friend}", "portrait": "friend", "image": "", "text": "{name}，我留下來。不當弟子，當你的軍師。師父回來之前，我陪你把{sect}撐住。" },
+    { "speaker": "", "portrait": "", "image": "", "text": "那天夜裡，{friend}在藏經閣旁的廂房住下，案上攤開一張兩京形勢圖。同門開始叫{friend}「軍師」——起初是玩笑，後來便沒人再改口。" }
+  ],
   "disasterPrompt": "師父去後第二年，禍事終於找上門來。那一年，崤山上發生了什麼？",
   "disasters": [
     {
       "id": "treasure",
+      "difficulty": 2,
       "name": "懷璧其罪",
       "summary": "師父留下的鐵匣裡藏著《衛公兵法》殘卷。黑山鐵騎夜襲山門，{sect}毀於一旦；你只能投靠師父的老友——華嶽派掌門封伯陽。",
       "image": "cg_treasure_attack",
@@ -112,6 +137,7 @@
     },
     {
       "id": "court",
+      "difficulty": 3,
       "name": "官府迫害",
       "summary": "宮中大璫看上了崤山，{sect}不肯讓山。殿中侍御史范希仁一紙敕牒，指{sect}私藏甲兵、窩匿逃丁——羅網已經收口。",
       "image": "cg_court_persecution",
@@ -205,6 +231,7 @@
     },
     {
       "id": "betrayal",
+      "difficulty": 4,
       "name": "同道背盟",
       "summary": "伏牛劍派與{sect}同盟二十年。秦無咎設下盟會，酒過三巡，擲杯為號——伏兵四起，崤山換了旗。",
       "image": "cg_betrayal",
@@ -297,6 +324,7 @@
     },
     {
       "id": "plague",
+      "difficulty": 1,
       "name": "大疫饑荒",
       "summary": "關中、河南先旱後澇，疫病自洛陽南市蔓延。{sect}開門收留病人，人救了，山也空了——崤山再養不活一個門派。",
       "image": "cg_ruins",

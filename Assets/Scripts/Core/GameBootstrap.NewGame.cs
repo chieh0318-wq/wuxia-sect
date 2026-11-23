@@ -231,6 +231,15 @@ namespace Wuxia
                 {
                     selected.Clear();
                     ShowTalents(1f);
+                }),
+                // v1124 C12: 「主修武學」 talents land on the line chosen here (cycles through the combat lines).
+                ($"主修：{EffectText.LineName(MajorId)}", () =>
+                {
+                    var combat = RankSystem.Categories.Where(category => category.family == "combat")
+                        .Select(category => category.id).ToArray();
+                    if (combat.Length > 0)
+                        state.Protagonist.major = combat[(Array.IndexOf(combat, MajorId) + 1) % combat.Length];
+                    ShowTalents(ui.TalentScrollPosition);
                 })
             };
             ui.ShowCreation("天賦", Array.Empty<string>(), actions, CompleteTalents, CompleteTalents);
@@ -271,14 +280,17 @@ namespace Wuxia
             {
                 if (effect == null || effect.key is not ("rank" or "lineRank" or "cap"))
                     continue;
-                var line = effect.@ref == "martial" ? RankSystem.BestCombat(preview)
+                var line = effect.@ref == "martial" ? RankSystem.Major(preview, MajorId)
                     : Array.Find(preview, entry => entry.id == effect.@ref);
                 int value = Mathf.RoundToInt(effect.value);
                 if (effect.key == "cap") RankSystem.Raise(line, 0, value);
                 else RankSystem.Raise(line, value, 0);
             }
+            RankSystem.ClampCreation(preview);
             return preview;
         }
+
+        private string MajorId => RankSystem.IsCombat(state.Protagonist.major) ? state.Protagonist.major : "sword";
 
         private int Spent => selected.Sum(option => option.cost);
         private bool CanPick(CreationOption option, int budget, int limit) =>
@@ -301,30 +313,9 @@ namespace Wuxia
         /// <summary>Gameplay effects of an option as a compact tag line (「武力 +2・身法 +2」).</summary>
         private static string Details(CreationOption option)
         {
-            var details = (option.effects ?? Array.Empty<GameEffect>()).Where(effect => effect != null).Select(effect =>
-            {
-                string caption = effect.key switch
-                {
-                    "silver" => "銀兩", "food" => "糧食", "reputation" => "聲望", "apMax" => "行動力上限",
-                    "recruitPoolSize" => "招徒人選", "recruitCostPct" => "招徒費用", "buildCostPct" => "建造費用",
-                    "trainBonusPct" => "修習進度", "insightChance" => "感悟機率", "str" => "武力", "agi" => "身法",
-                    "con" => "根骨", "qi" => "內力", "wit" => "悟性", "cha" => "魅力", "luk" => "幸運", "loyaltyAll" => "弟子忠誠",
-                    "relation" => "勢力關係", "followers" => "追隨弟子", "cap" => "技能上限",
-                    "rank" or "lineRank" => "技能階位", _ => ""
-                };
-                if (effect.key == "noGraveInjury") return "不會重傷，也不致殞命";
-                if (caption.Length == 0) return "";
-                if (effect.key is "rank" or "lineRank" or "cap")
-                {
-                    string line = RankSystem.Categories.FirstOrDefault(category => category.id == effect.@ref)?.name ?? "武學";
-                    caption = line + caption;
-                }
-                if (effect.key == "relation")
-                    caption = (WorldMapData.Load().Factions.FirstOrDefault(faction => faction.id == effect.@ref)?.Label ?? "") + "關係";
-                string value = effect.key == "insightChance" ? $"{effect.value:+0%;-0%}" :
-                    effect.key.EndsWith("Pct", StringComparison.Ordinal) ? $"{effect.value:+0;-0}%" : $"{effect.value:+0;-0}";
-                return $"{caption} {value}";
-            }).Where(line => line.Length > 0).ToList();
+            // v1124: one shared formatter (EffectText) for creation tags and story-choice impact lines.
+            var details = (option.effects ?? Array.Empty<GameEffect>())
+                .Select(effect => EffectText.Describe(effect)).Where(line => line.Length > 0).ToList();
             if (!string.IsNullOrEmpty(option.category) && RankSystem.Categories.Any(entry => entry.id == option.category))
             {
                 int steps = RankSystem.LearnSteps(option);
@@ -366,6 +357,7 @@ namespace Wuxia
             var lines = PreviewLines(talentList);
             foreach (var art in skillList)
                 RankSystem.Learn(lines, art);
+            RankSystem.ClampCreation(lines);
             var sheet = new CreationSheet
             {
                 name = hero.name, title = UiKit.HeroTitle(hero) == hero.name ? "" : UiKit.HeroTitle(hero), portrait = hero.portrait ?? hero.lookId, gender = hero.gender,
@@ -530,9 +522,37 @@ namespace Wuxia
                          .Where(option => option != null && state.Protagonist.skills.Contains(option.id)))
                 RankSystem.Learn(state.Protagonist.lines, art);
             state.ApplyEffects(skillEffects);
+            // v1124 C13: creation alone (background + talents + arts) never lifts a line past the opening ceiling.
+            RankSystem.ClampCreation(state.Protagonist.lines);
             LegacySystem.ApplyCarried(state, legacyPicks);
             AudioManager.Music("title");
-            Play(story.openingBeats, ChooseDisaster, SkipStory);
+            Play(story.openingBeats, PlaySuccession, SkipStory);
+        }
+
+        /// <summary>v1124 B10: the sect asks the protagonist to stand in as 代掌門; then B9, the friend arrives.</summary>
+        private void PlaySuccession() => Play(story.successionBeats, () =>
+        {
+            TakeActingTitle();
+            Play(story.friendBeats, ChooseDisaster, SkipStory);
+        }, SkipStory);
+
+        private void TakeActingTitle()
+        {
+            if (string.IsNullOrWhiteSpace(story.actingTitle)) return;
+            state.Protagonist.title = story.actingTitle;
+            state.ApplyEffects(new[] { new GameEffect { key = "flag", @ref = "acting_head", value = 1 } });
+        }
+
+        internal void CaptureSuccession() => CaptureBeats(story.successionBeats, 3);
+        internal void CaptureFriendArrival() => CaptureBeats(story.friendBeats, 3);
+
+        private void CaptureBeats(StoryBeat[] beats, int index)
+        {
+            if (beats == null || beats.Length == 0) { ChooseDisaster(); return; }
+            index = Mathf.Clamp(index, 0, beats.Length - 1);
+            currentCg = beats.Take(index + 1).LastOrDefault(beat => !string.IsNullOrEmpty(beat.image) &&
+                PortraitService.Story(beat.image) != null)?.image ?? currentCg;
+            Play(beats.Skip(index).ToArray(), ChooseDisaster, SkipStory);
         }
 
         private void ChooseDisaster()
@@ -542,13 +562,15 @@ namespace Wuxia
             ui.ShowCreation("門派之變", new[] { FormatStory(story.disasterPrompt) }, null, SkipStory);
             ui.CreationGrid(2, (options.Length + 1) / 2, 262);
             foreach (var option in options)
-                ui.CreationChoice(option.name, FormatStory(option.summary), option.image, () =>
+                // v1124 B6: difficulty badge from prologue.json and the real effects generated from the data.
+                ui.CreationChoice(ChoiceTitle(option.name, EffectText.Difficulty(option.difficulty)),
+                    FormatStory(option.summary), option.image, () =>
                 {
                     state.Story.disasterId = option.id;
                     state.ApplyEffects(option.effects);
                     AudioManager.Music(option.id == "treasure" ? "battle" : "sorrow");
                     Play(option.beats, () => ChooseResponse(option), SkipStory);
-                });
+                }, effect: EffectText.Describe(option.effects, state));
         }
 
         private void ChooseResponse(StoryDisaster disaster)
@@ -556,7 +578,8 @@ namespace Wuxia
             var options = disaster.responses ?? Array.Empty<StoryResponse>();
             if (options.Length == 0) { ChooseLocation(); return; }
             ui.ShowCreation("去留之策", new[] { FormatStory(disaster.responsePrompt) }, null, SkipStory);
-            ui.CreationGrid(3, (options.Length + 2) / 3, 376);
+            // v1124 B7: taller cards so the 「影響」 line and the full summary both fit.
+            ui.CreationGrid(3, (options.Length + 2) / 3, 600);
             foreach (var option in options)
                 ui.CreationChoice(option.name, FormatStory(option.summary),
                     PortraitService.ResponseArt(disaster.id, option.id, option.image
@@ -572,8 +595,11 @@ namespace Wuxia
                         AssignShelterLocation(disaster?.id, option.id);
                         Play(option.beats, () => Play(story.closingBeats, Finish, Finish), SkipStory);
                     }
-                }, banner: true);
+                }, banner: true, effect: EffectText.Describe(option.effects, state));
         }
+
+        private static string ChoiceTitle(string name, string badge) =>
+            string.IsNullOrEmpty(badge) ? name : $"{name}　{badge}";
 
         private void AssignShelterLocation(string disasterId, string responseId)
         {
@@ -651,7 +677,8 @@ namespace Wuxia
                 // Story characters always use their own portrait id (never a recruit/fallback image).
                 string portrait = beat.portrait == "hero" ? state.Protagonist.portrait ?? state.Protagonist.lookId :
                     PortraitService.StoryId(beat.portrait, friendId == "friend_m" ? "男" : "女");
-                if (!string.IsNullOrEmpty(beat.image))
+                // A CG still waiting for art (listed in v1124_art_todo.md) keeps the previous illustration.
+                if (!string.IsNullOrEmpty(beat.image) && PortraitService.Story(beat.image) != null)
                     currentCg = beat.image;
                 ui.ShowStoryBeat(FormatStory(beat.speaker), FormatStory(beat.text), currentCg, portrait,
                     beat.portrait != "hero", ShowNext, skip, voiceText: beat.text, femaleHero: state.Protagonist.gender == "女",
@@ -673,6 +700,9 @@ namespace Wuxia
 
         private void Finish()
         {
+            // Skipped stories still end with the protagonist standing in as 代掌門 (B10).
+            if (state.Protagonist.title is "三師兄" or "三師姐")
+                TakeActingTitle();
             ui.CloseStoryBeat();
             ui.CloseModal(force: true);
             state.RefillAp();

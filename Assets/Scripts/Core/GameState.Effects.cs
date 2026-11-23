@@ -53,12 +53,17 @@ namespace Wuxia
                     case "rank":
                     case "lineRank":
                     case "cap":
-                        var line = effect.@ref == "martial" ? RankSystem.BestCombat(Protagonist.lines)
+                        // v1124 C12: 「主修武學」 effects follow the player's chosen major, not whatever line is highest.
+                        var line = effect.@ref == "martial" ? RankSystem.Major(Protagonist.lines, Protagonist.major)
                             : Array.Find(Protagonist.lines, entry => entry.id == effect.@ref);
                         // Additive: rank effects carry the cap up with them, cap effects only widen potential.
                         if (effect.key == "cap") RankSystem.Raise(line, 0, value);
                         else RankSystem.Raise(line, value, 0);
                         break;
+                    case "studyPct":
+                        SetValue(ref Protagonist.study, StudyKey(effect.@ref), value, true);
+                        break;
+                    case "art": LearnArt(effect.@ref); break;
                     case "followers":
                         var member = Disciples.Find(d => d.id == effect.@ref);
                         if (value < 0 && member != null)
@@ -74,6 +79,18 @@ namespace Wuxia
                                 Disciples.Add(member);
                             }
                         }
+                        break;
+                    // v1124 C15–C18: realm / hall rewards.
+                    case "item": LegacySystem.AddInventory(Story, effect.@ref, value); break;
+                    case "gear": EquipOrStore(MakeGear(effect.@ref, value)); break;
+                    case "progress": StudyLine(effect.@ref, effect.value); break;
+                    case "injury":
+                        if (value > 0) Injure(value);
+                        else Protagonist.injury = Mathf.Max(0, Protagonist.injury + value);
+                        break;
+                    case "heal": for (int i = 0; i < Mathf.Max(1, value); i++) RecoverInjuries(); break;
+                    case "discipleProgress":
+                        foreach (var pupil in Disciples) TrainLine(RankSystem.BestCombat(pupil.lines), effect.value);
                         break;
                     default: Debug.LogWarning($"[Effects] Unknown key {effect.key}"); break;
                 }

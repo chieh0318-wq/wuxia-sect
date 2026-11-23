@@ -28,6 +28,8 @@ namespace Wuxia
     [Serializable] internal sealed class QuestChoice
     {
         public string text, setFlag, next;
+        /// <summary>v1124: optional 「劇情：……」 hint shown under the choice when it changes no numbers.</summary>
+        public string hint;
         public int relation;
         public GameEffect[] effects;
     }

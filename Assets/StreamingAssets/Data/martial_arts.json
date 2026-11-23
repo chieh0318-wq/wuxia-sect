@@ -1,0 +1,1940 @@
+{
+  "note": "v1124 C14: every martial art in the game. source: creation 開局可選 / faction 門派出身・勢力絕學 / mentor 師承 / manual 秘笈 / encounter 奇遇 / realm 秘境. tier: the cap this art can lift its line to when learned in play. move: battle_skills.json entry used in the skill or ultimate slot.",
+  "arts": [
+    {
+      "id": "kaibei_shou",
+      "name": "開碑手",
+      "category": "fist",
+      "tier": "B",
+      "source": "creation",
+      "how": "開局「武學與技藝」可選",
+      "slot": "skill",
+      "desc": "崤山入門掌法，一掌下去，青石板上留個淺印。",
+      "holders": [
+        "宋秋娘"
+      ],
+      "move": "mv_kaibei_shou"
+    },
+    {
+      "id": "jiaodi",
+      "name": "角抵摔法",
+      "category": "fist",
+      "tier": "B",
+      "source": "creation",
+      "how": "開局「武學與技藝」可選",
+      "slot": "skill",
+      "desc": "長安百戲裡的角抵，近身纏鬥，專拿關節。",
+      "holders": [
+        "屈突烈"
+      ],
+      "move": "mv_jiaodi"
+    },
+    {
+      "id": "luohan_quan",
+      "name": "伏虎羅漢拳",
+      "category": "fist",
+      "tier": "B",
+      "source": "creation",
+      "how": "開局「武學與技藝」可選",
+      "slot": "skill",
+      "desc": "少林外家拳，剛猛樸實，一拳一式都練到骨頭裡。",
+      "holders": [
+        "了空大師"
+      ],
+      "move": "mv_luohan_quan"
+    },
+    {
+      "id": "jingang_zhang",
+      "name": "金剛般若掌",
+      "category": "fist",
+      "tier": "A",
+      "source": "creation",
+      "how": "開局「武學與技藝」可選",
+      "slot": "skill",
+      "desc": "掌力沉厚，以靜制動。據說要先讀通一部經，才打得出第一掌。",
+      "holders": [],
+      "move": "mv_jingang_zhang"
+    },
+    {
+      "id": "hengdao",
+      "name": "橫刀十二路",
+      "category": "blade",
+      "tier": "B",
+      "source": "creation",
+      "how": "開局「武學與技藝」可選",
+      "slot": "skill",
+      "desc": "唐軍制式橫刀的用法，劈、砍、格、撩，乾淨利落。",
+      "holders": [
+        "獨孤鎮"
+      ],
+      "move": "mv_hengdao"
+    },
+    {
+      "id": "modao",
+      "name": "陌刀斬馬式",
+      "category": "blade",
+      "tier": "A",
+      "source": "creation",
+      "how": "開局「武學與技藝」可選",
+      "slot": "skill",
+      "desc": "陌刀如牆而進，人馬俱碎。只有兩膀過人的人才使得動。",
+      "holders": [
+        "魏老七"
+      ],
+      "move": "mv_modao"
+    },
+    {
+      "id": "huxuan_dao",
+      "name": "胡旋刀",
+      "category": "blade",
+      "tier": "A",
+      "source": "creation",
+      "how": "開局「武學與技藝」可選",
+      "slot": "skill",
+      "desc": "化自康國胡旋舞，旋身出刀，左右旋轉不知疲。",
+      "holders": [
+        "安延年"
+      ],
+      "move": "mv_huxuan_dao"
+    },
+    {
+      "id": "qingping",
+      "name": "青萍劍訣",
+      "category": "sword",
+      "tier": "B",
+      "source": "creation",
+      "how": "開局「武學與技藝」可選",
+      "slot": "skill",
+      "desc": "劍起於青萍之末。入門劍訣，重在步法與分寸。",
+      "holders": [
+        "崔鈺"
+      ],
+      "move": "mv_qingping"
+    },
+    {
+      "id": "xiaoshan13",
+      "name": "崤山十三劍",
+      "category": "sword",
+      "tier": "B",
+      "source": "creation",
+      "how": "開局「武學與技藝」可選",
+      "slot": "ultimate",
+      "desc": "崤山劍門鎮派劍法，以崤函古道十三處險隘為名，一式險過一式。",
+      "holders": [
+        "褚寒山",
+        "聶遠山",
+        "林照",
+        "許雁"
+      ],
+      "move": "mv_xiaoshan13"
+    },
+    {
+      "id": "jianqi_huntuo",
+      "name": "劍器渾脫",
+      "category": "sword",
+      "tier": "A",
+      "source": "creation",
+      "how": "開局「武學與技藝」可選",
+      "slot": "ultimate",
+      "desc": "教坊劍器舞中藏著的殺招，觀者如山色沮喪。",
+      "holders": [],
+      "move": "mv_jianqi_huntuo"
+    },
+    {
+      "id": "hangu_ziqi",
+      "name": "函谷紫氣劍",
+      "category": "sword",
+      "tier": "A",
+      "source": "creation",
+      "how": "開局「武學與技藝」可選",
+      "slot": "skill",
+      "desc": "相傳得自函谷關令舊宅的殘譜，劍意綿長，以氣御劍。",
+      "holders": [
+        "聶遠山"
+      ],
+      "move": "mv_hangu_ziqi"
+    },
+    {
+      "id": "jinqian_biao",
+      "name": "袖裡金錢鏢",
+      "category": "hidden",
+      "tier": "B",
+      "source": "creation",
+      "how": "開局「武學與技藝」可選",
+      "slot": "skill",
+      "desc": "開元通寶磨薄了邊，袖中一抖，三枚齊出。",
+      "holders": [
+        "康瑟"
+      ],
+      "move": "mv_jinqian_biao"
+    },
+    {
+      "id": "feihuang_shi",
+      "name": "飛蝗石",
+      "category": "hidden",
+      "tier": "B",
+      "source": "creation",
+      "how": "開局「武學與技藝」可選",
+      "slot": "skill",
+      "desc": "隨手拾石，百步取人。獵戶的手藝，用在江湖上一樣管用。",
+      "holders": [
+        "喬小檀"
+      ],
+      "move": "mv_feihuang_shi"
+    },
+    {
+      "id": "meihua_zhen",
+      "name": "梅花透骨針",
+      "category": "hidden",
+      "tier": "A",
+      "source": "creation",
+      "how": "開局「武學與技藝」可選",
+      "slot": "ultimate",
+      "desc": "五針一簇，形如梅花。專打穴道，中者半身酸麻。",
+      "holders": [
+        "沈青"
+      ],
+      "move": "mv_meihua_zhen"
+    },
+    {
+      "id": "zousuo_bu",
+      "name": "走索步",
+      "category": "qinggong",
+      "tier": "B",
+      "source": "creation",
+      "how": "開局「武學與技藝」可選",
+      "slot": "skill",
+      "desc": "百戲走索的步子，一根繩上也能翻筋斗。",
+      "holders": [
+        "羅小滿"
+      ],
+      "move": "mv_zousuo_bu"
+    },
+    {
+      "id": "taxue",
+      "name": "踏雪無痕",
+      "category": "qinggong",
+      "tier": "B",
+      "source": "creation",
+      "how": "開局「武學與技藝」可選",
+      "slot": "skill",
+      "desc": "提氣輕身，雪上行十步不留印。",
+      "holders": [],
+      "move": "mv_taxue"
+    },
+    {
+      "id": "babu_ganchan",
+      "name": "八步趕蟬",
+      "category": "qinggong",
+      "tier": "A",
+      "source": "creation",
+      "how": "開局「武學與技藝」可選",
+      "slot": "skill",
+      "desc": "八步之內追上飛蟬，身法之快，旁人只見影子。",
+      "holders": [
+        "沈青"
+      ],
+      "move": "mv_babu_ganchan"
+    },
+    {
+      "id": "xiaoshan_tuna",
+      "name": "崤山吐納法",
+      "category": "neigong",
+      "tier": "B",
+      "source": "creation",
+      "how": "開局「武學與技藝」可選",
+      "slot": "skill",
+      "desc": "崤山劍門入門吐納，晨昏各一炷香，貴在不斷。",
+      "holders": [
+        "褚寒山"
+      ],
+      "move": "mv_xiaoshan_tuna"
+    },
+    {
+      "id": "guixi",
+      "name": "龜息功",
+      "category": "neigong",
+      "tier": "B",
+      "source": "creation",
+      "how": "開局「武學與技藝」可選",
+      "slot": "skill",
+      "desc": "息若游絲，心如止水。靜坐之中，偶得靈光。",
+      "holders": [],
+      "move": "mv_guixi"
+    },
+    {
+      "id": "zifu_xuanyuan",
+      "name": "紫府玄元功",
+      "category": "neigong",
+      "tier": "A",
+      "source": "creation",
+      "how": "開局「武學與技藝」可選",
+      "slot": "skill",
+      "desc": "樓觀道院流出的上乘內功，氣走周天，綿綿不絕。",
+      "holders": [
+        "封伯陽"
+      ],
+      "move": "mv_zifu_xuanyuan"
+    },
+    {
+      "id": "fubing_qiang",
+      "name": "府兵槍術",
+      "category": "polearm",
+      "tier": "B",
+      "source": "creation",
+      "how": "開局「武學與技藝」可選",
+      "slot": "skill",
+      "desc": "折衝府衛士操練的槍法，十人成列，進退如一。",
+      "holders": [
+        "林照"
+      ],
+      "move": "mv_fubing_qiang"
+    },
+    {
+      "id": "qimei_gun",
+      "name": "齊眉棍",
+      "category": "polearm",
+      "tier": "B",
+      "source": "creation",
+      "how": "開局「武學與技藝」可選",
+      "slot": "skill",
+      "desc": "棍與眉齊，寺僧護院的看家本事，傷人而不殺人。",
+      "holders": [
+        "圓覺"
+      ],
+      "move": "mv_qimei_gun"
+    },
+    {
+      "id": "mashuo_pozhen",
+      "name": "馬槊破陣法",
+      "category": "polearm",
+      "tier": "A",
+      "source": "creation",
+      "how": "開局「武學與技藝」可選",
+      "slot": "ultimate",
+      "desc": "貞觀名將馬上破陣之術，丈八馬槊，一往無前。",
+      "holders": [],
+      "move": "mv_mashuo_pozhen"
+    },
+    {
+      "id": "jinchuang",
+      "name": "金創接骨術",
+      "category": "medicine",
+      "tier": "B",
+      "source": "creation",
+      "how": "開局「武學與技藝」可選",
+      "slot": "",
+      "desc": "止血、正骨、上夾板。行走江湖，先學會救自己。",
+      "holders": [
+        "韓守拙"
+      ],
+      "move": ""
+    },
+    {
+      "id": "qianjin",
+      "name": "千金方摘要",
+      "category": "medicine",
+      "tier": "A",
+      "source": "creation",
+      "how": "開局「武學與技藝」可選",
+      "slot": "",
+      "desc": "孫真人《千金方》的手抄節本，「人命至重，有貴千金」。",
+      "holders": [
+        "謝蘊"
+      ],
+      "move": ""
+    },
+    {
+      "id": "zhenjiu",
+      "name": "明堂針灸",
+      "category": "medicine",
+      "tier": "A",
+      "source": "creation",
+      "how": "開局「武學與技藝」可選",
+      "slot": "",
+      "desc": "依太醫署明堂圖取穴施針，起沉疴、通經脈。",
+      "holders": [
+        "韓守拙"
+      ],
+      "move": ""
+    },
+    {
+      "id": "bigu_wan",
+      "name": "行軍乾糧丸",
+      "category": "alchemy",
+      "tier": "B",
+      "source": "creation",
+      "how": "開局「武學與技藝」可選",
+      "slot": "",
+      "desc": "炒麥、棗泥、松子和蜜搓成丸，一丸頂半日飢。",
+      "holders": [],
+      "move": ""
+    },
+    {
+      "id": "jiedu_san",
+      "name": "解毒散",
+      "category": "alchemy",
+      "tier": "B",
+      "source": "creation",
+      "how": "開局「武學與技藝」可選",
+      "slot": "",
+      "desc": "南方瘴癘、蛇蟲之毒，一劑可緩三分。",
+      "holders": [
+        "韓守拙"
+      ],
+      "move": ""
+    },
+    {
+      "id": "huanhun_dan",
+      "name": "續命還元丹",
+      "category": "alchemy",
+      "tier": "A",
+      "source": "creation",
+      "how": "開局「武學與技藝」可選",
+      "slot": "",
+      "desc": "以人參、黃耆為君，九蒸九曬。重傷之人服下，能吊住一口氣。",
+      "holders": [],
+      "move": ""
+    },
+    {
+      "id": "guangang",
+      "name": "灌鋼法",
+      "category": "forging",
+      "tier": "B",
+      "source": "creation",
+      "how": "開局「武學與技藝」可選",
+      "slot": "",
+      "desc": "生鐵灌熟鐵，數宿成鋼。打農具、修兵器都靠它。",
+      "holders": [],
+      "move": ""
+    },
+    {
+      "id": "bailian",
+      "name": "百煉鋼",
+      "category": "forging",
+      "tier": "A",
+      "source": "creation",
+      "how": "開局「武學與技藝」可選",
+      "slot": "",
+      "desc": "一鍛一稱，百鍛而斤兩不減，方為百煉。",
+      "holders": [],
+      "move": ""
+    },
+    {
+      "id": "longquan_cuihuo",
+      "name": "龍泉淬火",
+      "category": "forging",
+      "tier": "A",
+      "source": "creation",
+      "how": "開局「武學與技藝」可選",
+      "slot": "",
+      "desc": "取龍泉之水淬刃，劍身生出流雲般的紋路。",
+      "holders": [],
+      "move": ""
+    },
+    {
+      "id": "husuan",
+      "name": "胡商算學",
+      "category": "commerce",
+      "tier": "B",
+      "source": "creation",
+      "how": "開局「武學與技藝」可選",
+      "slot": "",
+      "desc": "粟特人的記帳法，一本帳記得清三國的錢。",
+      "holders": [
+        "康瑟"
+      ],
+      "move": ""
+    },
+    {
+      "id": "guifang",
+      "name": "櫃坊生息",
+      "category": "commerce",
+      "tier": "A",
+      "source": "creation",
+      "how": "開局「武學與技藝」可選",
+      "slot": "",
+      "desc": "把銀錢存進西市櫃坊，憑帖支取，坐收利息。",
+      "holders": [],
+      "move": ""
+    },
+    {
+      "id": "silu",
+      "name": "絲路行商",
+      "category": "commerce",
+      "tier": "A",
+      "source": "creation",
+      "how": "開局「武學與技藝」可選",
+      "slot": "",
+      "desc": "絹帛西去、香料東來，一趟駝隊的利，抵得上十年田租。",
+      "holders": [
+        "康瑟"
+      ],
+      "move": ""
+    },
+    {
+      "id": "qutian",
+      "name": "區田法",
+      "category": "farming",
+      "tier": "B",
+      "source": "creation",
+      "how": "開局「武學與技藝」可選",
+      "slot": "",
+      "desc": "掘坑深耕、集中施肥，薄田也能多收兩成。",
+      "holders": [
+        "羅小滿"
+      ],
+      "move": ""
+    },
+    {
+      "id": "quyuanli",
+      "name": "代田輪作",
+      "category": "farming",
+      "tier": "A",
+      "source": "creation",
+      "how": "開局「武學與技藝」可選",
+      "slot": "",
+      "desc": "壟溝歲歲互換，地力不竭。老農口傳的法子，比官府勸農文管用。",
+      "holders": [
+        "杜蘅"
+      ],
+      "move": ""
+    },
+    {
+      "id": "sangma",
+      "name": "桑麻兼營",
+      "category": "farming",
+      "tier": "B",
+      "source": "creation",
+      "how": "開局「武學與技藝」可選",
+      "slot": "",
+      "desc": "田埂種桑，坡地種麻。糧食之外，還有絹帛可賣。",
+      "holders": [],
+      "move": ""
+    },
+    {
+      "id": "sunmao",
+      "name": "榫卯營造",
+      "category": "construction",
+      "tier": "B",
+      "source": "creation",
+      "how": "開局「武學與技藝」可選",
+      "slot": "",
+      "desc": "不用一根鐵釘，梁柱咬合，百年不散。",
+      "holders": [],
+      "move": ""
+    },
+    {
+      "id": "luban_chi",
+      "name": "魯班尺法",
+      "category": "construction",
+      "tier": "A",
+      "source": "creation",
+      "how": "開局「武學與技藝」可選",
+      "slot": "",
+      "desc": "量材定尺，吉凶分寸。一根木料也不白費。",
+      "holders": [],
+      "move": ""
+    },
+    {
+      "id": "hangtu",
+      "name": "版築夯土",
+      "category": "construction",
+      "tier": "A",
+      "source": "creation",
+      "how": "開局「武學與技藝」可選",
+      "slot": "",
+      "desc": "長安城牆的築法，夾板層層夯實，刀砍不入。",
+      "holders": [
+        "宋秋娘"
+      ],
+      "move": ""
+    },
+    {
+      "id": "yincai",
+      "name": "因材施教",
+      "category": "teaching",
+      "tier": "B",
+      "source": "creation",
+      "how": "開局「武學與技藝」可選",
+      "slot": "",
+      "desc": "同一招，對笨的說三遍，對聰明的只說半句。",
+      "holders": [
+        "許雁"
+      ],
+      "move": ""
+    },
+    {
+      "id": "chuandeng",
+      "name": "師徒傳燈",
+      "category": "teaching",
+      "tier": "A",
+      "source": "creation",
+      "how": "開局「武學與技藝」可選",
+      "slot": "",
+      "desc": "一燈傳一燈。教出來的弟子，心也向著你。",
+      "holders": [
+        "裴秉"
+      ],
+      "move": ""
+    },
+    {
+      "id": "jiangwu",
+      "name": "講武堂規",
+      "category": "teaching",
+      "tier": "A",
+      "source": "creation",
+      "how": "開局「武學與技藝」可選",
+      "slot": "",
+      "desc": "仿軍中講武之制，分班輪訓、考校賞罰，一年抵三年。",
+      "holders": [],
+      "move": ""
+    },
+    {
+      "id": "xiaoshan13_true",
+      "name": "崤山十三劍・真解",
+      "category": "sword",
+      "tier": "SS",
+      "source": "mentor",
+      "how": "師父褚寒山歸來後親傳（師父主線）",
+      "slot": "ultimate",
+      "desc": "十三處險隘連成一線，劍意如古道千里，師父一生所悟盡在其中。",
+      "holders": [],
+      "move": "mv_xiaoshan13_true"
+    },
+    {
+      "id": "anxi_zhendao",
+      "name": "安西軍陣刀",
+      "category": "blade",
+      "tier": "S",
+      "source": "mentor",
+      "how": "師父褚寒山的從軍舊學",
+      "slot": "skill",
+      "desc": "安西軍中刀陣化為單人刀法，進退如列陣。",
+      "holders": [
+        "褚寒山"
+      ],
+      "move": "mv_anxi_zhendao"
+    },
+    {
+      "id": "houshan_yinfu",
+      "name": "後山陰符訣",
+      "category": "neigong",
+      "tier": "S",
+      "source": "faction",
+      "how": "師叔聶遠山私藏的後山殘卷",
+      "slot": "skill",
+      "desc": "後山石室裡的陰符殘卷，運氣逆行，傷人先傷己。",
+      "holders": [
+        "聶遠山"
+      ],
+      "move": "mv_houshan_yinfu"
+    },
+    {
+      "id": "dengxia_lunbing",
+      "name": "燈下論兵",
+      "category": "teaching",
+      "tier": "S",
+      "source": "mentor",
+      "how": "軍師的兵法心得（軍師主線）",
+      "slot": "",
+      "desc": "燈下推演兩京形勢，教人以陣法調度同門。",
+      "holders": [
+        "謝瑾"
+      ],
+      "move": ""
+    },
+    {
+      "id": "art_765deea9",
+      "name": "洛水流雲劍",
+      "category": "sword",
+      "tier": "S",
+      "source": "faction",
+      "how": "洛陽謝家家傳",
+      "slot": "skill",
+      "desc": "劍勢如洛水東流，綿而不斷。",
+      "holders": [
+        "謝瑾"
+      ],
+      "move": "mv_art_765deea9"
+    },
+    {
+      "id": "art_3d4e672f",
+      "name": "流雲步",
+      "category": "qinggong",
+      "tier": "A",
+      "source": "faction",
+      "how": "洛陽謝家家傳步法",
+      "slot": "skill",
+      "desc": "步隨雲走，看似從容，實則一步三變。",
+      "holders": [
+        "謝瑾"
+      ],
+      "move": "mv_art_3d4e672f"
+    },
+    {
+      "id": "art_4dda15ba",
+      "name": "琴心九針",
+      "category": "hidden",
+      "tier": "S",
+      "source": "faction",
+      "how": "洛陽謝家女的獨門針法",
+      "slot": "skill",
+      "desc": "撫琴時藏針於弦，九針應九音。",
+      "holders": [
+        "謝蘊"
+      ],
+      "move": "mv_art_4dda15ba"
+    },
+    {
+      "id": "art_c5206ac4",
+      "name": "凌波踏月",
+      "category": "qinggong",
+      "tier": "A",
+      "source": "faction",
+      "how": "洛陽謝家女的輕身法",
+      "slot": "skill",
+      "desc": "月下踏水而行，衣帶不濕。",
+      "holders": [
+        "謝蘊"
+      ],
+      "move": "mv_art_c5206ac4"
+    },
+    {
+      "id": "art_fa6c2b18",
+      "name": "折衝回馬刀",
+      "category": "blade",
+      "tier": "A",
+      "source": "faction",
+      "how": "大師兄林照府兵時期自練",
+      "slot": "skill",
+      "desc": "敗中求勝的回身一刀，府兵裡保命的本事。",
+      "holders": [
+        "林照"
+      ],
+      "move": "mv_art_fa6c2b18"
+    },
+    {
+      "id": "art_2bcbe4bd",
+      "name": "回雪劍",
+      "category": "sword",
+      "tier": "A",
+      "source": "faction",
+      "how": "二師姐許雁讀遍藏經閣後自創",
+      "slot": "skill",
+      "desc": "劍勢如風回雪，守中帶攻，一絲不亂。",
+      "holders": [
+        "許雁"
+      ],
+      "move": "mv_art_2bcbe4bd"
+    },
+    {
+      "id": "art_9220adaa",
+      "name": "柳葉飛針",
+      "category": "hidden",
+      "tier": "B",
+      "source": "faction",
+      "how": "二師姐許雁的袖中細針",
+      "slot": "skill",
+      "desc": "針細如柳葉，專打手腕穴道。",
+      "holders": [
+        "許雁"
+      ],
+      "move": "mv_art_9220adaa"
+    },
+    {
+      "id": "art_e5da5947",
+      "name": "頑猴拳",
+      "category": "fist",
+      "tier": "B",
+      "source": "faction",
+      "how": "小師弟羅小滿在山野裡學猴子打架",
+      "slot": "skill",
+      "desc": "抓、撓、翻、滾，毫無章法卻總打不著他。",
+      "holders": [
+        "羅小滿"
+      ],
+      "move": "mv_art_e5da5947"
+    },
+    {
+      "id": "art_e468a89f",
+      "name": "庖丁解牛刀",
+      "category": "blade",
+      "tier": "A",
+      "source": "faction",
+      "how": "伙房杜蘅的菜刀功夫",
+      "slot": "skill",
+      "desc": "刀走筋骨縫隙，以無厚入有間。",
+      "holders": [
+        "杜蘅"
+      ],
+      "move": "mv_art_e468a89f"
+    },
+    {
+      "id": "art_2c74da4c",
+      "name": "杵臼拳",
+      "category": "fist",
+      "tier": "B",
+      "source": "faction",
+      "how": "藥房韓守拙搗藥練出的拳勁",
+      "slot": "skill",
+      "desc": "一拳一臼，沉而不猛。",
+      "holders": [
+        "韓守拙"
+      ],
+      "move": "mv_art_2c74da4c"
+    },
+    {
+      "id": "art_f34b3cd5",
+      "name": "書劍十九式",
+      "category": "sword",
+      "tier": "B",
+      "source": "faction",
+      "how": "記名弟子裴秉以書法筆勢化劍",
+      "slot": "skill",
+      "desc": "永字八法化入劍招，起落皆有筆意。",
+      "holders": [
+        "裴秉"
+      ],
+      "move": "mv_art_f34b3cd5"
+    },
+    {
+      "id": "art_33e2bcfe",
+      "name": "浩然養氣訣",
+      "category": "neigong",
+      "tier": "B",
+      "source": "faction",
+      "how": "裴秉讀書養氣的法子",
+      "slot": "skill",
+      "desc": "吾善養吾浩然之氣，至大至剛。",
+      "holders": [
+        "裴秉"
+      ],
+      "move": "mv_art_33e2bcfe"
+    },
+    {
+      "id": "art_2fbd9376",
+      "name": "寒江孤影劍",
+      "category": "sword",
+      "tier": "A",
+      "source": "faction",
+      "how": "客居弟子沈青的來歷之劍",
+      "slot": "skill",
+      "desc": "獨釣寒江般的一劍，不求快只求準。",
+      "holders": [
+        "沈青"
+      ],
+      "move": "mv_art_2fbd9376"
+    },
+    {
+      "id": "art_5f93c1bc",
+      "name": "安西回馬槍",
+      "category": "polearm",
+      "tier": "A",
+      "source": "faction",
+      "how": "守山門魏老七的邊塞槍法",
+      "slot": "skill",
+      "desc": "佯敗回身，一槍挑落追兵。",
+      "holders": [
+        "魏老七"
+      ],
+      "move": "mv_art_5f93c1bc"
+    },
+    {
+      "id": "art_ee1ea2e6",
+      "name": "博陵禮劍",
+      "category": "sword",
+      "tier": "B",
+      "source": "faction",
+      "how": "崔鈺的世家禮劍",
+      "slot": "skill",
+      "desc": "劍出必先作揖，禮數周全，殺招也周全。",
+      "holders": [
+        "崔鈺"
+      ],
+      "move": "mv_art_ee1ea2e6"
+    },
+    {
+      "id": "art_85f5167d",
+      "name": "燕子三抄水",
+      "category": "qinggong",
+      "tier": "A",
+      "source": "faction",
+      "how": "喬小檀吃苦練成的身法",
+      "slot": "skill",
+      "desc": "三起三落，掠水如燕。",
+      "holders": [
+        "喬小檀"
+      ],
+      "move": "mv_art_85f5167d"
+    },
+    {
+      "id": "art_78fa71a9",
+      "name": "鎖喉釘",
+      "category": "hidden",
+      "tier": "A",
+      "source": "faction",
+      "how": "殿中侍御史范希仁的暗器",
+      "slot": "skill",
+      "desc": "專鎖咽喉的短釘，臺獄裡審人用的。",
+      "holders": [
+        "范希仁"
+      ],
+      "move": "mv_art_78fa71a9"
+    },
+    {
+      "id": "art_c432cf89",
+      "name": "御史鐵筆",
+      "category": "fist",
+      "tier": "B",
+      "source": "faction",
+      "how": "御史臺宇文嶠的判官筆點穴",
+      "slot": "skill",
+      "desc": "鐵筆一點，判生判死。",
+      "holders": [
+        "宇文嶠"
+      ],
+      "move": "mv_art_c432cf89"
+    },
+    {
+      "id": "art_1fd178e5",
+      "name": "黑山斷馬刀",
+      "category": "blade",
+      "tier": "S",
+      "source": "faction",
+      "how": "黑山鐵騎屈突烈的馬上刀",
+      "slot": "ultimate",
+      "desc": "一刀斷馬，再刀斷人。",
+      "holders": [
+        "屈突烈"
+      ],
+      "move": "mv_art_1fd178e5"
+    },
+    {
+      "id": "art_653226c2",
+      "name": "伏牛登山步",
+      "category": "qinggong",
+      "tier": "A",
+      "source": "faction",
+      "how": "伏牛劍派秦無咎的登山步",
+      "slot": "skill",
+      "desc": "伏牛山陡壁上練出的步子。",
+      "holders": [
+        "秦無咎"
+      ],
+      "move": "mv_art_653226c2"
+    },
+    {
+      "id": "art_244ec5c0",
+      "name": "博陵家學",
+      "category": "teaching",
+      "tier": "A",
+      "source": "faction",
+      "how": "博陵崔氏家學",
+      "slot": "",
+      "desc": "詩禮傳家，課子有方。",
+      "holders": [
+        "崔元禮"
+      ],
+      "move": ""
+    },
+    {
+      "id": "art_cf95afcd",
+      "name": "金頂飛雲步",
+      "category": "qinggong",
+      "tier": "A",
+      "source": "faction",
+      "how": "峨眉劍宗葉青鸞的身法",
+      "slot": "skill",
+      "desc": "峨眉金頂雲海中練成的步法。",
+      "holders": [
+        "葉青鸞"
+      ],
+      "move": "mv_art_cf95afcd"
+    },
+    {
+      "id": "art_12efddbf",
+      "name": "韋陀掌",
+      "category": "fist",
+      "tier": "A",
+      "source": "faction",
+      "how": "少林武僧圓覺的護法掌",
+      "slot": "skill",
+      "desc": "韋陀護法，掌力如杵。",
+      "holders": [
+        "圓覺"
+      ],
+      "move": "mv_art_12efddbf"
+    },
+    {
+      "id": "art_9db74c16",
+      "name": "康居旋刃",
+      "category": "blade",
+      "tier": "A",
+      "source": "faction",
+      "how": "粟特少年曹拂延的旋刃",
+      "slot": "skill",
+      "desc": "旋身出刃，刀光如舞。",
+      "holders": [
+        "曹拂延"
+      ],
+      "move": "mv_art_9db74c16"
+    },
+    {
+      "id": "art_edc50eb4",
+      "name": "駝鈴鏢",
+      "category": "hidden",
+      "tier": "B",
+      "source": "faction",
+      "how": "粟特駝隊護衛的鈴鏢",
+      "slot": "skill",
+      "desc": "鏢尾繫鈴，聲東擊西。",
+      "holders": [
+        "曹拂延"
+      ],
+      "move": "mv_art_edc50eb4"
+    },
+    {
+      "id": "art_41fdac04",
+      "name": "清河劍",
+      "category": "sword",
+      "tier": "A",
+      "source": "faction",
+      "how": "博陵崔氏嫡孫崔湛的家劍",
+      "slot": "skill",
+      "desc": "清河之水，澄澈見底。",
+      "holders": [
+        "崔湛"
+      ],
+      "move": "mv_art_41fdac04"
+    },
+    {
+      "id": "art_92b11c57",
+      "name": "霞影步",
+      "category": "qinggong",
+      "tier": "A",
+      "source": "faction",
+      "how": "赤城劍閣殷照雪的步法",
+      "slot": "skill",
+      "desc": "赤城霞起，人影隨霞。",
+      "holders": [
+        "殷照雪"
+      ],
+      "move": "mv_art_92b11c57"
+    },
+    {
+      "id": "wuming_gujian",
+      "name": "無名古劍訣",
+      "category": "sword",
+      "tier": "SS",
+      "source": "encounter",
+      "how": "奇遇「斷崖古洞」崖壁劍痕",
+      "slot": "ultimate",
+      "desc": "前人刻在崖壁上的劍痕，無名無姓，一劍比一劍深。",
+      "holders": [],
+      "move": "mv_wuming_gujian"
+    },
+    {
+      "id": "leisong_jianyi",
+      "name": "雷松劍意",
+      "category": "sword",
+      "tier": "S",
+      "source": "encounter",
+      "how": "奇遇「雷雨觀松」",
+      "slot": "skill",
+      "desc": "雷劈古松，枝折而根不動。",
+      "holders": [],
+      "move": "mv_leisong_jianyi"
+    },
+    {
+      "id": "longquan_qixing",
+      "name": "龍泉七星劍",
+      "category": "sword",
+      "tier": "S",
+      "source": "manual",
+      "how": "秘笈：寶物秘境或藏經閣深處",
+      "slot": "skill",
+      "desc": "劍走北斗七星方位，步步相連。",
+      "holders": [],
+      "move": "mv_longquan_qixing"
+    },
+    {
+      "id": "yufeng_jian",
+      "name": "御風劍",
+      "category": "sword",
+      "tier": "S",
+      "source": "realm",
+      "how": "秘境探尋最深處的石刻",
+      "slot": "skill",
+      "desc": "劍隨風動，風止劍停。",
+      "holders": [],
+      "move": "mv_yufeng_jian"
+    },
+    {
+      "id": "kuangcao_dao",
+      "name": "狂草刀",
+      "category": "blade",
+      "tier": "S",
+      "source": "encounter",
+      "how": "奇遇：洛陽觀張長史醉後狂草",
+      "slot": "skill",
+      "desc": "刀勢如草書，忽斷忽連，不可端倪。",
+      "holders": [],
+      "move": "mv_kuangcao_dao"
+    },
+    {
+      "id": "tiedan_dao",
+      "name": "鐵膽刀",
+      "category": "blade",
+      "tier": "A",
+      "source": "manual",
+      "how": "秘笈：山道尋訪所得",
+      "slot": "skill",
+      "desc": "刀背藏鐵膽，一刀兩響。",
+      "holders": [],
+      "move": "mv_tiedan_dao"
+    },
+    {
+      "id": "yinglong_zhang",
+      "name": "應龍掌",
+      "category": "fist",
+      "tier": "S",
+      "source": "realm",
+      "how": "秘境：鎮守高手所傳",
+      "slot": "skill",
+      "desc": "掌出如龍抬頭，勁力層層疊加。",
+      "holders": [],
+      "move": "mv_yinglong_zhang"
+    },
+    {
+      "id": "lanhua_fuxue",
+      "name": "蘭花拂穴手",
+      "category": "fist",
+      "tier": "A",
+      "source": "manual",
+      "how": "秘笈：寶物秘境",
+      "slot": "skill",
+      "desc": "五指如蘭，拂穴於無聲。",
+      "holders": [],
+      "move": "mv_lanhua_fuxue"
+    },
+    {
+      "id": "tiexian_quan",
+      "name": "鐵線拳",
+      "category": "fist",
+      "tier": "B",
+      "source": "manual",
+      "how": "秘笈：市集舊書攤",
+      "slot": "skill",
+      "desc": "手臂纏鐵線苦練，一拳硬過一拳。",
+      "holders": [],
+      "move": "mv_tiexian_quan"
+    },
+    {
+      "id": "qianshou_biao",
+      "name": "千手觀音鏢",
+      "category": "hidden",
+      "tier": "S",
+      "source": "realm",
+      "how": "秘境：寶物秘境鎮守者",
+      "slot": "ultimate",
+      "desc": "一揮手，滿天鏢影如千手。",
+      "holders": [],
+      "move": "mv_qianshou_biao"
+    },
+    {
+      "id": "baibu_feijian",
+      "name": "百步飛劍",
+      "category": "hidden",
+      "tier": "A",
+      "source": "encounter",
+      "how": "奇遇：江湖異人",
+      "slot": "skill",
+      "desc": "擲劍如鏢，百步取人。",
+      "holders": [],
+      "move": "mv_baibu_feijian"
+    },
+    {
+      "id": "tiyun_zong",
+      "name": "梯雲縱",
+      "category": "qinggong",
+      "tier": "S",
+      "source": "encounter",
+      "how": "奇遇「觀胡旋舞」",
+      "slot": "skill",
+      "desc": "左腳踏右腳，凌空再起。",
+      "holders": [],
+      "move": "mv_tiyun_zong"
+    },
+    {
+      "id": "shuishang_piao",
+      "name": "水上漂",
+      "category": "qinggong",
+      "tier": "A",
+      "source": "manual",
+      "how": "秘笈：渡口船家所贈",
+      "slot": "skill",
+      "desc": "踏水十步而不沉。",
+      "holders": [],
+      "move": "mv_shuishang_piao"
+    },
+    {
+      "id": "zhoutian_banyun",
+      "name": "大周天搬運法",
+      "category": "neigong",
+      "tier": "S",
+      "source": "encounter",
+      "how": "奇遇「破廟老僧」",
+      "slot": "skill",
+      "desc": "氣走大周天，一呼一吸皆是功夫。",
+      "holders": [],
+      "move": "mv_zhoutian_banyun"
+    },
+    {
+      "id": "chunyang_wuji",
+      "name": "純陽無極功",
+      "category": "neigong",
+      "tier": "SS",
+      "source": "realm",
+      "how": "秘境：終南古觀遺刻",
+      "slot": "ultimate",
+      "desc": "純陽之氣，綿綿無極，傷敵於內。",
+      "holders": [],
+      "move": "mv_chunyang_wuji"
+    },
+    {
+      "id": "yangxin_jue",
+      "name": "養心訣",
+      "category": "neigong",
+      "tier": "B",
+      "source": "manual",
+      "how": "秘笈：破廟舊經",
+      "slot": "skill",
+      "desc": "心定則氣定。",
+      "holders": [],
+      "move": "mv_yangxin_jue"
+    },
+    {
+      "id": "liuhe_qiang",
+      "name": "六合大槍",
+      "category": "polearm",
+      "tier": "A",
+      "source": "manual",
+      "how": "秘笈：折衝府舊檔",
+      "slot": "skill",
+      "desc": "六合歸一，一槍定中軍。",
+      "holders": [],
+      "move": "mv_liuhe_qiang"
+    },
+    {
+      "id": "bawang_ji",
+      "name": "霸王戟",
+      "category": "polearm",
+      "tier": "S",
+      "source": "realm",
+      "how": "寶物秘境：古戰場",
+      "slot": "ultimate",
+      "desc": "項王舊法，一戟橫掃千軍。",
+      "holders": [],
+      "move": "mv_bawang_ji"
+    },
+    {
+      "id": "yanmen_qiang",
+      "name": "雁門寒槍",
+      "category": "polearm",
+      "tier": "S",
+      "source": "encounter",
+      "how": "奇遇：雁門關外老卒",
+      "slot": "skill",
+      "desc": "寒風裡練成的槍，槍尖帶霜。",
+      "holders": [],
+      "move": "mv_yanmen_qiang"
+    },
+    {
+      "id": "taiyi_huandan",
+      "name": "太乙還丹術",
+      "category": "alchemy",
+      "tier": "S",
+      "source": "realm",
+      "how": "秘境：終南丹房",
+      "slot": "",
+      "desc": "九轉還丹，起死回生之法。",
+      "holders": [],
+      "move": ""
+    },
+    {
+      "id": "jiangshen_cuiren",
+      "name": "匠神淬刃訣",
+      "category": "forging",
+      "tier": "S",
+      "source": "manual",
+      "how": "秘笈：龍泉劍爐遺稿",
+      "slot": "",
+      "desc": "一火一淬，刃生流雲紋。",
+      "holders": [],
+      "move": ""
+    },
+    {
+      "id": "art_3a375b88",
+      "name": "太華十九式",
+      "category": "sword",
+      "tier": "SS",
+      "source": "faction",
+      "how": "勢力絕學（封伯陽）",
+      "slot": "ultimate",
+      "desc": "",
+      "holders": [
+        "封伯陽"
+      ],
+      "move": "mv_art_3a375b88"
+    },
+    {
+      "id": "art_2b82df15",
+      "name": "蓮花峰掌",
+      "category": "fist",
+      "tier": "S",
+      "source": "faction",
+      "how": "勢力絕學（封伯陽）",
+      "slot": "skill",
+      "desc": "",
+      "holders": [
+        "封伯陽"
+      ],
+      "move": "mv_art_2b82df15"
+    },
+    {
+      "id": "art_512011b2",
+      "name": "黑山騎射",
+      "category": "hidden",
+      "tier": "A",
+      "source": "faction",
+      "how": "勢力絕學（屈突烈）",
+      "slot": "skill",
+      "desc": "",
+      "holders": [
+        "屈突烈"
+      ],
+      "move": "mv_art_512011b2"
+    },
+    {
+      "id": "art_9d80db36",
+      "name": "臺獄鎖拿手",
+      "category": "fist",
+      "tier": "A",
+      "source": "faction",
+      "how": "勢力絕學（范希仁、宇文嶠）",
+      "slot": "skill",
+      "desc": "",
+      "holders": [
+        "范希仁",
+        "宇文嶠"
+      ],
+      "move": "mv_art_9d80db36"
+    },
+    {
+      "id": "art_84ac33e2",
+      "name": "伏牛七絕劍",
+      "category": "sword",
+      "tier": "S",
+      "source": "faction",
+      "how": "勢力絕學（秦無咎）",
+      "slot": "ultimate",
+      "desc": "",
+      "holders": [
+        "秦無咎"
+      ],
+      "move": "mv_art_84ac33e2"
+    },
+    {
+      "id": "art_2a48925f",
+      "name": "鳴鏑飛石",
+      "category": "hidden",
+      "tier": "A",
+      "source": "faction",
+      "how": "勢力絕學（秦無咎）",
+      "slot": "skill",
+      "desc": "",
+      "holders": [
+        "秦無咎"
+      ],
+      "move": "mv_art_2a48925f"
+    },
+    {
+      "id": "art_4ebefdae",
+      "name": "金吾陌刀陣",
+      "category": "blade",
+      "tier": "S",
+      "source": "faction",
+      "how": "勢力絕學（獨孤鎮）",
+      "slot": "ultimate",
+      "desc": "",
+      "holders": [
+        "獨孤鎮"
+      ],
+      "move": "mv_art_4ebefdae"
+    },
+    {
+      "id": "art_3e0eca10",
+      "name": "陰柔綿掌",
+      "category": "fist",
+      "tier": "S",
+      "source": "faction",
+      "how": "勢力絕學（霍元昌）",
+      "slot": "skill",
+      "desc": "",
+      "holders": [
+        "霍元昌"
+      ],
+      "move": "mv_art_3e0eca10"
+    },
+    {
+      "id": "art_76d637cb",
+      "name": "宮門擒拿",
+      "category": "fist",
+      "tier": "A",
+      "source": "faction",
+      "how": "勢力絕學（霍元昌）",
+      "slot": "skill",
+      "desc": "",
+      "holders": [
+        "霍元昌"
+      ],
+      "move": "mv_art_76d637cb"
+    },
+    {
+      "id": "art_c3d8ae35",
+      "name": "不良人緝捕術",
+      "category": "fist",
+      "tier": "B",
+      "source": "faction",
+      "how": "勢力絕學（韋元溥）",
+      "slot": "skill",
+      "desc": "",
+      "holders": [
+        "韋元溥"
+      ],
+      "move": "mv_art_c3d8ae35"
+    },
+    {
+      "id": "art_d8fc6931",
+      "name": "河西馬槊",
+      "category": "polearm",
+      "tier": "S",
+      "source": "faction",
+      "how": "勢力絕學（渾元朗）",
+      "slot": "skill",
+      "desc": "",
+      "holders": [
+        "渾元朗"
+      ],
+      "move": "mv_art_d8fc6931"
+    },
+    {
+      "id": "art_bda3ceac",
+      "name": "赤水軍弓陣",
+      "category": "hidden",
+      "tier": "A",
+      "source": "faction",
+      "how": "勢力絕學（渾元朗）",
+      "slot": "ultimate",
+      "desc": "",
+      "holders": [
+        "渾元朗"
+      ],
+      "move": "mv_art_bda3ceac"
+    },
+    {
+      "id": "art_a11c105b",
+      "name": "安西橫刀",
+      "category": "blade",
+      "tier": "S",
+      "source": "faction",
+      "how": "勢力絕學（裴行遠）",
+      "slot": "skill",
+      "desc": "",
+      "holders": [
+        "裴行遠"
+      ],
+      "move": "mv_art_a11c105b"
+    },
+    {
+      "id": "art_0dd80a42",
+      "name": "大漠陌刀陣",
+      "category": "blade",
+      "tier": "SS",
+      "source": "faction",
+      "how": "勢力絕學（裴行遠）",
+      "slot": "ultimate",
+      "desc": "",
+      "holders": [
+        "裴行遠"
+      ],
+      "move": "mv_art_0dd80a42"
+    },
+    {
+      "id": "art_eb2e691d",
+      "name": "幽燕騎射",
+      "category": "hidden",
+      "tier": "A",
+      "source": "faction",
+      "how": "勢力絕學（張懷遠）",
+      "slot": "skill",
+      "desc": "",
+      "holders": [
+        "張懷遠"
+      ],
+      "move": "mv_art_eb2e691d"
+    },
+    {
+      "id": "art_bd39df63",
+      "name": "曳落河短刀",
+      "category": "blade",
+      "tier": "S",
+      "source": "faction",
+      "how": "勢力絕學（張懷遠）",
+      "slot": "skill",
+      "desc": "",
+      "holders": [
+        "張懷遠"
+      ],
+      "move": "mv_art_bd39df63"
+    },
+    {
+      "id": "art_dc7742b0",
+      "name": "少林棍法",
+      "category": "polearm",
+      "tier": "SS",
+      "source": "faction",
+      "how": "勢力絕學（了空大師）",
+      "slot": "ultimate",
+      "desc": "",
+      "holders": [
+        "了空大師"
+      ],
+      "move": "mv_art_dc7742b0"
+    },
+    {
+      "id": "art_13bfabcf",
+      "name": "達摩禪定功",
+      "category": "neigong",
+      "tier": "SS",
+      "source": "faction",
+      "how": "勢力絕學（了空大師）",
+      "slot": "skill",
+      "desc": "",
+      "holders": [
+        "了空大師"
+      ],
+      "move": "mv_art_13bfabcf"
+    },
+    {
+      "id": "art_dda66992",
+      "name": "紫氣東來掌",
+      "category": "fist",
+      "tier": "S",
+      "source": "faction",
+      "how": "勢力絕學（尹太初）",
+      "slot": "skill",
+      "desc": "",
+      "holders": [
+        "尹太初"
+      ],
+      "move": "mv_art_dda66992"
+    },
+    {
+      "id": "art_2960a5ea",
+      "name": "說經台吐納",
+      "category": "neigong",
+      "tier": "S",
+      "source": "faction",
+      "how": "勢力絕學（尹太初）",
+      "slot": "skill",
+      "desc": "",
+      "holders": [
+        "尹太初"
+      ],
+      "move": "mv_art_2960a5ea"
+    },
+    {
+      "id": "art_d3c1ef15",
+      "name": "玄武劍",
+      "category": "sword",
+      "tier": "SS",
+      "source": "faction",
+      "how": "勢力絕學（呂元貞）",
+      "slot": "skill",
+      "desc": "",
+      "holders": [
+        "呂元貞"
+      ],
+      "move": "mv_art_d3c1ef15"
+    },
+    {
+      "id": "art_c5721511",
+      "name": "龜蛇導引術",
+      "category": "neigong",
+      "tier": "A",
+      "source": "faction",
+      "how": "勢力絕學（呂元貞）",
+      "slot": "skill",
+      "desc": "",
+      "holders": [
+        "呂元貞"
+      ],
+      "move": "mv_art_c5721511"
+    },
+    {
+      "id": "art_b86e01b4",
+      "name": "金頂佛光掌",
+      "category": "fist",
+      "tier": "S",
+      "source": "faction",
+      "how": "勢力絕學（靜玄師太）",
+      "slot": "skill",
+      "desc": "",
+      "holders": [
+        "靜玄師太"
+      ],
+      "move": "mv_art_b86e01b4"
+    },
+    {
+      "id": "art_658fb1a6",
+      "name": "峨眉刺法",
+      "category": "hidden",
+      "tier": "A",
+      "source": "faction",
+      "how": "勢力絕學（靜玄師太、葉青鸞）",
+      "slot": "skill",
+      "desc": "",
+      "holders": [
+        "靜玄師太",
+        "葉青鸞"
+      ],
+      "move": "mv_art_658fb1a6"
+    },
+    {
+      "id": "art_a91d079d",
+      "name": "赤城霞劍",
+      "category": "sword",
+      "tier": "S",
+      "source": "faction",
+      "how": "勢力絕學（陸孤雲、殷照雪）",
+      "slot": "skill",
+      "desc": "",
+      "holders": [
+        "陸孤雲",
+        "殷照雪"
+      ],
+      "move": "mv_art_a91d079d"
+    },
+    {
+      "id": "art_414ca9fb",
+      "name": "天台止觀",
+      "category": "neigong",
+      "tier": "A",
+      "source": "faction",
+      "how": "勢力絕學（陸孤雲）",
+      "slot": "skill",
+      "desc": "",
+      "holders": [
+        "陸孤雲"
+      ],
+      "move": "mv_art_414ca9fb"
+    },
+    {
+      "id": "art_0bf16cb2",
+      "name": "祝融烈掌",
+      "category": "fist",
+      "tier": "A+",
+      "source": "faction",
+      "how": "勢力絕學（鍾離熾）",
+      "slot": "skill",
+      "desc": "",
+      "holders": [
+        "鍾離熾"
+      ],
+      "move": "mv_art_0bf16cb2"
+    },
+    {
+      "id": "art_e59f9995",
+      "name": "回雁劍",
+      "category": "sword",
+      "tier": "B",
+      "source": "faction",
+      "how": "勢力絕學（鍾離熾）",
+      "slot": "skill",
+      "desc": "",
+      "holders": [
+        "鍾離熾"
+      ],
+      "move": "mv_art_e59f9995"
+    },
+    {
+      "id": "art_54eded59",
+      "name": "霜鍔短劍",
+      "category": "sword",
+      "tier": "SS",
+      "source": "faction",
+      "how": "勢力絕學（夜雨樓主）",
+      "slot": "skill",
+      "desc": "",
+      "holders": [
+        "夜雨樓主"
+      ],
+      "move": "mv_art_54eded59"
+    },
+    {
+      "id": "art_b388822f",
+      "name": "聽雨暗器",
+      "category": "hidden",
+      "tier": "S",
+      "source": "faction",
+      "how": "勢力絕學（夜雨樓主）",
+      "slot": "ultimate",
+      "desc": "",
+      "holders": [
+        "夜雨樓主"
+      ],
+      "move": "mv_art_b388822f"
+    },
+    {
+      "id": "art_0335bcaf",
+      "name": "弄潮分水刺",
+      "category": "hidden",
+      "tier": "A",
+      "source": "faction",
+      "how": "勢力絕學（錢四娘）",
+      "slot": "skill",
+      "desc": "",
+      "holders": [
+        "錢四娘"
+      ],
+      "move": "mv_art_0335bcaf"
+    },
+    {
+      "id": "art_f4cfd6f9",
+      "name": "舟楫刀",
+      "category": "blade",
+      "tier": "B",
+      "source": "faction",
+      "how": "勢力絕學（錢四娘）",
+      "slot": "skill",
+      "desc": "",
+      "holders": [
+        "錢四娘"
+      ],
+      "move": "mv_art_f4cfd6f9"
+    },
+    {
+      "id": "art_929b5bef",
+      "name": "崔氏家傳槊法",
+      "category": "polearm",
+      "tier": "B",
+      "source": "faction",
+      "how": "勢力絕學（崔元禮、崔湛）",
+      "slot": "skill",
+      "desc": "",
+      "holders": [
+        "崔元禮",
+        "崔湛"
+      ],
+      "move": "mv_art_929b5bef"
+    },
+    {
+      "id": "art_80f4893f",
+      "name": "駝隊連弩陣",
+      "category": "hidden",
+      "tier": "A",
+      "source": "faction",
+      "how": "勢力絕學（安延年）",
+      "slot": "ultimate",
+      "desc": "",
+      "holders": [
+        "安延年"
+      ],
+      "move": "mv_art_80f4893f"
+    },
+    {
+      "id": "art_13d26bb4",
+      "name": "鹽梟短刀",
+      "category": "blade",
+      "tier": "A",
+      "source": "faction",
+      "how": "勢力絕學（莫三川）",
+      "slot": "skill",
+      "desc": "",
+      "holders": [
+        "莫三川"
+      ],
+      "move": "mv_art_13d26bb4"
+    },
+    {
+      "id": "art_2368d9f0",
+      "name": "瓜洲水戰",
+      "category": "polearm",
+      "tier": "A",
+      "source": "faction",
+      "how": "勢力絕學（莫三川）",
+      "slot": "skill",
+      "desc": "",
+      "holders": [
+        "莫三川"
+      ],
+      "move": "mv_art_2368d9f0"
+    },
+    {
+      "id": "art_8abe665a",
+      "name": "開山斧",
+      "category": "blade",
+      "tier": "B",
+      "source": "faction",
+      "how": "勢力絕學（胡大眼）",
+      "slot": "skill",
+      "desc": "",
+      "holders": [
+        "胡大眼"
+      ],
+      "move": "mv_art_8abe665a"
+    },
+    {
+      "id": "art_706e83ca",
+      "name": "太行刀",
+      "category": "blade",
+      "tier": "S",
+      "source": "faction",
+      "how": "勢力絕學（程鐵牛）",
+      "slot": "skill",
+      "desc": "",
+      "holders": [
+        "程鐵牛"
+      ],
+      "move": "mv_art_706e83ca"
+    },
+    {
+      "id": "art_eeb13c6f",
+      "name": "陘道伏擊",
+      "category": "hidden",
+      "tier": "A",
+      "source": "faction",
+      "how": "勢力絕學（程鐵牛）",
+      "slot": "ultimate",
+      "desc": "",
+      "holders": [
+        "程鐵牛"
+      ],
+      "move": "mv_art_eeb13c6f"
+    },
+    {
+      "id": "art_47da2832",
+      "name": "雪域摔角",
+      "category": "fist",
+      "tier": "S",
+      "source": "faction",
+      "how": "勢力絕學（噶爾·恭頓）",
+      "slot": "skill",
+      "desc": "",
+      "holders": [
+        "噶爾·恭頓"
+      ],
+      "move": "mv_art_47da2832"
+    },
+    {
+      "id": "art_5ddc04c6",
+      "name": "鐵甲騎陣",
+      "category": "polearm",
+      "tier": "SS",
+      "source": "faction",
+      "how": "勢力絕學（噶爾·恭頓）",
+      "slot": "ultimate",
+      "desc": "",
+      "holders": [
+        "噶爾·恭頓"
+      ],
+      "move": "mv_art_5ddc04c6"
+    },
+    {
+      "id": "art_d27dbf9c",
+      "name": "草原騎射",
+      "category": "hidden",
+      "tier": "A",
+      "source": "faction",
+      "how": "勢力絕學（藥羅葛·烏蘇）",
+      "slot": "skill",
+      "desc": "",
+      "holders": [
+        "藥羅葛·烏蘇"
+      ],
+      "move": "mv_art_d27dbf9c"
+    },
+    {
+      "id": "art_fd0586e6",
+      "name": "狼頭彎刀",
+      "category": "blade",
+      "tier": "S",
+      "source": "faction",
+      "how": "勢力絕學（藥羅葛·烏蘇）",
+      "slot": "skill",
+      "desc": "",
+      "holders": [
+        "藥羅葛·烏蘇"
+      ],
+      "move": "mv_art_fd0586e6"
+    },
+    {
+      "id": "art_03e680d2",
+      "name": "西突厥騎射",
+      "category": "hidden",
+      "tier": "S",
+      "source": "faction",
+      "how": "勢力絕學（骨咄祿·阿悉）",
+      "slot": "skill",
+      "desc": "",
+      "holders": [
+        "骨咄祿·阿悉"
+      ],
+      "move": "mv_art_03e680d2"
+    },
+    {
+      "id": "art_866b7daf",
+      "name": "碎葉彎刀",
+      "category": "blade",
+      "tier": "S",
+      "source": "faction",
+      "how": "勢力絕學（骨咄祿·阿悉）",
+      "slot": "skill",
+      "desc": "",
+      "holders": [
+        "骨咄祿·阿悉"
+      ],
+      "move": "mv_art_866b7daf"
+    },
+    {
+      "id": "art_495f4b45",
+      "name": "鐸鞘刀法",
+      "category": "blade",
+      "tier": "S",
+      "source": "faction",
+      "how": "勢力絕學（蒙邏閣）",
+      "slot": "skill",
+      "desc": "",
+      "holders": [
+        "蒙邏閣"
+      ],
+      "move": "mv_art_495f4b45"
+    },
+    {
+      "id": "art_89cb91b7",
+      "name": "蒼山弩",
+      "category": "hidden",
+      "tier": "A",
+      "source": "faction",
+      "how": "勢力絕學（蒙邏閣）",
+      "slot": "skill",
+      "desc": "",
+      "holders": [
+        "蒙邏閣"
+      ],
+      "move": "mv_art_89cb91b7"
+    }
+  ]
+}

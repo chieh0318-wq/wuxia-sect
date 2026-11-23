@@ -16,6 +16,8 @@ namespace Wuxia
         public string element, enemyProfile;
         public BattleSkill intent;
         public BattleCombatant intentTarget;
+        /// <summary>v1124 C14: slot ("skill" / "ultimate") → battle_skills.json id from the arts this fighter knows.</summary>
+        public Dictionary<string, string> moves = new();
         public readonly Dictionary<string, int> statuses = new();
         public bool Alive => hp > 0;
     }
@@ -37,6 +39,19 @@ namespace Wuxia
         public int enemyCount = 3;
         public float difficulty = 1.0f;
         public Action<bool> onComplete;
+        /// <summary>
+        /// v1124 C15/C16: a named guardian fights as its own portrait standee; a beast names a Resources standee path
+        /// (falls back to the generic boss art until P2 paints it). Escorts can carry their own names.
+        /// </summary>
+        public bool leadAsStandee;
+        public string enemyLeadStandee;
+        public string[] minionNames;
+        /// <summary>
+        /// v1124 C17 同門切磋: the player side is exactly these fighters ("hero" or disciple ids) and the opposing side
+        /// is built from <see cref="sparOpponents"/> with the same stat derivation — no bandits involved.
+        /// </summary>
+        public string[] sparParty, sparOpponents;
+        public bool IsSparring => sparParty is { Length: > 0 } && sparOpponents is { Length: > 0 };
         public bool IsBoss => encounter == BattleEncounter.Boss;
         public string MusicCue => IsBoss ? "boss" : "battle";
 
@@ -56,51 +71,12 @@ namespace Wuxia
     {
         public static (List<BattleCombatant> party, List<BattleCombatant> enemies) Create(GameState state, BattleRequest req, BattleCatalog catalog)
         {
+            if (req.IsSparring)
+                return Sparring(state, req, catalog);
             var stats = state.HeroStats;
-            var players = new List<BattleCombatant>
-            {
-                new()
-                {
-                    name = state.Protagonist.title == "少掌門" ? state.Protagonist.title
-                        : state.Protagonist.gender == "女" ? "三師姐" : "三師兄",
-                    standee = CharacterFactory.HeroOriginStandee(state.Protagonist.gender,
-                        state.Protagonist.lookId ?? state.Protagonist.portrait,
-                        state.Protagonist.backgroundId, state.Protagonist.title),
-                    portraitId = state.Protagonist.portrait ?? state.Protagonist.lookId,
-                    gender = state.Protagonist.gender,
-                    isPlayer = true,
-                    level = 10 + state.Year * 2 + state.TechCount,
-                    hp = stats.MaxHp, maxHp = stats.MaxHp,
-                    qi = stats.MaxQi, maxQi = stats.MaxQi,
-                    attack = Math.Max(28, stats.Attack),
-                    speed = Math.Max(15, stats.Speed),
-                    defense = Math.Max(8, stats.Attack / 3),
-                    element = "木",
-                    dodge = stats.Dodge
-                }
-            };
+            var players = new List<BattleCombatant> { Hero(state, catalog) };
             foreach (var d in state.Disciples.Where(member => member != null).Take(2))
-            {
-                var lines = d.lines is { Length: > 0 }
-                    ? d.lines
-                    : RankSystem.Seed(null, d.rank, d.cap, RankSystem.BaseCap, RankSystem.BaseRank);
-                var derived = AttributeSystem.Derive(d.attrs, lines, state.WeaponRankDelta(d.weapon));
-                players.Add(new BattleCombatant
-                {
-                    name = d.name,
-                    spriteId = null,
-                    portraitId = PortraitService.IdOrDefault(d.portrait, d.id),
-                    gender = d.gender,
-                    isPlayer = true,
-                    level = 8 + state.Year,
-                    hp = derived.MaxHp, maxHp = derived.MaxHp, qi = derived.MaxQi, maxQi = derived.MaxQi,
-                    attack = derived.Attack,
-                    speed = derived.Speed,
-                    defense = Math.Max(8, derived.Attack / 3),
-                    element = "水",
-                    dodge = derived.Dodge
-                });
-            }
+                players.Add(Member(state, d, catalog, true));
 
             // Build enemy squad
             var enemies = new List<BattleCombatant>();
@@ -111,10 +87,12 @@ namespace Wuxia
             int bossHp = req.IsBoss
                 ? Mathf.RoundToInt(players.Sum(unit => unit.attack) * 7.9f * diff)
                 : Mathf.RoundToInt(stats.MaxHp * 1.15f * diff);
+            var leadStandee = string.IsNullOrEmpty(req.enemyLeadStandee) ? null : Resources.Load<Texture2D>(req.enemyLeadStandee);
             enemies.Add(new BattleCombatant
             {
                 name = req.enemyLeadName,
-                spriteId = "enemy_boss",
+                spriteId = leadStandee != null || req.leadAsStandee ? null : "enemy_boss",
+                standee = leadStandee,
                 portraitId = req.enemyLeadPortrait,
                 gender = "男",
                 isPlayer = false,
@@ -128,8 +106,8 @@ namespace Wuxia
             });
             string[] minionSprites = { "enemy_scout", "enemy_axe", "enemy_assassin" };
             string[] minionProfiles = { "scout", "axe", "assassin" };
-            string[] minionNames = { "山賊斥候", "山寨悍匪", "黑衣刺客" };
-            int count = Mathf.Clamp(req.enemyCount, 2, 4);
+            string[] minionNames = req.minionNames is { Length: > 0 } ? req.minionNames : new[] { "山賊斥候", "山寨悍匪", "黑衣刺客" };
+            int count = Mathf.Clamp(req.enemyCount, 1, 4);
             for (int i = 1; i < count; i++)
             {
                 int mHp = Mathf.RoundToInt(stats.MaxHp * 0.58f * diff);
@@ -152,6 +130,83 @@ namespace Wuxia
 
             foreach (var enemy in enemies) enemy.element = catalog.Enemies[enemy.enemyProfile].element;
             return (players, enemies);
+        }
+
+        /// <summary>v1124 C17: a bout between fellow disciples — both sides use their own derived stats and arts.</summary>
+        private static (List<BattleCombatant>, List<BattleCombatant>) Sparring(GameState state, BattleRequest req,
+            BattleCatalog catalog)
+        {
+            BattleCombatant Build(string id, bool ally)
+            {
+                if (id == "hero")
+                {
+                    var hero = Hero(state, catalog);
+                    hero.isPlayer = ally;
+                    return hero;
+                }
+                var member = state.Disciples.FirstOrDefault(d => d?.id == id);
+                return member == null ? null : Member(state, member, catalog, ally);
+            }
+            var players = req.sparParty.Select(id => Build(id, true)).Where(unit => unit != null).ToList();
+            var enemies = req.sparOpponents.Select(id => Build(id, false)).Where(unit => unit != null).ToList();
+            string[] profiles = { "leader", "scout", "axe", "assassin" };
+            for (int i = 0; i < enemies.Count; i++)
+            {
+                enemies[i].enemyProfile = profiles[i % profiles.Length];
+                enemies[i].element = catalog.Enemies[enemies[i].enemyProfile].element;
+            }
+            return (players, enemies);
+        }
+
+        private static BattleCombatant Hero(GameState state, BattleCatalog catalog)
+        {
+            var stats = state.HeroStats;
+            return new BattleCombatant
+            {
+                // v1124 B10/A5: the battle HUD names the protagonist, never 「三師兄／三師姐」.
+                name = !string.IsNullOrWhiteSpace(state.Protagonist.name) ? state.Protagonist.name
+                    : state.Protagonist.title,
+                standee = CharacterFactory.HeroOriginStandee(state.Protagonist.gender,
+                    state.Protagonist.lookId ?? state.Protagonist.portrait,
+                    state.Protagonist.backgroundId, state.Protagonist.title),
+                portraitId = state.Protagonist.portrait ?? state.Protagonist.lookId,
+                gender = state.Protagonist.gender,
+                isPlayer = true,
+                level = 10 + state.Year * 2 + state.TechCount,
+                hp = stats.MaxHp, maxHp = stats.MaxHp,
+                qi = stats.MaxQi, maxQi = stats.MaxQi,
+                attack = Math.Max(28, stats.Attack),
+                speed = Math.Max(15, stats.Speed),
+                defense = Math.Max(8, stats.Attack / 3),
+                element = "木",
+                dodge = stats.Dodge,
+                moves = MartialArts.Moves(state.ProtagonistArts,
+                    RankSystem.Major(state.Protagonist.lines, state.Protagonist.major)?.id, catalog.Skills.ContainsKey)
+            };
+        }
+
+        private static BattleCombatant Member(GameState state, DiscipleData d, BattleCatalog catalog, bool ally)
+        {
+            var lines = d.lines is { Length: > 0 }
+                ? d.lines
+                : RankSystem.Seed(null, d.rank, d.cap, RankSystem.BaseCap, RankSystem.BaseRank);
+            var derived = AttributeSystem.Derive(d.attrs, lines, state.WeaponRankDelta(d.weapon));
+            return new BattleCombatant
+            {
+                name = d.name,
+                spriteId = null,
+                portraitId = PortraitService.IdOrDefault(d.portrait, d.id),
+                gender = d.gender,
+                isPlayer = ally,
+                level = 8 + state.Year,
+                hp = derived.MaxHp, maxHp = derived.MaxHp, qi = derived.MaxQi, maxQi = derived.MaxQi,
+                attack = derived.Attack,
+                speed = derived.Speed,
+                defense = Math.Max(8, derived.Attack / 3),
+                element = "水",
+                dodge = derived.Dodge,
+                moves = MartialArts.Moves(state.ArtsOf(d), RankSystem.BestCombat(lines)?.id, catalog.Skills.ContainsKey)
+            };
         }
     }
 }

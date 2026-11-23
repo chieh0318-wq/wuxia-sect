@@ -711,6 +711,7 @@ namespace Wuxia
                 var raw = AddImage(head, texture);
                 FitCover(raw, texture, 382f / 562f);
             }
+            staging.SetAsLastSibling();
             var dock = Panel("Dialogue", staging, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero);
             UiKit.Skin(dock.GetComponent<Image>(), "Lacquer");
             var press = dock.gameObject.AddComponent<Button>();

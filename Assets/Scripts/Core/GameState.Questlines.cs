@@ -65,7 +65,9 @@ namespace Wuxia
             return valid;
         }
 
-        internal string FriendId => Protagonist.gender == "女" ? "friend_m" : "friend_f";
+        // Older saves retain the companion whose relationship and quest progress they already track.
+        internal string FriendId => (Protagonist.gender == "女") == Story.sameGenderChildhoodFriend
+            ? "friend_f" : "friend_m";
         internal string CharacterId(string id) => id == "friend" ? FriendId : id;
         internal int CharacterRelation(string id) => ValueOf(Story.characterRelations, CharacterId(id));
         private static int ValueOf(StoryValue[] values, string id) =>

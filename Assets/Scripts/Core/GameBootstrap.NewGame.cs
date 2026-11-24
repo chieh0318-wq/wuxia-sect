@@ -696,7 +696,7 @@ namespace Wuxia
             {
                 if (index >= (beats?.Length ?? 0)) { next(); return; }
                 var beat = beats[index++];
-                string friendId = state.Protagonist.gender == "女" ? "friend_m" : "friend_f";
+                string friendId = state.FriendId;
                 // Story characters always use their own portrait id (never a recruit/fallback image).
                 string portrait = beat.portrait == "hero" ? state.Protagonist.portrait ?? state.Protagonist.lookId :
                     PortraitService.StoryId(beat.portrait, friendId == "friend_m" ? "男" : "女");
@@ -713,8 +713,7 @@ namespace Wuxia
 
         private StoryCharacter Friend()
         {
-            string id = state.Protagonist.gender == "女" ? "friend_m" : "friend_f";
-            return characters.storyCharacters?.FirstOrDefault(entry => entry.id == id);
+            return characters.storyCharacters?.FirstOrDefault(entry => entry.id == state.FriendId);
         }
 
         private string FormatStory(string text) => CastDialogue.Format(state, text).Replace("{title}", UiKit.HeroTitle(state.Protagonist))

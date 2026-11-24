@@ -120,6 +120,7 @@ namespace Wuxia
         public GameState(GameData data)
         {
             Data = data;
+            Story.sameGenderChildhoodFriend = true;
             Year = data.Start.year;
             Month = data.Start.month;
             Silver = data.Start.silver;

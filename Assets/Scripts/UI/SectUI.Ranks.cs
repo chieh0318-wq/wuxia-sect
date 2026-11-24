@@ -41,7 +41,7 @@ namespace Wuxia
                 value.color = values[i] > AttributeSystem.Base ? CardGold : values[i] < AttributeSystem.Base ? CardLow : CardText;
                 value.font = UiKit.Font("Numbers", font, value.text);
                 Anchor(value.rectTransform, Vector2.up, Vector2.one, new(5, -58), new(-8, -30));
-                CardBar(stat, 10, -44, -10, 6, values[i] / (float)AttributeSystem.Max,
+                CardBar(stat, 10, -60, -10, 5, values[i] / (float)AttributeSystem.Max,
                     Color.Lerp(AttributeSystem.Tints[i], Color.white, .25f));
             }
             var derived = stats ?? AttributeSystem.Derive(values, lines, weaponDelta);

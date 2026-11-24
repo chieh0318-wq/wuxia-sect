@@ -139,6 +139,7 @@ namespace Wuxia
 
     [Serializable] public sealed class StoryProgress
     {
+        public bool sameGenderChildhoodFriend;
         public SectRaid sectRaid;
         public int raidResolvedMonth;
         public string patronFaction;

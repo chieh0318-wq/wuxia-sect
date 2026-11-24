@@ -115,7 +115,7 @@ namespace Wuxia
             string[] factionNames = visible.Select(person => person.id == state.FriendId ? GuestLabel :
                 FactionOf(person, factions)?.Label ?? person.faction).ToArray();
             // v1126 #18: every own person's card (hero and friend included) carries the best martial and life lines.
-            string[] lifeSkills = visible.Select(person => CombatSummary(person.lines, int.MaxValue) + "\n" + LifeSkillSummary(person.lines, int.MaxValue)).ToArray();
+            string[] lifeSkills = visible.Select(person => CombatSummary(DirectorySkillLines(person), int.MaxValue) + "\n生活　" + LifeSkillSummary(DirectorySkillLines(person), int.MaxValue)).ToArray();
             ui.ShowDirectory(filters, filter, next => ShowCharacterDirectory(next, directoryFocus), visible, kinds, factionNames,
                 visible.Length == 0 ? -1 : focus, index => ShowCharacterDirectory(filter, visible[index].id),
                 visible.Length == 0 ? null : BuildDossier(visible[focus], factions, filter), sectOnly ? "本門" : "江湖人物",
@@ -137,6 +137,9 @@ namespace Wuxia
             person.id == HeroCharacterId ? 3 : IsSectPerson(person) || person.id == state.FriendId ? 0 : IsHostile(person, faction) ? 1 : 2;
 
         /// <summary>Collects the right-hand dossier for the selected character, including its context actions.</summary>
+        private SkillLine[] DirectorySkillLines(StoryCharacter person) =>
+            state.Disciples.FirstOrDefault(member => member.id == person.id)?.lines ?? person.lines;
+
         private CharacterDossier BuildDossier(StoryCharacter person, IEnumerable<MapFaction> factions, int filter)
         {
             var faction = FactionOf(person, factions);
@@ -148,7 +151,7 @@ namespace Wuxia
             string stance = hero ? "代掌門" : sect ? "本門" : friendOfHero ? $"{QuestBoardData.Data.guestRole}・{QuestBoardData.Data.advisorTitle}" :
                 faction != null ? faction.RelationWith(state.RelationShift(faction.id)) : kind == 1 ? "敵對" : "江湖散人";
             // v1126 #18: every known line is listed (hero and friend the same way as any disciple).
-            var lines = (person.lines ?? Array.Empty<SkillLine>()).Where(line => line != null && !string.IsNullOrEmpty(line.id)
+            var lines = (DirectorySkillLines(person) ?? Array.Empty<SkillLine>()).Where(line => line != null && !string.IsNullOrEmpty(line.id)
                     && RankSystem.IsCombat(line.id) && RankSystem.Index(line.rank) >= 0)
                 .OrderByDescending(line => RankSystem.Index(line.rank))
                 .Select(line => (RankSystem.Categories.FirstOrDefault(category => category.id == line.id)?.name ?? line.id) +
@@ -157,7 +160,7 @@ namespace Wuxia
             string tiers = string.Join("　", lines);
             if (!string.IsNullOrEmpty(tiers)) arts = string.IsNullOrEmpty(arts) ? "武學　" + tiers : arts + "\n武學　" + tiers;
             // v1125 #18: life skills (醫術、鍛造、經商…) sit beside the martial lines for comparing who to send.
-            string life = LifeSkillSummary(person.lines, 99);
+            string life = LifeSkillSummary(DirectorySkillLines(person), int.MaxValue);
             arts = string.IsNullOrEmpty(arts) ? "生活　" + life : arts + "\n生活　" + life;
             string biography = string.Join("\n", new[]
             {

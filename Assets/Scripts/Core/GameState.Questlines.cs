@@ -79,7 +79,7 @@ namespace Wuxia
                 id = person.id, name = person.name, gender = person.gender, age = person.age,
                 title = "客將・軍師", portrait = person.portrait, rank = person.rank, cap = person.cap,
                 lines = RankSystem.Seed(person.lines, person.rank, person.cap, RankSystem.BaseCap, RankSystem.BaseRank),
-                attrs = person.attrs, signatureSkills = person.signatureSkills, origin = person.faction
+                attrs = person.attrs, signatureSkills = person.signatureSkills, origin = QuestBoardData.Data.guestSect
             };
             Disciples.Add(guest);
             if (!grantSupport) return;

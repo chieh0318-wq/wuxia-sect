@@ -562,6 +562,9 @@ namespace Wuxia
 
             // Connected roads as chips; clicking one jumps to that stronghold.
             MapUi.Text(panel, "相通驛路", 20, y, 200, 24, 18, MapUi.Red);
+            var treasure = RealmContent.Data.treasures.FirstOrDefault(site => site.node == node.id && !Claimed(site));
+            if (treasure != null)
+                cardActions.Add(MapUi.Button(panel, "入境探寶", 280, y - 4, 126, 30, () => ShowTreasure(treasure), null, 16));
             y += 28;
             var roads = data.Connections(node);
             if (roads.Count == 0) MapUi.Text(panel, "沒有相連道路", 20, y, 386, 26, 18, MapUi.Ink);

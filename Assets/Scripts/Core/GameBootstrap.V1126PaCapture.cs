@@ -20,6 +20,7 @@ namespace Wuxia
                 if (map != null && map.IsOpen) map.Close();
                 ui.Canvas.enabled = true;
                 if (ui.SceneOpen) ui.Scene.Close();
+                VerifyIntegratedAdviser();
                 EnsureCaptureCourtyard();
                 CaptureFlow().CaptureTalents();
             }),
@@ -102,6 +103,40 @@ namespace Wuxia
             ("P27_adviser_male_hero.png", () => CaptureFlow().CaptureFriendArrival(false)),
             ("P28_master_laosan_male.png", () => CaptureFlow().CaptureMasterLeaves()),
         };
+
+        private void VerifyIntegratedAdviser()
+        {
+            string path = System.IO.Path.Combine(System.IO.Path.GetTempPath(), $"wuxia-v1126-{Guid.NewGuid():N}.json");
+            try
+            {
+                foreach (bool female in new[] { false, true })
+                {
+                    string expected = female ? "friend_m" : "friend_f";
+                    string legacy = female ? "friend_f" : "friend_m";
+                    var fresh = new GameState(data);
+                    fresh.Protagonist.gender = female ? "女" : "男";
+                    fresh.Protagonist.title = "代掌門";
+                    fresh.WelcomeAdviser(false);
+                    if (fresh.FriendId != expected || fresh.Disciples.Count(member => member.id == expected) != 1)
+                        throw new InvalidOperationException("New game assigned the wrong adviser.");
+                    fresh.Disciples.RemoveAll(member => member.id == expected);
+                    fresh.Story.sameGenderChildhoodFriend = true;
+                    fresh.Story.characterRelations = new[] { new StoryValue { id = legacy, value = 37 } };
+                    fresh.Story.assignments = new[] { new AssignmentRecord { id = legacy, contribution = 12 } };
+                    if (!fresh.Save(path)) throw new InvalidOperationException("Could not write the legacy save fixture.");
+                    var loaded = GameState.LoadSave(data, path);
+                    if (loaded == null || loaded.CharacterRelation(expected) != 37 ||
+                        !loaded.Story.assignments.Any(entry => entry.id == expected && entry.contribution == 12) ||
+                        loaded.Disciples.Count(member => member.id == expected) != 1 || loaded.Story.sameGenderChildhoodFriend)
+                        throw new InvalidOperationException("Legacy save lost adviser identity, affinity or contributions.");
+                }
+                Debug.Log("[Capture] New and legacy adviser checks passed for both protagonist genders.");
+            }
+            finally
+            {
+                System.IO.File.Delete(path);
+            }
+        }
 
         private NewGameFlow CaptureFlow(bool female = false)
         {

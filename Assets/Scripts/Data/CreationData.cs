@@ -42,9 +42,8 @@ namespace Wuxia
         public int[] attrs;
     }
     [Serializable] internal sealed class AttributeInfo { public string id, name, desc; }
-    [Serializable] internal sealed class CharacterCatalog : ISerializationCallbackReceiver
+    [Serializable] internal sealed class CharacterCatalog
     {
-        public string guestOfficerFaction;
         public int attrBase = AttributeSystem.Base, attrMin = AttributeSystem.Min, attrMax = AttributeSystem.Max, attrPoints = 20;
         public AttributeInfo[] attributes;
         public CharacterLook[] protagonistLooks;
@@ -52,15 +51,7 @@ namespace Wuxia
         public CreationOption[] backgrounds;
         public StoryCharacter[] storyCharacters;
 
-        public void OnBeforeSerialize() { }
 
-        public void OnAfterDeserialize()
-        {
-            if (storyCharacters == null || string.IsNullOrWhiteSpace(guestOfficerFaction)) return;
-            foreach (var person in storyCharacters)
-                if (person?.id is "friend_f" or "friend_m")
-                    person.faction = guestOfficerFaction;
-        }
     }
 
     [Serializable] internal sealed class TalentCatalog

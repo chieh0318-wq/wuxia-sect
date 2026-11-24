@@ -1,16 +1,16 @@
 {
   "intro": [
     { "speaker": "旁白", "text": "{sect}重立山門。新址原是一座荒廢的山莊，殿宇猶存，屋瓦殘缺。" },
-    { "speaker": "旁白", "text": "眾人清掃了三日，掛上從舊山門搶出來的匾額，總算有了門派的樣子。" },
-    { "speaker": "二師姐　許雁", "text": "藏經閣的書卷都搬進去了。祖師殿、藥廬、演武場，修一修也都能用。" },
+    { "speaker": "旁白", "text": "眾人灑掃三日，將舊山門搶出的匾額懸上門楣，這才稍有幾分門庭氣象。" },
+    { "speaker": "二師姐　許雁", "text": "藏經閣的書卷都搬進去了。祖師殿、藥廬、演武場，略加修葺，也都還用得。" },
     { "speaker": "伙房管事　杜蘅", "text": "只是銀錢有限，糧也不多。往後興建、收徒，都得量入為出。" },
-    { "speaker": "二師姐　許雁", "text": "人手就這麼些，每月能辦的事有數，這便是「行動力」。用完了，就得等下個月。" },
-    { "speaker": "旁白", "text": "師父音訊全無，江湖風波未平。{sect}的將來，就在{title}手上了。" }
+    { "speaker": "二師姐　許雁", "text": "山上人手只這幾個，一月能辦的事原有定數。力氣使盡了，便只好待來月再說。" },
+    { "speaker": "旁白", "text": "師父音訊全無，江湖風波未平。{sect}的將來，便在{title}手上了。" }
   ],
-  "choosePrompt": "師父門下，你排行第三，卻是同輩中最出挑的一個。同門該怎麼稱呼你？",
+  "choosePrompt": "師父門下，你排行第三，卻是同輩中最出挑的一個。同門該如何稱呼你？",
   "titles": ["大師兄", "大師姐"],
   "steps": [
-    { "id": "camera", "title": "巡視山門", "objective": "{title}，先四處看看新山門的光景。", "hint": "按 WASD 或方向鍵移動視角，也可按住右鍵拖曳（右鍵單擊則是返回上一頁）。", "trigger": "camera_move", "target": "", "highlight": "" },
+    { "id": "camera", "title": "巡視山門", "objective": "{title}，先四下走走，看看新山門的光景。", "hint": "按 WASD 或方向鍵移動視角，也可按住右鍵拖曳（右鍵單擊則是返回上一頁）。", "trigger": "camera_move", "target": "", "highlight": "" },
     { "id": "zoom", "title": "遠近端詳", "objective": "拉近視角，細看殿宇屋簷。", "hint": "游標移到庭院上，轉動滾輪拉近或拉遠。", "trigger": "camera_zoom", "target": "", "highlight": "" },
     { "id": "hall", "title": "拜謁祖師", "objective": "點選北側祖師殿，查看殿中指令。", "hint": "左鍵點選紅色菱形標記下方的祖師殿。殿中議事也要花行動力。", "trigger": "click_building", "target": "hall", "highlight": "building:hall" },
     { "id": "disciple", "title": "問候同門", "objective": "找一位同門說說話。", "hint": "左鍵點選院中走動的弟子，聽聽近況（說話不花行動力）。看完點一下或按右鍵關閉。", "trigger": "talk_disciple", "target": "", "highlight": "" },
@@ -20,6 +20,6 @@
     { "id": "month", "title": "月底結算", "objective": "本月事務已畢，結束本月。", "hint": "點選右上角「結束本月」，結算本月收支，行動力也會補滿。", "trigger": "end_month", "target": "", "highlight": "ui:end_month" },
     { "id": "report", "title": "查閱月報", "objective": "看看本月收支與門中結餘。", "hint": "讀完點「收卷」，或按右鍵／Esc 關閉月報，聽軍師總結。", "trigger": "read_report", "target": "", "highlight": "" }
   ],
-  "completeText": "{title}主持有方，同門上下皆服。",
+  "completeText": "{title}主持有方，同門上下無不心服。",
   "reward": { "silver": 30, "food": 0, "reputation": 2 }
 }

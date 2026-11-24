@@ -139,6 +139,9 @@ namespace Wuxia
 
     [Serializable] public sealed class StoryProgress
     {
+        public SectRaid sectRaid;
+        public int raidResolvedMonth;
+        public string patronFaction;
         public string disasterId, responseId, locationId, mapNode, delegateId, partyNode;
         public int day = 1;
         public int sectScale, materials;

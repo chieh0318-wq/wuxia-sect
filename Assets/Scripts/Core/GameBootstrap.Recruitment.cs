@@ -117,7 +117,7 @@ namespace Wuxia
                     special.lines = RankSystem.Seed(special.lines, special.rank, special.cap, "B");
                     special.attrs = AttributeSystem.Normalize(special.attrs);
                     var personality = Recruitment.personalities?.FirstOrDefault(entry => entry.name == special.personality);
-                    special.loyalty = Mathf.Clamp(50 + (personality?.loyalty ?? 0) + state.Story.loyaltyBonus + 2 * (AssignmentSystem.Eloquence(state, recruiter) - 15), 0, 100);
+                    special.loyalty = Mathf.Clamp(50 + (personality?.loyalty ?? 0) + state.Story.loyaltyBonus + state.Legitimacy + 2 * (AssignmentSystem.Eloquence(state, recruiter) - 15), 0, 100);
                     if (special.look == null || string.IsNullOrEmpty(special.look.hairStyle))
                         special.look = CharacterFactory.ForRecruit(special.gender, special.title ?? "入門弟子");
                     candidates[count - 1] = special;
@@ -163,7 +163,7 @@ namespace Wuxia
                 gender = gender, age = Random.Range(12, 31), title = "入門弟子",
                 origin = origin?.name ?? "山下鄉里", blurb = (Pick(origin?.blurbs) ?? "聞訊來到山門，願在宗門習藝。").Replace("{name}", name),
                 personality = personality?.name ?? "沉著", trait = personality?.name ?? "沉著",
-                loyalty = Mathf.Clamp(50 + (personality?.loyalty ?? 0) + state.Story.loyaltyBonus + 2 * (AssignmentSystem.Eloquence(state, recruiter) - 15), 0, 100),
+                loyalty = Mathf.Clamp(50 + (personality?.loyalty ?? 0) + state.Story.loyaltyBonus + state.Legitimacy + 2 * (AssignmentSystem.Eloquence(state, recruiter) - 15), 0, 100),
                 attrs = Enumerable.Range(0, AttributeSystem.Count).Select(_ =>
                     Mathf.Clamp(Random.Range(6, 14) + 2 * method.quality, AttributeSystem.Min, AttributeSystem.Max)).ToArray(),
                 aptitude = new Aptitude { bone = Random.Range(1, 11), insight = Random.Range(1, 11) },

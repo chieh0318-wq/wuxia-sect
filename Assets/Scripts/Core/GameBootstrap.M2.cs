@@ -31,9 +31,11 @@ namespace Wuxia
                 map = gameObject.AddComponent<WorldMapScreen>();
                 map.Closed += OnWorldMapClosed;
                 map.LeaderSelected += OpenMapLeader;
+                map.CampaignRequested += StartOffensiveCampaign;
                 map.BattleRequested += StartMapAssaultBattle;
                 map.TreasureRequested += EnterTreasure; // v1124 C16
             }
+            state.ChoosePatronEnvoy = (title, send) => ui.ChoosePatronEnvoy(state, title, send);
             map.Open(state);
             controls.enabled = false;
         }
@@ -65,7 +67,7 @@ namespace Wuxia
         private bool HandleWorldMapInput()
         {
             bool open = map != null && map.IsOpen;
-            if (ui.BattleOpen)
+            if (ui.BattleOpen || campaignOpen)
             {
                 if (UiBack.BackPressed) UiBack.TryBack(); // v1125 #16: battle registers "cancel the armed move"
                 return true;

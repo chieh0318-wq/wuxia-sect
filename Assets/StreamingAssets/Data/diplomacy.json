@@ -1,4 +1,9 @@
 {
+  "patronage": [
+    { "id": "court", "label": "大唐敕許", "silver": 12, "food": 8, "legitimacy": 8 },
+    { "id": "military", "label": "方鎮關牒", "silver": 8, "food": 12, "legitimacy": 5 },
+    { "id": "foreign", "label": "外邦借兵", "reputation": 8, "orthodox": 12, "troops": 600 }
+  ],
   "victory": {
     "jianghuTypes": ["sect", "clan", "merchant"],
     "loyalNeeded": 9,

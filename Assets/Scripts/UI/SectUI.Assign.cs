@@ -35,8 +35,9 @@ namespace Wuxia
                     string block = AssignmentSystem.Block(state, id);
                     int index = picked.IndexOf(id);
                     string mark = index < 0 ? "" : index == 0 ? "【領隊】" : "【同行】";
-                    string condition = limit > 1 ? "（幸運判定參考）" : "";
-                    string preview = $"{prediction.Detail}\n預估成功率 {chance?.Invoke(id) ?? prediction.Success:P0}{condition}　預估品質 {prediction.Quality:P0}";
+                    string condition = limit > 1 && actionId == "explore" ? "（幸運判定參考）" : "";
+                    string preview = actionId == "campaign" && chance == null
+                        ? $"位階帶兵基數 {rank.Troops}・統率依悟性與魅力計算" : $"{prediction.Detail}\n預估成功率 {chance?.Invoke(id) ?? prediction.Success:P0}{condition}　預估品質 {prediction.Quality:P0}";
                     CreationChoice($"{mark}{state.SparName(id)}　{rank.Name}　餘 {AssignmentSystem.Remaining(state, id)}／{rank.Monthly} 次",
                         block ?? preview, null, block == null ? (Action)(() =>
                         {
@@ -56,6 +57,12 @@ namespace Wuxia
             ChooseAboveMap(state, action.name, "diplomacy", 1,
                 party => selected(party[0]), id => state.DiploChance(action, faction, id));
         }
+
+        internal void ChoosePatronEnvoy(GameState state, string title, Action<string> send) =>
+            ChooseAboveMap(state, title, "diplomacy", 1, party => send(party[0]), state.PatronChance);
+
+        internal void ChooseCampaignAssignment(GameState state, string title, Action<string[]> selected) =>
+            ChooseAboveMap(state, title, "campaign", 10, selected);
 
         internal void ChooseMapAssignment(GameState state, string title, Action<string[]> selected) =>
             ChooseAboveMap(state, title, "explore", 3, selected);

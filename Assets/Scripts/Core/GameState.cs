@@ -224,6 +224,8 @@ namespace Wuxia
             EvaluateQuestlines();
             RecoverInjuries();
             ActionPoints = ApMax;
+            RaidMonth(report);
+            PatronMonth(report);
             report.Lines.Add($"行動力已恢復 {ActionPoints}／{ApMax}。");
             report.Lines.Add($"本月結餘　銀兩 {Silver}、糧食 {Food}、聲望 {Reputation}");
             return report;

@@ -33,6 +33,7 @@ namespace Wuxia
         private bool traveling;
         private string selected;
         internal event Action<BattleRequest, Action<bool>> BattleRequested;
+        internal event Action<MapNode, MapFaction, Action<string>> CampaignRequested;
         private bool changingScreen, dragFromMap;
         private RectTransform focusMarker;
         private Vector2 focusedPoint;
@@ -626,6 +627,19 @@ namespace Wuxia
                 }, MapUi.Red, 15);
                 assault.interactable = host.ActionPoints >= 2;
                 cardActions.Add(assault);
+            }
+            else if (host is GameState game && !held && faction != null && faction.Court && game.Patron?.id != faction.id && known && node.id != host.StartNode
+                && node.id == host.PartyNode && CampaignRequested != null)
+            {
+                var campaign = MapUi.Button(panel, "門派戰役 ›\n行動力 2", 20, 610, 124, 48, () =>
+                    CampaignRequested.Invoke(node, faction, result =>
+                    {
+                        UpdateAp();
+                        ShowNode(node);
+                        status.text = result;
+                    }), MapUi.Red, 15);
+                campaign.interactable = host.ActionPoints >= 2;
+                cardActions.Add(campaign);
             }
             else if (held)
             {

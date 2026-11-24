@@ -47,6 +47,7 @@ namespace Wuxia
 
     [Serializable] internal sealed class DiplomacyData
     {
+        public PatronageTerms[] patronage = Array.Empty<PatronageTerms>();
         public DiploVictory victory = new();
         public float weakRatio = 1.2f, eventChance = .4f;
         public string[] rivals = Array.Empty<string>();
@@ -184,6 +185,7 @@ namespace Wuxia
         }
 
         /// <summary>Envoy eloquence: the best 魅力 + 悟性/2 among the head and the uninjured disciples.</summary>
+        internal Action<string, Action<string>> ChoosePatronEnvoy;
         internal Action<DiploAction, MapFaction, Action<string>> ChooseEnvoy;
         internal string EnvoyId;
 
@@ -255,7 +257,7 @@ namespace Wuxia
         {
             int eloquence = worker == null ? Eloquence(out _) : AssignmentSystem.Eloquence(this, worker);
             float gap = Mathf.Clamp((Prestige - Diplomacy.Strength(faction)) * .004f, -.2f, .2f);
-            float chance = action.chance / 100f + (eloquence - 15) * .02f + Attitude(faction) * .003f + gap;
+            float chance = action.chance / 100f + (eloquence - 15) * .02f + Attitude(faction) * .003f + gap + Legitimacy / 100f;
             return Mathf.Clamp(chance, .05f, .95f);
         }
 

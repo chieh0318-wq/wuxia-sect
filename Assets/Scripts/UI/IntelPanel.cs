@@ -8,16 +8,16 @@ namespace Wuxia
 {
     public sealed class IntelPanel
     {
-        private const int ListWidth = 1480, Columns = 2, Pitch = 746, CardHeight = 194, ListHeight = 3 * CardHeight;
+        private const int ListWidth = 1480, Columns = 2, Pitch = 746, CardHeight = 224, ListHeight = 3 * CardHeight;
         private readonly WorldMapData data;
         private readonly Action<MapFaction> focus;
         private readonly RectTransform root, rows;
         private readonly Text count;
-        private readonly Button factionsTab, peopleTab;
+        private readonly Button factionsTab, peopleTab, specialTab;
         private readonly ScrollRect scroll;
         private readonly StoryCharacter[] roster;
         private IWorldMapHost host;
-        private bool people;
+        private bool people, special;
         public bool IsOpen => root.gameObject.activeSelf;
 
         internal IntelPanel(Transform parent, WorldMapData data, Action<MapFaction> focus)
@@ -33,6 +33,7 @@ namespace Wuxia
             MapUi.Kit(root, "情報卷冊", 14, 99, 1572, 784, "Paper", false);
             factionsTab = MapUi.Button(root, "勢力情報", 34, 117, 196, 48, () => Select(false));
             peopleTab = MapUi.Button(root, "江湖俠客", 244, 117, 196, 48, () => Select(true));
+            specialTab = MapUi.Button(root, "特殊勢力", 454, 117, 196, 48, () => Select(false, true));
             count = MapUi.Text(root, "", 1095, 117, 448, 48, 21, MapUi.Jade, TextAnchor.MiddleRight);
             var viewport = MapUi.Panel(root, "卷冊視窗", 34, 192, ListWidth, ListHeight, new Color(.66f, .55f, .38f, .11f));
             viewport.gameObject.AddComponent<RectMask2D>();
@@ -65,16 +66,18 @@ namespace Wuxia
         public void Close() => root.gameObject.SetActive(false);
         internal void CapturePeopleTab() => peopleTab.onClick.Invoke();
 
-        private void Select(bool showPeople)
+        private void Select(bool showPeople, bool showSpecial = false)
         {
             people = showPeople;
+            special = showSpecial;
             Render();
         }
 
         private void Render()
         {
             MapUi.Clear(rows);
-            MapUi.Select(factionsTab, !people);
+            MapUi.Select(factionsTab, !people && !special);
+            MapUi.Select(specialTab, special);
             MapUi.Select(peopleTab, people);
             int entries;
             if (people)
@@ -86,7 +89,7 @@ namespace Wuxia
             }
             else
             {
-                var list = data.Factions.OrderByDescending(faction => host.IsFactionKnown(faction.id))
+                var list = data.Factions.Where(faction => faction.Court == special).OrderByDescending(faction => host.IsFactionKnown(faction.id))
                     .ThenByDescending(faction => data.Holdings(faction).Count()).ThenBy(faction => faction.Label).ToArray();
                 entries = list.Length;
                 for (int i = 0; i < entries; i++) DrawFaction(list[i], i);
@@ -116,14 +119,16 @@ namespace Wuxia
             var card = Card(faction.Label, i, faction.Tint);
             MapUi.Portrait(card, known ? PortraitService.Resolve(faction.PortraitId) : null, 15, 13, 116, 154);
             MapUi.Text(card, faction.Label, 148, 11, 355, 38, 28, MapUi.Ink);
-            MapUi.Text(card, faction.RelationWith(shift), 635, 12, 77, 35, 20, attitude, TextAnchor.MiddleRight);
+            MapUi.Text(card, faction.RelationWith(shift), 477, 12, 100, 35, 20, attitude, TextAnchor.MiddleRight);
             MapUi.Text(card, known ? faction.leader ?? "首領不詳" : "首領尚待打探", 148, 50, 565, 31, 21, MapUi.Ink);
             string strength = known ? $"人數 {faction.disciples:N0}　聲望 {faction.reputation}" : "兵力尚待打探";
             MapUi.Text(card, $"{faction.TypeName}　據點 {data.Holdings(faction).Count()} 處　{strength}",
                 148, 82, 565, 28, 19, MapUi.Jade);
+            if (known && GameState.Patronage(faction) is PatronageTerms terms)
+                MapUi.Text(card, terms.Benefit + "\n" + terms.Cost, 148, 168, 565, 45, 18, MapUi.Jade, TextAnchor.UpperLeft);
             MapUi.Text(card, known ? GameState.RelationExplanation(faction, shift) : $"據於{data.NodeLabel(faction.seat)}。可派人查明近況。",
-                148, 115, 438, 62, 18, MapUi.Ink, TextAnchor.UpperLeft);
-            MapUi.Button(card, known ? "查看據點" : "查探勢力", 594, 132, 118, 37, () => focus(faction), MapUi.Red, 17);
+                148, 110, 565, 55, 18, MapUi.Ink, TextAnchor.UpperLeft);
+            MapUi.Button(card, known ? "查看據點" : "查探勢力", 594, 10, 118, 37, () => focus(faction), MapUi.Red, 17);
         }
 
         private IEnumerable<(StoryCharacter person, MapFaction faction)> People()

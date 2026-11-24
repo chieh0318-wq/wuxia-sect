@@ -277,7 +277,25 @@ namespace Wuxia
             MapUi.Clear(side);
             var docket = MapUi.Docket(side, "席前進言", 0, 0, 410, 516, false);
             MapUi.Text(docket, "席前進言　／　" + selectedAction?.name, 20, 13, 370, 52, 27, MapUi.Gold);
-            if (selected != null && selectedAction != null)
+            if (selected != null && state.IsFactionKnown(selected.id) && GameState.Patronage(selected) is PatronageTerms terms)
+            {
+                var faction = selected;
+                bool active = state.Patron?.id == faction.id;
+                MapUi.Text(docket, terms.label + (active ? "・已立約" : ""),
+                    20, 82, 365, 48, 27, MapUi.Gold);
+                MapUi.Text(docket, "所得　" + terms.Benefit, 20, 146, 365, 64, 20, MapUi.Paper, TextAnchor.UpperLeft);
+                MapUi.Text(docket, "代價　" + terms.Cost, 20, 225, 365, 64, 20, MapUi.Paper, TextAnchor.UpperLeft);
+                string block = active ? null : state.PatronBlock(faction);
+                MapUi.Text(docket, block ?? (active ? "解除後，對方態度 −10。" : "派使議約需行動力 1。"),
+                    20, 314, 365, 60, 19, MapUi.Gold, TextAnchor.UpperLeft);
+                var patronButton = MapUi.Button(docket, active ? "解除約書" : "遣使議約 ›", 20, 401, 365, 51, () =>
+                {
+                    if (active) ApplyResult(state.ReleasePatron());
+                    else state.ChoosePatronEnvoy?.Invoke(terms.label, id => ApplyResult(state.SeekPatron(faction, id)));
+                }, MapUi.Red);
+                patronButton.interactable = block == null;
+            }
+            else if (selected != null && selectedAction != null)
             {
                 var available = state.Disciples.Where(d => d.injury < 3).ToArray();
                 var disciple = available.Where(d => CastDialogue.Find(d.id)?.role?.StartsWith("disciple_pro_", StringComparison.Ordinal) == true)
@@ -309,6 +327,13 @@ namespace Wuxia
                 MapUi.Text(report, $"{pending.title}・{state.PendingDiploTarget?.Label}", 20, 130, 368, 34, 19, MapUi.Ink);
                 MapUi.Button(report, "處理急報", 20, 173, 370, 42, ShowEvent, MapUi.Red);
             }
+        }
+
+        private void ApplyResult(string text)
+        {
+            result = text;
+            DrawDetail();
+            DrawSide();
         }
 
         private string Preview(DiscipleData member)

@@ -1,5 +1,8 @@
 {
   "buildings": [
+    {"id": "wall", "name": "山門城牆", "description": "佈防時提高山門守軍防護。", "summary": "佈防時提高山門守軍防護。", "color": "#897961", "size": [6, 2, 1.5], "unique": true, "startBuilt": false, "cost": {"silver": 50, "food": 0}, "upkeep": 2, "income": {"silver": 0, "food": 0, "reputation": 0}, "actions": [], "footprint": 2, "scale": 1},
+    {"id": "watchtower", "name": "哨塔", "description": "提前探知來襲人馬，佈防時提高山門守軍防護。", "summary": "提前探知來襲人馬，佈防時提高山門守軍防護。", "color": "#805C43", "size": [2, 4, 2], "unique": true, "startBuilt": false, "cost": {"silver": 35, "food": 0}, "upkeep": 2, "income": {"silver": 0, "food": 0, "reputation": 0}, "actions": [], "footprint": 2, "scale": 0},
+    {"id": "spy_lodge", "name": "候訊房", "description": "提前取得軍情，並提升細作成功率。", "summary": "提前取得軍情，並提升細作成功率。", "color": "#675447", "size": [3, 2, 3], "unique": true, "startBuilt": false, "cost": {"silver": 45, "food": 0}, "upkeep": 2, "income": {"silver": 0, "food": 0, "reputation": 0}, "actions": [], "footprint": 2, "scale": 1},
     {
       "id": "council",
       "name": "議事堂",

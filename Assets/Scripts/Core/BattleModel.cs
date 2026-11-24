@@ -328,20 +328,21 @@ namespace Wuxia
             foreach (var victim in targets)
             {
                 var evasion = Effects(victim).FirstOrDefault(status => status.evade);
-                if (evasion != null || (!actor.isPlayer && !move.telegraph && random.NextDouble() < victim.dodge))
+                if (evasion != null || (!move.telegraph && random.NextDouble() < Math.Clamp(victim.dodge - actor.talentHit, 0, .95f)))
                 {
                     if (evasion != null) victim.statuses.Remove(evasion.id);
                     Emit($"{victim.name} 閃過了{actor.name}的{move.label}！", actor, victim, "閃避！");
                     continue;
                 }
 
-                float attack = Effects(actor).Aggregate((float)actor.attack, (value, effect) => value * effect.attack);
+                float attack = Effects(actor).Aggregate((float)actor.attack + (move.id == "attack" ? actor.talentBasicAttack : 0), (value, effect) => value * effect.attack);
                 float defense = Effects(victim).Aggregate((float)victim.defense, (value, effect) => value * effect.defense);
                 int counter = Counter(move.element, victim.element);
                 double multiplier = counter > 0 ? 1.25 : counter < 0 ? .8 : 1;
                 float reduction = Effects(victim).Aggregate(1f, (value, effect) => value * effect.incoming);
                 double roll = random.NextDouble();
-                bool critical = roll >= .92;
+                bool critical = roll >= .92 - actor.talentCrit;
+                reduction *= 1 - victim.talentReduction;
                 int amount = Math.Max(1, (int)Math.Round(move.power * attack * attack / (attack + defense) *
                     multiplier * reduction * (.95 + roll * .1) * (critical ? 1.5 : 1)));
                 victim.hp = Math.Max(0, victim.hp - amount);

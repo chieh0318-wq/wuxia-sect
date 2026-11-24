@@ -93,7 +93,8 @@ namespace Wuxia
             if (worker != null && IsGuestOfficer(worker) && node.branch == "sword")
                 return "客將不可由本門傳授崤山武學。";
             if (worker != null && AssignmentSystem.Block(this, worker) is string unavailable) return unavailable;
-            float quality = worker == null ? 1 : AssignmentSystem.Predict(this, "study", worker).Quality;
+            float quality = worker == null ? 1 : AssignmentSystem.Predict(this, "study", worker).Quality
+                * (1 + TalentValue(worker, "read", 43) / 100f);
             int silver = Mathf.CeilToInt(node.silver / Mathf.Max(1, quality));
             if (Silver < silver) return "銀兩不足，買不起燈油紙墨。";
             if (!TrySpendAp(node.ap, "tech:" + node.id)) return "行動力不足。";

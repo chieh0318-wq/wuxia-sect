@@ -774,7 +774,11 @@ namespace Wuxia
                 if (!state.Save())
                     ui.Message("自動存檔失敗。");
             }
-            ShowMonthReport("門派月報", report.Lines, before, ReadReport); // v1125 #20: scroll + 軍師 + new-month opener
+            ShowMonthReport("門派月報", report.Lines, before, () =>
+            {
+                ReadReport();
+                if (state.FactionWorld.envoy != null) ShowFactionEnvoy();
+            }); // v1125 #20: scroll + 軍師 + new-month opener
         }
 
         private bool TutorialApGrant(ActionData action)

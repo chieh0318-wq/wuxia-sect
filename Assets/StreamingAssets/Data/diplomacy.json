@@ -1,4 +1,5 @@
 {
+  "factionPolicy": { "acceptance": 60, "grace": 3, "occupationMonths": 8, "annex": true },
   "patronage": [
     { "id": "court", "label": "大唐敕許", "silver": 12, "food": 8, "legitimacy": 8 },
     { "id": "military", "label": "方鎮關牒", "silver": 8, "food": 12, "legitimacy": 5 },

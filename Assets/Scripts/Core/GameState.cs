@@ -231,11 +231,12 @@ namespace Wuxia
             string breakthrough = CheckMartialPath(true);
             if (!string.IsNullOrEmpty(breakthrough))
                 report.Lines.Add(breakthrough);
+            RecoverInjuries();
             AdvanceDispatches(report);
             EvaluateQuestlines();
-            RecoverInjuries();
             ActionPoints = ApMax;
             RaidMonth(report);
+            FactionMonth(report);
             PatronMonth(report);
             report.Lines.Add($"行動力已恢復 {ActionPoints}／{ApMax}。");
             report.Lines.Add($"本月結餘　銀兩 {Silver}、糧食 {Food}、聲望 {Reputation}");

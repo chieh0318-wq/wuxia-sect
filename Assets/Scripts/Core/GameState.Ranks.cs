@@ -9,13 +9,16 @@ namespace Wuxia
     {
         internal float ProductionMultiplier(string id)
         {
-            int best = RankSystem.Index(Array.Find(Protagonist.lines, line => line.id == id)?.rank);
+            float best = IsDispatched(HeroId) ? 0 : WorkerProduction(HeroId, Protagonist.lines);
             foreach (var disciple in Disciples.Where(member => member.id != Story.delegateId && !IsDispatched(member.id)))
             {
-                var line = disciple.lines?.FirstOrDefault(entry => entry.id == id);
-                best = Math.Max(best, RankSystem.Index(line?.rank));
+                best = Mathf.Max(best, WorkerProduction(disciple.id, disciple.lines));
             }
-            return RankSystem.Multiplier(RankSystem.At(best));
+            return best > 0 ? best : RankSystem.Multiplier(RankSystem.At(-1));
+
+            float WorkerProduction(string worker, SkillLine[] lines) =>
+                RankSystem.Multiplier(lines?.FirstOrDefault(line => line.id == id)?.rank) *
+                (1 + TalentValue(worker, id, 20) / 100f);
         }
 
         internal int BuildSilver(int amount) => Mathf.Max(0, Mathf.RoundToInt(
@@ -49,6 +52,7 @@ namespace Wuxia
                 AssignmentSystem.Predict(this, "train", worker).Quality * Mathf.Max(.5f, 1 + .05f * AttributeBonus("wit"));
             if (hero)
                 experience *= Mathf.Max(.5f, 1 + .02f * AttributeBonus("str")) * StudyMultiplier(line.id);
+            if (TalentValue(worker, "growth", 1) > 0) experience *= Year <= 3 ? .9f : 1.3f;
             string major = hero ? Protagonist.major : RankSystem.BestCombat(lines)?.id;
             if (line.id == major) experience *= 1.2f;
             TrainLine(line, experience);

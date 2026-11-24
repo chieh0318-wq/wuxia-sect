@@ -11,7 +11,8 @@ namespace Wuxia
         public Texture2D standee;
         public bool isPlayer;
         public int level, hp, maxHp, qi, maxQi, attack, speed;
-        public float dodge;
+        public float dodge, talentHit, talentCrit, talentReduction;
+        public int talentBasicAttack;
         public int defense, phase = 1, intentRound;
         public string element, enemyProfile;
         public BattleSkill intent;
@@ -174,7 +175,7 @@ namespace Wuxia
         private static BattleCombatant Hero(GameState state, BattleCatalog catalog)
         {
             var stats = state.HeroStats;
-            return new BattleCombatant
+            return state.ApplyBattleTalents(GameState.HeroId, new BattleCombatant
             {
                 // v1124 B10/A5: the battle HUD names the protagonist, never 「三師兄／三師姐」.
                 name = !string.IsNullOrWhiteSpace(state.Protagonist.name) ? state.Protagonist.name
@@ -197,7 +198,7 @@ namespace Wuxia
                 knownMoves = MartialArts.KnownMoves(state.ProtagonistArts, state.Protagonist.major, catalog.Skills.ContainsKey),
                 moves = MartialArts.Moves(state.ProtagonistArts,
                     RankSystem.Major(state.Protagonist.lines, state.Protagonist.major)?.id, catalog.Skills.ContainsKey)
-            };
+            });
         }
 
         private static BattleCombatant Member(GameState state, DiscipleData d, BattleCatalog catalog, bool ally)
@@ -206,7 +207,7 @@ namespace Wuxia
                 ? d.lines
                 : RankSystem.Seed(null, d.rank, d.cap, RankSystem.BaseCap, RankSystem.BaseRank);
             var derived = AttributeSystem.Derive(state.DiscipleAttributes(d), lines, state.WeaponRankDelta(d.weapon));
-            return new BattleCombatant
+            return state.ApplyBattleTalents(d.id, new BattleCombatant
             {
                 name = d.name,
                 spriteId = null,
@@ -223,7 +224,7 @@ namespace Wuxia
                 personalArts = true,
                 knownMoves = MartialArts.KnownMoves(state.ArtsOf(d), RankSystem.BestCombat(lines)?.id, catalog.Skills.ContainsKey),
                 moves = MartialArts.Moves(state.ArtsOf(d), RankSystem.BestCombat(lines)?.id, catalog.Skills.ContainsKey)
-            };
+            });
         }
     }
 }

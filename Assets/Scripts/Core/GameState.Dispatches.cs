@@ -26,7 +26,7 @@ namespace Wuxia
         private float MarchSpeedOf(string worker)
         {
             var lines = worker == HeroId ? Protagonist.lines : Disciples.Find(member => member.id == worker)?.lines;
-            return MarchSpeed(lines?.FirstOrDefault(line => line.id == "qinggong")?.rank);
+            return MarchSpeed(lines?.FirstOrDefault(line => line.id == "qinggong")?.rank) + TalentValue(worker, "march", 1);
         }
 
         internal string SendTreasureDispatch(TreasureSite site, string[] party)
@@ -62,14 +62,17 @@ namespace Wuxia
 
         internal bool DispatchArrived(FieldDispatch mission) => !mission.returning && mission.traveled >= mission.distance;
 
+        internal bool ForceDispatchAmbush { get; set; }
+
         private void AdvanceDispatches(MonthlyReport report)
         {
             foreach (var mission in Story.fieldDispatches)
             {
                 if (DispatchArrived(mission)) continue;
                 string name = RealmContent.Treasure(mission.site)?.name ?? mission.site;
-                if (UnityEngine.Random.value < .12f)
+                if (ForceDispatchAmbush || UnityEngine.Random.value < .12f)
                 {
+                    ForceDispatchAmbush = false;
                     InjureWorker(mission.party[UnityEngine.Random.Range(0, mission.party.Length)]);
                     report.Lines.Add($"前往{name}的外派隊伍遇伏，一人負傷。");
                 }

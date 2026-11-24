@@ -73,6 +73,7 @@ namespace Wuxia
     {
         public string id, name, type, color, seat, stance, leader, leaderId, desc, leaderRank, leaderCap, leaderWeapon;
         public string[] martialArts, territory;
+        public string aiPrimary, aiSecondary;
         public FactionNotable[] notables;
         public MapSkillLine[] leaderLines;
         public int reputation, disciples, money;

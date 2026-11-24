@@ -510,7 +510,7 @@ namespace Wuxia
         private void ShowNode(MapNode node)
         {
             if (traveling) return;
-            var factions = data.Controllers(node).ToArray();
+            var factions = (host is GameState game ? game.FactionControllers(node) : data.Controllers(node)).ToArray();
             var faction = factions.FirstOrDefault();
             bool held = host.HoldsNode(node.id);
             bool outlaw = faction != null && faction.Outlaw && !held;
@@ -541,7 +541,9 @@ namespace Wuxia
             }
             else
                 MapUi.Text(panel, "此地沒有已知的控制勢力", 20, 120, 386, 34, 21, MapUi.Jade);
-            if (held || outlaw)
+            if (host is GameState campaign && campaign.FactionMapNotice(node.id) is string notice)
+                MapUi.Text(panel, notice, 140, 222, 266, 30, 16, MapUi.Red);
+            else if (held || outlaw)
                 MapUi.Text(panel, held ? $"【本派據點・{host.SectLabel}】" : "【草莽據點・易攻】", 140, 222, 266, 30, 20,
                     held ? MapUi.Jade : MapUi.Red, TextAnchor.MiddleLeft, "Names");
 

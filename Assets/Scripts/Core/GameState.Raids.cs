@@ -106,22 +106,6 @@ namespace Wuxia
                 report.Lines.Add($"{WarNode(raid.target)}告急！請從「征伐 → 山門軍情」迎戰。");
                 return;
             }
-            bool exposed = Story.fieldDispatches.Length > 0 && UnityEngine.Random.value < .25f;
-            if (Story.raidResolvedMonth + 3 > MonthStamp || (!exposed && Month % 3 != 0)) return;
-            var map = WorldMapData.Load();
-            var opponents = map.Factions.Where(f => Attitude(f) <= -25
-                && f.id != Story.patronFaction && !HasTie(f.id, Diplomacy.Pact | Diplomacy.Alliance | Diplomacy.Merged)).ToArray();
-            if (opponents.Length == 0) return;
-            var attacker = opponents[UnityEngine.Random.Range(0, opponents.Length)];
-            var holdings = (Story.heldNodes ?? Array.Empty<string>()).Where(map.Nodes.ContainsKey).Append(StartNode).Distinct().ToArray();
-            Story.sectRaid = new SectRaid
-            {
-                faction = attacker.id, due = MonthStamp + 1,
-                target = exposed ? StartNode : holdings[UnityEngine.Random.Range(0, holdings.Length)],
-                troops = Mathf.Clamp(attacker.disciples / 3, 80, 1800),
-                detected = WarWorks("spy_lodge") + WarWorks("watchtower") > 0
-            };
-            report.Lines.Add(Story.sectRaid.detected ? "哨探截得敵軍動向，詳見山門軍情。" : "近日山道有可疑人馬，可遣細作查探。");
         }
 
         internal string FinishRaid(bool won, string prefix = "")

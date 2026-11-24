@@ -33,6 +33,7 @@ namespace Wuxia
             var raid = state.Story.sectRaid;
             var lines = new List<string>();
             var buttons = new List<(string, Action)> { ("關閉", () => ui.CloseModal(force: true)) };
+            if (state.FactionWorld.envoy != null) buttons.Add(("來使 ›", ShowFactionEnvoy));
             if (raid == null)
                 lines.Add("目前山道平靜。加蓋城牆、哨塔和候訊房，可加強守備並及早掌握敵軍。");
             else
@@ -57,8 +58,8 @@ namespace Wuxia
                     Add("收買內線・銀兩 20", RaidOrder.Bribe, 1);
                 }
             }
-            ui.ShowCreation("山門軍情", lines.ToArray(), buttons.Take(state.RaidReady ? 2 : 1).ToArray(), null);
-            foreach (var option in buttons.Skip(state.RaidReady ? 2 : 1))
+            ui.ShowCreation("山門軍情", lines.ToArray(), buttons.Take((state.RaidReady ? 2 : 1) + (state.FactionWorld.envoy != null ? 1 : 0)).ToArray(), null);
+            foreach (var option in buttons.Skip((state.RaidReady ? 2 : 1) + (state.FactionWorld.envoy != null ? 1 : 0)))
                 ui.CreationChoice(option.Item1, "派人後使用當月出勤次數。", null, option.Item2);
 
             void Add(string label, RaidOrder order, int limit)

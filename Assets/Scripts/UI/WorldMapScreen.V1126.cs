@@ -211,7 +211,7 @@ namespace Wuxia
         /// <summary>v1126 #13: what a stronghold is and who holds it (「洛陽　州城｜朝廷・大唐朝廷・中立」).</summary>
         private string NodeTip(MapNode node)
         {
-            var faction = data.Controllers(node).FirstOrDefault();
+            var faction = (host is GameState game ? game.FactionControllers(node) : data.Controllers(node)).FirstOrDefault();
             string head = $"{node.Label}　{TypeName(node.type)}";
             if (host != null && host.HoldsNode(node.id)) return head + "\n本派據點";
             if (faction == null) return head + "\n無人據守";

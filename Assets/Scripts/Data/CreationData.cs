@@ -10,7 +10,8 @@ namespace Wuxia
     {
         public string id, name, desc, summary, image, rarity, category, grantsRank;
         public int cost, weight = 10, capBonus;
-        public GameEffect[] effects;
+        public GameEffect[] effects, modifiers;
+        public string exclusive;
     }
 
     [Serializable] public sealed class CharacterLook
@@ -145,6 +146,7 @@ namespace Wuxia
         public int monthlyFood, monthlySilver, monthlyTermsLeft;
         public ManualPractice[] manualTraining = Array.Empty<ManualPractice>();
         public SectRaid sectRaid;
+        public FactionCampaign factionCampaign;
         public FieldDispatch[] fieldDispatches = Array.Empty<FieldDispatch>();
         public int raidResolvedMonth;
         public string patronFaction;

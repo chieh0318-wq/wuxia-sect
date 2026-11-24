@@ -53,7 +53,7 @@ namespace Wuxia
                 .Select(id => catalog.FirstOrDefault(option => option?.id == id)).Where(option => option != null)
                 .Select(option =>
                 {
-                    string effect = EffectText.Describe(option.effects);
+                    string effect = option.modifiers?.Length > 0 ? option.desc : EffectText.Describe(option.effects);
                     return string.IsNullOrEmpty(effect) ? $"【{option.name}】" : $"【{option.name}】{effect}";
                 }).ToArray();
             return lines.Length == 0 ? null : string.Join("\n", lines);

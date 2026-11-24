@@ -207,8 +207,7 @@ namespace Wuxia
             return new CharacterDossier
             {
                 person = person, faction = friendOfHero ? GuestSect : sect || hero ? state.Data.Start.sectName : faction?.Label ?? person.faction, stance = stance, kind = kind,
-                talents = TalentSummary(person.id == HeroCharacterId ? state.Protagonist.talents : disciple?.talents ??
-                    state.Data.Disciples.FirstOrDefault(seed => seed.id == person.id)?.talents),
+                talents = TalentSummary(state.TalentsOf(hero ? GameState.HeroId : person.id)),
                 relation = relation, attrs = person.attrs ?? disciple?.attrs ?? EstimateAttributes(person),
                 estimated = person.attrs == null && disciple?.attrs == null, arts = arts, biography = biography,
                 bond = bond, actions = actions.ToArray()

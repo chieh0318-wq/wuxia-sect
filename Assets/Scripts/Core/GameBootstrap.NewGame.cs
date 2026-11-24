@@ -213,7 +213,7 @@ namespace Wuxia
         private void StartTalents()
         {
             // Point-buy mode: list ALL talents directly without random drawing.
-            offered = (talents.talents ?? Array.Empty<CreationOption>()).Where(x => x != null).ToArray();
+            offered = (talents.talents ?? Array.Empty<CreationOption>()).Where(x => x != null && !TalentRules.Innate.Contains(x.id)).ToArray();
             Restore(offered, state.Protagonist.talents);
             talentFilter = "";
             ShowTalents(1f);
@@ -221,7 +221,7 @@ namespace Wuxia
 
         private void RollTalents()
         {
-            offered = (talents.talents ?? Array.Empty<CreationOption>()).Where(x => x != null).ToArray();
+            offered = (talents.talents ?? Array.Empty<CreationOption>()).Where(x => x != null && !TalentRules.Innate.Contains(x.id)).ToArray();
         }
 
         private string talentFilter = "";
@@ -314,7 +314,7 @@ namespace Wuxia
 
         private int Spent => selected.Sum(option => option.cost);
         private bool CanPick(CreationOption option, int budget, int limit) =>
-            selected.Count < limit && Spent + option.cost <= budget;
+            selected.Count < limit && Spent + option.cost <= budget && TalentRules.Compatible(option, selected);
 
         private void ShowPick(CreationOption option, string group, int budget, int limit, Action redraw)
         {

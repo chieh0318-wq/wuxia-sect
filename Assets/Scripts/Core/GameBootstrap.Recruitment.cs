@@ -145,10 +145,18 @@ namespace Wuxia
                 RankSystem.Shift(Pick(production), 1, false);
             }
             float quality = AssignmentSystem.Predict(state, "recruit", recruiter).Quality;
-            var talents = (RecruitTalents.talents ?? Array.Empty<CreationOption>())
+            var pool = (RecruitTalents.talents ?? Array.Empty<CreationOption>())
                 .Where(talent => talent.rarity == "common" || Random.value < method.rareChance * quality)
                 .OrderBy(talent => -Mathf.Log(Mathf.Max(.00001f, Random.value)) / Math.Max(1, talent.weight))
-                .Take(Random.Range(0, 3)).Select(talent => talent.id).ToArray();
+                .ToArray();
+            var chosen = new System.Collections.Generic.List<CreationOption>();
+            int count = Random.Range(1, 4);
+            foreach (var talent in pool)
+            {
+                if (TalentRules.Compatible(talent, chosen)) chosen.Add(talent);
+                if (chosen.Count == count) break;
+            }
+            var talents = chosen.Select(talent => talent.id).ToArray();
             int tier = RankSystem.Index(rank);
             var signature = MartialArts.All.Where(art => art.Combat && art.source == "creation" &&
                     RankSystem.Index(art.tier) <= tier + 1)

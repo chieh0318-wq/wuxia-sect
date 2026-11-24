@@ -143,6 +143,8 @@ namespace Wuxia
             int value = attribute == "cha" ? Eloquence(state, id) : Attribute(state, id, attribute);
             int basis = attribute == "cha" ? 15 : 10;
             float quality = Mathf.Clamp(.85f + .09f * rank + (value - basis) * .025f, .6f, 1.8f);
+            string talentKey = actionId == "diplomacy" ? "diplomacy" : skill == "forging" ? "forge" : skill;
+            quality *= 1 + state.TalentValue(id, talentKey, 20) / 100f;
             float success = actionId is "explore" or "secret_realm"
                 ? SecretRealms.Chance(state, new RealmChoice { attr = "luk" }, 0, id) : 1;
             string detail = $"{EffectText.LineName(skill)} {RankSystem.At(rank)}・{(attribute == "cha" ? "口才" : AttributeSystem.Names[AttributeSystem.Index(attribute)])} {value}";

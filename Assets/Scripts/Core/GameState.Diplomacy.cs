@@ -47,6 +47,7 @@ namespace Wuxia
 
     [Serializable] internal sealed class DiplomacyData
     {
+        public FactionPolicy factionPolicy;
         public PatronageTerms[] patronage = Array.Empty<PatronageTerms>();
         public DiploVictory victory = new();
         public float weakRatio = 1.2f, eventChance = .4f;

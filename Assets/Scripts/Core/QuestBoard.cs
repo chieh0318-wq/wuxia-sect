@@ -69,22 +69,17 @@ namespace Wuxia
             (stage?.steps ?? Array.Empty<QuestStep>()).Where(step => step != null)
                 .Select(step => (step.text, Math.Min(Metric(state, step.metric), step.target), step.target));
 
-        /// <summary>One line of progress for a long-term route; the built-in victories keep their own counters.</summary>
+        /// <summary>
+        /// v1126b 決定 3: one line of live progress for a long-term route (e.g. 「庫銀 1,240／3,000」), from
+        /// <see cref="GameState.Route"/>. The route is matched by its progress key, else by its id.
+        /// </summary>
         internal static string RouteProgress(GameState state, QuestRoute route)
         {
-            var victory = state.Victory;
-            var rules = victory.Rules;
-            switch (route.progress)
-            {
-                case "diplomacy":
-                    return $"友好 {victory.Loyal}/{rules.loyalNeeded}・歸附 {victory.Subjects}/{rules.subjectNeeded}・聲望 {victory.Reputation}/{rules.reputationNeeded}" +
-                        (victory.Diplomatic ? "　已可宣告" : "");
-                case "conquest":
-                    return $"據點 {victory.Held}/{rules.conquestNodes}・聲望 {victory.Reputation}/{rules.conquestReputation}" +
-                        (victory.Conquest ? "　已達成" : "");
-                default:
-                    return string.IsNullOrWhiteSpace(route.condition) ? "達成條件：待定" : route.condition;
-            }
+            string id = Array.IndexOf(GameState.RouteIds, route.progress) >= 0 ? route.progress : route.id;
+            if (Array.IndexOf(GameState.RouteIds, id) < 0)
+                return string.IsNullOrWhiteSpace(route.condition) ? "達成條件：待定" : route.condition;
+            var live = state.Route(id);
+            return live.Progress + (live.Declared ? "　已宣告" : live.Met ? "　已可宣告" : "");
         }
     }
 }

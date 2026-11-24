@@ -189,6 +189,7 @@ namespace Wuxia
             if (materials > 0) report.Lines.Add($"作坊材料　+{materials}");
             M6MonthIncome(ref silver, ref food, report);
             DiplomacyMonth(report);
+            RoutesMonth(report); // v1126b 決定 3: route counters (trade ages, trade ring, hold months)
             HallsMonth(report); // v1124 C18
             if (Story.monthlyFood != 0 || Story.monthlySilver != 0)
             {

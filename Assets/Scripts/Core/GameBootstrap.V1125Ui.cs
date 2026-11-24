@@ -394,7 +394,7 @@ namespace Wuxia
             ui.ShowMonthScroll(title, lines, net, () =>
             {
                 read?.Invoke();
-                if (capturing) return;
+                if (capturing || ui.ModalOpen) return;
                 PlayMonthTalks(net, null);
             });
         }

@@ -61,7 +61,11 @@ namespace Wuxia
             if (!capturing && !state.Save())
                 lines.Add("自動存檔失敗。");
             // v1125 #20: travel month-ends use the same report scroll.
-            ui.ShowMonthScroll("旅途中的門派月報", lines, null, ShowRequestedLeader);
+            ui.ShowMonthScroll("旅途中的門派月報", lines, null, () =>
+            {
+                if (state.FactionWorld.envoy != null) ShowFactionEnvoy();
+                else ShowRequestedLeader();
+            });
         }
 
         private bool HandleWorldMapInput()

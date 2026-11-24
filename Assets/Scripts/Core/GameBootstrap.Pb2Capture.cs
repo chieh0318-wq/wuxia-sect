@@ -133,6 +133,14 @@ namespace Wuxia
             string save = System.IO.Path.Combine(Application.temporaryCachePath, "pb2_" + Guid.NewGuid() + ".json");
             try
             {
+                const string olderSave = "{\"version\":1,\"year\":1,\"month\":2,\"buildings\":[],\"disciples\":[],\"story\":{}}";
+                System.IO.Directory.CreateDirectory(Application.temporaryCachePath);
+                System.IO.File.WriteAllText(save, olderSave);
+                var migrated = GameState.LoadSave(data, save);
+                RequirePb2(migrated != null && migrated.FactionWorld.difficulty == 1 &&
+                    migrated.FactionWorld.realms == null, "legacy save receives default faction settings");
+                migrated.EndMonth();
+                RequirePb2(migrated.FactionWorld.realms.Length > 0, "legacy save seeds faction state on month end");
                 sample.FactionWorld.difficulty = 2;
                 sample.EndMonth();
                 RequirePb2(sample.Save(save), "temporary PB2 save written");

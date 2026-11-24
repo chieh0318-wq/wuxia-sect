@@ -212,8 +212,8 @@ namespace Wuxia
 
         private void StartTalents()
         {
-            // Point-buy mode: list ALL talents directly without random drawing.
-            offered = (talents.talents ?? Array.Empty<CreationOption>()).Where(x => x != null && !TalentRules.Innate.Contains(x.id)).ToArray();
+            // Innate talents are granted separately. The selected list contains only point-buy choices.
+            RollTalents();
             Restore(offered, state.Protagonist.talents);
             talentFilter = "";
             ShowTalents(1f);

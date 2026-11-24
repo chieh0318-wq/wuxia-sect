@@ -44,8 +44,13 @@ namespace Wuxia
             if (!AssignmentSystem.Commit(this, new[] { id })) return "使者無法出勤。";
             if (!TrySpendAp(1, "patronage:" + faction.id)) return "行動力不足。";
             if (UnityEngine.Random.value > PatronChance(id)) return $"{faction.Label}未允所請。";
-            Story.patronFaction = faction.id;
             AssignmentSystem.Credit(this, id, 2);
+            return EstablishPatronage(faction, terms);
+        }
+
+        private string EstablishPatronage(MapFaction faction, PatronageTerms terms)
+        {
+            Story.patronFaction = faction.id;
             Reputation -= terms.reputation;
             if (terms.orthodox > 0)
                 foreach (var orthodox in WorldMapData.Load().Factions.Where(f => f.type == "sect" && f.stance != "hostile"))

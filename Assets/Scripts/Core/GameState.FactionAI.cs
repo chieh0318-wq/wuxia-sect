@@ -215,8 +215,15 @@ namespace Wuxia
             string kind = primary == "trade" ? "trade" : "aid";
             int score = 52 + (commonThreat ? 18 : 0) + (kind == "trade" ? 15 : 0) - partner.days / 4;
             realm.nextOffer = MonthStamp + 2;
-            if (score < Policy.acceptance) return true;
-            MakeAccord(realm.id, partner.realm.id, kind, 8);
+            int length = 8;
+            if (score < Policy.acceptance)
+            {
+                // A shorter commitment is the counteroffer. Both sides can propose again in two months.
+                if (score + 5 < Policy.acceptance) return true;
+                length = 4;
+            }
+            partner.realm.nextOffer = Math.Max(partner.realm.nextOffer, MonthStamp + 2);
+            MakeAccord(realm.id, partner.realm.id, kind, length);
             news.Add(Bulletin(realm.id, $"{faction.Label}與{NameOf(partner.realm.id)}{(kind == "trade" ? "互通商旅" : "立約互援")}。"));
             return true;
         }
@@ -255,18 +262,20 @@ namespace Wuxia
             if (FactionWorld.envoy != null || UnityEngine.Random.value >= .025f ||
                 faction.type == "court" && (Patron != null || Attitude(faction) < 0)) return false;
             string kind = faction.type == "court" ? "submission" :
+                faction.type == "foreign" && HasTie(faction.id, Diplomacy.Trade) && Patron == null ? "foreign_aid" :
                 faction.type == "foreign" || faction.aiPrimary == "trade" ? "trade" : hostile ? "peace" : "aid";
             if (kind == "trade" && HasTie(faction.id, Diplomacy.Trade)) return false;
             FactionWorld.envoy = new FactionEnvoy { faction = faction.id, kind = kind, due = MonthStamp + 2,
                 silver = kind == "trade" && faction.type != "foreign" ? 12 : 0,
-                food = faction.type == "foreign" ? 20 : 0 };
+                food = kind == "foreign_aid" ? 40 : faction.type == "foreign" ? 20 : 0 };
             news.Add($"【已證實】{faction.Label}遣使議{OfferLabel(kind)}。");
             return true;
         }
 
         internal static string OfferLabel(string kind) => kind switch
         {
-            "aid" => "互援", "trade" => "通商", "peace" => "求和", "submission" => "奉表臣服", _ => "最後通牒"
+            "aid" => "互援", "trade" => "通商", "peace" => "求和", "submission" => "奉表臣服",
+            "foreign_aid" => "輸糧借兵", _ => "最後通牒"
         };
 
         internal string AnswerFactionEnvoy(string answer)
@@ -275,11 +284,17 @@ namespace Wuxia
             if (offer == null) return "使者已離去。";
             var faction = FindFaction(offer.faction);
             var realm = Realm(offer.faction);
+            int duration = answer == "counter" ? 4 : 6;
             int silver = answer == "counter" ? (offer.silver + 1) / 2 : offer.silver;
             int food = answer == "counter" ? (offer.food + 1) / 2 : offer.food;
             int score = 66 + Attitude(faction) / 4 - (answer == "counter" ? 8 : 0);
+            if (answer == "counter" && (offer.kind is "trade" or "foreign_aid"))
+                score += 8; // Trade-focused envoys have room to reduce the opening price.
             bool agreed = answer == "accept" || answer == "counter" && score >= Policy.acceptance;
-            if (agreed && (Silver < silver || Food < food)) return "庫中錢糧不足。";
+            var patronage = offer.kind is "submission" or "foreign_aid" ? Patronage(faction) : null;
+            if (agreed && patronage != null && Patron != null) return "須先解除現有約書。";
+            if (agreed && (Silver < silver + (patronage?.silver ?? 0) || Food < food + (patronage?.food ?? 0)))
+                return "庫中錢糧不足。";
             FactionWorld.envoy = null;
             if (realm != null) realm.nextOffer = MonthStamp + 2;
             if (agreed)
@@ -296,11 +311,11 @@ namespace Wuxia
                     SetTie(faction, Diplomacy.Alliance, true);
                     Tie(faction.id).pactPower = 8;
                 }
-                else if (offer.kind == "submission")
-                    Story.patronFaction = faction.id;
+                else if (patronage != null)
+                    return EstablishPatronage(faction, patronage);
                 else
                 {
-                    MakeAccord(HeroId, faction.id, "peace", 6);
+                    MakeAccord(HeroId, faction.id, "peace", duration);
                     ShiftAttitude(faction, 10);
                 }
                 return $"已與{faction.Label}議定{OfferLabel(offer.kind)}。";

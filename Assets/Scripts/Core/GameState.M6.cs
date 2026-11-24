@@ -71,7 +71,7 @@ namespace Wuxia
             if (node == null || foe == null) return "此處沒有可攻打的據點。";
             if (node.id == StartNode || HoldsNode(node.id)) return "此處由本門守備。";
             if (!IsFactionKnown(foe.id)) return "先打探此地守軍。";
-            if (Patron?.id == foe.id || HasTie(foe.id, Diplomacy.Alliance | Diplomacy.Pact))
+            if (Patron?.id == foe.id || HasTie(foe.id, Diplomacy.Alliance | Diplomacy.Pact) || Protected(HeroId, foe.id))
                 return $"仍與{foe.Label}有約，請先解除盟約。";
             if (!foe.Outlaw && Attitude(foe) > -25)
                 return foe.Court ? $"攻打將與{foe.Label}為敵，須先在外交交惡。"

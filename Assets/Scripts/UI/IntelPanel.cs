@@ -120,7 +120,7 @@ namespace Wuxia
             string strength = known ? $"人數 {faction.disciples:N0}　聲望 {faction.reputation}" : "兵力尚待打探";
             MapUi.Text(card, $"{faction.TypeName}　據點 {data.Holdings(faction).Count()} 處　{strength}",
                 148, 82, 565, 28, 19, MapUi.Jade);
-            MapUi.Text(card, known ? faction.desc ?? "" : $"據於{data.NodeLabel(faction.seat)}。可派人查明近況。",
+            MapUi.Text(card, known ? GameState.RelationExplanation(faction, shift) : $"據於{data.NodeLabel(faction.seat)}。可派人查明近況。",
                 148, 115, 438, 62, 18, MapUi.Ink, TextAnchor.UpperLeft);
             MapUi.Button(card, known ? "查看據點" : "查探勢力", 594, 132, 118, 37, () => focus(faction), MapUi.Red, 17);
         }

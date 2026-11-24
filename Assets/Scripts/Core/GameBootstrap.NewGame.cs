@@ -535,8 +535,22 @@ namespace Wuxia
         private void PlaySuccession() => Play(story.successionBeats, () =>
         {
             TakeActingTitle();
-            Play(story.friendBeats, ChooseDisaster, SkipStory);
+            Play(story.friendBeats, IntroduceSectGoals, SkipStory);
         }, SkipStory);
+
+        private void IntroduceSectGoals()
+        {
+            var friend = Friend();
+            var factions = new[] { "shaolin", "huayue", "heisong", "taihang" }
+                .Select(GameState.FindFaction).Where(faction => faction != null).ToArray();
+            var briefing = factions.Select(faction => new StoryBeat
+            {
+                speaker = friend?.name ?? (state.Protagonist.gender == "女" ? "謝蘊" : "謝瑾"),
+                portrait = friend?.portrait ?? state.FriendId,
+                text = $"{faction.Label}（{faction.Relation}）。{GameState.RelationExplanation(faction, 0)}"
+            }).ToArray();
+            ui.ShowSectGoals(state, () => Play(briefing, ChooseDisaster, SkipStory));
+        }
 
         private void TakeActingTitle()
         {

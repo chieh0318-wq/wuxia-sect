@@ -635,7 +635,7 @@ namespace Wuxia
         private void ShowAudioOptions(bool system)
         {
             ShowModal(system ? "系統選單" : "音量設定", Array.Empty<string>(), system
-                ? new (string, Action)[] { ("繼續遊戲", CloseModalFromMenu), ("退出遊戲", () => ConfirmExit(ShowSystemMenu)) }
+                ? new (string, Action)[] { ("繼續遊戲", CloseModalFromMenu), ("門派志向 ›", GoalsFromSystem), ("退出遊戲", () => ConfirmExit(ShowSystemMenu)) }
                 : null);
             Anchor(modalCard, Vector2.one * .5f, Vector2.one * .5f, new(-352, -234), new(352, 234));
             Anchor((RectTransform)modalList.parent, Vector2.zero, Vector2.one, new(30, 82), new(-30, -26));

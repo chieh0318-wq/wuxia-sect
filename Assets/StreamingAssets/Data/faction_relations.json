@@ -1,0 +1,132 @@
+{
+  "entries": [
+    {
+      "id": "jinwuwei",
+      "reason": "金吾衛只查京畿治安，與本門尚無約定。"
+    },
+    {
+      "id": "yushitai",
+      "reason": "御史臺重法度，正觀察本門行止。"
+    },
+    {
+      "id": "neishisheng",
+      "reason": "宮中與本門少有來往。"
+    },
+    {
+      "id": "henan_fu",
+      "reason": "河南府重地方安定，尚未站隊。"
+    },
+    {
+      "id": "hexi_jds",
+      "reason": "河西方面忙於邊防，與本門少有往來。"
+    },
+    {
+      "id": "anxi_dhf",
+      "reason": "安西遠在西陲，與本門尚無約定。"
+    },
+    {
+      "id": "fanyang_jds",
+      "reason": "范陽重鎮與本門並無舊約。"
+    },
+    {
+      "id": "shaolin",
+      "reason": "少林與崤山素有武學往來。"
+    },
+    {
+      "id": "huayue",
+      "reason": "華嶽與崤山相鄰，早有交情。"
+    },
+    {
+      "id": "funiu",
+      "reason": "伏牛與崤山素以劍術相互砥礪。"
+    },
+    {
+      "id": "louguan",
+      "reason": "樓觀門人重清修，暫守中立。"
+    },
+    {
+      "id": "wulong",
+      "reason": "五龍觀尚在觀察本門聲勢。"
+    },
+    {
+      "id": "emei",
+      "reason": "峨眉遠在蜀中，少有交集。"
+    },
+    {
+      "id": "chicheng",
+      "reason": "赤城劍閣與本門未立盟約。"
+    },
+    {
+      "id": "zhurong",
+      "reason": "祝融門經營南方，與本門少有往來。"
+    },
+    {
+      "id": "yeyu",
+      "reason": "夜雨樓看重委託，暫無私怨。"
+    },
+    {
+      "id": "nongchao",
+      "reason": "弄潮幫看重水路商利，暫不站隊。"
+    },
+    {
+      "id": "cuishi",
+      "reason": "崔氏看重門第聲譽，尚在觀望。"
+    },
+    {
+      "id": "sute",
+      "reason": "粟特商團與本門商道互惠。"
+    },
+    {
+      "id": "yanbang",
+      "reason": "鹽幫只看商路通暢，未和本門結交。"
+    },
+    {
+      "id": "heishan",
+      "reason": "黑山鐵騎按約收酬，尚未與本門交兵。"
+    },
+    {
+      "id": "heisong",
+      "reason": "黑松寨劫掠崤函山道，與本門結怨。"
+    },
+    {
+      "id": "taihang",
+      "reason": "太行寨眾劫商，本門曾護送受害行旅。"
+    },
+    {
+      "id": "tubo",
+      "reason": "吐蕃與唐境爭奪邊地，本門遭其戒備。"
+    },
+    {
+      "id": "huihe",
+      "reason": "回紇使商往來，尚未與本門立約。"
+    },
+    {
+      "id": "tuqishi",
+      "reason": "突騎施與唐境屢有邊爭，對本門戒備。"
+    },
+    {
+      "id": "nanzhao",
+      "reason": "南詔另有地方盟約，與本門少往來。"
+    },
+    {
+      "id": "longyou_mazei",
+      "reason": "隴右馬賊劫奪商旅，本門行事與其相悖。"
+    },
+    {
+      "id": "qinling_shanfei",
+      "reason": "秦嶺山匪靠劫道為生，與本門衝突。"
+    },
+    {
+      "id": "lingnan_dongzhai",
+      "reason": "嶺南峒寨不信任北來武人。"
+    },
+    {
+      "id": "huainan_shuifei",
+      "reason": "淮南水匪劫掠貨船，敵視護商門派。"
+    },
+    {
+      "id": "taishan_xiangma",
+      "reason": "泰山響馬與各地護商門派為敵。"
+    }
+  ]
+}

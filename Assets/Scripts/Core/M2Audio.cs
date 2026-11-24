@@ -11,6 +11,7 @@ namespace Wuxia
 {
     public sealed class AudioManager : MonoBehaviour
     {
+        public static bool VoiceEnabled { get; set; } = false;
         private const float FadeSeconds = 2.5f;
         private static AudioManager instance;
         private readonly AudioSource[] music = new AudioSource[2];
@@ -160,7 +161,7 @@ namespace Wuxia
         /// <summary>Plays an AI voice-over clip from Resources/Audio/Voice, replacing any line still speaking.</summary>
         public static void Voice(string clipId)
         {
-            if (instance == null || string.IsNullOrEmpty(clipId)) return;
+            if (!VoiceEnabled || instance == null || string.IsNullOrEmpty(clipId)) return;
             var clip = Resources.Load<AudioClip>("Audio/Voice/" + clipId);
             instance.voice.Stop();
             if (clip == null) return;
@@ -179,7 +180,7 @@ namespace Wuxia
         /// <summary>Looks up the voice clip for a raw story-beat text (12-char md5 key in voice_map.json) and plays it.</summary>
         public static void VoiceForText(string rawText, bool femaleHero = false)
         {
-            if (instance == null) return;
+            if (!VoiceEnabled || instance == null) return;
             string clip = ClipFor(rawText, femaleHero);
             if (clip == null) StopVoice();
             else Voice(clip);

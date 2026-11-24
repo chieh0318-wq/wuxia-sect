@@ -66,8 +66,10 @@ namespace Wuxia
             SyncParty();
             UpdateAp();
             RefreshTreasures(); // v1124 C16
-            CenterOn(host.PartyNode);
-            if (!traveling) status.text = $"隊伍駐於{data.NodeLabel(host.PartyNode)}。點選城寨查看守備與路線，點選旗幟查看勢力。";
+            if (HomeNode != null && !traveling) CenterOnHome(); // v1125 #6: open on our own mountain gate
+            else CenterOn(host.PartyNode);
+            if (!traveling) status.text = (HomeNode != null ? $"本門在{data.NodeLabel(HomeNode)}（金色光圈與「本」字旗）。" : "") +
+                $"隊伍駐於{data.NodeLabel(host.PartyNode)}。點選城寨查看守備與路線，點選旗幟查看勢力。";
             if (!traveling && host is GameState game && game.PendingDiploEvent != null)
                 status.text = $"外交急報待決：{game.PendingDiploEvent.title}（{game.PendingDiploTarget?.Label}）。點右上「外交」處理。";
             ApplyView();
@@ -166,6 +168,7 @@ namespace Wuxia
                 }
             }
             BuildTreasures(); // v1124 C16 寶物秘境 seals
+            BuildHome(); // v1125 #6 本門 banner, ring and 回到本門
             focusMarker = MapUi.Rect(map,"Selected seat",0,0,36,36);
             var focusText = MapUi.Text(focusMarker,"◯",0,0,36,36,32,MapUi.Red,TextAnchor.MiddleCenter);
             focusText.fontStyle = FontStyle.Bold;
@@ -334,6 +337,7 @@ namespace Wuxia
 
         private void Update()
         {
+            if (IsOpen) PulseHome(); // v1125 #6
             if (!IsOpen || intel.IsOpen || diplomacy.IsOpen) return;
             Vector2 mouse = Input.mousePosition;
             // The node/faction card floats over the viewport: wheel and drags that start on it must not move the map.
@@ -411,6 +415,7 @@ namespace Wuxia
             focusMarker.localScale = Vector3.one/zoom;
             focusMarker.anchoredPosition = new Vector2(focusedPoint.x - 18 / zoom, -focusedPoint.y + 18 / zoom);
             LayoutTreasures(); // v1124 C16
+            LayoutHome(); // v1125 #6
             Vector2 offset = new((ViewWidth-MapWidth*zoom)/2+pan.x,(ViewHeight-MapHeight*zoom)/2-pan.y);
             if (party.gameObject.activeSelf && data.Nodes.TryGetValue(host?.PartyNode ?? "",out var partyNode))
                 occupied.Add(new Rect(Position(partyNode)*zoom + offset + new Vector2(-30.5f,3.5f),new Vector2(23,23)));

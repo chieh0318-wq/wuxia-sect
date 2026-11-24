@@ -267,6 +267,8 @@ namespace Wuxia
                 ShowCommands("門派事務・" + category.name, new[] { ("‹ 返回分類", "查看其他門派事務（右鍵亦可返回）", (Action)DrawCategories, false) }
                     .Concat(category.entries));
                 commandsBack = DrawCategories; // v1125 #16: right-click / Esc returns to the categories
+                if (commandList.childCount > category.entries.Length)
+                    targets["cmd_back"] = (RectTransform)commandList.GetChild(commandList.childCount - category.entries.Length - 1);
                 if (category.name == "建造" && commandList.childCount > 2)
                     targets["cmd_build"] = (RectTransform)commandList.GetChild(commandList.childCount - category.entries.Length);
                 if (category.name == "人事" && commandList.childCount > 2)

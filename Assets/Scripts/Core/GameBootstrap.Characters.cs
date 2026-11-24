@@ -56,6 +56,7 @@ namespace Wuxia
             if (choosingBuilding) CancelBuild();
             sectRosterMode = true;
             ShowCharacterDirectory(0, directoryFocus);
+            tutorial?.Record("open_roster"); // v1125 #7
         }
 
         private void ShowCharacterDirectory(int filter, string focusId)

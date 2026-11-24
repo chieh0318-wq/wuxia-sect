@@ -368,5 +368,117 @@ namespace Wuxia
             ui.Message($"服下{EffectText.ItemName(id)}，傷勢{(state.Protagonist.injury == 0 ? "痊癒" : "減輕")}。", "skill_medicine", 1);
             ShowManuals();
         }
+
+        // ── #20: month report scroll, the 軍師's summary and the new-month opener ─────────────────────────────
+
+        private string lastOpenerId;
+
+        /// <summary>
+        /// Shows the memorial-scroll report; when it is rolled up the 軍師 (謝瑾 / 謝蘊) gives a one-line summary and a
+        /// suggestion for next month, then one of our own people opens the new month.
+        /// </summary>
+        private void ShowMonthReport(string title, IList<string> lines, (int silver, int food, int reputation) before, Action read)
+        {
+            var net = (state.Silver - before.silver, state.Food - before.food, state.Reputation - before.reputation);
+            ui.ShowMonthScroll(title, lines, net, () =>
+            {
+                read?.Invoke();
+                if (capturing) return;
+                PlayMonthTalks(net, null);
+            });
+        }
+
+        private void PlayMonthTalks((int silver, int food, int reputation) net, Action done)
+        {
+            var talks = new List<PortraitLine>();
+            var advisor = AdvisorLine(net);
+            if (advisor.HasValue) talks.Add(advisor.Value);
+            var opener = NewMonthOpener();
+            if (opener.HasValue) talks.Add(opener.Value);
+            ui.ShowTalk(talks, done);
+        }
+
+        /// <summary>The 軍師's summary for the month just closed, with one concrete suggestion from the numbers.</summary>
+        private PortraitLine? AdvisorLine((int silver, int food, int reputation) net)
+        {
+            var friend = StoryCharacters.FirstOrDefault(person => person.id == state.FriendId);
+            if (friend == null || AbsenceReason(friend.id) != null) return null;
+            string summary = $"{state.Protagonist.name}，本月結算：銀兩 {net.silver:+0;−0;0}、糧食 {net.food:+0;−0;0}、聲望 {net.reputation:+0;−0;0}。";
+            return new PortraitLine(friend.name, "軍師・本月總結", friend.portrait ?? friend.id, friend.gender,
+                summary + AdvisorAdvice(net), right: true);
+        }
+
+        private string AdvisorAdvice((int silver, int food, int reputation) net)
+        {
+            int meals = Math.Max(1, state.Disciples.Count * state.Data.Start.foodPerDisciple);
+            int foodMonths = state.Food / meals;
+            if (foodMonths < 2)
+                return $"糧倉只夠撐{(foodMonths <= 0 ? "不到一" : "一")}個月，下月務必先顧糧食：開伙前先興建田舍、伙房，或拿銀兩去買糧。";
+            if (net.silver < 0)
+                return $"入不敷出，每月少了 {-net.silver} 兩。下月宜興建能生財的屋舍，或派善經商的弟子去打點買賣。";
+            var hostile = WorldMapData.Load().Factions.Where(faction => state.IsFactionKnown(faction.id) &&
+                faction.StanceWith(state.RelationShift(faction.id)) == "hostile").Select(faction => faction.Label).FirstOrDefault();
+            int injured = state.Disciples.Count(member => member.injury > 0);
+            if (injured > 0)
+                return $"門中有 {injured} 人帶傷，下月先施藥義診，別急著出兵。" + (hostile != null ? $"{hostile}那邊也還虎視眈眈。" : "");
+            if (hostile != null)
+                return $"{hostile}對我們敵意未消，下月出門歷練多帶幾個好手，也可派人去外交斡旋。";
+            if (state.Disciples.Count < 6)
+                return "人手還太少，下月不妨開門收徒，派得出去的人多了，事情才辦得快。";
+            return "門中諸事順遂。下月可以讓弟子外出歷練，或去探一探江湖傳聞裡的秘境。";
+        }
+
+        /// <summary>
+        /// One of our own people speaks first in the new month. Weight = 1 + rank bonus (title / martial rank),
+        /// the childhood friend ×2; everyone present has a chance, and nobody opens two months running.
+        /// </summary>
+        private PortraitLine? NewMonthOpener()
+        {
+            var pool = new List<(string id, string name, string title, string portrait, string gender, float weight)>();
+            foreach (var member in state.Disciples.Where(member => AbsenceReason(member.id) == null))
+                pool.Add((member.id, member.name, DiscipleTitle(member), PortraitService.IdOrDefault(member.portrait, member.id),
+                    member.gender, 1 + RankWeight(member)));
+            var friend = StoryCharacters.FirstOrDefault(person => person.id == state.FriendId);
+            if (friend != null && AbsenceReason(friend.id) == null)
+                pool.Add((friend.id, friend.name, "軍師", friend.portrait ?? friend.id, friend.gender, 2 * (1 + 2)));
+            if (pool.Count > 1) pool.RemoveAll(entry => entry.id == lastOpenerId);
+            if (pool.Count == 0) return null;
+            float roll = UnityEngine.Random.value * pool.Sum(entry => entry.weight);
+            var pick = pool[pool.Count - 1];
+            foreach (var entry in pool)
+            {
+                if ((roll -= entry.weight) > 0) continue;
+                pick = entry;
+                break;
+            }
+            lastOpenerId = pick.id;
+            string month = state.Date;
+            string text;
+            if (pick.id == state.FriendId)
+                text = FriendLines[UnityEngine.Random.Range(0, FriendLines.Length)].Replace("{name}", state.Protagonist.name);
+            else
+            {
+                var member = state.Disciples.First(entry => entry.id == pick.id);
+                var cast = CastDialogue.Find(member.id)?.daily?.Get(CastDialogue.Tier(CastDialogue.Score(state, member)));
+                var fallback = (member.dialogue ?? Array.Empty<string>()).Concat(state.Data.GeneralLines)
+                    .Where(line => !string.IsNullOrWhiteSpace(line)).ToArray();
+                text = CastDialogue.Format(state, CastDialogue.Pick(cast) ?? CastDialogue.Pick(fallback) ?? "新的一月，請吩咐。", member.id);
+            }
+            return new PortraitLine(pick.name, $"{month}・新月　{pick.title}", pick.portrait, pick.gender, text);
+        }
+
+        /// <summary>
+        /// Temporary rank weight until PB's 位階 ladder lands (v1125 #11): senior titles and martial rank count,
+        /// the 總管 a little more. PC replaces this with the real ladder.
+        /// </summary>
+        private float RankWeight(DiscipleData member)
+        {
+            float weight = 0;
+            string title = member.title ?? "";
+            if (title.Contains("大師") || title.Contains("二師") || title.Contains("長老") || title.Contains("執事")) weight += 2;
+            if (state.Story.delegateId == member.id) weight += 1;
+            weight += Mathf.Max(0, RankSystem.Index(member.rank ?? (member.lines?.Length > 0 ? RankSystem.Martial(member.lines) : null))) * .5f;
+            return weight;
+        }
     }
 }

@@ -113,7 +113,18 @@ namespace Wuxia
                 return;
 
             float phase = .7f + Mathf.Sin(Time.unscaledTime * 5) * .25f;
-            if (key.StartsWith("ui:", StringComparison.Ordinal) && targets.TryGetValue(key.Substring(3), out var target))
+            RectTransform target = null;
+            if (key.StartsWith("ui:", StringComparison.Ordinal))
+            {
+                targets.TryGetValue(key.Substring(3), out target);
+                // v1125 #7: the menus are two levels deep. When the wanted button is not on screen (another
+                // category is open), light 「‹ 返回分類」 so the guide always points at the next click.
+                if ((target == null || !target.gameObject.activeInHierarchy) && CommandsInSubmenu &&
+                    targets.TryGetValue("cmd_back", out var back) && back != null && back.gameObject.activeInHierarchy)
+                    target = back;
+                if (target != null && !target.gameObject.activeInHierarchy) target = null;
+            }
+            if (target != null)
             {
                 target.GetWorldCorners(highlightCorners);
                 Vector2 min = canvas.InverseTransformPoint(highlightCorners[0]);

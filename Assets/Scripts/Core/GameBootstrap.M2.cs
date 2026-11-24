@@ -58,7 +58,8 @@ namespace Wuxia
             var lines = reports.SelectMany(report => report.Lines).ToList();
             if (!capturing && !state.Save())
                 lines.Add("自動存檔失敗。");
-            ui.ShowModal("旅途中的門派月報", lines, closed: ShowRequestedLeader);
+            // v1125 #20: travel month-ends use the same report scroll.
+            ui.ShowMonthScroll("旅途中的門派月報", lines, null, ShowRequestedLeader);
         }
 
         private bool HandleWorldMapInput()

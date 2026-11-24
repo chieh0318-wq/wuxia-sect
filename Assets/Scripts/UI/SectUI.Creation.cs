@@ -639,11 +639,12 @@ namespace Wuxia
 
         /// <summary>One attribute row: seal glyph, name, pip track (min / base markers), value, delta and − / ＋.</summary>
         internal void CreationAttribute(int index, int current, int baseValue, int minimum, int maximum, int bonus,
-            string description, Action less, Action more)
+            string description, Action less, Action more, string perPoint = null)
         {
             string name = AttributeSystem.Names[index];
             Color tint = AttributeSystem.Tints[index];
-            var row = CreationRow(name, 84);
+            bool showPerPoint = !string.IsNullOrEmpty(perPoint);
+            var row = CreationRow(name, showPerPoint ? 108 : 84);
             var card = Panel(name, row, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero, false);
             UiKit.Skin(card.GetComponent<Image>(), "Wood");
             var seal = Rect("Seal", card);
@@ -669,7 +670,17 @@ namespace Wuxia
             Anchor(caption.rectTransform, Vector2.up, Vector2.up, new(90, -42), new(196, -6));
             var benefit = Label(card, description, 18, TextAnchor.MiddleLeft);
             benefit.color = CardMuted;
-            Anchor(benefit.rectTransform, Vector2.zero, Vector2.right, new(90, 6), new(-300, 36));
+            Anchor(benefit.rectTransform, Vector2.zero, Vector2.right, new(90, showPerPoint ? 32 : 6), new(-300, showPerPoint ? 58 : 36));
+            if (showPerPoint)
+            {
+                // v1126 #4: what one more point buys, computed from the live formulas (AttributePerPoint).
+                var each = Label(card, perPoint, 18, TextAnchor.MiddleLeft);
+                each.name = "每點效果";
+                each.color = new Color(.99f, .80f, .45f);
+                each.resizeTextMinSize = 15;
+                each.resizeTextMaxSize = 18;
+                Anchor(each.rectTransform, Vector2.zero, Vector2.right, new(90, 4), new(-300, 30));
+            }
 
             var track = Rect("Attribute pips", card);
             Anchor(track, Vector2.up, Vector2.one, new(206, -33), new(-300, -15));
@@ -718,7 +729,8 @@ namespace Wuxia
         internal bool StoryOpen => storyScreen != null;
 
         internal void ShowStoryBeat(string speaker, string text, string image, string portrait, bool required,
-            Action next, Action skip, string skipLabel = "略過", string voiceText = null, bool femaleHero = false, bool speakerOnRight = false)
+            Action next, Action skip, string skipLabel = "略過", string voiceText = null, bool femaleHero = false, bool speakerOnRight = false,
+            string tag = null)
         {
             CloseModal(force: true);
             CloseTalk(false);
@@ -768,6 +780,15 @@ namespace Wuxia
             var name = Label(nameplate, string.IsNullOrWhiteSpace(speaker) ? "旁白" : speaker, 30, TextAnchor.MiddleLeft);
             name.color = CardGold;
             Fill(name.rectTransform, 14);
+            if (!string.IsNullOrEmpty(tag))
+            {
+                // v1126 #14: relation / status shown as a tag beside the nameplate, never inside the spoken line.
+                var badge = Panel("Speaker tag", dock, Vector2.up, Vector2.up, new(414, -46), new(414 + tag.Length * 22 + 36, 4), false);
+                UiKit.Skin(badge.GetComponent<Image>(), "Jade");
+                var tagText = Label(badge, tag, 22, TextAnchor.MiddleCenter);
+                tagText.color = new Color(.90f, .96f, .88f);
+                Fill(tagText.rectTransform, 4);
+            }
             storyText = Label(dock, "", 30, TextAnchor.UpperLeft);
             storyText.color = CardText;
             storyText.font = UiKit.Font(string.IsNullOrEmpty(speaker) ? "Narration" : "Dialogue", font, text);

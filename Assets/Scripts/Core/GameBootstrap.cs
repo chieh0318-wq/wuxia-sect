@@ -134,6 +134,9 @@ namespace Wuxia
             ui.ShowMapButtons(ToggleWorldMap, () => ToggleWorldMap(true), ShowCharacterDirectory, OpenSystemMenu, ShowSectRoster);
             if (startTutorial)
                 BootStep("tutorial", () => tutorial = new TutorialGuide(ui, state));
+            // v1126 #8: the 任務 panel (short-term goal on top, the four routes pinned underneath).
+            ui.TutorialQuest = () => tutorial?.Current;
+            ui.ShowQuestPanel(state);
         }
 
         private static bool BootStep(string name, Action action)

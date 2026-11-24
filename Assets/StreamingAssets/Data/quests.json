@@ -1,0 +1,68 @@
+{
+  "guestSect": "（待定）派",
+  "guestRole": "客將",
+  "advisorTitle": "軍師",
+  "opening": [
+    "既然留下了，有幾句話，我得先說在前頭。",
+    "崤山劍門要在這世道裡立住，路不止一條。我替你盤算過，大抵有四條。",
+    "其一，外交結盟。與四方門派、官府修好，結盟通好，教他們一家家願與崤山同進退。",
+    "其二，武力征服。整頓人馬，攻寨拔城，以劍說話。來得快，卻也最險。",
+    "其三，富甲天下。經商置產，廣積錢糧；銀子使得動傭兵，也買得來人心。",
+    "其四，天下第一。你若能把劍練到無人能及，在武林大會上折服群雄，天下英雄自會來投。",
+    "四條路，可以只走一條，也可以兼而行之。怎麼走，由你決定——我只管替你算路。",
+    "眼下且不必想得太遠。先把山門立穩：收徒、蓋屋、攢下名聲。要緊的事，我會一件一件替你記著。"
+  ],
+  "factionIntro": [
+    { "id": "shaolin", "text": "少林與我崤山素有武學往來，算是故交。逢年節備份薄禮，情誼自然深厚；若以勢相逼，只怕反生嫌隙。" },
+    { "id": "huayue", "text": "華嶽與崤山比鄰而居，早年兩家弟子常互相走動。鄰里之誼最是要緊，莫教小事傷了和氣。" },
+    { "id": "heisong", "text": "黑松寨盤踞崤函山道，劫掠過往行旅，與我們早結下樑子。此輩只認刀劍，遲早要有一戰。" },
+    { "id": "taihang", "text": "太行寨眾專劫商旅，本門從前護送過被劫的客商，他們記恨在心。若要用兵，先把寨中虛實摸清。" }
+  ],
+  "routes": [
+    { "id": "diplomacy", "name": "外交結盟", "direction": "與各派、官府修好結盟，使其歸附。", "condition": "", "progress": "diplomacy" },
+    { "id": "conquest", "name": "武力征服", "direction": "攻占據點，以兵威服人。", "condition": "", "progress": "conquest" },
+    { "id": "wealth", "name": "富甲天下", "direction": "經商致富，花錢請傭兵、收買人心。", "condition": "", "progress": "" },
+    { "id": "champion", "name": "天下第一", "direction": "主角武功登峰造極，於武林大會奪魁。", "condition": "", "progress": "" }
+  ],
+  "stages": [
+    {
+      "id": "settle",
+      "title": "立穩山門",
+      "brief": "人手、屋舍、名聲三樣齊了，山門才算立得住。",
+      "steps": [
+        { "text": "門下弟子", "metric": "disciples", "target": 6 },
+        { "text": "山門建築", "metric": "buildings", "target": 8 },
+        { "text": "江湖聲望", "metric": "reputation", "target": 22 }
+      ]
+    },
+    {
+      "id": "known",
+      "title": "立足江湖",
+      "brief": "多結識幾家勢力，交一個朋友，江湖上才有我們說話的份。",
+      "steps": [
+        { "text": "結識勢力", "metric": "knownFactions", "target": 8 },
+        { "text": "友好勢力", "metric": "friendlyFactions", "target": 1 },
+        { "text": "江湖聲望", "metric": "reputation", "target": 35 }
+      ]
+    },
+    {
+      "id": "rise",
+      "title": "一方大派",
+      "brief": "結盟也好、攻寨也好，總要先有一處自己說了算的地方。",
+      "steps": [
+        { "text": "友好或歸附勢力", "metric": "loyalFactions", "target": 2 },
+        { "text": "轄下據點", "metric": "heldNodes", "target": 1 },
+        { "text": "門下弟子", "metric": "disciples", "target": 10 }
+      ]
+    }
+  ],
+  "bonds": {
+    "hero": "{background}出身，自幼不愛舞刀弄劍，偏愛讀書、雜學，天資卻是同輩裡最好的。八歲被褚寒山領上崤山，門下排行第三；師父遠行未歸，山門遭難後受同門推舉，暫代掌門。",
+    "heroNoBackground": "八歲被褚寒山領上崤山，門下排行第三；師父遠行未歸，山門遭難後受同門推舉，暫代掌門。",
+    "friend": "出身洛陽謝家。謝家是洛陽士族，與范陽幕府素有往來，城中人脈、錢糧、消息都通。{friend_he}不是崤山弟子，原屬{guestSect}，以客將之身留在崤山替你出謀劃策；同門起初半開玩笑叫{friend_he}「軍師」，後來便沒人再改口。",
+    "master": "崤山劍門第三代掌門，你的師父。你八歲上山，由他一手帶大；他背劍下山赴「十年之約」，至今未歸。",
+    "uncle_schemer": "崤山劍門師叔，你師父的師弟。十年前自請閉關後山，從此不問門事。",
+    "disciple": "崤山劍門弟子，與你同在褚寒山門下學藝，山門遭難後一路跟隨至今。",
+    "recruit": "新近拜入崤山劍門的弟子，由代掌門收錄門下。"
+  }
+}

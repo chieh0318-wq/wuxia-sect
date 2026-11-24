@@ -214,6 +214,7 @@ namespace Wuxia
             resourceLabels[1].text = $"糧食 {state.Food}";
             resourceLabels[2].text = $"聲望 {state.Reputation}";
             resourceLabels[3].text = $"門人 {state.Disciples.Count}";
+            if (questPanel != null) { questState = state; RefreshQuestPanel(); } // v1126 #8
         }
 
         public void ShowCommands(string title, IEnumerable<(string label, Action run)> commands) =>

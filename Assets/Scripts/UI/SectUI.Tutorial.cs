@@ -103,11 +103,13 @@ namespace Wuxia
             Anchor(objectiveBody.rectTransform, Vector2.zero, Vector2.one, new(20, ObjectiveHeight - 58 - bodyHeight), new(-20, -58));
             Anchor(objectiveHint.rectTransform, Vector2.zero, Vector2.one, new(20, 49), new(-20, -66 - bodyHeight));
             objective.gameObject.SetActive(true);
+            RefreshQuestPanel(); // v1126 #8: the 任務 panel follows the guide step
         }
 
         internal void HideObjective()
         {
             objective.gameObject.SetActive(false);
+            RefreshQuestPanel();
             pulse.gameObject.SetActive(false);
             landmarkMarker.gameObject.SetActive(false);
         }

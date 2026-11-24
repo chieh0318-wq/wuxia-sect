@@ -68,7 +68,10 @@ namespace Wuxia
                 rank = hero.lines?.Length > 0 ? RankSystem.Martial(hero.lines) : null,
                 cap = hero.lines?.Length > 0 ? RankSystem.Martial(hero.lines, true) : null,
                 lines = hero.lines, attrs = hero.attrs,
-                personality = "本門代掌門，師父不在時主持門戶。",
+                // v1126 #18: the hero's own arts are listed like anyone else's signature skills.
+                signatureSkills = (hero.arts ?? Array.Empty<string>()).Select(MartialArts.Find).Where(art => art != null)
+                    .Select(art => art.name).ToArray(),
+                personality = "天資聰穎，從前不愛舞刀弄劍，讀書雜學卻樣樣上心；如今代掌門戶，凡事親力親為。",
                 background = $"{state.Data.Start.sectName}門下排行第三，師父遠行後受同門推舉暫代掌門。"
             };
         }
@@ -332,11 +335,13 @@ namespace Wuxia
                 (line.id == hero.major ? "（主修）" : ""), (Action)(() =>
             {
                 hero.major = line.id;
-                ui.Message($"主修改為{EffectText.LineName(line.id)}：修練與「主修武學」加成都落在這一路。", "skill_sword");
+                ui.Message($"主修改為{EffectText.LineName(line.id)}。修練這一路另有加成，「主修武學」天賦、切磋心得與上陣招式都以這一路為主。", "skill_sword");
                 ShowProtagonist();
             }))).ToList();
             buttons.Add(("‹ 返回主角頁", ShowProtagonist));
-            ui.ShowModal("調整主修", new[] { "主修決定修練時優先精進哪一路武學，主修已達上限時改練其他未滿的武學。" }, buttons);
+            // v1126 #2: the same explanation as on the creation screen, for the line that is 主修 now.
+            ui.ShowModal("調整主修", new[] { NewGameFlow.MajorExplanation(RankSystem.IsCombat(hero.major) ? hero.major : "sword"),
+                "點選下方一路武學改為主修（可隨時再改）。" }, buttons);
             ui.SizeModal(1300, 680);
             ui.FitModalButtons(1300);
         }

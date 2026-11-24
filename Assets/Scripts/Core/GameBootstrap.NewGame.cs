@@ -79,6 +79,16 @@ namespace Wuxia
                     selected.Add(option);
             ShowTalents();
         }
+        /// <summary>v1126 #5: as many talents picked as the budget allows, to check the 已選天賦 bar against 繼續.</summary>
+        internal void CaptureTalentsFull()
+        {
+            selected.Clear();
+            RollTalents();
+            foreach (var option in offered.Where(option => option.cost > 0).OrderBy(option => option.cost).ThenByDescending(option => option.name.Length))
+                if (CanPick(option, talents.budget, talents.maxPicks))
+                    selected.Add(option);
+            ShowTalents();
+        }
         internal void CapturePrologue()
         {
             var opening = story.openingBeats ?? Array.Empty<StoryBeat>();
@@ -237,15 +247,6 @@ namespace Wuxia
                 {
                     selected.Clear();
                     ShowTalents(1f);
-                }),
-                // v1124 C12: 「主修武學」 talents land on the line chosen here (cycles through the combat lines).
-                ($"主修：{EffectText.LineName(MajorId)}", () =>
-                {
-                    var combat = RankSystem.Categories.Where(category => category.family == "combat")
-                        .Select(category => category.id).ToArray();
-                    if (combat.Length > 0)
-                        state.Protagonist.major = combat[(Array.IndexOf(combat, MajorId) + 1) % combat.Length];
-                    ShowTalents(ui.TalentScrollPosition);
                 })
             };
             ui.ShowCreation("天賦", Array.Empty<string>(), actions, CompleteTalents, CompleteTalents);
@@ -258,6 +259,12 @@ namespace Wuxia
                     selected.Remove(option);
                     ShowTalents(ui.TalentScrollPosition);
                 }) : null)).ToArray());
+            // v1126 #2: 主修 is picked from the combat lines, with what it changes written beside it.
+            ui.CreationMajor(MajorId, id =>
+            {
+                state.Protagonist.major = id;
+                ShowTalents(ui.TalentScrollPosition);
+            }, MajorExplanation(MajorId));
             // Pinned at the TOP (synchronized with 武學與技藝 so 14 skill bars are always visible while scrolling talents).
             ui.SkillTiles(PreviewLines(selected));
             ui.CreationTabs(new[] { "", "legendary", "rare", "common", "negative" }.Select(key =>
@@ -297,6 +304,14 @@ namespace Wuxia
 
         private string MajorId => RankSystem.IsCombat(state.Protagonist.major) ? state.Protagonist.major : "sword";
 
+        /// <summary>v1126 #2: what 主修 decides, in one line (shared with the hero page's 調整主修).</summary>
+        internal static string MajorExplanation(string major)
+        {
+            string line = EffectText.LineName(major);
+            return $"主修{line}：標「主修武學」的天賦，階位與潛力都加在{line}；每月修練{line}一路另有加成；" +
+                $"與弟子切磋的心得記在{line}；上陣時以{line}招式為主。進遊戲後可在主角頁「調整主修」改換。";
+        }
+
         private int Spent => selected.Sum(option => option.cost);
         private bool CanPick(CreationOption option, int budget, int limit) =>
             selected.Count < limit && Spent + option.cost <= budget;
@@ -316,11 +331,15 @@ namespace Wuxia
         }
 
         /// <summary>Gameplay effects of an option as a compact tag line (「武力 +2・身法 +2」).</summary>
-        private static string Details(CreationOption option)
+        private string Details(CreationOption option)
         {
             // v1124: one shared formatter (EffectText) for creation tags and story-choice impact lines.
+            // v1126 #2: 「主修武學」 bonuses name the line they land on.
+            string major = EffectText.LineName(MajorId);
             var details = (option.effects ?? Array.Empty<GameEffect>())
-                .Select(effect => EffectText.Describe(effect)).Where(line => line.Length > 0).ToList();
+                .Select(effect => effect?.@ref == "martial" && effect.key is "rank" or "lineRank" or "cap"
+                    ? EffectText.Describe(effect).Replace("主修武學", $"主修（{major}）")
+                    : EffectText.Describe(effect)).Where(line => line.Length > 0).ToList();
             if (!string.IsNullOrEmpty(option.category) && RankSystem.Categories.Any(entry => entry.id == option.category))
             {
                 int steps = RankSystem.LearnSteps(option);
@@ -440,7 +459,8 @@ namespace Wuxia
                 ui.CreationAttribute(slot, value, characters.attrBase, characters.attrMin, characters.attrMax, bonuses[slot],
                     AttributeBenefit(slot),
                     value > characters.attrMin ? () => ChangeAttribute(slot, -1) : null,
-                    freeAttributes > 0 && value < characters.attrMax ? () => ChangeAttribute(slot, 1) : null);
+                    freeAttributes > 0 && value < characters.attrMax ? () => ChangeAttribute(slot, 1) : null,
+                    AttributePerPoint.Describe(slot));
             }
         }
 
@@ -538,19 +558,35 @@ namespace Wuxia
             Play(story.friendBeats, IntroduceSectGoals, SkipStory);
         }, SkipStory);
 
-        private void IntroduceSectGoals()
+        /// <summary>
+        /// v1126 #8 / #14: after taking over, the 軍師 (the friend of the opposite sex) lays out the four routes in
+        /// person and says the choice is the hero's, then speaks of the neighbouring powers in plain words — the
+        /// relation itself is a tag on screen, never part of the line (quests.json).
+        /// </summary>
+        private void IntroduceSectGoals() => IntroduceSectGoals(false);
+
+        private void IntroduceSectGoals(bool factionsOnly)
         {
-            var friend = Friend();
-            var factions = new[] { "shaolin", "huayue", "heisong", "taihang" }
-                .Select(GameState.FindFaction).Where(faction => faction != null).ToArray();
-            var briefing = factions.Select(faction => new StoryBeat
+            var board = QuestBoardData.Data;
+            var opening = (factionsOnly ? Array.Empty<string>() : board.opening ?? Array.Empty<string>()).Where(text => !string.IsNullOrWhiteSpace(text))
+                .Select(text => new StoryBeat { speaker = "{friend}", portrait = "friend", text = text }).ToList();
+            foreach (var intro in board.factionIntro ?? Array.Empty<QuestIntro>())
             {
-                speaker = friend?.name ?? (state.Protagonist.gender == "女" ? "謝蘊" : "謝瑾"),
-                portrait = friend?.portrait ?? state.FriendId,
-                text = $"{faction.Label}（{faction.Relation}）。{GameState.RelationExplanation(faction, 0)}"
-            }).ToArray();
-            ui.ShowSectGoals(state, () => Play(briefing, ChooseDisaster, SkipStory));
+                var faction = intro == null ? null : GameState.FindFaction(intro.id);
+                if (faction == null || string.IsNullOrWhiteSpace(intro.text)) continue;
+                var beat = new StoryBeat { speaker = "{friend}", portrait = "friend", text = intro.text };
+                beatTags[beat] = $"{faction.Label}・{faction.Relation}";
+                opening.Add(beat);
+            }
+            if (opening.Count == 0) { ui.ShowSectGoals(state, ChooseDisaster); return; }
+            Play(opening.ToArray(), ChooseDisaster, SkipStory);
         }
+
+        /// <summary>v1126 #14: on-screen tags (e.g. 「少林寺・友好」) for beats whose line must not spell them out.</summary>
+        private readonly Dictionary<StoryBeat, string> beatTags = new();
+
+        internal void CaptureAdvisorOpening() => IntroduceSectGoals();
+        internal void CaptureAdvisorFaction() => IntroduceSectGoals(true);
 
         private void TakeActingTitle()
         {
@@ -707,7 +743,8 @@ namespace Wuxia
                     beat.portrait != "hero", ShowNext, skip, voiceText: beat.text, femaleHero: state.Protagonist.gender == "女",
                     speakerOnRight: !string.IsNullOrEmpty(portrait)
                         && beat.portrait is not ("hero" or "lin" or "xu" or "master")
-                        && !portrait.StartsWith("friend_", StringComparison.Ordinal));
+                        && !portrait.StartsWith("friend_", StringComparison.Ordinal),
+                    tag: beatTags.TryGetValue(beat, out var tag) ? tag : null);
             }
         }
 

@@ -227,41 +227,16 @@ namespace Wuxia
                 (known && host != null ? $"・{faction.RelationWith(host.RelationShift(faction.id))}" : "・虛實未明");
         }
 
-        /// <summary>
-        /// v1126 #12: what the attack button on a stronghold card does. Blocked cases return no action and a reason
-        /// with the way forward. (Rules live with the host; this mirrors the existing ones — outlaw holds are
-        /// assaulted directly, other powers go through 門派戰役 once hostile (朝廷 / 方鎮 / 外族 at any time, with a
-        /// warning) and the party stands at the stronghold.)
-        /// </summary>
-        private (string label, string note, bool blocked, Action run) AttackOption(MapNode node, MapFaction faction, bool held,
-            bool known, Action assault, Action campaign)
+        private (string label, string note, bool blocked, Action run) AttackOption(MapNode node, MapFaction faction, Action campaign)
         {
-            const string attack = "攻打";
-            if (held) return (attack, "本派據點，無須攻打。", true, null);
-            if (faction == null) return (attack, "此地無人據守，行軍前往即可。", true, null);
-            if (faction.Outlaw)
-                return ($"率眾攻討\n勝算 {host.AssaultChance(Garrison(node), OutlawGuard(node) == "丙" ? .9f : .7f):P0}",
-                    host.ActionPoints >= 2 ? "草莽據點：可直接率眾攻討（行動力 2）。" : "率眾攻討需行動力 2，下月再戰。",
-                    host.ActionPoints < 2, assault);
-            if (!known) return (attack, "虛實未明：先派人打探，再議攻守。", true, null);
-            if (host is GameState game && game.Patron?.id == faction.id)
-                return (attack, $"{faction.Label}是本門靠山，須先解除依附才能攻打。", true, null);
-            if (node.id == host.StartNode) return (attack, "此為本門開局立足之地，不可攻打。", true, null);
-            string stance = faction.StanceWith(host.RelationShift(faction.id));
-            string relation = faction.RelationWith(host.RelationShift(faction.id));
-            string warning = KindOf(faction) switch
-            {
-                FlagKind.Court when faction.type == "military" => $"方鎮據點：攻打將與{faction.Label}為敵。",
-                FlagKind.Court => $"朝廷據點：攻打將與{faction.Label}為敵。",
-                FlagKind.Foreign => $"外族據點：攻打將與{faction.Label}開戰。",
-                _ => null
-            };
-            if (warning == null && stance != "hostile")
-                return (attack, $"與{faction.Label}仍是{relation}，需先在外交中交惡、宣戰。", true, null);
-            if (node.id != host.PartyNode) return ("門派戰役", (warning ?? "") + "隊伍須先行軍至此，方可發動門派戰役。", true, null);
-            if (campaign == null) return ("門派戰役", "此處暫不能開戰。", true, null);
-            if (host.ActionPoints < 2) return ("門派戰役", "門派戰役需行動力 2，下月再戰。", true, null);
-            return ("門派戰役 ›", warning ?? $"與{faction.Label}已成敵對，可發動門派戰役（行動力 2）。", false, campaign);
+            if (host is not GameState game || campaign == null)
+                return ("攻打", "此處沒有可攻打的據點。", true, null);
+            if (game.CampaignBlock(node, faction) is string reason)
+                return ("攻打", reason, true, null);
+            string note = faction.Court || faction.type == "foreign"
+                ? $"攻打將與{faction.Label}為敵。（行動力 2）"
+                : $"可發動門派戰役（行動力 2）。";
+            return ("門派戰役", note, false, campaign);
         }
     }
 }

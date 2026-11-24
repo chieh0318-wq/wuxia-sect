@@ -103,21 +103,19 @@ namespace Wuxia
             MapUi.Text(panel, EffectText.Describe(site.rewards, host as GameState), 80, y, 326, 56, 17, MapUi.Jade, TextAnchor.UpperLeft);
             y += 62;
 
-            var route = data.Route(host.PartyNode, node.id);
-            bool here = node.id == host.PartyNode;
-            string message = taken ? "秘寶已經取走。" : here ? "隊伍就在此地，可入境探寶（行動力 1）。" :
-                route == null ? "沒有可通的道路" : $"須先抵達：行軍 {route.Days} 日" + (host.TravelCost(route.Ap) > 0 ? $"　行動力 {host.TravelCost(route.Ap)}" : "");
-            MapUi.Text(panel, message, 20, y, 386, 40, 18, taken ? MapUi.Ink : MapUi.Jade, TextAnchor.UpperLeft);
+            var game = host as GameState;
+            string block = game?.TreasureBlock(site);
+            if (game != null && game.Story.fieldDispatches.Any(mission => mission.site == site.id))
+                block = "已有隊伍外派至此，可在人事查看進度。";
+            string message = block ?? "選擇最多三人出發，腳程依隊伍輕功而定。";
+            MapUi.Text(panel, message, 20, y, 386, 40, 18, block == null ? MapUi.Jade : MapUi.Ink, TextAnchor.UpperLeft);
 
             var enter = MapUi.Button(panel, "入境探寶\n行動力 1", 20, 610, 124, 48, () => TreasureRequested?.Invoke(site), MapUi.Red, 16);
             enter.name = "入境探寶";
-            enter.interactable = !taken && here && host.ActionPoints >= 1;
+            enter.interactable = game != null && block == null && TreasureRequested != null;
             cardActions.Add(enter);
             var stronghold = MapUi.Button(panel, "查看據點", 151, 610, 124, 48, () => ShowNode(node), null, 18);
             cardActions.Add(stronghold);
-            var go = MapUi.Button(panel, "確認啟程", 282, 610, 124, 48, () => StartTravel(route, node.id), MapUi.Red, 18);
-            go.interactable = !here && route != null && host.ActionPoints >= host.TravelCost(route.Ap);
-            cardActions.Add(go);
         }
 
         /// <summary>Capture hook: opens a treasure card by id (or the first one).</summary>

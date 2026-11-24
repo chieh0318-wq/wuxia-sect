@@ -363,6 +363,7 @@ namespace Wuxia
                 if (map != null && map.IsOpen) map.Close();
                 ui.Refresh(state);
                 ui.Message(result);
+                state.Save();
                 return;
             }
             if (map != null && map.IsOpen) map.Close();

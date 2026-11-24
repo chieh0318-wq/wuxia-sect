@@ -120,7 +120,8 @@ namespace Wuxia
                 AddLine(modalList, "此類人物暫無紀錄。");
             else
             {
-                CreationGrid(2, (people.Length + 1) / 2, 150); // v1126 #18: two skill lines on own cards
+                int columns = kinds?.Any(kind => kind is 0 or 3) == true ? 1 : 2;
+                CreationGrid(columns, (people.Length + columns - 1) / columns, columns == 1 ? 216 : 150);
                 for (int index = 0; index < people.Length; index++)
                     RosterCard(people[index], kinds != null && index < kinds.Length ? kinds[index] : 2, index == focus, index,
                         factionNames != null && index < factionNames.Length ? factionNames[index] : people[index].faction,
@@ -176,12 +177,12 @@ namespace Wuxia
                 var roleText = Label(badge, string.IsNullOrEmpty(role) ? "江湖人士" : role, 18, TextAnchor.MiddleLeft);
                 roleText.color = new Color(.86f, .93f, .86f);
                 Anchor(roleText.rectTransform, Vector2.zero, Vector2.one, new(10, 0), new(-6, 0));
-                // v1125 #18: the card's last line carries the best life skills next to the faction.
+                // The full martial and life lists wrap below the portrait.
                 bool own = kind is 0 or 3 && !string.IsNullOrEmpty(life);
                 var faction = Label(card, own ? life : factionName ?? "", own ? 17 : 18, own ? TextAnchor.UpperLeft : TextAnchor.MiddleLeft);
                 faction.color = own ? new Color(.78f, .88f, .74f) : CardMuted;
                 faction.resizeTextMinSize = 15;
-                Anchor(faction.rectTransform, Vector2.zero, Vector2.right, new(114, 8), new(-12, own ? 56 : 40));
+                Anchor(faction.rectTransform, Vector2.zero, Vector2.right, new(own ? 18 : 114, 8), new(-12, own ? 92 : 40));
                 RankSeal(card, person.rank, person.cap, new(-76, -48), new(-10, -10), 22);
                 card.GetComponentInChildren<Text>().text = "";
             }

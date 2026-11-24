@@ -593,34 +593,6 @@ namespace Wuxia
 
             // v1126 #12: command row — attack (every stronghold; grey with the reason when not possible) /
             // scout or visit / intel / march. The reason line sits right above the buttons.
-            Action assault = !outlaw ? null : () =>
-            {
-                float guard = OutlawGuard(node) == "丙" ? .9f : .7f;
-                if (BattleRequested != null)
-                {
-                    var encounter = OutlawEncounter(node, faction);
-                    BattleRequested.Invoke(encounter, won =>
-                    {
-                        if (won)
-                        {
-                            string result = host.Assault(node.id, faction.id, garrison, 0.01f);
-                            status.text = result;
-                        }
-                        else
-                        {
-                            status.text = $"攻討{data.NodeLabel(node.id)}失利，暫退休整。";
-                        }
-                        UpdateAp();
-                        ShowNode(node);
-                    });
-                    return;
-                }
-                string resultFallback = host.Assault(node.id, faction.id, garrison, guard);
-                AudioManager.Play(host.HoldsNode(node.id) ? "complete" : "page");
-                UpdateAp();
-                ShowNode(node);
-                status.text = resultFallback;
-            };
             Action campaignRun = CampaignRequested == null || faction == null ? null : () =>
                 CampaignRequested.Invoke(node, faction, result =>
                 {
@@ -628,7 +600,7 @@ namespace Wuxia
                     ShowNode(node);
                     status.text = result;
                 });
-            var attack = AttackOption(node, faction, held, known, assault, campaignRun);
+            var attack = AttackOption(node, faction, campaignRun);
             var note = MapUi.Text(panel, attack.note, 20, 560, 386, 48, 17, attack.blocked ? MapUi.Red : MapUi.Jade, TextAnchor.LowerLeft);
             note.name = "攻打說明";
             const int buttonY = 612, buttonW = 92, buttonH = 48;

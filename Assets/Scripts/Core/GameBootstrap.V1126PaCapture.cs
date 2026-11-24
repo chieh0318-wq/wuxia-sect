@@ -76,6 +76,31 @@ namespace Wuxia
             ("P20_card_outlaw.png", () => CaptureMapCard("heisong")),
             ("P21_card_foreign.png", () => CaptureMapCard("tubo")),
             ("P22_card_unknown.png", () => CaptureMapCard("louguan", known: false)),
+            ("P23_treasure_remote.png", () =>
+            {
+                OpenCaptureMap();
+                var site = RealmContent.Data.treasures.First(entry => entry.node != state.StartNode && state.TreasureBlock(entry) == null);
+                map.CaptureTreasure(site.id);
+            }),
+            ("P24_dispatch_roster.png", () =>
+            {
+                map.Close();
+                ui.Canvas.enabled = true;
+                var site = RealmContent.Data.treasures.First(entry => entry.node != state.StartNode && state.TreasureBlock(entry) == null);
+                state.SendTreasureDispatch(site, new[] { GameState.HeroId });
+                if (!state.IsDispatched(GameState.HeroId))
+                    throw new InvalidOperationException("Treasure dispatch did not reserve its party.");
+                ShowFieldDispatches();
+            }),
+            ("P25_training_manuals.png", () =>
+            {
+                ui.CloseModal(force: true);
+                var party = new[] { state.Disciples.First(member => AssignmentSystem.Block(state, member.id) == null).id };
+                ChooseTraining(data.Actions.First(action => action.id == "train"), party);
+            }),
+            ("P26_adviser_female_hero.png", () => CaptureFlow(female: true).CaptureFriendArrival(true)),
+            ("P27_adviser_male_hero.png", () => CaptureFlow().CaptureFriendArrival(false)),
+            ("P28_master_laosan_male.png", () => CaptureFlow().CaptureMasterLeaves()),
         };
 
         private NewGameFlow CaptureFlow(bool female = false)

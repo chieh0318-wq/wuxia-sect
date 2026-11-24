@@ -611,11 +611,16 @@ namespace Wuxia
 
         internal void CaptureSuccession() => CaptureBeats(story.successionBeats, 1);
 
-        internal void CaptureFriendArrival()
+        internal void CaptureFriendArrival() => CaptureFriendArrival(true);
+
+        internal void CaptureFriendArrival(bool female)
         {
-            state.Protagonist.gender = "女";
-            state.Protagonist.name = "盧凝雪";
-            state.Protagonist.portrait = state.Protagonist.lookId = "hero_f1";
+            if (female)
+            {
+                state.Protagonist.gender = "女";
+                state.Protagonist.name = "盧凝雪";
+                state.Protagonist.portrait = state.Protagonist.lookId = "hero_f1";
+            }
             CaptureBeats(story.friendBeats, 2);
         }
 

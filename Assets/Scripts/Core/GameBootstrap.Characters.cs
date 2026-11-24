@@ -115,7 +115,7 @@ namespace Wuxia
             string[] factionNames = visible.Select(person => person.id == state.FriendId ? GuestLabel :
                 FactionOf(person, factions)?.Label ?? person.faction).ToArray();
             // v1126 #18: every own person's card (hero and friend included) carries the best martial and life lines.
-            string[] lifeSkills = visible.Select(person => CombatSummary(person.lines, 3) + "\n" + LifeSkillSummary(person.lines, 3)).ToArray();
+            string[] lifeSkills = visible.Select(person => CombatSummary(person.lines, int.MaxValue) + "\n" + LifeSkillSummary(person.lines, int.MaxValue)).ToArray();
             ui.ShowDirectory(filters, filter, next => ShowCharacterDirectory(next, directoryFocus), visible, kinds, factionNames,
                 visible.Length == 0 ? -1 : focus, index => ShowCharacterDirectory(filter, visible[index].id),
                 visible.Length == 0 ? null : BuildDossier(visible[focus], factions, filter), sectOnly ? "本門" : "江湖人物",

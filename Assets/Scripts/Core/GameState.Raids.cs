@@ -33,7 +33,7 @@ namespace Wuxia
                 _ => "wit"
             };
             return order == RaidOrder.Garrison ? 1 :
-                Mathf.Clamp(.66f + .025f * (AssignmentSystem.Attribute(this, id, attr) - 10)
+                Mathf.Clamp(.66f + AttributeSystem.CheckBonus(AssignmentSystem.Attribute(this, id, attr))
                     + .055f * AssignmentSystem.Grade(this, id) + .04f * WarWorks("spy_lodge"), .3f, .96f);
         }
 

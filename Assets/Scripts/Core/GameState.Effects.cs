@@ -22,7 +22,7 @@ namespace Wuxia
                     case "food": Food = Mathf.Max(0, Food + value); break;
                     // 魅力 widens reputation gains (never losses).
                     case "reputation":
-                        Reputation += value > 0 ? Mathf.Max(1, Mathf.RoundToInt(value * (1 + .03f * AttributeBonus("cha")))) : value;
+                        Reputation += value > 0 ? Mathf.Max(1, Mathf.RoundToInt(value * (1 + AttributeSystem.ReputationPerPoint * AttributeBonus("cha")))) : value;
                         break;
                     case "monthlyTerms": Story.monthlyTermsLeft = value; break;
                     case "monthlyFood": Story.monthlyFood += value; break;

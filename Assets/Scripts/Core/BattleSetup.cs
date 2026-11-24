@@ -12,6 +12,9 @@ namespace Wuxia
         public bool isPlayer;
         public int level, hp, maxHp, qi, maxQi, attack, speed;
         public float dodge;
+        /// <summary>v1126b 決定 1: 身法 hit (cancels the target's dodge), 幸運 crit, 內力 qi regained each turn.</summary>
+        public float hit, crit = AttributeSystem.BaseCrit;
+        public int qiRegen;
         public int defense, phase = 1, intentRound;
         public string element, enemyProfile;
         public BattleSkill intent;
@@ -193,6 +196,7 @@ namespace Wuxia
                 defense = Math.Max(8, stats.Attack / 3),
                 element = "木",
                 dodge = stats.Dodge,
+                hit = stats.Hit, crit = stats.Crit, qiRegen = stats.QiRegen,
                 personalArts = true,
                 knownMoves = MartialArts.KnownMoves(state.ProtagonistArts, state.Protagonist.major, catalog.Skills.ContainsKey),
                 moves = MartialArts.Moves(state.ProtagonistArts,
@@ -220,6 +224,7 @@ namespace Wuxia
                 defense = Math.Max(8, derived.Attack / 3),
                 element = "水",
                 dodge = derived.Dodge,
+                hit = derived.Hit, crit = derived.Crit, qiRegen = derived.QiRegen,
                 personalArts = true,
                 knownMoves = MartialArts.KnownMoves(state.ArtsOf(d), RankSystem.BestCombat(lines)?.id, catalog.Skills.ContainsKey),
                 moves = MartialArts.Moves(state.ArtsOf(d), RankSystem.BestCombat(lines)?.id, catalog.Skills.ContainsKey)

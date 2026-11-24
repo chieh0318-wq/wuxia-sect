@@ -172,7 +172,7 @@ namespace Wuxia
             int value = AssignmentSystem.Attribute(state, worker, choice.attr);
             var lines = worker == GameState.HeroId ? state.Protagonist.lines : state.Disciples.Find(member => member.id == worker)?.lines;
             int martial = RankSystem.Index(RankSystem.Martial(lines ?? Array.Empty<SkillLine>()));
-            return Mathf.Clamp(.48f + (value - AttributeSystem.Base) * .045f + martial * .02f - stage * .06f +
+            return Mathf.Clamp(.48f + AttributeSystem.CheckBonus(value) + martial * .02f - stage * .06f +
                 state.Story.insightChance, .1f, .95f);
         }
 

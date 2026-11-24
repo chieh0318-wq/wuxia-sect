@@ -257,7 +257,8 @@ namespace Wuxia
         {
             int eloquence = worker == null ? Eloquence(out _) : AssignmentSystem.Eloquence(this, worker);
             float gap = Mathf.Clamp((Prestige - Diplomacy.Strength(faction)) * .004f, -.2f, .2f);
-            float chance = action.chance / 100f + (eloquence - 15) * .02f + Attitude(faction) * .003f + gap + Legitimacy / 100f;
+            float chance = action.chance / 100f + (eloquence - 15) * AttributeSystem.DiplomacyPerPoint +
+                Attitude(faction) * .003f + gap + Legitimacy / 100f;
             return Mathf.Clamp(chance, .05f, .95f);
         }
 

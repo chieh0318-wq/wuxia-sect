@@ -76,12 +76,11 @@ namespace Wuxia
         public string TravelFortune()
         {
             string leader = travellingMembers?.FirstOrDefault() ?? HeroId;
-            float fortune = .012f * (AssignmentSystem.Attribute(this, leader, "luk") - AttributeSystem.Base)
-                + .003f * (AssignmentSystem.Attribute(this, leader, "agi") - AttributeSystem.Base);
+            float fortune = AttributeSystem.FortuneFactor(AssignmentSystem.Attribute(this, leader, "luk"));
             foreach (string member in travellingMembers ?? Array.Empty<string>())
                 AssignmentSystem.Credit(this, member, 1);
             travellingMembers = null;
-            float chance = Mathf.Clamp(.06f + 1.5f * fortune, .01f, .5f);
+            float chance = Mathf.Clamp(.06f * fortune, .01f, .5f);
             if (UnityEngine.Random.value >= chance)
                 return null;
             switch (UnityEngine.Random.Range(0, 3))

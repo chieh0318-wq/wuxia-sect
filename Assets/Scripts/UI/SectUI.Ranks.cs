@@ -31,6 +31,8 @@ namespace Wuxia
                 var stat = Panel(AttributeSystem.Names[i], profile, new(i / 7f, 1), new((i + 1) / 7f, 1),
                     new(3, -114), new(-3, -44), false);
                 UiKit.Skin(stat.GetComponent<Image>(), "Wood");
+                int slot = i, shown = values[i];
+                AttributeHover(stat, slot, () => shown); // v1126b 決定 1
                 var caption = Label(stat, AttributeSystem.Names[i], 18, TextAnchor.MiddleLeft);
                 caption.color = CardMuted;
                 Anchor(caption.rectTransform, Vector2.up, Vector2.one, new(10, -32), new(-4, -4));
@@ -46,7 +48,10 @@ namespace Wuxia
             }
             var derived = stats ?? AttributeSystem.Derive(values, lines, weaponDelta);
             var summary = Label(profile, $"攻擊 {derived.Attack}　先手 {derived.Speed}　氣血 {derived.MaxHp}　內力 {derived.MaxQi}" +
-                $"　內功威力 {derived.QiPower}　閃避 {derived.Dodge:P0}　奇遇 {derived.Fortune:P0}", 20, TextAnchor.MiddleCenter);
+                $"　內功威力 {derived.QiPower}　閃避 {derived.Dodge:P0}　命中 {derived.Hit:+0%;-0%;0%}　暴擊 {derived.Crit:P0}　奇遇 {derived.Fortune:P0}", 20, TextAnchor.MiddleCenter);
+            summary.resizeTextForBestFit = true;
+            summary.resizeTextMinSize = 15;
+            summary.resizeTextMaxSize = 20;
             Anchor(summary.rectTransform, Vector2.zero, Vector2.right, new(8, 4), new(-8, 35));
             SkillColumns(lines);
         }

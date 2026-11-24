@@ -134,7 +134,7 @@ namespace Wuxia
                 "build" or "gather_materials" => ("construction", "wit"),
                 "commerce" or "recruit" or "host" or "diplomacy" => ("commerce", "cha"),
                 "train" or "lecture" or "study" => ("teaching", "wit"),
-                "seclusion" => ("neigong", "wit"),
+                "seclusion" => ("neigong", "qi"),
                 "gather_rumors" => ("commerce", "cha"),
                 "explore" or "secret_realm" => ("qinggong", "luk"),
                 _ => ("commerce", "wit")
@@ -142,7 +142,7 @@ namespace Wuxia
             int rank = Skill(state, id, skill);
             int value = attribute == "cha" ? Eloquence(state, id) : Attribute(state, id, attribute);
             int basis = attribute == "cha" ? 15 : 10;
-            float quality = Mathf.Clamp(.85f + .09f * rank + (value - basis) * .025f, .6f, 1.8f);
+            float quality = AttributeSystem.WorkQuality(rank, value, basis);
             float success = actionId is "explore" or "secret_realm"
                 ? SecretRealms.Chance(state, new RealmChoice { attr = "luk" }, 0, id) : 1;
             string detail = $"{EffectText.LineName(skill)} {RankSystem.At(rank)}・{(attribute == "cha" ? "口才" : AttributeSystem.Names[AttributeSystem.Index(attribute)])} {value}";

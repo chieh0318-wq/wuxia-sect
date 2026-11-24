@@ -647,6 +647,7 @@ namespace Wuxia
             var row = CreationRow(name, showPerPoint ? 108 : 84);
             var card = Panel(name, row, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero, false);
             UiKit.Skin(card.GetComponent<Image>(), "Wood");
+            AttributeHover(card, index, () => current); // v1126b 決定 1: every per-point effect on hover
             var seal = Rect("Seal", card);
             Anchor(seal, new(0, .5f), new(0, .5f), new(16, -29), new(74, 29));
             var sealInk = seal.gameObject.AddComponent<Image>();

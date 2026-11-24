@@ -300,6 +300,10 @@ namespace Wuxia
                 Anchor(value.rectTransform, new(1, 0), Vector2.one, new(-34, 0), Vector2.zero);
                 CardBar(half, 54, -11, -40, 9, attrs[index] / (float)AttributeSystem.Max,
                     Color.Lerp(AttributeSystem.Tints[index], Color.white, .2f));
+                // v1126b 決定 1: hovering lists every per-point effect (a clear image catches the pointer).
+                half.gameObject.AddComponent<Image>().color = Color.clear;
+                int slot = index, shown = attrs[index];
+                AttributeHover(half, slot, () => shown);
             }
             if (info.estimated)
             {

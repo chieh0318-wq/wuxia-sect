@@ -86,6 +86,11 @@
                   "key": "relation",
                   "value": -5,
                   "ref": "yeyu"
+                },
+                {
+                  "key": "knownFaction",
+                  "value": 1,
+                  "ref": "yeyu"
                 }
               ],
               "setFlag": "master_trace_yeyu",

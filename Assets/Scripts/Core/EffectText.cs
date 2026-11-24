@@ -33,6 +33,8 @@ namespace Wuxia
                 case "silver": return $"銀兩 {signed}";
                 case "food": return $"糧食 {signed}";
                 case "reputation": return $"聲望 {signed}";
+                case "knownFaction": return $"掌握{GameState.FindFaction(effect.@ref)?.Label ?? effect.@ref}的情報";
+                case "monthlyTerms": return $"給付期 {value} 個月";
                 case "monthlyFood": return $"每月糧食 {signed}";
                 case "monthlySilver": return $"每月銀兩 {signed}";
                 case "apMax": return $"行動力上限 {signed}";

@@ -55,9 +55,24 @@ namespace Wuxia
         {
             if (!Story.sameGenderChildhoodFriend) return;
             string oldId = FriendId == "friend_m" ? "friend_f" : "friend_m";
-            foreach (var values in new[] { Story.characterRelations, Story.relations })
-                foreach (var entry in values.Where(entry => entry?.id == oldId))
-                    entry.id = FriendId;
+            RemapRelation(ref Story.characterRelations);
+            RemapRelation(ref Story.relations);
+            Story.assignments ??= Array.Empty<AssignmentRecord>();
+            var assignment = Story.assignments.FirstOrDefault(entry => entry?.id == oldId);
+            if (assignment != null)
+            {
+                Story.assignments = Story.assignments.Where(entry => entry?.id != FriendId).ToArray();
+                assignment.id = FriendId;
+            }
+            if (Story.delegateId == oldId) Story.delegateId = FriendId;
+
+            void RemapRelation(ref StoryValue[] values)
+            {
+                var previous = values.FirstOrDefault(entry => entry?.id == oldId);
+                if (previous == null) return;
+                values = values.Where(entry => entry?.id != FriendId).ToArray();
+                previous.id = FriendId;
+            }
 
             Story.sameGenderChildhoodFriend = false;
         }
@@ -136,6 +151,8 @@ namespace Wuxia
                     state.EnsurePortrait(disciple);
                 }
                 if (state.Protagonist.title == "代掌門") state.WelcomeAdviser(false);
+                if (ValueOf(state.Story.flags, "henan_registered") > 0 && state.Story.monthlyFood == 0)
+                    state.Story.monthlyFood = 12;
                 state.ActionPoints = Mathf.Clamp(snapshot.actionPoints, 0, state.ApMax);
                 return state;
             }

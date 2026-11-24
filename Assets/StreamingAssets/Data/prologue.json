@@ -375,6 +375,7 @@
             { "key": "silver", "value": 45, "ref": "" },
             { "key": "monthlySilver", "value": 4, "ref": "" },
             { "key": "monthlyFood", "value": -3, "ref": "" },
+            { "key": "monthlyTerms", "value": 36, "ref": "" },
             { "key": "food", "value": 10, "ref": "" },
             { "key": "lineRank", "value": 1, "ref": "commerce" },
             { "key": "flag", "value": 1, "ref": "sute_contract" }

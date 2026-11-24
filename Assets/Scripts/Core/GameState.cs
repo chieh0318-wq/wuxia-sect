@@ -195,6 +195,11 @@ namespace Wuxia
                 Food += Story.monthlyFood;
                 Silver += Story.monthlySilver;
                 report.Lines.Add($"去留約定　銀兩 {Story.monthlySilver:+0;-0;0}、糧食 {Story.monthlyFood:+0;-0;0}");
+                if (Story.monthlyTermsLeft > 0 && --Story.monthlyTermsLeft == 0)
+                {
+                    Story.monthlyFood = Story.monthlySilver = 0;
+                    report.Lines.Add("粟特商隊的三年押運之約已滿。");
+                }
             }
             int consumed = Disciples.Count * Data.Start.foodPerDisciple;
             Silver += silver - upkeep;

@@ -140,7 +140,7 @@ namespace Wuxia
     [Serializable] public sealed class StoryProgress
     {
         public bool sameGenderChildhoodFriend;
-        public int monthlyFood, monthlySilver;
+        public int monthlyFood, monthlySilver, monthlyTermsLeft;
         public ManualPractice[] manualTraining = Array.Empty<ManualPractice>();
         public SectRaid sectRaid;
         public FieldDispatch[] fieldDispatches = Array.Empty<FieldDispatch>();

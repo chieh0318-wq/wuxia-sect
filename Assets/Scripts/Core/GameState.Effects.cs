@@ -24,6 +24,7 @@ namespace Wuxia
                     case "reputation":
                         Reputation += value > 0 ? Mathf.Max(1, Mathf.RoundToInt(value * (1 + .03f * AttributeBonus("cha")))) : value;
                         break;
+                    case "monthlyTerms": Story.monthlyTermsLeft = value; break;
                     case "monthlyFood": Story.monthlyFood += value; break;
                     case "monthlySilver": Story.monthlySilver += value; break;
                     case "apMax": Story.apBonus += value; break;
@@ -48,6 +49,7 @@ namespace Wuxia
                         Protagonist.attributeBonuses ??= new int[AttributeSystem.Count];
                         Protagonist.attributeBonuses[AttributeSystem.Index(effect.key)] += value;
                         break;
+                    case "knownFaction": SetFactionKnown(effect.@ref); break;
                     case "flag": SetValue(ref Story.flags, effect.@ref, value, false); break;
                     case "charRelation": SetValue(ref Story.characterRelations, CharacterId(effect.@ref), value, true); break;
                     case "relation": SetValue(ref Story.relations, effect.@ref, value, true); break;

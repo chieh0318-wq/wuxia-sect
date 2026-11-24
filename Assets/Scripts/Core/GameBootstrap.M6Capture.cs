@@ -10,20 +10,20 @@ namespace Wuxia
         /// Shots 40–45: lit build plots with the rich build menu, the command cards, the tech tree, a secret-realm floor,
         /// its treasure page and the protagonist wearing the loot. Each step also checks the system it shows.
         /// </summary>
-        /// <summary>Creation base tiers and additive skill stacking: 劍 C/B → +1 → B/A → +2 → A+/S.</summary>
+        /// <summary>Creation training and the v1125 potential increases for 1-, 2-, and 3-point arts.</summary>
         private static void VerifyRankStacking()
         {
             var lines = RankSystem.Seed(null, RankSystem.PrimaryRank, RankSystem.PrimaryCap, RankSystem.BaseCap, RankSystem.BaseRank);
             var sword = Array.Find(lines, line => line.id == "sword");
             var fist = Array.Find(lines, line => line.id == "fist");
             string start = $"{sword.rank}/{sword.cap} {fist.rank}/{fist.cap}";
-            RankSystem.Learn(lines, new CreationOption { category = "sword", cost = 1 });
+            RankSystem.Learn(lines, new CreationOption { category = "sword", cost = 1, capBonus = 1 });
             string one = $"{sword.rank}/{sword.cap}";
-            RankSystem.Learn(lines, new CreationOption { category = "sword", cost = 2 });
+            RankSystem.Learn(lines, new CreationOption { category = "sword", cost = 2, capBonus = 2 });
             string three = $"{sword.rank}/{sword.cap}";
-            RankSystem.Learn(lines, new CreationOption { category = "sword", cost = 3 });
+            RankSystem.Learn(lines, new CreationOption { category = "sword", cost = 3, capBonus = 3 });
             string six = $"{sword.rank}/{sword.cap}";
-            bool ok = start == "C/B D/C" && one == "B/A" && three == "A+/S" && six == "SSS/SSS";
+            bool ok = start == "C/B D/C" && one == "B/A" && three == "A+/A+" && six == "SS/SS";
             string report = $"[Capture] M6 rank stacking: base {start} → +1 {one} → +2 {three} → +3 {six}";
             if (ok) Debug.Log(report);
             else Debug.LogError(report + " (unexpected)");

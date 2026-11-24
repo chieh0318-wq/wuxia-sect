@@ -146,7 +146,7 @@ namespace Wuxia
             }),
             ("89_c18_halls.png", () =>
             {
-                CaptureClick("結果確定");
+                if (ui.SceneOpen) CloseScene();
                 state.Apply(new Yield { silver = 400, food = 40, reputation = 30 });
                 foreach (string id in new[] { "training_hall", "pharmacy_hall" })
                 {
@@ -163,7 +163,8 @@ namespace Wuxia
             }),
             ("89b_c18_hall_targets.png", () =>
             {
-                CaptureClick("堂口指令:閉關苦修　行動力 1・糧 3");
+                UseHall(GameState.Hall("training_hall"), GameState.Hall("training_hall").functions
+                    .First(function => function.id == "seclusion"));
             })
         };
     }

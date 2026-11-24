@@ -49,8 +49,8 @@ namespace Wuxia
                 state.Story.sectRaid = new SectRaid
                 {
                     faction = "tubo", target = state.StartNode, due = state.MonthStamp + 1,
-                    troops = 610, detected = true, preparation = 9, aid = 350,
-                    guards = new[] { GameState.HeroId }.Concat(state.Disciples.Take(3).Select(d => d.id)).ToArray()
+                    troops = 810, detected = true, preparation = 9, aid = 350,
+                    guards = new[] { GameState.HeroId, state.Disciples.First().id }
                 };
                 ShowRaidDesk();
             }),
@@ -61,6 +61,7 @@ namespace Wuxia
             }),
             ("D10_campaign_battle.png", () =>
             {
+                ClickCaptureCaption(SectCampaign.FormationNames[(int)WarFormation.Circle]);
                 ClickCaptureCaption("開戰");
             }),
             ("D11_campaign_duel.png", () =>

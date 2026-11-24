@@ -492,6 +492,12 @@ namespace Wuxia
                 if (build == null || plot < 0)
                     throw new System.InvalidOperationException("The tutorial requires a build action and an empty plot.");
                 ui.CloseModal(force: true);
+                tutorial = new TutorialGuide(ui, state);
+                tutorial.ChooseForCapture();
+                tutorial.Record("camera_move");
+                tutorial.Record("camera_zoom");
+                tutorial.Record("click_building", "hall");
+                tutorial.Record("talk_disciple");
                 BeginBuild(build);
                 buildChoice = System.Array.Find(data.Buildings, building => building.id == "council");
                 if (buildChoice == null)
@@ -514,6 +520,7 @@ namespace Wuxia
                     RecruitRestriction(acceptedCandidate) != Recruited)
                     throw new System.InvalidOperationException("The tutorial could not accept a recruit.");
                 ui.CloseModal(force: true);
+                tutorial.Record("open_roster");
                 state.EndMonth();
                 tutorial?.Record("end_month");
                 tutorial?.Record("read_report");
@@ -522,6 +529,7 @@ namespace Wuxia
                     throw new System.InvalidOperationException("The tutorial, AP refill, or save failed.");
                 var restored = GameState.LoadSave(data, path);
                 if (restored == null || restored.ActionPoints != state.ActionPoints || restored.Month != state.Month ||
+                    restored.FriendId != state.FriendId ||
                     !restored.Disciples.Exists(member => member.id == recruit.id && member.aptitude?.bone == recruit.aptitude?.bone))
                     throw new System.InvalidOperationException("The save did not restore the generated recruit, date, and AP.");
                 Debug.Log("[Capture] AP, tutorial completion and generated recruit save/load smoke passed.");

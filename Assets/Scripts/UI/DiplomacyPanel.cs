@@ -77,7 +77,6 @@ namespace Wuxia
             root.SetAsLastSibling();
             overlay.gameObject.SetActive(false);
             Refresh();
-            if (state.ClaimDiplomaticVictory()) ShowVictoryProclamation();
         }
 
         public void Close()
@@ -132,7 +131,6 @@ namespace Wuxia
                     changed?.Invoke();
                 }
                 Refresh();
-                if (state.ClaimDiplomaticVictory()) ShowVictoryProclamation();
             });
         }
 
@@ -497,21 +495,11 @@ namespace Wuxia
             {
                 overlay.gameObject.SetActive(false);
                 Refresh();
-                if (state.ClaimDiplomaticVictory()) ShowVictoryProclamation();
             }, MapUi.Red, 24);
             ok.name = "知道了";
             result = text;
             return text;
         }
 
-        private void ShowVictoryProclamation()
-        {
-            AudioManager.Jingle("victory");
-            var v = state.Victory;
-            var scroll = Popup("江湖盟主", "外交勝利", null);
-            MapUi.Text(scroll, $"{state.SectLabel}不動干戈，令江湖 {v.Loyal} 家勢力歸心、{v.Subjects} 家奉為上宗。" +
-                "群雄齊聚山門，共推本派掌門為江湖盟主。\n\n（遊戲可繼續進行。）", 224, 140, 616, 260, 23, MapUi.Ink, TextAnchor.UpperLeft, "Narration");
-            MapUi.Button(scroll, "受此重任", 300, 520, 280, 60, () => { overlay.gameObject.SetActive(false); Refresh(); }, MapUi.Red, 24);
-        }
     }
 }

@@ -398,14 +398,6 @@ namespace Wuxia
         internal int JianghuCount => WorldMapData.Load().Factions.Count(Diplomacy.Jianghu);
 
         /// <summary>True once, the first time the 江湖盟主 victory is reached (so the panel can proclaim it).</summary>
-        internal bool ClaimDiplomaticVictory()
-        {
-            if (!Route("diplomacy").Met || (Story.flags ?? Array.Empty<StoryValue>()).Any(flag => flag.id == "diplo_victory" && flag.value > 0))
-                return false;
-            SetValue(ref Story.flags, "diplo_victory", 1, false);
-            return true;
-        }
-
         // ---- Events ----------------------------------------------------------------------------
 
         internal DiploEvent PendingDiploEvent =>

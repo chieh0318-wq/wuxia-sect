@@ -11,7 +11,12 @@ namespace Wuxia
 
         private void ChooseTraining(ActionData action, string[] party)
         {
-            ui.ShowCreation("選擇修練秘笈", new[] { "主修一路額外獲得兩成修練經驗。" },
+            if (AssignmentSystem.Block(state, party[0]) is string blocked)
+            {
+                ui.Message(blocked);
+                return;
+            }
+            ui.ShowCreation("選擇修練秘笈", new[] { "主修一路額外獲得兩成修練經驗；弟子的主修以最強武學為準。" },
                 new[] { ("自動修練", (Action)(() => Select(null))), ("返回", (Action)(() => ui.CloseModal(force: true))) }, null);
             foreach (var art in state.TrainingManuals(party[0]))
                 ui.CreationChoice(art.name, EffectText.LineName(art.category), null, () => Select(art.id));

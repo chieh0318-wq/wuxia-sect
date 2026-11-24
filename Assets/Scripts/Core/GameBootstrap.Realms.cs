@@ -459,7 +459,7 @@ namespace Wuxia
             var run = treasureRun;
             if (run == null) return;
             treasureRun = null;
-            var rewards = state.ClaimTreasure(run.site);
+            var rewards = state.ClaimTreasure(run.site, ExpeditionLeader);
             AudioManager.Play("coin");
             var log = new List<string>(run.log) { $"{run.site.name}的秘寶已歸{state.SectLabel}所有，地圖上的標記將改為「已取」。" };
             ui.Scene.Result($"取得秘寶・{run.site.treasure}", Rows(run.site.rewards, rewards), log, "收下秘寶", () =>

@@ -53,7 +53,7 @@ namespace Wuxia
         public int[] attrs;
         public string[] talents;
         public string origin, blurb, personality, background, relation, questline;
-        public string[] signatureSkills;
+        public string[] signatureSkills, learnedArts;
         public Aptitude aptitude;
         public CharacterLook look;
     }

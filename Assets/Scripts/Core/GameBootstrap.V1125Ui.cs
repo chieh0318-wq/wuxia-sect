@@ -128,6 +128,7 @@ namespace Wuxia
         /// </summary>
         private string AbsenceReason(string id)
         {
+            if (state.IsDispatched(id == HeroCharacterId ? GameState.HeroId : id)) return "（外派未返）";
             if (id == "master") return StoryFlag("master_returned") ? null : "（雲遊未歸）";
             if (id == "uncle_schemer") return StoryFlag("uncle_returned") ? null : "（閉關後山）";
             if (id == state.FriendId) return StoryFlag("friend_arrived") || state.Story.flags == null || FriendHasArrived() ? null : "（尚未上山）";
@@ -179,7 +180,7 @@ namespace Wuxia
             ui.AddModalAction(train == null ? "安排修練" : $"安排修練　行動力 {train.apCost}", mayTrain ? () =>
             {
                 ui.CloseModal(force: true);
-                RunAction(train);
+                ChooseTraining(train, new[] { disciple.id });
             } : null, first: true);
             if (ledgerOpen)
                 ui.AddModalAction("‹ 返回政務", ShowSect, first: true);
@@ -278,8 +279,7 @@ namespace Wuxia
                 train != null && CanUseAp(train) ? () =>
                 {
                     ui.CloseModal(force: true);
-                    RunAction(train);
-                    ShowProtagonist();
+                    ChooseTraining(train, new[] { GameState.HeroId });
                 } : null, first: true);
             int pills = LegacySystem.GetInventory(state.Story, "item_jinchuang") + LegacySystem.GetInventory(state.Story, "item_jiuzhuan");
             int arts = hero.arts?.Length ?? 0;

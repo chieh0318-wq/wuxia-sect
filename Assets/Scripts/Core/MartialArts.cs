@@ -68,7 +68,25 @@ namespace Wuxia
         /// <summary>A disciple's arts; authored disciples always use the current data (old saves keep stale lists).</summary>
         internal IEnumerable<MartialArt> ArtsOf(DiscipleData member) =>
             (Data.Disciples.FirstOrDefault(seed => seed.id == member?.id)?.signatureSkills ?? member?.signatureSkills
-                ?? Array.Empty<string>()).Select(MartialArts.Find).Where(art => art != null);
+                ?? Array.Empty<string>()).Concat(member?.learnedArts ?? Array.Empty<string>())
+                .Select(MartialArts.Find).Where(art => art != null).Distinct();
+
+        internal string LearnDiscipleArt(DiscipleData member, string id, bool sectInstruction)
+        {
+            var art = MartialArts.Find(id);
+            if (art == null || member == null) return "";
+            if (sectInstruction && IsGuestOfficer(member.id)) return "客將不可由本門傳授崤山武學。";
+            var line = Array.Find(member.lines, entry => entry.id == art.category);
+            if (ArtsOf(member).Contains(art))
+            {
+                TrainLine(line, 1.5f);
+                return $"{member.name}重讀《{art.name}》，修習進度 +1.5";
+            }
+            member.learnedArts = (member.learnedArts ?? Array.Empty<string>()).Append(art.id).ToArray();
+            RankSystem.Shift(line, 1, true);
+            RankSystem.Shift(line, 1, false);
+            return $"{member.name}習得《{art.name}》";
+        }
 
         internal bool KnowsArt(string id) => ProtagonistArts.Any(art => art.id == id);
 

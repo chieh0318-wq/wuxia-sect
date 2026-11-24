@@ -573,8 +573,8 @@ namespace Wuxia
         {
             if (beats == null || beats.Length == 0) { ChooseDisaster(); return; }
             index = Mathf.Clamp(index, 0, beats.Length - 1);
-            currentCg = beats.Take(index + 1).LastOrDefault(beat => !string.IsNullOrEmpty(beat.image) &&
-                PortraitService.Story(beat.image) != null)?.image ?? currentCg;
+            currentCg = beats.Take(index + 1).Select(beat => AdviserArt(beat.image))
+                .LastOrDefault(image => !string.IsNullOrEmpty(image) && PortraitService.Story(image) != null) ?? currentCg;
             Play(beats.Skip(index).ToArray(), ChooseDisaster, SkipStory);
         }
 
@@ -688,6 +688,9 @@ namespace Wuxia
             Finish();
         }
 
+        private string AdviserArt(string image) => image == "cg_friend_arrival" && state.FriendId == "friend_f"
+            ? "cg_friend_arrival_f" : image;
+
         private void Play(StoryBeat[] beats, Action next, Action skip)
         {
             int index = 0;
@@ -701,8 +704,7 @@ namespace Wuxia
                 string portrait = beat.portrait == "hero" ? state.Protagonist.portrait ?? state.Protagonist.lookId :
                     PortraitService.StoryId(beat.portrait, friendId == "friend_m" ? "男" : "女");
                 // A CG still waiting for art (listed in v1124_art_todo.md) keeps the previous illustration.
-                string image = beat.image == "cg_friend_arrival" && friendId == "friend_f"
-                    ? "cg_friend_arrival_f" : beat.image;
+                string image = AdviserArt(beat.image);
                 if (!string.IsNullOrEmpty(image) && PortraitService.Story(image) != null)
                     currentCg = image;
                 ui.ShowStoryBeat(FormatStory(beat.speaker), FormatStory(beat.text), currentCg, portrait,

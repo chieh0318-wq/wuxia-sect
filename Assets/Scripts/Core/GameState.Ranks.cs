@@ -49,7 +49,8 @@ namespace Wuxia
                 AssignmentSystem.Predict(this, "train", worker).Quality * Mathf.Max(.5f, 1 + .05f * AttributeBonus("wit"));
             if (hero)
                 experience *= Mathf.Max(.5f, 1 + .02f * AttributeBonus("str")) * StudyMultiplier(line.id);
-            if (hero && line.id == Protagonist.major) experience *= 1.2f;
+            string major = hero ? Protagonist.major : RankSystem.BestCombat(lines)?.id;
+            if (line.id == major) experience *= 1.2f;
             TrainLine(line, experience);
             if (art != null)
             {

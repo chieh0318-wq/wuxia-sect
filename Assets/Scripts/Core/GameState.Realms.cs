@@ -192,9 +192,9 @@ namespace Wuxia
         }
 
         /// <summary>Marks the site taken and grants its rewards; returns the reward lines.</summary>
-        internal List<string> ClaimTreasure(TreasureSite site)
+        internal List<string> ClaimTreasure(TreasureSite site, string worker = HeroId)
         {
-            var lines = GrantRealmRewards(site.rewards);
+            var lines = GrantRealmRewards(site.rewards, worker);
             SetValue(ref Story.flags, TreasureFlag(site.id), 1, false);
             Story.realmsCleared++;
             return lines;
@@ -243,7 +243,8 @@ namespace Wuxia
                 if (effect == null) continue;
                 string text = effect.key switch
                 {
-                    "art" => LearnArt(effect.@ref),
+                    "art" => worker == HeroId ? LearnArt(effect.@ref)
+                        : LearnDiscipleArt(Disciples.Find(member => member.id == worker), effect.@ref, sectInstruction: false),
                     "gear" => EquipOrStore(MakeGear(effect.@ref, Mathf.RoundToInt(effect.value))),
                     "cap" or "rank" or "lineRank" => CapLine(effect),
                     _ => EffectText.Describe(effect, this)
@@ -253,7 +254,7 @@ namespace Wuxia
                     member.injury = Mathf.Clamp(member.injury + Mathf.RoundToInt(effect.value), 0, 9);
                 else if (effect.key is not ("gear" or "art" or "cap" or "rank" or "lineRank"))
                     ApplyEffects(new[] { effect });
-                if (effect.key == "art" && string.IsNullOrEmpty(text))
+                if (effect.key == "art" && worker == HeroId && string.IsNullOrEmpty(text))
                 {
                     // Already known: the manual still deepens its line.
                     StudyLine(MartialArts.Find(effect.@ref)?.category, 1.5f);

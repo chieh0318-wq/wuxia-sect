@@ -133,6 +133,7 @@ namespace Wuxia
                     if (migratePortraits) PortraitPool.Track(state.Story, disciple.portrait);
                     state.EnsurePortrait(disciple);
                 }
+                if (state.Protagonist.title == "代掌門") state.WelcomeAdviser(false);
                 state.ActionPoints = Mathf.Clamp(snapshot.actionPoints, 0, state.ApMax);
                 return state;
             }

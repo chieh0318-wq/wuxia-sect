@@ -356,6 +356,7 @@
             { "key": "food", "value": 60, "ref": "" },
             { "key": "reputation", "value": -10, "ref": "" },
             { "key": "apMax", "value": -1, "ref": "" },
+            { "key": "monthlyFood", "value": 12, "ref": "" },
             { "key": "flag", "value": 1, "ref": "henan_registered" }
           ],
           "beats": [
@@ -371,7 +372,9 @@
           "summary": "康瑟的舅家在粟特商團。薩寶安延年許你三年工錢，換{sect}替駝隊押貨——有錢、有路、有消息，前提是活得過三年。",
           "effects": [
             { "key": "relation", "value": 35, "ref": "sute" },
-            { "key": "silver", "value": 60, "ref": "" },
+            { "key": "silver", "value": 45, "ref": "" },
+            { "key": "monthlySilver", "value": 4, "ref": "" },
+            { "key": "monthlyFood", "value": -3, "ref": "" },
             { "key": "food", "value": 10, "ref": "" },
             { "key": "lineRank", "value": 1, "ref": "commerce" },
             { "key": "flag", "value": 1, "ref": "sute_contract" }
@@ -388,7 +391,7 @@
           "name": "施藥立名，另闢山門",
           "summary": "不靠誰。疫中活下來的人都記得，是誰給他們端過藥。{sect}兩手空空地走，身後跟著的，是一路的名聲和自願追隨的人。",
           "effects": [
-            { "key": "reputation", "value": 25, "ref": "" },
+            { "key": "reputation", "value": 30, "ref": "" },
             { "key": "relation", "value": 10, "ref": "henan_fu" },
             { "key": "silver", "value": -20, "ref": "" },
             { "key": "food", "value": -10, "ref": "" },

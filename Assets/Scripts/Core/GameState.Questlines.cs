@@ -66,6 +66,28 @@ namespace Wuxia
         }
 
         internal string FriendId => Protagonist.gender == "女" ? "friend_m" : "friend_f";
+        internal bool IsGuestOfficer(string id) => id == FriendId;
+
+        internal void WelcomeAdviser(bool grantSupport)
+        {
+            if (Disciples.Any(member => member.id == FriendId)) return;
+            var person = M2Data.Load<CharacterCatalog>("characters").storyCharacters?
+                .FirstOrDefault(entry => entry.id == FriendId);
+            if (person == null) return;
+            var guest = new DiscipleData
+            {
+                id = person.id, name = person.name, gender = person.gender, age = person.age,
+                title = "客將・軍師", portrait = person.portrait, rank = person.rank, cap = person.cap,
+                lines = RankSystem.Seed(person.lines, person.rank, person.cap, RankSystem.BaseCap, RankSystem.BaseRank),
+                attrs = person.attrs, signatureSkills = person.signatureSkills, origin = person.faction
+            };
+            Disciples.Add(guest);
+            if (!grantSupport) return;
+            Apply(new Yield { silver = 12, food = 8 });
+            SetValue(ref Story.relations, "fanyang_jds", 5, true);
+            SetValue(ref Story.flags, "friend_arrived", 1, false);
+        }
+
         internal string CharacterId(string id) => id == "friend" ? FriendId : id;
         internal int CharacterRelation(string id) => ValueOf(Story.characterRelations, CharacterId(id));
         private static int ValueOf(StoryValue[] values, string id) =>

@@ -191,6 +191,12 @@ namespace Wuxia
             M6MonthIncome(ref silver, ref food, report);
             DiplomacyMonth(report);
             HallsMonth(report); // v1124 C18
+            if (Story.monthlyFood != 0 || Story.monthlySilver != 0)
+            {
+                Food += Story.monthlyFood;
+                Silver += Story.monthlySilver;
+                report.Lines.Add($"去留約定　銀兩 {Story.monthlySilver:+0;-0;0}、糧食 {Story.monthlyFood:+0;-0;0}");
+            }
             int consumed = Disciples.Count * Data.Start.foodPerDisciple;
             Silver += silver - upkeep;
             Food += food - consumed;

@@ -24,6 +24,8 @@ namespace Wuxia
                     case "reputation":
                         Reputation += value > 0 ? Mathf.Max(1, Mathf.RoundToInt(value * (1 + .03f * AttributeBonus("cha")))) : value;
                         break;
+                    case "monthlyFood": Story.monthlyFood += value; break;
+                    case "monthlySilver": Story.monthlySilver += value; break;
                     case "apMax": Story.apBonus += value; break;
                     case "recruitPoolSize": Story.recruitPoolSize += value; break;
                     case "recruitCostPct": Story.recruitCostPct += value; break;

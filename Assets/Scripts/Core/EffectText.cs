@@ -33,6 +33,8 @@ namespace Wuxia
                 case "silver": return $"銀兩 {signed}";
                 case "food": return $"糧食 {signed}";
                 case "reputation": return $"聲望 {signed}";
+                case "monthlyFood": return $"每月糧食 {signed}";
+                case "monthlySilver": return $"每月銀兩 {signed}";
                 case "apMax": return $"行動力上限 {signed}";
                 case "recruitPoolSize": return $"招徒人選 {signed}";
                 case "recruitCostPct": return $"招徒費用 {signed}%";

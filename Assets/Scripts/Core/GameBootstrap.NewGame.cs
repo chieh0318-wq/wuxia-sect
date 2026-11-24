@@ -727,6 +727,7 @@ namespace Wuxia
                 TakeActingTitle();
             ui.CloseStoryBeat();
             ui.CloseModal(force: true);
+            state.WelcomeAdviser(true);
             state.RefillAp();
             done(state);
         }

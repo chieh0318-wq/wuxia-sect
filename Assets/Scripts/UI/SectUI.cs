@@ -895,7 +895,8 @@ namespace Wuxia
         {
             int index = worldLabels.FindIndex(entry => entry.target == target);
             if (index < 0) return;
-            UnityEngine.Object.Destroy(worldLabels[index].tag.gameObject);
+            var tag = worldLabels[index].tag;
+            if (tag != null) UnityEngine.Object.Destroy(tag.gameObject);
             worldLabels.RemoveAt(index);
         }
 

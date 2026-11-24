@@ -17,6 +17,7 @@ namespace Wuxia
         {
             ("A01_talent_cards.png", () =>
             {
+                if (ui.SceneOpen) ui.Scene.Close();
                 EnsureCaptureCourtyard();
                 new NewGameFlow(ui, new GameState(data), _ => { }).CaptureTalents();
             }),
@@ -94,14 +95,16 @@ namespace Wuxia
             ("A15_toasts.png", () =>
             {
                 ui.CloseTalk(false);
+                Toast.ClearAll();
                 ui.Message("鍛成一件【精品】玄鐵護腕（護腕・攻擊 +6・氣血 +30），已存入門派裝備庫。這段提示文字特意寫得很長，用來檢查提示框會依內容自動長高、不會超出邊框。");
                 ui.Message("茶寮裡打聽到不少消息，下次奇遇機率 +25%。銀兩 −3");
                 ui.Message("糧食不足。", "hud_food");
             }),
             ("A16_tutorial_two_level.png", () =>
             {
+                Toast.ClearAll();
                 ShowCommands();
-                tutorial ??= new TutorialGuide(ui, state);
+                tutorial = new TutorialGuide(ui, state);
                 tutorial.ChooseForCapture();
                 foreach (string trigger in new[] { "camera_move", "camera_zoom", "talk_disciple" })
                     tutorial.Record(trigger);

@@ -85,6 +85,7 @@ namespace Wuxia
                         }
                         next.Protagonist.name = "盧凝雪";
                         next.Protagonist.gender = "女";
+                        next.Protagonist.title = "代掌門";
                         next.Protagonist.portrait = next.Protagonist.lookId = "hero_f1";
                         EnterCourtyard(next, true);
                         controls.enabled = false;
@@ -131,7 +132,8 @@ namespace Wuxia
                             ?? StoryCharacters.FirstOrDefault();
                         if (person != null) ShowCharacterDetail(person, ShowCharacterDirectory);
                     })
-                }.Concat(M6CaptureSteps()).Concat(V1124CaptureSteps()).Concat(V1125PaCaptureSteps()).ToArray();
+                }.Concat(M6CaptureSteps()).Concat(V1124CaptureSteps()).Concat(V1125PaCaptureSteps())
+                    .Concat(V1125PdCaptureSteps()).ToArray();
                 // "-wuxiaCaptureOnly 8" runs just the shots whose file names start with that prefix (v1124 P1B-2: 80–89).
                 int only = System.Array.IndexOf(args, "-wuxiaCaptureOnly");
                 string prefix = only >= 0 && only + 1 < args.Length ? args[only + 1] : null;
@@ -140,7 +142,16 @@ namespace Wuxia
 
                 foreach (var step in steps)
                 {
-                    step.show();
+                    try
+                    {
+                        step.show();
+                    }
+                    catch (System.Exception error)
+                    {
+                        Debug.LogError($"[Capture] {step.filename}: {error}");
+                        Application.Quit(1);
+                        yield break;
+                    }
                     yield return new WaitForSecondsRealtime(.3f);
                     ui.RevealStoryForCapture();
                     if (!SaveShot(step.filename))
@@ -158,6 +169,12 @@ namespace Wuxia
                         Application.Quit(1);
                         yield break;
                     }
+                }
+                if (map != null && map.IsOpen)
+                {
+                    map.Close();
+                    map.CaptureCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
+                    controls.enabled = false;
                 }
                 if (ui.SceneOpen) ui.Scene.Close(); // v1124: leave no scene page over the later shots
                 CleanupV1125PaCapture(); // v1125 PA

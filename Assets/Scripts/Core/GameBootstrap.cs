@@ -687,7 +687,7 @@ namespace Wuxia
             string storyWeapon = RankSystem.Catalog.breakthroughs?.FirstOrDefault(
                 entry => entry.id == hero.weapon && entry.type == "weapon")?.name ?? hero.weapon;
             ui.ShowCharacter(hero.name, UiKit.HeroTitle(hero) == hero.name ? "" : UiKit.HeroTitle(hero), hero.gender, PortraitService.IdOrDefault(hero.portrait, hero.lookId), hero.attrs, hero.lines,
-                hero.weapon, state.WeaponRankDelta(hero.weapon), gear: state.GearLabels(storyWeapon), stats: state.HeroStats);
+                hero.weapon, state.WeaponRankDelta(hero.weapon), gear: state.GearLabels(storyWeapon), stats: state.HeroStats, attributeBonuses: Enumerable.Range(0, AttributeSystem.Count).Select(state.HeroAttributeBonus).ToArray());
         }
 
         private void ShowSect() => ui.ShowSectLedger(state);

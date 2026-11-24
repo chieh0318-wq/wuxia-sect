@@ -182,6 +182,8 @@ namespace Wuxia
             grade = Mathf.Clamp(grade, 0, GearGrades.Length - 1);
             int scale = grade + 1;
             var item = new GearItem { slot = GearSlots[index], name = GearNames[index][grade], grade = GearGrades[grade] };
+            item.attribute = new[] { "str", "con", "qi", "wit", "con", "agi" }[index];
+            item.attributeBonus = grade;
             switch (index)
             {
                 case 0: item.attack = 6 * scale + (grade == 3 ? 8 : 0); break;

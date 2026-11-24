@@ -10,6 +10,8 @@ namespace Wuxia
     {
         public string id, name, category, tier, source, how, slot, desc, move;
         public string[] holders;
+        public string attribute;
+        public int attributeBonus;
         internal bool Combat => RankSystem.IsCombat(category);
     }
 

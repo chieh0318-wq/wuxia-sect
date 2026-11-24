@@ -9,7 +9,7 @@ namespace Wuxia
     {
         internal void ShowCharacter(string name, string title, string gender, string portrait, int[] attrs,
             SkillLine[] lines, string weapon, int weaponDelta, (string, Action)? extra = null,
-            string[] gear = null, DerivedStats? stats = null)
+            string[] gear = null, DerivedStats? stats = null, int[] attributeBonuses = null)
         {
             var close = ("關閉", (Action)(() => CloseModal()));
             ShowModal(name, new[] { title }, extra.HasValue ? new[] { extra.Value, close } : new[] { close });
@@ -34,10 +34,13 @@ namespace Wuxia
                 var caption = Label(stat, AttributeSystem.Names[i], 18, TextAnchor.MiddleLeft);
                 caption.color = CardMuted;
                 Anchor(caption.rectTransform, Vector2.up, Vector2.one, new(10, -32), new(-4, -4));
-                var value = Label(stat, values[i].ToString(), 26, TextAnchor.MiddleRight);
+                string displayed = attributeBonuses == null ? values[i].ToString()
+                    : AttributeSystem.Format(values[i], attributeBonuses[i], "#e7bd64");
+                var value = Label(stat, displayed, 18, TextAnchor.MiddleRight);
+                value.supportRichText = true;
                 value.color = values[i] > AttributeSystem.Base ? CardGold : values[i] < AttributeSystem.Base ? CardLow : CardText;
                 value.font = UiKit.Font("Numbers", font, value.text);
-                Anchor(value.rectTransform, Vector2.up, Vector2.one, new(10, -34), new(-10, -2));
+                Anchor(value.rectTransform, Vector2.up, Vector2.one, new(5, -58), new(-8, -30));
                 CardBar(stat, 10, -44, -10, 6, values[i] / (float)AttributeSystem.Max,
                     Color.Lerp(AttributeSystem.Tints[i], Color.white, .25f));
             }

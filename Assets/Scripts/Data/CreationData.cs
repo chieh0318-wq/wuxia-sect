@@ -90,6 +90,7 @@ namespace Wuxia
         public int[] attrs = { 10, 10, 10, 10, 10, 10, 10 };
         public string[] talents = Array.Empty<string>(), skills = Array.Empty<string>();
         public bool noGraveInjury;
+        public int[] attributeBonuses;
         public SkillLine[] lines;
         public int martialTraining, trainingMonths, lastTrainingMonth, injury;
         public string weapon;
@@ -110,13 +111,16 @@ namespace Wuxia
     {
         public string slot, name, grade;
         public int attack, speed, hp, qi;
+        public string attribute;
+        public int attributeBonus;
         public float dodge;
-        internal int Power => attack * 2 + speed * 2 + hp / 4 + qi / 4 + Mathf.RoundToInt(dodge * 200);
+        internal int Power => attributeBonus * 8 + attack * 2 + speed * 2 + hp / 4 + qi / 4 + Mathf.RoundToInt(dodge * 200);
         internal string Stats
         {
             get
             {
                 var parts = new System.Collections.Generic.List<string>();
+                if (attributeBonus != 0) parts.Add(AttributeSystem.FormatBonus(attribute, attributeBonus));
                 if (attack != 0) parts.Add($"攻擊 +{attack}");
                 if (speed != 0) parts.Add($"先手 +{speed}");
                 if (hp != 0) parts.Add($"氣血 +{hp}");

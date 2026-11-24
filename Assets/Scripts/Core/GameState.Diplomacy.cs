@@ -187,7 +187,7 @@ namespace Wuxia
         internal int Eloquence(out string envoy)
         {
             int Score(int[] attrs) => AttributeSystem.Value(attrs, "cha") + AttributeSystem.Value(attrs, "wit") / 2;
-            int best = Score(AttributeSystem.Normalize(Protagonist.attrs));
+            int best = Score(HeroAttributes);
             envoy = string.IsNullOrWhiteSpace(Protagonist.name) ? "掌門" : Protagonist.name;
             foreach (var disciple in Disciples.Where(member => member != null && member.injury < 3))
             {

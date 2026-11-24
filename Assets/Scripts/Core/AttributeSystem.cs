@@ -66,6 +66,14 @@ namespace Wuxia
             return Enumerable.Range(0, Count).Select(index => index < attrs.Length ? attrs[index] : Base).ToArray();
         }
 
+        internal static int Allocated(int value) => Mathf.Clamp(value, 1, Max);
+
+        internal static string FormatBonus(string key, int value) =>
+            $"{(Index(key) is int slot && slot >= 0 ? Names[slot] : key)} {value:+0;-0;0}";
+
+        internal static string Format(int basis, int bonus, string tint) =>
+            bonus == 0 ? $"基礎 {basis}" : $"基礎 {basis} <color={tint}>{bonus:+0;-0}</color>";
+
         public static int Value(int[] attrs, string key)
         {
             int index = Index(key);

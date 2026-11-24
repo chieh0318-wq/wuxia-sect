@@ -55,12 +55,25 @@ namespace Wuxia
 
         private int AttributeValue(string id)
         {
-            Protagonist.attrs = AttributeSystem.Normalize(Protagonist.attrs);
             int index = AttributeSystem.Index(id);
-            return index < 0 ? 0 : Protagonist.attrs[index];
+            return index < 0 ? 0 : HeroAttributes[index];
         }
 
-        internal DerivedStats HeroStats => WithBonuses(AttributeSystem.Derive(Protagonist.attrs, Protagonist.lines,
+        internal int[] HeroAttributes => AttributeSystem.Normalize(Protagonist.attrs).Select((value, index) =>
+            System.Math.Max(1, AttributeSystem.Allocated(value) + HeroAttributeBonus(index))).ToArray();
+
+        internal int HeroAttributeBonus(int index)
+        {
+            int permanent = Protagonist.attributeBonuses?.ElementAtOrDefault(index) ?? 0;
+            string key = AttributeSystem.Keys[index];
+            int gear = (Protagonist.gear ?? System.Array.Empty<GearItem>())
+                .Where(item => item?.attribute == key).Sum(item => item.attributeBonus);
+            int arts = (Protagonist.arts ?? System.Array.Empty<string>()).Distinct()
+                .Select(MartialArts.Find).Where(art => art?.attribute == key).Sum(art => art.attributeBonus);
+            return permanent + gear + arts;
+        }
+
+        internal DerivedStats HeroStats => WithBonuses(AttributeSystem.Derive(HeroAttributes, Protagonist.lines,
             WeaponRankDelta(Protagonist.weapon)));
 
         /// <summary>Extra qi-yu (adventure) chance from 幸運, with a touch of 身法 for finding hidden paths.</summary>

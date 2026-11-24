@@ -76,6 +76,17 @@ namespace Wuxia
                         : RankSystem.Seed(hero.lines, null, null, RankSystem.BaseCap, RankSystem.BaseRank);
                     var attrs = hero.attrs ?? Array.Empty<int>();
                     hero.attrs = AttributeSystem.Normalize(attrs);
+                    if (hero.attributeBonuses?.Length != AttributeSystem.Count)
+                    {
+                        var previous = hero.attributeBonuses ?? Array.Empty<int>();
+                        hero.attributeBonuses = new int[AttributeSystem.Count];
+                        for (int i = 0; i < AttributeSystem.Count; i++)
+                        {
+                            int basis = AttributeSystem.Allocated(hero.attrs[i]);
+                            hero.attributeBonuses[i] = previous.ElementAtOrDefault(i) + hero.attrs[i] - basis;
+                            hero.attrs[i] = basis;
+                        }
+                    }
                     hero.talents ??= Array.Empty<string>();
                     hero.skills ??= Array.Empty<string>();
                     hero.breakthroughs ??= Array.Empty<string>();

@@ -43,9 +43,8 @@ namespace Wuxia
                     case "wit":
                     case "cha":
                     case "luk":
-                        Protagonist.attrs = AttributeSystem.Normalize(Protagonist.attrs);
-                        Protagonist.attrs[AttributeSystem.Index(effect.key)] =
-                            Mathf.Clamp(Protagonist.attrs[AttributeSystem.Index(effect.key)] + value, 1, 30);
+                        Protagonist.attributeBonuses ??= new int[AttributeSystem.Count];
+                        Protagonist.attributeBonuses[AttributeSystem.Index(effect.key)] += value;
                         break;
                     case "flag": SetValue(ref Story.flags, effect.@ref, value, false); break;
                     case "charRelation": SetValue(ref Story.characterRelations, CharacterId(effect.@ref), value, true); break;

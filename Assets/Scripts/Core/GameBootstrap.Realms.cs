@@ -97,7 +97,7 @@ namespace Wuxia
         }
 
         private static string AttrTag(GameState state, string attr, float chance) =>
-            $"{SecretRealms.AttrName(attr)} {AttributeSystem.Value(state.Protagonist.attrs, attr)}・成功率 {chance:P0}";
+            $"{SecretRealms.AttrName(attr)} {AttributeSystem.Value(state.HeroAttributes, attr)}・成功率 {chance:P0}";
 
         // ---- 山道巡訪 (C15) --------------------------------------------------------------------------
 

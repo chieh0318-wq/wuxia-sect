@@ -363,6 +363,7 @@ namespace Wuxia
                     UiKit.Skin(marker.GetComponent<Image>(), site == focused ? "Selected" : "Plaque");
                     marker.SetAsLastSibling();
                 }
+                SettlementPowers(map, data, state, sites, focused); // v1126 #10
 
                 var detail = Panel("選址詳情", row, new(.69f, 0), Vector2.one, Vector2.zero, Vector2.zero, false);
                 UiKit.Skin(detail.GetComponent<Image>(), "Wood");
@@ -375,19 +376,18 @@ namespace Wuxia
                 Write("物產　" + focused.resources, 20, 62, 102, CardText);
                 Write(focused.bonusText, 21, 110, 245, CardGold);
                 Write(focused.desc, 20, 246, 374, CardMuted);
-                Write("附近勢力・目前關係", 22, 378, 415, CardGold);
-                if (data.Nodes.TryGetValue(focused.node ?? "", out var selectedNode))
+                Write("附近勢力・關係・距離", 22, 378, 415, CardGold);
                 {
-                    var point = data.Bounds.Uv(selectedNode);
-                    var neighbors = data.Factions.Where(f => data.Nodes.ContainsKey(f.seat ?? ""))
-                        .OrderBy(f => (data.Bounds.Uv(data.Nodes[f.seat]) - point).sqrMagnitude).Take(4);
-                    int top = 428;
-                    foreach (var faction in neighbors)
+                    // v1126 #10: relation colour, kind, strength and road distance for the four nearest powers.
+                    int top = 424;
+                    foreach (var (faction, hops, days) in NearbyPowers(data, focused.node, 4))
                     {
-                        int score = state.Attitude(faction);
-                        string relation = score >= 25 ? "友好" : score <= -25 ? "敵對" : "中立";
-                        Write($"{faction.Label}　{relation} {score:+0;-0;0}", 20, top, top + 37, CardText);
-                        top += 39;
+                        string stance = faction.StanceWith(state.RelationShift(faction.id));
+                        string distance = hops == 0 ? "同地" : hops >= 99 ? "無路" : $"{hops} 格・{days} 日";
+                        Write($"{faction.Label}　{faction.RelationWith(state.RelationShift(faction.id))}　{distance}", 20, top, top + 28,
+                            RelationColor(stance));
+                        Write($"{WorldMapScreen.KindName(faction)}・人馬約 {faction.disciples:N0}・聲望 {faction.reputation}", 18, top + 27, top + 52, CardMuted);
+                        top += 56;
                     }
                 }
 

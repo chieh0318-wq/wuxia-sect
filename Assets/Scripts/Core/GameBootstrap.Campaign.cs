@@ -82,9 +82,12 @@ namespace Wuxia
             var guards = (raid.guards ?? Array.Empty<string>()).Where(id => id == GameState.HeroId
                 ? state.Protagonist.injury < 3
                 : state.Disciples.Any(member => member.id == id && member.injury < 3 && id != state.Story.delegateId)).ToArray();
+            guards = guards.Where(id => !state.IsDispatched(id)).ToArray();
             if (guards.Length == 0)
                 guards = new[] { GameState.HeroId }.Concat(state.Disciples.Where(member => member.injury < 3
-                    && member.id != state.Story.delegateId).Take(3).Select(member => member.id)).ToArray();
+                    && member.id != state.Story.delegateId).Select(member => member.id))
+                    .Where(id => !state.IsDispatched(id)).Take(4).ToArray();
+            if (guards.Length == 0) { ui.Message(state.FinishRaid(false, "山中無將可出戰。")); ShowRaidDesk(); return; }
             ui.CloseModal(force: true);
             OpenCampaign(new SectCampaign(state, guards, foe, raid.troops, raid),
                 $"門派戰役　{state.WarNode(raid.target)}守備", foe, 0, () => state.RaidReady, won =>

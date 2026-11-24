@@ -143,6 +143,7 @@ namespace Wuxia
         public int monthlyFood, monthlySilver;
         public ManualPractice[] manualTraining = Array.Empty<ManualPractice>();
         public SectRaid sectRaid;
+        public FieldDispatch[] fieldDispatches = Array.Empty<FieldDispatch>();
         public int raidResolvedMonth;
         public string patronFaction;
         public string disasterId, responseId, locationId, mapNode, delegateId, partyNode;

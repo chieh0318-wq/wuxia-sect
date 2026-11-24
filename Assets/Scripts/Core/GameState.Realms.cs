@@ -171,7 +171,7 @@ namespace Wuxia
         {
             if (site == null) return "此處沒有秘境。";
             if (TreasureClaimed(site.id)) return "秘寶已經取走。";
-            if (PartyNode != site.node) return $"隊伍須先抵達{WorldMapData.Load().NodeLabel(site.node)}。";
+            if (WorldMapData.Load().Route(StartNode, site.node) == null && StartNode != site.node) return "沒有可通的道路。";
             if (ActionPoints < 1) return "行動力不足（需 1 點）。";
             if (Protagonist.injury >= 6) return "主角傷勢太重，先回山養傷。";
             return null;

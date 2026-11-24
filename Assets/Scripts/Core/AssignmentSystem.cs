@@ -61,6 +61,7 @@ namespace Wuxia
 
         internal static string Block(GameState state, string id)
         {
+            if (state.IsDispatched(id)) return "正在外派";
             if (id == GameState.HeroId)
             {
                 if (state.Protagonist.injury >= 3) return "傷勢未癒";

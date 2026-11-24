@@ -105,6 +105,7 @@ namespace Wuxia
                     state.Protagonist = hero;
                 }
                 state.Story = snapshot.story ?? new StoryProgress();
+                state.Story.fieldDispatches ??= Array.Empty<FieldDispatch>();
                 state.Story.manualTraining ??= Array.Empty<ManualPractice>();
                 state.Story.knownFactions ??= Array.Empty<string>();
                 state.Story.buildingLevels ??= Array.Empty<StoryValue>();

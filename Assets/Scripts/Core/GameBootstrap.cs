@@ -385,6 +385,7 @@ namespace Wuxia
                 ("人事", "招募弟子、查閱門派與主角資料", Matching(action => action.type == "recruit").Concat(new[]
                 {
                     ("門派政務　›", $"收支、弟子與建築，可直接派人辦事　{HousingInfo()}", (System.Action)ShowSect, false),
+                    ("外派名單・飛鴿傳書 ›", "查閱外派進度，或緊急召回隊伍", (System.Action)ShowFieldDispatches, state.Story.fieldDispatches.Length > 0),
                     ("門中位階 ›", "查閱貢獻並升階", (System.Action)(() => ui.ShowRankLadder(state, null)), false),
                     ("主角　›", $"{state.Protagonist.name}：換裝備、調主修、修練、用秘笈", (System.Action)ShowProtagonist, false)
                 }).ToArray()),

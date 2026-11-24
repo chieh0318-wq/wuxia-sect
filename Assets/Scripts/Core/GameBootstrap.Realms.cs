@@ -357,10 +357,23 @@ namespace Wuxia
                 ui.Message(block);
                 return;
             }
+            if (!capturing && site.node != state.StartNode)
+            {
+                string result = state.SendTreasureDispatch(site, party);
+                if (map != null && map.IsOpen) map.Close();
+                ui.Refresh(state);
+                ui.Message(result);
+                return;
+            }
             if (map != null && map.IsOpen) map.Close();
             if (party.Any(id => AssignmentSystem.Block(state, id) != null) ||
                 !state.TrySpendAp(1, "treasure:" + site.id)) return;
             AssignmentSystem.Commit(state, party);
+            BeginTreasureScene(site, party);
+        }
+
+        private void BeginTreasureScene(TreasureSite site, string[] party)
+        {
             expeditionParty = party;
             foreach (string id in party) AssignmentSystem.Credit(state, id, 1);
             LeaveCourtyardForScene();

@@ -701,8 +701,10 @@ namespace Wuxia
                 string portrait = beat.portrait == "hero" ? state.Protagonist.portrait ?? state.Protagonist.lookId :
                     PortraitService.StoryId(beat.portrait, friendId == "friend_m" ? "男" : "女");
                 // A CG still waiting for art (listed in v1124_art_todo.md) keeps the previous illustration.
-                if (!string.IsNullOrEmpty(beat.image) && PortraitService.Story(beat.image) != null)
-                    currentCg = beat.image;
+                string image = beat.image == "cg_friend_arrival" && friendId == "friend_f"
+                    ? "cg_friend_arrival_f" : beat.image;
+                if (!string.IsNullOrEmpty(image) && PortraitService.Story(image) != null)
+                    currentCg = image;
                 ui.ShowStoryBeat(FormatStory(beat.speaker), FormatStory(beat.text), currentCg, portrait,
                     beat.portrait != "hero", ShowNext, skip, voiceText: beat.text, femaleHero: state.Protagonist.gender == "女",
                     speakerOnRight: !string.IsNullOrEmpty(portrait)

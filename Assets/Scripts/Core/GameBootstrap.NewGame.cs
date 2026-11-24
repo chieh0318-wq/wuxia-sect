@@ -43,10 +43,6 @@ namespace Wuxia
         private readonly Dictionary<string, int> legacyPicks = new();
         private LegacyItemDef legacyFocused;
 
-        private string AttributeBenefit(int slot) =>
-            characters.attributes?.FirstOrDefault(entry => entry?.id == AttributeSystem.Keys[slot])?.desc
-            ?? AttributeSystem.Benefits[slot];
-
         internal NewGameFlow(SectUI ui, GameState state, Action<GameState> done)
         {
             this.ui = ui;
@@ -457,7 +453,7 @@ namespace Wuxia
                 int slot = index;
                 int value = values[slot];
                 ui.CreationAttribute(slot, value, characters.attrBase, characters.attrMin, characters.attrMax, bonuses[slot],
-                    AttributeBenefit(slot),
+                    AttributeSystem.Benefits[slot],
                     value > characters.attrMin ? () => ChangeAttribute(slot, -1) : null,
                     freeAttributes > 0 && value < characters.attrMax ? () => ChangeAttribute(slot, 1) : null,
                     AttributePerPoint.Describe(slot));

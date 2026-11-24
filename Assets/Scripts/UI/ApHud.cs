@@ -27,7 +27,8 @@ namespace Wuxia
             current = points;
             SetPips(points, max);
             label.text = $"行動力　{points}／{max}";
-            sourceList.text = "每月行動力來源\n" + sources;
+            // v1125 #5: the delegation source reads 「總管」 (ap.json still says 代掌門 until PB renames it).
+            sourceList.text = "每月行動力來源\n" + (sources ?? "").Replace("代掌門", "總管");
         }
 
         /// <summary>One jade pip per point of monthly action: lit jade while unspent, dim ink once used.</summary>

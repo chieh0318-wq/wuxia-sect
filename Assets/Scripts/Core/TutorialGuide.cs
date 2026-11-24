@@ -75,10 +75,12 @@ namespace Wuxia
             {
                 var line = data.intro[intro++];
                 var speaker = state.Data.Disciples.FirstOrDefault(member => !string.IsNullOrEmpty(member.name) && (line.speaker ?? "").EndsWith(member.name, StringComparison.Ordinal));
-                ui.ShowModal(Format(line.speaker), new[] { Format(line.text) },
-                    new[] { ("繼續", (Action)ShowIntro), ("略過", (Action)(() => Choose(title))) }, dismissible: false);
-                if (speaker != null)
-                    ui.ModalPortrait(speaker.portrait ?? speaker.id, speaker.gender);
+                // v1125 #4: the opening guide talks with the same large-portrait box as the rest of the game.
+                string name = Format(line.speaker);
+                int split = name.IndexOf('　');
+                ui.ShowTalk(new PortraitLine(split > 0 ? name.Substring(split + 1) : name, split > 0 ? name.Substring(0, split) : "",
+                        speaker == null ? null : speaker.portrait ?? speaker.id, speaker?.gender, Format(line.text)),
+                    new[] { ("略過介紹", (Action)(() => Choose(title))) }, ShowIntro);
                 return;
             }
             Choose(title);
@@ -89,6 +91,7 @@ namespace Wuxia
             title = option;
             introComplete = true;
             ui.CloseModal(force: true);
+            ui.CloseTalk(false);
             Advance();
         }
 

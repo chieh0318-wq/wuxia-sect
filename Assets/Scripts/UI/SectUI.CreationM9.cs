@@ -116,6 +116,9 @@ namespace Wuxia
                 grid.spacing = new Vector2(gap, gap);
                 grid.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
                 grid.constraintCount = cols;
+                // v1125 #1: columns follow the real scroll width (the docked summary narrows it), so the third
+                // column is never clipped by the viewport mask.
+                gridObj.gameObject.AddComponent<FitGridColumns>().Estimate = grid.cellSize.x;
                 creationGrid = gridObj;
                 foreach (var option in options)
                     draw(option);
@@ -278,10 +281,13 @@ namespace Wuxia
 
         internal void CreationSelectedTalents(string heading, (CreationOption option, Action remove)[] picks)
         {
+            // v1125 #1: two rows once more than four talents are picked, each cell wide enough for its name.
+            bool twoRows = picks.Length > 4;
+            float barHeight = twoRows ? 112 : 80;
             var scroll = (RectTransform)modalList.parent;
-            scroll.offsetMin = new Vector2(scroll.offsetMin.x, 174);
+            scroll.offsetMin = new Vector2(scroll.offsetMin.x, 94 + barHeight);
             characterDecoration = Panel("已選天賦", modalCard, Vector2.zero, Vector2.right,
-                new(36, 84), new(-36, 164), false);
+                new(36, 84), new(-36, 84 + barHeight), false);
             UiKit.Skin(characterDecoration.GetComponent<Image>(), "Lacquer");
             var title = Label(characterDecoration, heading, 22, TextAnchor.MiddleLeft);
             title.color = CardGold;
@@ -295,25 +301,31 @@ namespace Wuxia
             }
             var row = Rect("Selected talent icons", characterDecoration);
             Anchor(row, Vector2.zero, Vector2.one, new(216, 8), new(-12, -8));
-            var layout = row.gameObject.AddComponent<HorizontalLayoutGroup>();
-            layout.spacing = 8;
-            layout.childControlWidth = layout.childControlHeight = true;
-            layout.childForceExpandWidth = false;
-            layout.childForceExpandHeight = true;
+            var layout = row.gameObject.AddComponent<GridLayoutGroup>();
+            int columns = twoRows ? (picks.Length + 1) / 2 : Mathf.Max(1, picks.Length);
+            float rowWidth = modalCard.rect.width - 72 - 228;
+            float cellWidth = Mathf.Min(300, (rowWidth - (columns - 1) * 8) / columns);
+            layout.cellSize = new Vector2(cellWidth, twoRows ? 44 : 64);
+            layout.spacing = new Vector2(8, 8);
+            layout.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
+            layout.constraintCount = columns;
+            layout.childAlignment = TextAnchor.MiddleLeft;
             foreach (var (option, remove) in picks)
             {
                 var button = Button(row, option.name, remove);
                 var size = button.GetComponent<LayoutElement>();
                 size.minWidth = 0;
-                size.preferredWidth = 148;
+                size.preferredWidth = cellWidth;
                 button.GetComponent<Button>().interactable = remove != null;
                 UiKit.Skin(button.GetComponent<Image>(), "Wood");
-                AddCardIcon(button, UiKit.TalentIcon(option), 8, 30);
+                AddCardIcon(button, UiKit.TalentIcon(option), 8, twoRows ? 28 : 30);
                 var caption = button.GetComponentInChildren<Text>();
-                caption.text = remove == null ? option.name : option.name + " ×";
+                caption.text = remove == null ? option.name : option.name + "　×";
                 caption.resizeTextMinSize = 18;
                 caption.resizeTextMaxSize = 20;
-                Anchor(caption.rectTransform, Vector2.zero, Vector2.one, new(42, 5), new(-5, -5));
+                caption.alignment = TextAnchor.MiddleLeft;
+                caption.horizontalOverflow = HorizontalWrapMode.Wrap;
+                Anchor(caption.rectTransform, Vector2.zero, Vector2.one, new(42, 2), new(-6, -2));
             }
         }
 
@@ -397,6 +409,31 @@ namespace Wuxia
                 float h = srcAspect / targetAspect;
                 raw.uvRect = new Rect(0f, (1f - h) * .72f, 1f, h);
             }
+        }
+    }
+
+    /// <summary>v1125 #1: keeps a fixed-column GridLayoutGroup's cells exactly as wide as the grid's own rect.</summary>
+    internal sealed class FitGridColumns : MonoBehaviour
+    {
+        private GridLayoutGroup grid;
+        private float width = -1;
+
+        /// <summary>Cell width the grid was laid out with before the layout pass (cards size their text to it).</summary>
+        internal float Estimate;
+
+        private void OnRectTransformDimensionsChange() => Fit();
+        private void LateUpdate() => Fit();
+
+        private void Fit()
+        {
+            grid ??= GetComponent<GridLayoutGroup>();
+            var rect = (RectTransform)transform;
+            // Ignore the default 100 px rect a fresh object has before its layout group sizes it.
+            if (grid == null || rect.rect.width < 300 || Mathf.Abs(rect.rect.width - width) < .5f) return;
+            width = rect.rect.width;
+            int columns = Mathf.Max(1, grid.constraintCount);
+            float cell = (width - grid.padding.horizontal - (columns - 1) * grid.spacing.x) / columns;
+            if (Mathf.Abs(cell - grid.cellSize.x) > .5f) grid.cellSize = new Vector2(cell, grid.cellSize.y);
         }
     }
 }

@@ -71,18 +71,17 @@ namespace Wuxia
                 party => { Restore(); selected(party); }, Restore, chance);
         }
 
-        internal void TrackPanelBack(Action back) => AssignmentBack = back;
-
-        internal Action AssignmentBack { get; private set; }
-
-        internal bool HandleAssignmentBack()
+        private Action AssignmentBack
         {
-            if (!ModalOpen) AssignmentBack = null;
-            if (AssignmentBack == null || !(Input.GetKeyDown(KeyCode.Escape) || Input.GetMouseButtonDown(1))) return false;
-            var back = AssignmentBack;
-            AssignmentBack = null;
-            back();
-            return true;
+            set
+            {
+                UiBack.Pop(assignmentBackOwner);
+                if (value != null) UiBack.Push(value, () => ModalOpen, assignmentBackOwner);
+            }
         }
+
+        private readonly object assignmentBackOwner = new();
+
+        internal void TrackPanelBack(Action back) => AssignmentBack = back;
     }
 }

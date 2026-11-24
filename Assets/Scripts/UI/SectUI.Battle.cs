@@ -282,20 +282,11 @@ namespace Wuxia
             RefreshBattle();
             captureRound?.Invoke(() => Advance(stopAfterRound: true));
             captureInspect?.Invoke(SelectAction);
-            runner.StartCoroutine(WatchCancel(battleScreen));
-
-            IEnumerator WatchCancel(RectTransform watchedScreen)
+            void CancelMove()
             {
-                while (battleScreen == watchedScreen)
-                {
-                    if (!busy && (Input.GetMouseButtonDown(1) || Input.GetKeyDown(KeyCode.Escape)))
-                    {
-                        inspectedAction = "attack";
-                        selectedAction = null;
-                        RefreshActionButtons();
-                    }
-                    yield return null;
-                }
+                inspectedAction = "attack";
+                selectedAction = null;
+                RefreshActionButtons();
             }
 
             void PageMoves(int direction)
@@ -371,6 +362,11 @@ namespace Wuxia
 
             void RefreshActionButtons()
             {
+                var screen = battleScreen;
+                UiBack.Pop(screen);
+                if (selectedAction != null && screen != null)
+                    UiBack.Push(CancelMove, () => battleScreen == screen && !busy, screen);
+
                 for (int i = 0; i < tabs.Length; i++)
                     UiKit.Skin(tabs[i].GetComponent<Image>(), i == activeTab ? "Selected" : "Wood");
 

@@ -28,7 +28,7 @@ namespace Wuxia
         private readonly ApHud apHud;
         private readonly RawImage dialoguePortrait;
         private Action inspectDisciple;
-        private readonly Text toast;
+        private string lastMessage;
         private readonly Font font;
         private readonly List<(Transform target, Vector3 offset, RectTransform tag, bool building)> worldLabels = new();
         private readonly List<Rect> visibleTags = new();
@@ -128,11 +128,8 @@ namespace Wuxia
             Fill(Label(help, "左鍵查看院中建築與弟子\nWASD 移動　滾輪縮放",
                 22, TextAnchor.MiddleLeft).rectTransform, 12);
 
-            var toastPanel = Panel("Messages", canvas, new Vector2(0.5f, 0), new Vector2(0.5f, 0),
-                new Vector2(-380, 258), new Vector2(380, 310), false);
-            toast = Label(toastPanel, "", 23, TextAnchor.MiddleCenter);
-            Fill(toast.rectTransform, 8);
-            toastPanel.gameObject.SetActive(false);
+            // v1125 #21: notices are stacked, self-sizing slips that fade (Toast.cs).
+            Toast.Initialize(canvas, font);
 
             dialogue = Panel("Dialogue", canvas, new Vector2(0.5f, 0), new Vector2(0.5f, 0),
                 new Vector2(-440, 102), new Vector2(440, 246));
@@ -229,6 +226,7 @@ namespace Wuxia
         public void ShowCommands(string title, IEnumerable<(string label, string detail, Action run, bool selected)> commands)
         {
             Clear(commandList);
+            commandsBack = null;
             SetCommandsPanelHeight(title == "建造" ? 800 : 780);
             AddLine(commandList, title == "指令" ? "門派事務" : title, 28);
             targets.Remove("cmd_build");
@@ -266,8 +264,11 @@ namespace Wuxia
 
             void Expand((string name, string detail, (string label, string detail, Action run, bool selected)[] entries) category)
             {
-                ShowCommands("門派事務・" + category.name, new[] { ("返回分類", "查看其他門派事務", (Action)DrawCategories, false) }
+                ShowCommands("門派事務・" + category.name, new[] { ("‹ 返回分類", "查看其他門派事務（右鍵亦可返回）", (Action)DrawCategories, false) }
                     .Concat(category.entries));
+                commandsBack = DrawCategories; // v1125 #16: right-click / Esc returns to the categories
+                if (commandList.childCount > category.entries.Length)
+                    targets["cmd_back"] = (RectTransform)commandList.GetChild(commandList.childCount - category.entries.Length - 1);
                 if (category.name == "建造" && commandList.childCount > 2)
                     targets["cmd_build"] = (RectTransform)commandList.GetChild(commandList.childCount - category.entries.Length);
                 if (category.name == "人事" && commandList.childCount > 2)
@@ -295,11 +296,11 @@ namespace Wuxia
             }
             if (string.IsNullOrEmpty(detail))
                 return rect;
-            int captionHeight = label.Contains("\n") ? 58 : 38;
-            rect.GetComponent<LayoutElement>().preferredHeight = 84 + captionHeight;
             string cmdIcon = CommandIconFor(label);
             var iconTex = UiKit.Icon(cmdIcon);
             int textLeft = iconTex != null ? 74 : 22;
+            // v1125 #1: caption and body heights follow their wrapped text so nothing overlaps or is cut off.
+            float cardWidth = Mathf.Max(200, parent.rect.width > 1 ? parent.rect.width : 396);
             if (iconTex != null)
             {
                 var ic = Rect("CmdIcon", rect);
@@ -310,6 +311,10 @@ namespace Wuxia
             caption.alignment = TextAnchor.MiddleLeft;
             caption.fontSize = caption.resizeTextMaxSize = 22;
             caption.resizeTextMinSize = UiKit.MinBody;
+            caption.resizeTextForBestFit = false;
+            caption.horizontalOverflow = HorizontalWrapMode.Wrap;
+            caption.text = label.Replace(' ', ' ');
+            float captionHeight = Mathf.Max(38, PreferredHeight(caption, cardWidth - textLeft - 10) + 10);
             Anchor(caption.rectTransform, Vector2.up, Vector2.one, new(textLeft, -captionHeight), new(-10, -6));
             var divider = Rect("Card rule", rect);
             Anchor(divider, Vector2.up, Vector2.one, new(textLeft, -captionHeight - 3), new(-14, -captionHeight - 2));
@@ -323,6 +328,10 @@ namespace Wuxia
             body.horizontalOverflow = HorizontalWrapMode.Wrap;
             body.resizeTextForBestFit = false;
             body.lineSpacing = 1.05f;
+            body.verticalOverflow = VerticalWrapMode.Overflow;
+            float bodyHeight = PreferredHeight(body, cardWidth - textLeft - 10);
+            rect.GetComponent<LayoutElement>().preferredHeight = Mathf.Max(84 + Mathf.Min(captionHeight, 58),
+                captionHeight + bodyHeight + 20);
             Anchor(body.rectTransform, Vector2.zero, Vector2.one, new(textLeft, 6), new(-10, -captionHeight - 6));
             UiKit.AccentStripe(rect, selected ? UiKit.GoldAccent : run == null ? new Color(.45f, .40f, .34f) : UiKit.Crimson);
             return rect;
@@ -352,19 +361,69 @@ namespace Wuxia
         }
 
         private RectTransform mapButtons;
+        private Action commandsBack;
+
+        /// <summary>v1125 #16: steps the 門派事務 menu back to its categories. False when already at the top.</summary>
+        internal bool CommandsBack()
+        {
+            if (commandsBack == null) return false;
+            var back = commandsBack;
+            commandsBack = null;
+            back();
+            return true;
+        }
+
+        internal bool CommandsInSubmenu => commandsBack != null;
+
+        private static readonly string[] BackLabels = { "取消", "關閉", "收卷", "繼續遊戲", "繼續引導", "確定", "知道了" };
+
+        /// <summary>
+        /// v1125 #16: right-click / Esc on a modal page. Presses the page's own 「返回…」 button when it has one
+        /// (one level up), otherwise its cancel / close / 收卷 button, otherwise closes a dismissible modal.
+        /// Returns false when the page offers no way back (story choices, creation steps without 返回).
+        /// </summary>
+        internal bool ModalBack()
+        {
+            if (!ModalOpen) return false;
+            var buttons = modalButtons.GetComponentsInChildren<Button>(false)
+                .Where(button => button.interactable && button.gameObject.activeInHierarchy).ToArray();
+            var pick = buttons.FirstOrDefault(button => button.name.TrimStart('‹', ' ').StartsWith("返回", StringComparison.Ordinal));
+            foreach (string label in BackLabels)
+                pick ??= buttons.FirstOrDefault(button => button.name == label);
+            // Full-page panels (堂口, 演武, 政務) draw their own 返回 / 關閉 buttons on the card itself.
+            pick ??= modalCard.GetComponentsInChildren<Button>(false).Where(button => button.interactable)
+                .FirstOrDefault(button => Caption(button).StartsWith("返回", StringComparison.Ordinal) ||
+                    button.name.EndsWith("返回", StringComparison.Ordinal));
+            pick ??= modalCard.GetComponentsInChildren<Button>(false).Where(button => button.interactable)
+                .FirstOrDefault(button => Caption(button) is "關閉" or "收卷" or "離開");
+            if (pick != null)
+            {
+                pick.onClick.Invoke();
+                return true;
+            }
+            if (!modalDismissible) return false;
+            CloseModal();
+            return true;
+
+            static string Caption(Button button) =>
+                (button.GetComponentInChildren<Text>()?.text ?? button.name).TrimStart('‹', ' ', '「');
+        }
 
         /// <summary>Bottom-right wood plaque with the world map (M) and intel overview shortcuts.</summary>
-        internal void ShowMapButtons(Action openMap, Action openIntel, Action openCharacters, Action openSystem)
+        internal void ShowMapButtons(Action openMap, Action openIntel, Action openCharacters, Action openSystem, Action openSect = null)
         {
             if (mapButtons != null)
                 return;
-            mapButtons = Panel("江湖", canvas, Vector2.right, Vector2.right, new(-826, 18), new(-18, 92));
+            mapButtons = Panel("江湖", canvas, Vector2.right, Vector2.right, new(openSect != null ? -1010 : -826, 18), new(-18, 92));
             UiKit.Skin(mapButtons.GetComponent<Image>(), "Wood");
             var row = mapButtons.gameObject.AddComponent<HorizontalLayoutGroup>();
             row.padding = new RectOffset(12, 12, 10, 10);
             row.spacing = 12;
             row.childControlWidth = row.childControlHeight = true;
             row.childForceExpandWidth = row.childForceExpandHeight = true;
+            // v1125 #18: 「本門」 lists only our own people (hero, elders, seniors, disciples, the friend).
+            if (openSect != null)
+                targets["sect_roster"] = Button(mapButtons, "本門　B", openSect);
             var mapButton = Button(mapButtons, "江湖地圖　M", openMap);
             var intelButton = Button(mapButtons, "情報", openIntel);
             Button(mapButtons, "江湖人物　C", openCharacters);
@@ -396,48 +455,92 @@ namespace Wuxia
             detailsList.anchoredPosition = Vector2.zero;
         }
 
-        internal void ShowSectLedger(GameState state)
+        /// <summary>What the 門派政務 page needs from the bootstrap to make its slips act (v1125 #9).</summary>
+        internal sealed class LedgerHooks
         {
-            ShowModal("", Array.Empty<string>(), new[] { ("收卷", (Action)(() => CloseModal())) });
-            Anchor(modalCard, Vector2.one * .5f, Vector2.one * .5f, new(-660, -394), new(660, 394));
-            characterDecoration = MapUi.Docket(modalCard, "門派政務", 0, 0, 1320, 702, false);
+            public string incomeLine, apLine, netLine;
+            public Action<BuildingData> openBuilding;
+            public Action<DiscipleData> openDisciple;
+            public Func<DiscipleData, string> status, life;
+            public Action openHalls, openRoster;
+        }
+
+        /// <summary>
+        /// v1125 #9: 門派政務 you can act on. Top: this month's income / upkeep and where the action points come
+        /// from. Left: every building as a button that opens its card (upgrade / functions). Right: the disciple
+        /// register — click a disciple to open their page (talk, 委任總管, assign to a hall, arrange training).
+        /// </summary>
+        internal void ShowSectLedger(GameState state, LedgerHooks hooks = null)
+        {
+            hooks ??= new LedgerHooks();
+            var buttons = new List<(string, Action)>();
+            if (hooks.openHalls != null) buttons.Add(("山門堂口　›", hooks.openHalls));
+            if (hooks.openRoster != null) buttons.Add(("本門名冊　›", hooks.openRoster));
+            buttons.Add(("收卷", () => CloseModal()));
+            ShowModal("", Array.Empty<string>(), buttons);
+            Anchor(modalCard, Vector2.one * .5f, Vector2.one * .5f, new(-700, -440), new(700, 440));
+            characterDecoration = MapUi.Docket(modalCard, "門派政務", 0, 0, 1400, 794, false);
             var page = characterDecoration;
-            MapUi.Text(page, $"{state.SectLabel}　門派政務", 38, 20, 800, 64, 40, MapUi.Gold);
-            MapUi.Text(page, state.Date, 890, 27, 392, 52, 23, MapUi.Paper, TextAnchor.MiddleRight);
-            var affairs = MapUi.Docket(page, "門務", 30, 99, 444, 573);
-            MapUi.Text(affairs, "門務簿", 24, 16, 396, 62, 30, MapUi.Red);
-            MapUi.Text(affairs, $"床位 {state.Beds}　弟子 {state.Disciples.Count}\n銀兩 {state.Silver}　聲望 {state.Reputation}",
-                24, 84, 396, 80, 24, MapUi.Ink, TextAnchor.UpperLeft);
-            var works = LedgerScroll(affairs, 22, 181, 400, 358);
+            MapUi.Text(page, $"{state.SectLabel}　門派政務", 38, 18, 760, 60, 40, MapUi.Gold);
+            MapUi.Text(page, state.Date, 960, 24, 400, 50, 23, MapUi.Paper, TextAnchor.MiddleRight);
+
+            // Monthly budget and action-point strip.
+            var budget = MapUi.Kit(page, "每月收支", 30, 86, 1340, 96, "Wood", false);
+            AddIconAt(budget, "hud_silver", 16, 12, 34);
+            MapUi.Text(budget, hooks.incomeLine ?? $"銀兩 {state.Silver}　糧食 {state.Food}", 60, 6, 860, 42, 21, MapUi.Paper);
+            MapUi.Text(budget, hooks.netLine ?? "", 60, 48, 860, 42, 21, MapUi.Gold);
+            AddIconAt(budget, "hud_ap", 930, 12, 34);
+            MapUi.Text(budget, hooks.apLine ?? $"行動力 {state.ActionPoints}／{state.ApMax}", 972, 6, 352, 84, 20, MapUi.Paper,
+                TextAnchor.UpperLeft);
+
+            var affairs = MapUi.Docket(page, "門務", 30, 194, 470, 572);
+            MapUi.Text(affairs, "門務簿", 24, 14, 250, 56, 30, MapUi.Red);
+            MapUi.Text(affairs, "點建築開啟功能", 230, 22, 216, 44, 18, MapUi.Ink, TextAnchor.MiddleRight);
+            MapUi.Text(affairs, $"床位 {state.Beds}　弟子 {state.Disciples.Count}　聲望 {state.Reputation}",
+                24, 72, 422, 40, 21, MapUi.Ink);
+            var works = LedgerScroll(affairs, 22, 120, 426, 432);
             int workY = 0;
             foreach (var building in state.Buildings.Where(b => b != null).GroupBy(b => b.id))
             {
                 var entry = building.First();
-                var slip = MapUi.Kit(works, entry.name, 0, workY, 394, 48, "Wood", false);
-                MapUi.Text(slip, entry.name, 15, 0, 238, 48, 21, MapUi.Paper);
-                MapUi.Text(slip, $"{building.Count()} 處", 250, 0, 121, 48, 19, MapUi.Gold, TextAnchor.MiddleRight);
-                workY += 54;
+                var slip = MapUi.Button(works, "", 0, workY, 420, 58, () => hooks.openBuilding?.Invoke(entry));
+                slip.name = entry.name;
+                slip.interactable = hooks.openBuilding != null;
+                MapUi.Text(slip.transform, entry.name, 15, 0, 240, 58, 22, MapUi.Paper);
+                MapUi.Text(slip.transform, $"等級 {state.BuildingLevel(entry.id)}・{building.Count()} 處　›", 230, 0, 176, 58, 19,
+                    MapUi.Gold, TextAnchor.MiddleRight);
+                workY += 64;
             }
-            works.sizeDelta = new Vector2(400, workY);
+            works.sizeDelta = new Vector2(426, workY);
 
-            var registry = MapUi.Docket(page, "弟子", 495, 99, 795, 573);
-            MapUi.Text(registry, "弟子名冊", 24, 16, 600, 62, 30, MapUi.Red);
-            var roster = LedgerScroll(registry, 20, 86, 755, 459);
+            var registry = MapUi.Docket(page, "弟子", 520, 194, 850, 572);
+            MapUi.Text(registry, "弟子名冊", 24, 14, 300, 56, 30, MapUi.Red);
+            MapUi.Text(registry, "點弟子：談話・委任總管・指派堂口・安排修練", 300, 22, 520, 44, 18, MapUi.Ink, TextAnchor.MiddleRight);
+            var roster = LedgerScroll(registry, 20, 78, 810, 474);
             int memberY = 0;
             foreach (var member in state.Disciples)
             {
-                var slip = MapUi.Kit(roster, member.name, 0, memberY, 750, 104, "Wood", false);
-                MapUi.Portrait(slip, PortraitService.Resolve(PortraitService.IdOrDefault(member.portrait, member.id), member.gender),
-                    12, 8, 70, 88);
-                MapUi.Text(slip, member.name + "　" + member.title, 100, 8, 430, 38, 24, MapUi.Paper, role: "Names");
-                MapUi.Text(slip, member.trait, 100, 48, 430, 43, 20, MapUi.Gold);
-                var affinity = MapUi.Rect(slip, "好感", 557, 37, 26, 26).gameObject.AddComponent<RawImage>();
+                var person = member;
+                var slip = MapUi.Button(roster, "", 0, memberY, 804, 110, () => hooks.openDisciple?.Invoke(person));
+                slip.name = member.name;
+                slip.interactable = hooks.openDisciple != null;
+                var rect = (RectTransform)slip.transform;
+                MapUi.Portrait(rect, PortraitService.Resolve(PortraitService.IdOrDefault(member.portrait, member.id), member.gender),
+                    12, 8, 72, 94);
+                MapUi.Text(rect, member.name + "　" + member.title, 100, 6, 420, 36, 24, MapUi.Paper, role: "Names");
+                MapUi.Text(rect, hooks.life?.Invoke(member) ?? member.trait, 100, 42, 450, 30, 18, new Color(.78f, .88f, .74f));
+                string status = hooks.status?.Invoke(member);
+                MapUi.Text(rect, string.IsNullOrEmpty(status) ? member.trait : status, 100, 72, 450, 30, 18,
+                    string.IsNullOrEmpty(status) ? MapUi.Gold : new Color(.95f, .62f, .48f));
+                var affinity = MapUi.Rect(rect, "好感", 580, 40, 26, 26).gameObject.AddComponent<RawImage>();
                 affinity.texture = UiKit.Icon("hud_affinity");
                 affinity.raycastTarget = false;
-                MapUi.Text(slip, $"好感 {CastDialogue.Score(state, member)}", 590, 20, 134, 60, 21, MapUi.Paper);
-                memberY += 112;
+                MapUi.Text(rect, $"好感 {CastDialogue.Score(state, member)}", 612, 24, 120, 60, 21, MapUi.Paper);
+                MapUi.Text(rect, "›", 748, 24, 40, 60, 30, MapUi.Gold, TextAnchor.MiddleCenter);
+                memberY += 118;
             }
-            roster.sizeDelta = new Vector2(755, memberY);
+            roster.sizeDelta = new Vector2(810, memberY);
+            FitModalButtons();
 
             RectTransform LedgerScroll(Transform parent, float x, float y, float width, float height)
             {
@@ -452,12 +555,22 @@ namespace Wuxia
                 scroll.scrollSensitivity = 45;
                 return contents;
             }
+
+            void AddIconAt(Transform parent, string icon, float x, float y, float size)
+            {
+                var image = MapUi.Rect(parent, icon, x, y, size, size).gameObject.AddComponent<RawImage>();
+                image.texture = UiKit.Icon(icon);
+                image.enabled = image.texture != null;
+                image.raycastTarget = false;
+            }
         }
 
         public void ShowModal(string title, IEnumerable<string> lines,
             IEnumerable<(string label, Action run)> buttons = null, bool dismissible = true, Action closed = null)
         {
+            CloseTalk(false); // v1125 #4: a page never opens under a lingering portrait talk
             ResetCreationLayout();
+            Anchor(modalButtons, Vector2.zero, Vector2.right, new Vector2(30, 22), new Vector2(-30, 72)); // v1125 #1
             Clear(modalList);
             foreach (Transform child in modalButtons)
             {
@@ -749,10 +862,20 @@ namespace Wuxia
             UnityEngine.Object.Destroy(paperTexture);
         }
 
+        /// <summary>v1125 #21: shows a fading notice slip; an empty message is ignored (slips expire on their own).</summary>
         public void Message(string message)
         {
-            toast.text = message;
-            toast.transform.parent.gameObject.SetActive(!string.IsNullOrEmpty(message));
+            if (string.IsNullOrWhiteSpace(message) || message == lastMessage && Toast.Count > 0) return;
+            lastMessage = message;
+            Toast.Show(message);
+        }
+
+        /// <summary>Notice with an explicit icon and quality colour (0 凡品 … 3 神兵).</summary>
+        internal void Message(string message, string icon, int quality = 0)
+        {
+            if (string.IsNullOrWhiteSpace(message)) return;
+            lastMessage = message;
+            Toast.Show(message, icon, Toast.QualityColor(quality));
         }
 
         public void AddWorldLabel(Transform target, Vector3 offset, string name, bool building = true)

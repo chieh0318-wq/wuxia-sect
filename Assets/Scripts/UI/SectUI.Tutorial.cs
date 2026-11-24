@@ -8,7 +8,8 @@ namespace Wuxia
     public sealed partial class SectUI
     {
         // Title, a two-line objective at 24px and a three-line hint at 20px above the skip button.
-        private const float ObjectiveHeight = 199;
+        private const float ObjectiveMinHeight = 199;
+        private float ObjectiveHeight = ObjectiveMinHeight; // v1125 #1: grows with the hint text
         private readonly Dictionary<string, RectTransform> targets = new();
         private readonly Vector3[] highlightCorners = new Vector3[4];
         private RectTransform modalButtons;
@@ -32,6 +33,8 @@ namespace Wuxia
             Anchor(objectiveBody.rectTransform, Vector2.zero, Vector2.one, new(20, ObjectiveHeight - 89), new(-20, -58));
             objectiveHint = Label(objective, "", 20);
             Anchor(objectiveHint.rectTransform, Vector2.zero, Vector2.one, new(20, 49), new(-20, -94));
+            objectiveBody.resizeTextForBestFit = objectiveHint.resizeTextForBestFit = false;
+            objectiveBody.horizontalOverflow = objectiveHint.horizontalOverflow = HorizontalWrapMode.Wrap;
             var skip = Button(objective, "略過引導", () => onSkip?.Invoke());
             Anchor(skip, Vector2.zero, Vector2.zero, new(20, 11), new(157, 45));
 
@@ -91,6 +94,14 @@ namespace Wuxia
             objectiveBody.text = body;
             objectiveHint.text = hint;
             onSkip = skip;
+            // v1125 #1: size the card to its wrapped text so the hint never runs under the skip button.
+            const float inner = 424 - 40;
+            float bodyHeight = Mathf.Max(31, PreferredHeight(objectiveBody, inner));
+            float hintHeight = Mathf.Max(45, PreferredHeight(objectiveHint, inner));
+            ObjectiveHeight = Mathf.Max(ObjectiveMinHeight, 58 + bodyHeight + 8 + hintHeight + 52);
+            Anchor(objectiveTitle.rectTransform, Vector2.zero, Vector2.one, new(20, ObjectiveHeight - 52), new(-20, -16));
+            Anchor(objectiveBody.rectTransform, Vector2.zero, Vector2.one, new(20, ObjectiveHeight - 58 - bodyHeight), new(-20, -58));
+            Anchor(objectiveHint.rectTransform, Vector2.zero, Vector2.one, new(20, 49), new(-20, -66 - bodyHeight));
             objective.gameObject.SetActive(true);
         }
 
@@ -113,7 +124,18 @@ namespace Wuxia
                 return;
 
             float phase = .7f + Mathf.Sin(Time.unscaledTime * 5) * .25f;
-            if (key.StartsWith("ui:", StringComparison.Ordinal) && targets.TryGetValue(key.Substring(3), out var target))
+            RectTransform target = null;
+            if (key.StartsWith("ui:", StringComparison.Ordinal))
+            {
+                targets.TryGetValue(key.Substring(3), out target);
+                // v1125 #7: the menus are two levels deep. When the wanted button is not on screen (another
+                // category is open), light 「‹ 返回分類」 so the guide always points at the next click.
+                if ((target == null || !target.gameObject.activeInHierarchy) && CommandsInSubmenu &&
+                    targets.TryGetValue("cmd_back", out var back) && back != null && back.gameObject.activeInHierarchy)
+                    target = back;
+                if (target != null && !target.gameObject.activeInHierarchy) target = null;
+            }
+            if (target != null)
             {
                 target.GetWorldCorners(highlightCorners);
                 Vector2 min = canvas.InverseTransformPoint(highlightCorners[0]);

@@ -257,21 +257,10 @@
             {
               "text": "拔劍：把師父交出來",
               "effects": [
-                {
-                  "key": "relation",
-                  "value": -15,
-                  "ref": "yeyu"
-                },
-                {
-                  "key": "charRelation",
-                  "value": -10,
-                  "ref": "leader_yeyu"
-                },
-                {
-                  "key": "reputation",
-                  "value": 3,
-                  "ref": ""
-                }
+                { "key": "relation", "value": -15, "ref": "yeyu" },
+                { "key": "charRelation", "value": -10, "ref": "leader_yeyu" },
+                { "key": "reputation", "value": 6, "ref": "" },
+                { "key": "loyaltyAll", "value": 3, "ref": "" }
               ],
               "setFlag": "master_yeyu_hostile",
               "next": "q_master_3",
@@ -500,16 +489,9 @@
             {
               "text": "「留下來。我需要你。」",
               "effects": [
-                {
-                  "key": "relation",
-                  "value": -10,
-                  "ref": "fanyang_jds"
-                },
-                {
-                  "key": "relation",
-                  "value": -5,
-                  "ref": "cuishi"
-                }
+                { "key": "relation", "value": -10, "ref": "fanyang_jds" },
+                { "key": "relation", "value": -5, "ref": "cuishi" },
+                { "key": "loyaltyAll", "value": 2, "ref": "" }
               ],
               "setFlag": "friend_stayed",
               "next": "q_friend_3a",
@@ -1426,16 +1408,9 @@
             {
               "text": "扣下秦小樓，要秦無咎親自來談",
               "effects": [
-                {
-                  "key": "relation",
-                  "value": -10,
-                  "ref": "funiu"
-                },
-                {
-                  "key": "reputation",
-                  "value": 2,
-                  "ref": ""
-                }
+                { "key": "relation", "value": -10, "ref": "funiu" },
+                { "key": "reputation", "value": 2, "ref": "" },
+                { "key": "knownFaction", "value": 1, "ref": "funiu" }
               ],
               "setFlag": "xiaolou_held",
               "next": "q_rival_head_2b",
@@ -1735,11 +1710,8 @@
             {
               "text": "先查是誰改了劍經",
               "effects": [
-                {
-                  "key": "charRelation",
-                  "value": -5,
-                  "ref": "uncle_schemer"
-                }
+                { "key": "charRelation", "value": -5, "ref": "uncle_schemer" },
+                { "key": "insightChance", "value": 0.01, "ref": "" }
               ],
               "setFlag": "xu_investigate",
               "next": "q_xu_2b",
@@ -1864,16 +1836,8 @@
             {
               "text": "「留下。{sect}的人，誰也拿不走。」",
               "effects": [
-                {
-                  "key": "relation",
-                  "value": -15,
-                  "ref": "yeyu"
-                },
-                {
-                  "key": "loyaltyAll",
-                  "value": 3,
-                  "ref": ""
-                }
+                { "key": "relation", "value": -15, "ref": "yeyu" },
+                { "key": "loyaltyAll", "value": 5, "ref": "" }
               ],
               "setFlag": "shen_protected",
               "next": "q_shen_2a",
@@ -3260,11 +3224,8 @@
             {
               "text": "推說記不清了",
               "effects": [
-                {
-                  "key": "relation",
-                  "value": -5,
-                  "ref": "yushitai"
-                }
+                { "key": "relation", "value": -5, "ref": "yushitai" },
+                { "key": "relation", "value": 5, "ref": "neishisheng" }
               ],
               "setFlag": "yushitai_declined",
               "next": "q_leader_yushitai_2b",
@@ -3526,11 +3487,8 @@
             {
               "text": "婉拒，不涉官府之事",
               "effects": [
-                {
-                  "key": "relation",
-                  "value": -5,
-                  "ref": "henan_fu"
-                }
+                { "key": "relation", "value": -5, "ref": "henan_fu" },
+                { "key": "relation", "value": 5, "ref": "heisong" }
               ],
               "setFlag": "henan_declined",
               "next": "q_leader_henan_fu_2b",
@@ -3897,11 +3855,8 @@
             {
               "text": "提醒張懷遠提防阿史德翰",
               "effects": [
-                {
-                  "key": "relation",
-                  "value": -10,
-                  "ref": "fanyang_jds"
-                }
+                { "key": "relation", "value": -10, "ref": "fanyang_jds" },
+                { "key": "reputation", "value": 4, "ref": "" }
               ],
               "setFlag": "fanyang_warned",
               "next": "q_leader_fanyang_jds_2a",
@@ -4176,11 +4131,8 @@
             {
               "text": "追問向他要藥的人",
               "effects": [
-                {
-                  "key": "relation",
-                  "value": -5,
-                  "ref": "louguan"
-                }
+                { "key": "relation", "value": -5, "ref": "louguan" },
+                { "key": "reputation", "value": 2, "ref": "" }
               ],
               "setFlag": "louguan_asked",
               "next": "q_leader_louguan_2b",
@@ -4427,11 +4379,8 @@
             {
               "text": "推說門下沒有這樣的人",
               "effects": [
-                {
-                  "key": "relation",
-                  "value": -10,
-                  "ref": "emei"
-                }
+                { "key": "relation", "value": -10, "ref": "emei" },
+                { "key": "loyaltyAll", "value": 3, "ref": "" }
               ],
               "setFlag": "emei_denied",
               "next": "q_leader_emei_2b",
@@ -4832,11 +4781,8 @@
             {
               "text": "不立看不見的約",
               "effects": [
-                {
-                  "key": "relation",
-                  "value": -10,
-                  "ref": "yeyu"
-                }
+                { "key": "relation", "value": -10, "ref": "yeyu" },
+                { "key": "reputation", "value": 3, "ref": "" }
               ],
               "setFlag": "yeyu_refused",
               "next": "q_leader_yeyu_2b",
@@ -4960,11 +4906,8 @@
             {
               "text": "不涉江湖仇殺",
               "effects": [
-                {
-                  "key": "relation",
-                  "value": -5,
-                  "ref": "nongchao"
-                }
+                { "key": "relation", "value": -5, "ref": "nongchao" },
+                { "key": "reputation", "value": 2, "ref": "" }
               ],
               "setFlag": "nongchao_declined",
               "next": "q_leader_nongchao_2b",
@@ -5083,11 +5026,8 @@
             {
               "text": "推說不知",
               "effects": [
-                {
-                  "key": "relation",
-                  "value": -10,
-                  "ref": "cuishi"
-                }
+                { "key": "relation", "value": -10, "ref": "cuishi" },
+                { "key": "loyaltyAll", "value": 2, "ref": "" }
               ],
               "setFlag": "cuishi_evasive",
               "next": "q_leader_cuishi_2b",
@@ -5758,16 +5698,8 @@
             {
               "text": "拂袖而去",
               "effects": [
-                {
-                  "key": "relation",
-                  "value": -15,
-                  "ref": "tubo"
-                },
-                {
-                  "key": "reputation",
-                  "value": 3,
-                  "ref": ""
-                }
+                { "key": "relation", "value": -15, "ref": "tubo" },
+                { "key": "reputation", "value": 5, "ref": "" }
               ],
               "setFlag": "tubo_refused",
               "next": "q_leader_tubo_2b",
@@ -6162,11 +6094,8 @@
             {
               "text": "婉拒，不涉邊事",
               "effects": [
-                {
-                  "key": "relation",
-                  "value": -5,
-                  "ref": "nanzhao"
-                }
+                { "key": "relation", "value": -5, "ref": "nanzhao" },
+                { "key": "reputation", "value": 2, "ref": "" }
               ],
               "setFlag": "nanzhao_declined",
               "next": "q_leader_nanzhao_2b",
@@ -6650,11 +6579,8 @@
             {
               "text": "不應戰，請她喝一杯",
               "effects": [
-                {
-                  "key": "relation",
-                  "value": -5,
-                  "ref": "chicheng"
-                }
+                { "key": "relation", "value": -2, "ref": "chicheng" },
+                { "key": "reputation", "value": 2, "ref": "" }
               ],
               "setFlag": "zhaoxue_declined",
               "next": "q_prodigy_chicheng_2b",

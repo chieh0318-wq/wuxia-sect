@@ -75,8 +75,8 @@
           "name": "降黑山，保同門",
           "summary": "向屈突烈遞上降書，說出鐵匣下落，換黑山鐵騎放過散落的同門。人命與錢糧都保住了，只是從此江湖上人人知道，{sect}低過頭。",
           "effects": [
-            { "key": "silver", "value": 60, "ref": "" },
-            { "key": "food", "value": 40, "ref": "" },
+            { "key": "silver", "value": 80, "ref": "" },
+            { "key": "food", "value": 50, "ref": "" },
             { "key": "reputation", "value": -12, "ref": "" },
             { "key": "relation", "value": 50, "ref": "heishan" },
             { "key": "relation", "value": -30, "ref": "huayue" },
@@ -97,11 +97,13 @@
           "summary": "聽{friend}之計，暫借華嶽派旗號立足。封伯陽撥你一處山場，卻把兩個同門留在華嶽「盡孝」——你欠下的，是一筆遲早要還的人情。",
           "effects": [
             { "key": "relation", "value": 30, "ref": "huayue" },
-            { "key": "silver", "value": 30, "ref": "" },
+            { "key": "silver", "value": 50, "ref": "" },
             { "key": "reputation", "value": 5, "ref": "" },
             { "key": "followers", "value": -1, "ref": "luo" },
             { "key": "followers", "value": -1, "ref": "kang" },
             { "key": "recruitPoolSize", "value": 1, "ref": "" },
+            { "key": "buildCostPct", "value": -10, "ref": "" },
+            { "key": "insightChance", "value": 0.02, "ref": "" },
             { "key": "flag", "value": 1, "ref": "owes_huayue" }
           ],
           "beats": [
@@ -171,9 +173,10 @@
           "effects": [
             { "key": "relation", "value": 40, "ref": "yushitai" },
             { "key": "relation", "value": 40, "ref": "neishisheng" },
-            { "key": "silver", "value": 60, "ref": "" },
-            { "key": "food", "value": 20, "ref": "" },
+            { "key": "silver", "value": 100, "ref": "" },
+            { "key": "food", "value": 40, "ref": "" },
             { "key": "reputation", "value": -15, "ref": "" },
+            { "key": "buildCostPct", "value": -10, "ref": "" },
             { "key": "followers", "value": -1, "ref": "lin" },
             { "key": "flag", "value": 1, "ref": "lin_exiled" }
           ],
@@ -190,11 +193,10 @@
           "name": "投奔少林，借佛門庇護",
           "summary": "少林寺當年助太宗擒王世充，至今有敕書護寺。{friend}引你上少室山求庇，御史臺的手伸不進山門——只是藥房的韓守拙，須留在寺中還這份情。",
           "effects": [
-            { "key": "relation", "value": 35, "ref": "shaolin" },
+            { "key": "relation", "value": 45, "ref": "shaolin" },
             { "key": "relation", "value": -10, "ref": "yushitai" },
             { "key": "reputation", "value": 5, "ref": "" },
-            { "key": "silver", "value": -10, "ref": "" },
-            { "key": "insightChance", "value": 0.02, "ref": "" },
+            { "key": "insightChance", "value": 0.04, "ref": "" },
             { "key": "followers", "value": -1, "ref": "han" },
             { "key": "flag", "value": 1, "ref": "shaolin_patron" }
           ],
@@ -266,8 +268,8 @@
           "effects": [
             { "key": "relation", "value": 50, "ref": "funiu" },
             { "key": "reputation", "value": -15, "ref": "" },
-            { "key": "silver", "value": 40, "ref": "" },
-            { "key": "food", "value": 30, "ref": "" },
+            { "key": "silver", "value": 60, "ref": "" },
+            { "key": "food", "value": 40, "ref": "" },
             { "key": "loyaltyAll", "value": -5, "ref": "" },
             { "key": "flag", "value": 1, "ref": "funiu_vassal" }
           ],
@@ -286,8 +288,10 @@
           "effects": [
             { "key": "relation", "value": 30, "ref": "huayue" },
             { "key": "relation", "value": -20, "ref": "funiu" },
-            { "key": "silver", "value": 20, "ref": "" },
+            { "key": "silver", "value": 40, "ref": "" },
             { "key": "reputation", "value": 5, "ref": "" },
+            { "key": "recruitPoolSize", "value": 1, "ref": "" },
+            { "key": "buildCostPct", "value": -10, "ref": "" },
             { "key": "followers", "value": -1, "ref": "kang" },
             { "key": "flag", "value": 1, "ref": "owes_huayue" },
             { "key": "flag", "value": 1, "ref": "kang_missing" }
@@ -353,12 +357,13 @@
           "name": "入籍官府，吃官糧",
           "summary": "應河南府招募，全門入「團結兵」籍，官給口糧。人人吃得飽，卻須聽官府調遣，江湖上也笑{sect}成了衙門的看家犬。",
           "effects": [
-            { "key": "relation", "value": 35, "ref": "henan_fu" },
+            { "key": "relation", "value": 45, "ref": "henan_fu" },
             { "key": "silver", "value": 30, "ref": "" },
             { "key": "food", "value": 60, "ref": "" },
             { "key": "reputation", "value": -10, "ref": "" },
             { "key": "apMax", "value": -1, "ref": "" },
-            { "key": "monthlyFood", "value": 12, "ref": "" },
+            { "key": "monthlyFood", "value": 20, "ref": "" },
+            { "key": "monthlySilver", "value": 8, "ref": "" },
             { "key": "flag", "value": 1, "ref": "henan_registered" }
           ],
           "beats": [

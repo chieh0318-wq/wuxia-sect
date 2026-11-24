@@ -64,15 +64,23 @@ namespace Wuxia
         private bool HandleWorldMapInput()
         {
             bool open = map != null && map.IsOpen;
-            if (ui.BattleOpen) return true;
+            if (ui.BattleOpen)
+            {
+                if (UiBack.BackPressed) UiBack.TryBack(); // v1125 #16: battle registers "cancel the armed move"
+                return true;
+            }
             if (Input.GetKeyDown(KeyCode.M) && (open || !ui.ModalOpen))
             {
                 ToggleWorldMap();
                 return true;
             }
-            if (open && Input.GetKeyDown(KeyCode.Escape))
+            if (open && UiBack.BackPressed)
             {
-                if (!map.CloseIntel()) map.Close();
+                // v1125 #16/#19: back closes intel / diplomacy (intel opened from the toolbar returns to the sect),
+                // then the open stronghold card, then the map itself.
+                if (UiBack.TryBack()) return true;
+                UiBack.Consume();
+                map.Back();
                 return true;
             }
             return open;

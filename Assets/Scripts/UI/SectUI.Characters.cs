@@ -80,13 +80,15 @@ namespace Wuxia
         /// left (44%) and an always-visible dossier of the selected character on the right (56%).
         /// </summary>
         internal void ShowDirectory(string[] filters, int selected, Action<int> filter,
-            StoryCharacter[] people, int[] kinds, string[] factionNames, int focus, Action<int> choose, CharacterDossier dossier)
+            StoryCharacter[] people, int[] kinds, string[] factionNames, int focus, Action<int> choose, CharacterDossier dossier,
+            string heading = "江湖人物", string[] lifeSkills = null, Action closed = null)
         {
-            bool sameFilter = rosterFilter == selected;
+            bool sameFilter = rosterFilter == selected && rosterHeading == heading;
             float keepScroll = sameFilter ? rosterScroll : 1;
             rosterFilter = selected;
-            ShowCreation("江湖人物", Array.Empty<string>(),
-                new[] { ("關閉", (Action)(() => { rosterFilter = -1; CloseModal(force: true); })) }, null);
+            rosterHeading = heading;
+            ShowCreation(heading, Array.Empty<string>(),
+                new[] { ("關閉", (Action)(() => { rosterFilter = -1; closed?.Invoke(); CloseModal(force: true); })) }, null);
             Anchor(modalCard, new(.03f, .025f), new(.97f, .975f), Vector2.zero, Vector2.zero);
             characterDecoration = Rect("人物總覽", modalCard);
             Fill(characterDecoration);
@@ -121,7 +123,8 @@ namespace Wuxia
                 CreationGrid(2, (people.Length + 1) / 2, 132);
                 for (int index = 0; index < people.Length; index++)
                     RosterCard(people[index], kinds != null && index < kinds.Length ? kinds[index] : 2, index == focus, index,
-                        factionNames != null && index < factionNames.Length ? factionNames[index] : people[index].faction);
+                        factionNames != null && index < factionNames.Length ? factionNames[index] : people[index].faction,
+                        lifeSkills != null && index < lifeSkills.Length ? lifeSkills[index] : null);
                 Canvas.ForceUpdateCanvases();
                 viewport.GetComponent<ScrollRect>().verticalNormalizedPosition = Mathf.Clamp01(keepScroll);
             }
@@ -136,7 +139,7 @@ namespace Wuxia
             }
             Dossier(sheet, dossier);
 
-            void RosterCard(StoryCharacter person, int kind, bool active, int index, string factionName)
+            void RosterCard(StoryCharacter person, int kind, bool active, int index, string factionName, string life)
             {
                 var card = Button(creationGrid, "", () =>
                 {
@@ -152,6 +155,14 @@ namespace Wuxia
                     glow.effectDistance = new Vector2(3, 3);
                 }
                 UiKit.AccentStripe(card, KindColor(kind));
+                if (kind == 3)
+                {
+                    // v1125 #13: the hero's own card wears a double gold frame so it stands out in 師門 / 本門.
+                    var frame = card.gameObject.GetComponent<Outline>() ?? card.gameObject.AddComponent<Outline>();
+                    frame.effectColor = new Color(1f, .82f, .36f, 1f);
+                    frame.effectDistance = new Vector2(4, 4);
+                    GoldFrame(card, 3, 2, new Color(1f, .84f, .42f));
+                }
                 var texture = PortraitService.Resolve(person.portrait ?? person.id, person.gender);
                 MapUi.Portrait(card, texture, 18, 12, 84, 108);
                 var name = Label(card, person.name ?? person.id, 22, TextAnchor.MiddleLeft);
@@ -165,16 +176,21 @@ namespace Wuxia
                 var roleText = Label(badge, string.IsNullOrEmpty(role) ? "江湖人士" : role, 18, TextAnchor.MiddleLeft);
                 roleText.color = new Color(.86f, .93f, .86f);
                 Anchor(roleText.rectTransform, Vector2.zero, Vector2.one, new(10, 0), new(-6, 0));
-                var faction = Label(card, factionName ?? "", 18, TextAnchor.MiddleLeft);
-                faction.color = CardMuted;
+                // v1125 #18: the card's last line carries the best life skills next to the faction.
+                bool own = kind is 0 or 3 && !string.IsNullOrEmpty(life);
+                var faction = Label(card, own ? life : factionName ?? "", 18, TextAnchor.MiddleLeft);
+                faction.color = own ? new Color(.78f, .88f, .74f) : CardMuted;
                 Anchor(faction.rectTransform, Vector2.zero, Vector2.right, new(114, 10), new(-12, 40));
                 RankSeal(card, person.rank, person.cap, new(-76, -48), new(-10, -10), 22);
                 card.GetComponentInChildren<Text>().text = "";
             }
         }
 
+        private string rosterHeading;
+
         private static Color KindColor(int kind) => kind switch
         {
+            3 => UiKit.HeaderGold,
             0 => UiKit.JadeAccent,
             1 => UiKit.Crimson,
             _ => UiKit.GoldAccent

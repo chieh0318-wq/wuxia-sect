@@ -125,7 +125,7 @@ namespace Wuxia
             if (controls != null)
                 controls.enabled = true;
             AudioManager.Music("courtyard");
-            ui.ShowMapButtons(ToggleWorldMap, () => ToggleWorldMap(true), ShowCharacterDirectory, OpenSystemMenu);
+            ui.ShowMapButtons(ToggleWorldMap, () => ToggleWorldMap(true), ShowCharacterDirectory, OpenSystemMenu, ShowSectRoster);
             if (startTutorial)
                 BootStep("tutorial", () => tutorial = new TutorialGuide(ui, state));
         }
@@ -262,8 +262,8 @@ namespace Wuxia
             {
                 ui.UpdateStoryBeat();
                 ui.UpdateAppearance();
-                if (Input.GetKeyDown(KeyCode.Escape) && ui.ModalOpen)
-                    ui.CloseModal();
+                if (!ui.StoryOpen && UiBack.BackPressed && !UiBack.TryBack())
+                    ui.ModalBack(); // v1125 #16
                 return;
             }
             if (ui == null || view == null || !courtyardReady)
@@ -273,13 +273,22 @@ namespace Wuxia
                 ui.UpdateStoryBeat();
                 return;
             }
-            if (ui.SceneOpen) return; // v1124 C15–C18: scene pages own the input
+            if (ui.SceneOpen)
+            {
+                if (UiBack.BackPressed) UiBack.TryBack(); // v1125 #16: scenes may register a back step
+                return; // v1124 C15–C18: scene pages own the input
+            }
             if (HandleWorldMapInput()) return; // M2-B map input
-            if (!capturing && !ui.ModalOpen && !ui.DialogueOpen && !choosingBuilding)
+            if (!capturing && !ui.ModalOpen && !ui.DialogueOpen && !ui.TalkOpen && !choosingBuilding)
             {
                 if (Input.GetKeyDown(KeyCode.C))
                 {
                     ShowCharacterDirectory();
+                    return;
+                }
+                if (Input.GetKeyDown(KeyCode.B))
+                {
+                    ShowSectRoster();
                     return;
                 }
                 state.EvaluateQuestlines();
@@ -301,26 +310,11 @@ namespace Wuxia
             }
             ui.PositionLabels(view, hovered, selectedCourtyardPerson);
             ui.PositionHighlight(tutorial?.Highlight, view, world);
-            if (Input.GetKeyDown(KeyCode.Escape))
-            {
-                if (ui.ModalOpen)
-                    ui.CloseModal();
-                else if (choosingBuilding)
-                    CancelBuild();
-                else
-                {
-                    OpenSystemMenu();
-                }
+            if (HandleBack()) // v1125 #16: right-click / Esc = back one page
                 return;
-            }
 
             if (ui.ModalOpen)
                 return;
-            if (choosingBuilding && Input.GetMouseButtonDown(1))
-            {
-                CancelBuild();
-                return;
-            }
             if (!Input.GetMouseButtonDown(0))
                 return;
 
@@ -379,28 +373,28 @@ namespace Wuxia
             var categories = new (string name, string detail, (string label, string detail, System.Action run, bool selected)[] entries)[]
             {
                 ("建造", "興建宗門設施", Matching(action => action.type == "build").Append(
-                    ("山門堂口　行動力 0", $"已建 {halls}／{HallCatalog.Data.halls.Length}，{ready} 處可興建", (System.Action)OpenHalls, ready > 0)).ToArray()),
+                    ("山門堂口　›", $"已建 {halls}／{HallCatalog.Data.halls.Length}，{ready} 處可興建", (System.Action)OpenHalls, ready > 0)).ToArray()),
                 ("人事", "招募弟子、查閱門派與主角資料", Matching(action => action.type == "recruit").Concat(new[]
                 {
-                    ("門派政務　行動力 0", $"{HousingInfo()}　轄下據點 {state.Story.heldNodes?.Length ?? 0} 處", (System.Action)ShowSect, false),
-                    ("主角　行動力 0", $"{state.Protagonist.name}的武學、屬性與裝備", (System.Action)ShowProtagonist, false)
+                    ("門派政務　›", $"收支、弟子與建築，可直接派人辦事　{HousingInfo()}", (System.Action)ShowSect, false),
+                    ("主角　›", $"{state.Protagonist.name}：換裝備、調主修、修練、用秘笈", (System.Action)ShowProtagonist, false)
                 }).ToArray()),
                 ("探險", "走訪山道，探尋秘境", Matching(action => action.id is "explore" or "secret_realm")),
                 ("外交", "拜會各方勢力", new[]
                 {
-                    ("開啟江湖外交　行動力 0", "查看勢力關係，派使後依所選交涉扣除行動力",
+                    ("開啟江湖外交　›", "查看勢力關係，派使後依所選交涉扣除行動力",
                         (System.Action)(() => { ToggleWorldMap(); if (map != null && map.IsOpen) map.OpenDiplomacy(null); }), false)
                 }),
                 ("征伐", "前往江湖地圖調兵行軍", new[]
                 {
-                    ("開啟江湖地圖　行動力 0", "點選據點查看路線與出兵條件", (System.Action)ToggleWorldMap, false)
+                    ("開啟江湖地圖　›", "點選據點查看路線與出兵條件", (System.Action)ToggleWorldMap, false)
                 }),
                 ("修練", "研習藏經閣功法，或在山門切磋", new[]
                 {
-                    ("藏經閣科技樹　行動力 0", state.BuildingLevel("library") > 0
+                    ("藏經閣科技樹　›", state.BuildingLevel("library") > 0
                         ? $"已研習 {state.TechCount}／{GameState.TechTree.Length}，研習資費標於各節點" : "須先興建藏經閣",
                         state.BuildingLevel("library") > 0 ? (System.Action)ShowTechTree : null, false),
-                    ($"山門演武　行動力 {state.SparApCost}", "選派同門對練，提升武學與好感", maySpar ? (System.Action)StartSparring : null, false)
+                    (state.SparApCost > 0 ? $"山門演武　行動力 {state.SparApCost}" : "山門演武　›", "選派同門對練，提升武學與好感", maySpar ? (System.Action)StartSparring : null, false)
                 })
             };
             ui.ShowCommandCategories(categories);
@@ -557,12 +551,13 @@ namespace Wuxia
         {
             var options = new List<(string, string, System.Action, bool)>
             {
-                ("返回指令", "取消建造，回到門派事務", CancelBuild, false)
+                ("‹ 返回指令", "取消建造，回到門派事務（右鍵亦可）", CancelBuild, false)
             };
             foreach (var building in state.Data.Buildings.Where(state.IsAvailable))
             {
                 var total = BuildTotal(building);
-                string cost = $"銀 {total.silver}" + (total.food > 0 ? $"・糧 {total.food}" : "") + $"・行動力 {buildAction.apCost}";
+                string cost = $"銀 {total.silver}" + (total.food > 0 ? $"・糧 {total.food}" : "") +
+                    (buildAction.apCost > 0 ? $"・行動力 {buildAction.apCost}" : ""); // v1125 #8: no 「行動力 0」
                 bool picked = building == buildChoice;
                 options.Add(($"{(picked ? "【已選】" : "")}{building.name}　{cost}", building.summary ?? building.description, () =>
                 {
@@ -642,6 +637,7 @@ namespace Wuxia
 
         private void Speak(DiscipleData disciple)
         {
+            ledgerOpen = false;
             var action = state.Data.Actions.FirstOrDefault(entry => entry.id == "talk");
             if (action != null && !state.TrySpendAp(action.apCost, action.id))
             {
@@ -662,7 +658,10 @@ namespace Wuxia
             text = CastDialogue.Format(state, CastDialogue.Pick(castLines) ?? text, disciple.id);
             if (state.Story.delegateId == disciple.id)
                 text = CastDialogue.CharacterSpeech(state, disciple.id, "門務暫由我料理。");
-            ui.ShowDialogue(disciple, text, () => ShowDisciple(disciple));
+            // v1125 #4: courtyard chat uses the large-portrait talk instead of the old small box.
+            ui.ShowTalk(new PortraitLine(disciple.name, $"{DiscipleTitle(disciple)}／{disciple.trait}",
+                    PortraitService.IdOrDefault(disciple.portrait, disciple.id), disciple.gender, text),
+                new (string, System.Action)[] { ("人物詳情　›", () => ShowDisciple(disciple)) });
             tutorial?.Record("talk_disciple");
         }
 
@@ -670,15 +669,17 @@ namespace Wuxia
         {
             bool delegateRole = state.Story.delegateId == disciple.id;
             bool senior = disciple.age >= 20 && disciple.startInSect;
-            ui.ShowCharacter(disciple.name, delegateRole ? "代掌門" : disciple.title, disciple.gender,
+            // v1125 #5: 「委任總管」 (the hero already is 代掌門); the button spells out the trade-off.
+            ui.ShowCharacter(disciple.name, DiscipleTitle(disciple), disciple.gender,
                 PortraitService.IdOrDefault(disciple.portrait, disciple.id), disciple.attrs, disciple.lines,
                 disciple.weapon, state.WeaponRankDelta(disciple.weapon),
-                senior ? (delegateRole ? "解除代掌門" : "委任代掌門", () =>
+                senior ? (delegateRole ? "解除總管\n行動力 −1，恢復練武與生產" : "委任總管\n行動力 +1，此人不再練武、不計生產", () =>
                 {
                     state.ToggleDelegate(disciple);
                     ui.Refresh(state);
                     ShowDisciple(disciple);
                 }) : null);
+            DiscipleActions(disciple);
         }
 
         private void ShowProtagonist()
@@ -688,9 +689,10 @@ namespace Wuxia
                 entry => entry.id == hero.weapon && entry.type == "weapon")?.name ?? hero.weapon;
             ui.ShowCharacter(hero.name, UiKit.HeroTitle(hero) == hero.name ? "" : UiKit.HeroTitle(hero), hero.gender, PortraitService.IdOrDefault(hero.portrait, hero.lookId), hero.attrs, hero.lines,
                 hero.weapon, state.WeaponRankDelta(hero.weapon), gear: state.GearLabels(storyWeapon), stats: state.HeroStats);
+            HeroActions(); // v1125 #10: equip, 主修, training and manuals right on the hero page
         }
 
-        private void ShowSect() => ui.ShowSectLedger(state);
+        private void ShowSect() => ShowSectLedgerPage(); // v1125 #9: GameBootstrap.V1125Ui.cs
 
         private string HousingInfo()
         {
@@ -740,12 +742,15 @@ namespace Wuxia
 
         private string ActionLabel(ActionData action)
         {
+            // v1125 #8: only actions that really spend action points show them; menus that open a page get 「›」.
+            bool opensPage = action.type is "build" or "recruit";
             if (action.type == "recruit")
-                return CanUseAp(action) ? $"{action.name}　行動力 {action.apCost} 起" : $"{action.name}　行動力不足";
+                return CanUseAp(action) ? $"{action.name}　›" : $"{action.name}　行動力不足";
             int silver = action.cost.silver;
             string resources = silver == 0 && action.cost.food == 0 ? "" : $"\n{CostText(silver, action.cost.food)}";
             string reason = CanUseAp(action) ? "" : "（行動力不足）";
-            return $"{action.name}　行動力 {action.apCost}{reason}{resources}";
+            string ap = action.apCost > 0 ? $"　行動力 {action.apCost}" : "";
+            return $"{action.name}{(opensPage ? "　›" : ap)}{reason}{resources}";
         }
 
         private static string CostText(int silver, int food) =>

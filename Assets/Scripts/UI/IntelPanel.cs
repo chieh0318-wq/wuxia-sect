@@ -28,7 +28,8 @@ namespace Wuxia
             root = MapUi.Kit(parent, "江湖情報", 0, 0, 1600, 900, "Teal");
             var masthead = MapUi.Kit(root, "刊首", 12, 8, 1576, 80, "Wood");
             MapUi.Text(masthead, "江湖情報", 27, 6, 420, 68, 36, MapUi.Paper);
-            MapUi.Button(masthead, "返回地圖", 1376, 16, 176, 48, Close, MapUi.Red);
+            // v1125 #19: no 「返回地圖」 button — right-click / Esc goes back (to the sect when opened from the toolbar).
+            MapUi.Text(masthead, "右鍵或 Esc 返回", 1236, 16, 316, 48, 20, MapUi.Gold, TextAnchor.MiddleRight);
             MapUi.Kit(root, "情報卷冊", 14, 99, 1572, 784, "Paper", false);
             factionsTab = MapUi.Button(root, "勢力情報", 34, 117, 196, 48, () => Select(false));
             peopleTab = MapUi.Button(root, "江湖俠客", 244, 117, 196, 48, () => Select(true));

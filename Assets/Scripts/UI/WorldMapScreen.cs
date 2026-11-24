@@ -763,10 +763,47 @@ namespace Wuxia
         {
             if (traveling) return;
             AudioManager.Play("page");
+            intelFromSect = false;
             intel.Open(host);
         }
 
-        internal void OpenIntelOverview() => OpenIntel();
+        /// <summary>v1125 #19: intel opened from the sect toolbar; going back from it returns straight to the sect.</summary>
+        internal void OpenIntelOverview()
+        {
+            OpenIntel();
+            intelFromSect = true;
+        }
+
+        private bool intelFromSect;
+
+        /// <summary>
+        /// v1125 #16: one step back — diplomacy / intel first (toolbar intel closes the whole map), then the open
+        /// stronghold or faction card, then the map itself.
+        /// </summary>
+        internal void Back()
+        {
+            if (diplomacy != null && diplomacy.IsOpen)
+            {
+                if (!diplomacy.TalkCommitted) diplomacy.Close();
+                return;
+            }
+            if (intel != null && intel.IsOpen)
+            {
+                intel.Close();
+                if (intelFromSect)
+                {
+                    intelFromSect = false;
+                    Close();
+                }
+                return;
+            }
+            if (openedCard != null)
+            {
+                ClearCard();
+                return;
+            }
+            Close();
+        }
         internal void CaptureIntel() => OpenIntel();
         internal void CapturePeopleIntel() => intel.CapturePeopleTab();
 

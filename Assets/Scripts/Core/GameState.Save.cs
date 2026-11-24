@@ -51,6 +51,17 @@ namespace Wuxia
             }
         }
 
+        private void RestoreAdviserIdentity()
+        {
+            if (!Story.sameGenderChildhoodFriend) return;
+            string oldId = FriendId == "friend_m" ? "friend_f" : "friend_m";
+            foreach (var values in new[] { Story.characterRelations, Story.relations })
+                foreach (var entry in values.Where(entry => entry?.id == oldId))
+                    entry.id = FriendId;
+
+            Story.sameGenderChildhoodFriend = false;
+        }
+
         public static GameState LoadSave(GameData data) => LoadSave(data, SavePath);
 
         internal static GameState LoadSave(GameData data, string path)
@@ -109,6 +120,7 @@ namespace Wuxia
                     string id = index < snapshot.buildings.Length ? snapshot.buildings[index] : "";
                     state.Buildings[index] = data.Buildings.FirstOrDefault(building => building.id == id);
                 }
+                state.RestoreAdviserIdentity();
                 state.Disciples.Clear();
                 state.Disciples.AddRange(snapshot.disciples.Select(CloneDisciple));
                 bool migratePortraits = state.Story.usedPortraits?.Length > 0 != true;

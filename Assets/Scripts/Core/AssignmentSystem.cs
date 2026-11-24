@@ -25,14 +25,15 @@ namespace Wuxia
         internal static readonly Rank[] Ladder =
         {
             new("雜役", 0, 1, 0, 100),
-            new("外門", 4, 2, 0, 250),
-            new("內門", 12, 3, 1, 500),
-            new("親傳", 24, 4, 2, 800),
-            new("長老", 42, 5, 3, 1200)
+            new("外門", 4, 1, 0, 250),
+            new("內門", 12, 2, 1, 500),
+            new("親傳", 24, 2, 2, 800),
+            new("長老", 42, 3, 3, 1200)
         };
 
-        internal static readonly Rank Head = new("代掌門", 0, 6, 0, 1600);
+        internal static readonly Rank Head = new("代掌門", 0, 3, 0, 1600);
         internal static int Grade(GameState state, string id) => id == GameState.HeroId ? Ladder.Length :
+            id == state.FriendId ? Ladder.Length - 1 :
             Mathf.Clamp(Record(state, id)?.rank ?? (state.IsNamedDisciple(id) ? 2 : 0), 0, Ladder.Length - 1);
         internal static Rank RankOf(GameState state, string id) => id == GameState.HeroId ? Head : Ladder[Grade(state, id)];
         internal static int Contribution(GameState state, string id) => Record(state, id)?.contribution ?? 0;

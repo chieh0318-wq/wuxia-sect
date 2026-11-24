@@ -545,7 +545,7 @@ namespace Wuxia
                 .Select(GameState.FindFaction).Where(faction => faction != null).ToArray();
             var briefing = factions.Select(faction => new StoryBeat
             {
-                speaker = friend?.name ?? (state.Protagonist.gender == "女" ? "謝蘊" : "謝瑾"),
+                speaker = friend?.name ?? (state.Protagonist.gender == "女" ? "謝瑾" : "謝蘊"),
                 portrait = friend?.portrait ?? state.FriendId,
                 text = $"{faction.Label}（{faction.Relation}）。{GameState.RelationExplanation(faction, 0)}"
             }).ToArray();

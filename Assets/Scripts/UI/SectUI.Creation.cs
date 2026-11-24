@@ -464,6 +464,34 @@ namespace Wuxia
                 Anchor(chips.rectTransform, Vector2.zero, Vector2.one, new(8, 0), new(-6, 0));
                 var clip = strip.gameObject.AddComponent<RectMask2D>();
                 clip.padding = Vector4.zero;
+                if (!wideDescription && art == null)
+                {
+                    // v1125 #1: cards grow with their text — the description and the effect line wrap fully
+                    // instead of being truncated; the grid / list row takes the tallest card's height.
+                    var cell = creationGrid == null ? null : creationGrid.GetComponent<GridLayoutGroup>();
+                    float width = (cell != null ? cell.cellSize.x : creationListWidth) - left - 16;
+                    chips.horizontalOverflow = HorizontalWrapMode.Wrap;
+                    chips.alignment = TextAnchor.UpperLeft;
+                    chips.text = tags.Replace(' ', ' ');
+                    float tagsHeight = Mathf.Max(30, PreferredHeight(chips, width - 14) + 8);
+                    body.horizontalOverflow = HorizontalWrapMode.Wrap;
+                    body.verticalOverflow = VerticalWrapMode.Overflow;
+                    body.alignment = TextAnchor.UpperLeft;
+                    body.text = (description ?? "").Replace(' ', ' ');
+                    float bodyHeight = PreferredHeight(body, width);
+                    Anchor(strip, Vector2.zero, Vector2.right, new(left - 4, 8), new(-12, 8 + tagsHeight));
+                    Anchor(body.rectTransform, Vector2.zero, Vector2.one, new(left, 14 + tagsHeight), new(-16, -46 - top));
+                    float need = 46 + 6 + bodyHeight + 6 + tagsHeight + 10;
+                    if (cell != null && need > cell.cellSize.y)
+                    {
+                        cell.cellSize = new Vector2(cell.cellSize.x, Mathf.Ceil(need));
+                        var rows = Mathf.CeilToInt(cell.transform.childCount / (float)Mathf.Max(1, cell.constraintCount));
+                        var holder = cell.GetComponent<LayoutElement>();
+                        if (holder != null) holder.preferredHeight = rows * cell.cellSize.y + Mathf.Max(0, rows - 1) * cell.spacing.y;
+                    }
+                    else if (cell == null && need > layout.preferredHeight)
+                        layout.preferredHeight = Mathf.Ceil(need);
+                }
             }
             if (art != null)
             {
@@ -486,6 +514,17 @@ namespace Wuxia
                     raw.uvRect = new Rect((1 - crop) / 2, 0, crop, 1);
                 }
             }
+        }
+
+        /// <summary>Height a wrapped legacy Text needs at <paramref name="width"/> reference pixels.</summary>
+        private static float PreferredHeight(Text text, float width)
+        {
+            var settings = text.GetGenerationSettings(new Vector2(Mathf.Max(10, width), 0));
+            settings.resizeTextForBestFit = false;
+            settings.horizontalOverflow = HorizontalWrapMode.Wrap;
+            settings.verticalOverflow = VerticalWrapMode.Overflow;
+            settings.scaleFactor = 1;
+            return text.cachedTextGeneratorForLayout.GetPreferredHeight(text.text, settings);
         }
 
         internal void CreationName(string value, Action<string> changed, Func<string> suggest)
@@ -680,6 +719,7 @@ namespace Wuxia
             Action next, Action skip, string skipLabel = "略過", string voiceText = null, bool femaleHero = false, bool speakerOnRight = false)
         {
             CloseModal(force: true);
+            CloseTalk(false);
             var previousImage = storyScreen != null ? storyArt.texture as Texture2D : null;
             CloseStoryBeat();
             // AI voice-over keyed by the md5 of the raw (unformatted) beat text; silently absent when unvoiced.

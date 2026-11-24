@@ -296,11 +296,11 @@ namespace Wuxia
             }
             if (string.IsNullOrEmpty(detail))
                 return rect;
-            int captionHeight = label.Contains("\n") ? 58 : 38;
-            rect.GetComponent<LayoutElement>().preferredHeight = 84 + captionHeight;
             string cmdIcon = CommandIconFor(label);
             var iconTex = UiKit.Icon(cmdIcon);
             int textLeft = iconTex != null ? 74 : 22;
+            // v1125 #1: caption and body heights follow their wrapped text so nothing overlaps or is cut off.
+            float cardWidth = Mathf.Max(200, parent.rect.width > 1 ? parent.rect.width : 396);
             if (iconTex != null)
             {
                 var ic = Rect("CmdIcon", rect);
@@ -311,6 +311,10 @@ namespace Wuxia
             caption.alignment = TextAnchor.MiddleLeft;
             caption.fontSize = caption.resizeTextMaxSize = 22;
             caption.resizeTextMinSize = UiKit.MinBody;
+            caption.resizeTextForBestFit = false;
+            caption.horizontalOverflow = HorizontalWrapMode.Wrap;
+            caption.text = label.Replace(' ', ' ');
+            float captionHeight = Mathf.Max(38, PreferredHeight(caption, cardWidth - textLeft - 10) + 10);
             Anchor(caption.rectTransform, Vector2.up, Vector2.one, new(textLeft, -captionHeight), new(-10, -6));
             var divider = Rect("Card rule", rect);
             Anchor(divider, Vector2.up, Vector2.one, new(textLeft, -captionHeight - 3), new(-14, -captionHeight - 2));
@@ -324,6 +328,10 @@ namespace Wuxia
             body.horizontalOverflow = HorizontalWrapMode.Wrap;
             body.resizeTextForBestFit = false;
             body.lineSpacing = 1.05f;
+            body.verticalOverflow = VerticalWrapMode.Overflow;
+            float bodyHeight = PreferredHeight(body, cardWidth - textLeft - 10);
+            rect.GetComponent<LayoutElement>().preferredHeight = Mathf.Max(84 + Mathf.Min(captionHeight, 58),
+                captionHeight + bodyHeight + 20);
             Anchor(body.rectTransform, Vector2.zero, Vector2.one, new(textLeft, 6), new(-10, -captionHeight - 6));
             UiKit.AccentStripe(rect, selected ? UiKit.GoldAccent : run == null ? new Color(.45f, .40f, .34f) : UiKit.Crimson);
             return rect;
@@ -560,6 +568,7 @@ namespace Wuxia
         public void ShowModal(string title, IEnumerable<string> lines,
             IEnumerable<(string label, Action run)> buttons = null, bool dismissible = true, Action closed = null)
         {
+            CloseTalk(false); // v1125 #4: a page never opens under a lingering portrait talk
             ResetCreationLayout();
             Clear(modalList);
             foreach (Transform child in modalButtons)

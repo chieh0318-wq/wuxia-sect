@@ -662,6 +662,7 @@ namespace Wuxia
             ui.ShowTalk(new PortraitLine(disciple.name, $"{DiscipleTitle(disciple)}／{disciple.trait}",
                     PortraitService.IdOrDefault(disciple.portrait, disciple.id), disciple.gender, text),
                 new (string, System.Action)[] { ("人物詳情　›", () => ShowDisciple(disciple)) });
+            if (capturing) ui.RevealTalkForCapture();
             tutorial?.Record("talk_disciple");
         }
 

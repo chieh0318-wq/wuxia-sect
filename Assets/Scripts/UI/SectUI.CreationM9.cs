@@ -278,10 +278,13 @@ namespace Wuxia
 
         internal void CreationSelectedTalents(string heading, (CreationOption option, Action remove)[] picks)
         {
+            // v1125 #1: two rows once more than four talents are picked, each cell wide enough for its name.
+            bool twoRows = picks.Length > 4;
+            float barHeight = twoRows ? 112 : 80;
             var scroll = (RectTransform)modalList.parent;
-            scroll.offsetMin = new Vector2(scroll.offsetMin.x, 174);
+            scroll.offsetMin = new Vector2(scroll.offsetMin.x, 94 + barHeight);
             characterDecoration = Panel("已選天賦", modalCard, Vector2.zero, Vector2.right,
-                new(36, 84), new(-36, 164), false);
+                new(36, 84), new(-36, 84 + barHeight), false);
             UiKit.Skin(characterDecoration.GetComponent<Image>(), "Lacquer");
             var title = Label(characterDecoration, heading, 22, TextAnchor.MiddleLeft);
             title.color = CardGold;
@@ -295,25 +298,31 @@ namespace Wuxia
             }
             var row = Rect("Selected talent icons", characterDecoration);
             Anchor(row, Vector2.zero, Vector2.one, new(216, 8), new(-12, -8));
-            var layout = row.gameObject.AddComponent<HorizontalLayoutGroup>();
-            layout.spacing = 8;
-            layout.childControlWidth = layout.childControlHeight = true;
-            layout.childForceExpandWidth = false;
-            layout.childForceExpandHeight = true;
+            var layout = row.gameObject.AddComponent<GridLayoutGroup>();
+            int columns = twoRows ? (picks.Length + 1) / 2 : Mathf.Max(1, picks.Length);
+            float rowWidth = modalCard.rect.width - 72 - 228;
+            float cellWidth = Mathf.Min(300, (rowWidth - (columns - 1) * 8) / columns);
+            layout.cellSize = new Vector2(cellWidth, twoRows ? 44 : 64);
+            layout.spacing = new Vector2(8, 8);
+            layout.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
+            layout.constraintCount = columns;
+            layout.childAlignment = TextAnchor.MiddleLeft;
             foreach (var (option, remove) in picks)
             {
                 var button = Button(row, option.name, remove);
                 var size = button.GetComponent<LayoutElement>();
                 size.minWidth = 0;
-                size.preferredWidth = 148;
+                size.preferredWidth = cellWidth;
                 button.GetComponent<Button>().interactable = remove != null;
                 UiKit.Skin(button.GetComponent<Image>(), "Wood");
-                AddCardIcon(button, UiKit.TalentIcon(option), 8, 30);
+                AddCardIcon(button, UiKit.TalentIcon(option), 8, twoRows ? 28 : 30);
                 var caption = button.GetComponentInChildren<Text>();
-                caption.text = remove == null ? option.name : option.name + " ×";
+                caption.text = remove == null ? option.name : option.name + "　×";
                 caption.resizeTextMinSize = 18;
                 caption.resizeTextMaxSize = 20;
-                Anchor(caption.rectTransform, Vector2.zero, Vector2.one, new(42, 5), new(-5, -5));
+                caption.alignment = TextAnchor.MiddleLeft;
+                caption.horizontalOverflow = HorizontalWrapMode.Wrap;
+                Anchor(caption.rectTransform, Vector2.zero, Vector2.one, new(42, 2), new(-6, -2));
             }
         }
 

@@ -100,13 +100,13 @@ namespace Wuxia
                 Line(route.name, 19, UiKit.HeaderGold, 26);
                 var detail = Label(questPanel, progress, 17, TextAnchor.MiddleLeft);
                 detail.color = progress.StartsWith("達成條件：待定", StringComparison.Ordinal) ? CardMuted : MapUi.Paper;
-                Anchor(detail.rectTransform, Vector2.up, Vector2.one, new(pad + 96, -y + 26), new(-pad, -y + 2));
+                Anchor(detail.rectTransform, Vector2.up, Vector2.one, new(pad + 96, -y), new(-pad, -y + 26));
                 detail.resizeTextMinSize = 15;
                 detail.resizeTextMaxSize = 17;
                 if (!string.IsNullOrEmpty(route.direction))
                     Line(route.direction, 16, CardMuted, 22, pad + 14);
             }
-            Resize(y + 10);
+            Resize(y + 16);
 
             void Place(RectTransform rect, float height)
             {

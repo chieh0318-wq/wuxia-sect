@@ -69,8 +69,8 @@ namespace Wuxia
             RefreshTreasures(); // v1124 C16
             if (HomeNode != null && !traveling) CenterOnHome(); // v1125 #6: open on our own mountain gate
             else CenterOn(host.PartyNode);
-            if (!traveling) status.text = (HomeNode != null ? $"本門在{data.NodeLabel(HomeNode)}（金色光圈與「本」字旗）。" : "") +
-                $"隊伍駐於{data.NodeLabel(host.PartyNode)}。點選城寨查看守備與路線，點選旗幟查看勢力。";
+            // v1126 #15: one short line.
+            if (!traveling) status.text = $"隊伍駐於{data.NodeLabel(host.PartyNode)}。點選據點或旗幟查看詳情。";
             if (!traveling && host is GameState game && game.PendingDiploEvent != null)
                 status.text = $"外交急報待決：{game.PendingDiploEvent.title}（{game.PendingDiploTarget?.Label}）。點右上「外交」處理。";
             ApplyView();
@@ -181,8 +181,7 @@ namespace Wuxia
             card = MapUi.Rect(frame,"Map card",1113,96,426,680);
             var footer = MapUi.Kit(frame,"Map status bar",12,808,1576,82,"Wood",false);
             // v1126 #15: one short line; the controls show on hover; the legend is a box in the map corner.
-            status = MapUi.Text(footer,"",22,6,1360,38,22,MapUi.Paper,TextAnchor.MiddleLeft,"Narration");
-            MapUi.Text(footer,"點選據點或旗幟查看詳情。",22,44,900,30,18,MapUi.Gold);
+            status = MapUi.Text(footer,"",22,6,1360,70,22,MapUi.Paper,TextAnchor.MiddleLeft,"Narration");
             BuildFooterHelp(footer);
             BuildLegend();
             if (data.Nodes.Count == 0) status.text = "地圖資料尚未載入。";
@@ -584,8 +583,10 @@ namespace Wuxia
             MapUi.Text(panel, message, 20, y, 386, 28, 20, MapUi.Jade);
             if (route != null)
             {
-                MapUi.Text(panel, string.Join(" → ", route.Nodes.Select(data.NodeLabel)), 20, y + 28, 386, Mathf.Clamp(578 - (y + 28), 24, 40), 18,
-                    MapUi.Ink, TextAnchor.UpperLeft);
+                // v1126 #12: the path line only shows when it cannot reach the attack note above the buttons.
+                if (y + 28 + 24 <= 560)
+                    MapUi.Text(panel, string.Join(" → ", route.Nodes.Select(data.NodeLabel)), 20, y + 28, 386, Mathf.Min(40, 560 - (y + 28)), 18,
+                        MapUi.Ink, TextAnchor.UpperLeft);
                 for (int i = 1; i < route.Nodes.Count; i++)
                     Line(routeLayer, Position(data.Nodes[route.Nodes[i - 1]]), Position(data.Nodes[route.Nodes[i]]), MapUi.Red, 3, false);
             }
@@ -628,7 +629,7 @@ namespace Wuxia
                     status.text = result;
                 });
             var attack = AttackOption(node, faction, held, known, assault, campaignRun);
-            var note = MapUi.Text(panel, attack.note, 20, 580, 386, 28, 17, attack.blocked ? MapUi.Red : MapUi.Jade);
+            var note = MapUi.Text(panel, attack.note, 20, 560, 386, 48, 17, attack.blocked ? MapUi.Red : MapUi.Jade, TextAnchor.LowerLeft);
             note.name = "攻打說明";
             const int buttonY = 612, buttonW = 92, buttonH = 48;
             var attackButton = MapUi.Button(panel, attack.label, 20, buttonY, buttonW, buttonH, attack.run ?? (() => { }), MapUi.Red, 15);

@@ -130,7 +130,7 @@ namespace Wuxia
                 })
             };
             float height = 34 + entries.Length * row + 8;
-            var box = MapUi.Kit(viewport, "Map legend", 8, ViewHeight - height - 8, width, height, "Paper", false);
+            var box = MapUi.Kit(viewport, "Map legend", 8, 8, width, height, "Paper", false);
             box.SetAsLastSibling();
             MapUi.Text(box, "圖例", 12, 4, width - 24, 28, 19, MapUi.Red, TextAnchor.MiddleLeft, "Names");
             for (int i = 0; i < entries.Length; i++)

@@ -565,7 +565,7 @@ namespace Wuxia
         /// </summary>
         private void IntroduceSectGoals() => IntroduceSectGoals(false);
 
-        private void IntroduceSectGoals(bool factionsOnly)
+        private void IntroduceSectGoals(bool factionsOnly, int skip = 0)
         {
             var board = QuestBoardData.Data;
             var opening = (factionsOnly ? Array.Empty<string>() : board.opening ?? Array.Empty<string>()).Where(text => !string.IsNullOrWhiteSpace(text))
@@ -579,13 +579,27 @@ namespace Wuxia
                 opening.Add(beat);
             }
             if (opening.Count == 0) { ui.ShowSectGoals(state, ChooseDisaster); return; }
-            Play(opening.ToArray(), ChooseDisaster, SkipStory);
+            Play(opening.Skip(Mathf.Clamp(skip, 0, opening.Count - 1)).ToArray(), ChooseDisaster, SkipStory);
         }
 
         /// <summary>v1126 #14: on-screen tags (e.g. 「少林寺・友好」) for beats whose line must not spell them out.</summary>
         private readonly Dictionary<StoryBeat, string> beatTags = new();
 
-        internal void CaptureAdvisorOpening() => IntroduceSectGoals();
+        internal void CaptureAdvisorOpening(int skip = 0) => IntroduceSectGoals(false, skip);
+
+        /// <summary>v1126 capture: the friend's beat about the Xie family's support (#0).</summary>
+        internal void CaptureFriendFamily()
+        {
+            var beats = story.friendBeats ?? Array.Empty<StoryBeat>();
+            CaptureBeats(beats, Math.Max(0, Array.FindIndex(beats, beat => beat.text?.Contains("空手") == true)));
+        }
+
+        /// <summary>v1126 capture: 「門中事務，交給老三……替{he}看著」 (#6).</summary>
+        internal void CaptureMasterLeaves()
+        {
+            var beats = story.openingBeats ?? Array.Empty<StoryBeat>();
+            CaptureBeats(beats, Math.Max(0, Array.FindIndex(beats, beat => beat.text?.Contains("交給老三") == true)));
+        }
         internal void CaptureAdvisorFaction() => IntroduceSectGoals(true);
 
         private void TakeActingTitle()

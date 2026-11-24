@@ -179,9 +179,9 @@ namespace Wuxia
                 ("xu", "frosty") => "{call}，公事說完，我便告退。",
                 ("han" or "wei", "frosty") => "若大師兄在，我自會與他細商。眼下只說這一件。",
                 ("kang" or "cui", "frosty") => "這事原該由許師姐定奪。眼下我只把話帶到。",
-                (_, "low") => "{call}，這話還請你自己斟酌。",
-                (_, "high") => "{call}，有事儘管算上我。",
-                _ => "{call}，且聽我說。"
+                (_, "low") => "{call}，此事還請自行斟酌。",
+                (_, "high") => "{call}，但有差遣，算我一份。",
+                _ => "{call}，且聽我一言。"
             };
             // v1126 #14: one address per line — when the line already names the hero (代掌門 / 師妹 / 老三 / the
             // name), the opening drops its own 「{call}，」 instead of stacking a second, different address.

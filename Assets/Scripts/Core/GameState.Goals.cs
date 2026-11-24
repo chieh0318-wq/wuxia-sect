@@ -41,7 +41,7 @@ namespace Wuxia
                 < 0 => "近來嫌隙加深。",
                 _ => ""
             };
-            string advice = faction.Outlaw ? "攻占寨堡會激化敵意。" : "送禮可改善關係，威嚇失敗會生嫌隙。";
+            string advice = faction.Outlaw ? "若興兵攻寨，只會激得他們更恨。" : "逢年過節備份薄禮，情誼自然漸厚；若以勢相逼而不成，只怕反結冤仇。";
             return reason + change + advice;
         }
     }

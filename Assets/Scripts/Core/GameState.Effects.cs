@@ -116,6 +116,20 @@ namespace Wuxia
                 person.portrait = PortraitPool.Assign(Story, person);
         }
 
+        internal void InjureWorker(string id)
+        {
+            if (id == HeroId) Injure(1);
+            else if (Disciples.Find(member => member.id == id) is DiscipleData member)
+                member.injury = Mathf.Min(9, member.injury + 1);
+        }
+
+        internal int[] DiscipleAttributes(DiscipleData member)
+        {
+            int rank = member == null ? 0 : AssignmentSystem.RankOf(this, member.id).Ability;
+            return AttributeSystem.Normalize(member?.attrs).Select(AttributeSystem.Allocated)
+                .Select(value => value + rank).ToArray();
+        }
+
         public void RefillAp() => ActionPoints = ApMax;
 
         private static DiscipleData CloneDisciple(DiscipleData seed)

@@ -24,7 +24,7 @@ namespace Wuxia
 
         private void ShowSparPicker()
         {
-            var cards = state.SparCandidates.Select(id =>
+            var cards = state.SparCandidates.Where(id => AssignmentSystem.Block(state, id) == null).Select(id =>
             {
                 int order = sparPicks.IndexOf(id);
                 var member = state.Disciples.FirstOrDefault(d => d.id == id);
@@ -71,7 +71,7 @@ namespace Wuxia
 
         private void RunSparSimulation()
         {
-            if (state.SparBlock(sparPicks, sparMelee) != null || !state.PaySpar()) return;
+            if (state.SparBlock(sparPicks, sparMelee) != null || !state.PaySpar(sparPicks)) return;
             var picks = sparPicks.ToList();
             var result = state.SimulateSpar(picks);
             PlaySparResult(picks, result);
@@ -80,7 +80,7 @@ namespace Wuxia
         /// <summary>The protagonist fights for real: their side is them (plus every other second pick), the rest oppose.</summary>
         private void RunSparBattle()
         {
-            if (state.SparBlock(sparPicks, sparMelee) != null || !sparPicks.Contains(GameState.HeroId) || !state.PaySpar()) return;
+            if (state.SparBlock(sparPicks, sparMelee) != null || !sparPicks.Contains(GameState.HeroId) || !state.PaySpar(sparPicks)) return;
             var picks = sparPicks.ToList();
             var others = picks.Where(id => id != GameState.HeroId).ToList();
             var party = new List<string> { GameState.HeroId };

@@ -225,11 +225,12 @@ namespace Wuxia
         }).ToArray();
 
         /// <summary>鍛造兵甲: forging rank and 百煉精鋼鍛法 decide the grade.</summary>
-        internal string ForgeGear()
+        internal string ForgeGear(string worker = HeroId)
         {
-            int forging = RankSystem.Index(Array.Find(Protagonist.lines ?? Array.Empty<SkillLine>(), line => line.id == "forging")?.rank);
+            int forging = AssignmentSystem.Skill(this, worker, "forging");
+            float quality = AssignmentSystem.Predict(this, "forge_gear", worker).Quality;
             float boost = HasTech("craft2") ? 2 : 1;
-            float legendary = (.03f + .015f * forging) * boost, fine = (.12f + .03f * forging) * boost, good = .40f;
+            float legendary = (.03f + .015f * forging) * boost * quality, fine = (.12f + .03f * forging) * boost * quality, good = .40f;
             float roll = UnityEngine.Random.value;
             int grade = roll < legendary ? 3 : roll < legendary + fine ? 2 : roll < legendary + fine + good ? 1 : 0;
             var item = MakeGear(GearSlots[UnityEngine.Random.Range(0, GearSlots.Length)], grade);

@@ -167,20 +167,21 @@ namespace Wuxia
         }
 
         /// <summary>Check odds: higher attribute and a stronger best martial line help; deeper floors are harder.</summary>
-        internal static float Chance(GameState state, RealmChoice choice, int stage)
+        internal static float Chance(GameState state, RealmChoice choice, int stage, string worker = GameState.HeroId)
         {
-            int value = AttributeSystem.Value(state.Protagonist.attrs, choice.attr);
-            int martial = RankSystem.Index(RankSystem.Martial(state.Protagonist.lines ?? Array.Empty<SkillLine>()));
+            int value = AssignmentSystem.Attribute(state, worker, choice.attr);
+            var lines = worker == GameState.HeroId ? state.Protagonist.lines : state.Disciples.Find(member => member.id == worker)?.lines;
+            int martial = RankSystem.Index(RankSystem.Martial(lines ?? Array.Empty<SkillLine>()));
             return Mathf.Clamp(.48f + (value - AttributeSystem.Base) * .045f + martial * .02f - stage * .06f +
                 state.Story.insightChance, .1f, .95f);
         }
 
         /// <summary>Resolves a floor: success adds to the score, failure costs a wound.</summary>
-        internal static bool Resolve(GameState state, RealmRun run, RealmChoice choice)
+        internal static bool Resolve(GameState state, RealmRun run, RealmChoice choice, string worker = GameState.HeroId)
         {
-            bool success = UnityEngine.Random.value < Chance(state, choice, run.stage);
+            bool success = UnityEngine.Random.value < Chance(state, choice, run.stage, worker);
             if (success) run.score++;
-            else state.Injure(1);
+            else state.InjureWorker(worker);
             run.log.Add($"{StageTitles[run.stage]}　{choice.label}（{AttrName(choice.attr)}）{(success ? "成功" : "失手")}：" +
                 (success ? choice.success : choice.failure));
             run.stage++;

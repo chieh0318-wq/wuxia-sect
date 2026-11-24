@@ -53,7 +53,7 @@ namespace Wuxia
             if (member == null) return default;
             var lines = member.lines is { Length: > 0 } ? member.lines
                 : RankSystem.Seed(null, member.rank, member.cap, RankSystem.BaseCap, RankSystem.BaseRank);
-            return AttributeSystem.Derive(member.attrs, lines, WeaponRankDelta(member.weapon));
+            return AttributeSystem.Derive(DiscipleAttributes(member), lines, WeaponRankDelta(member.weapon));
         }
 
         /// <summary>A single strength score used for simulated bouts and the odds shown on the picker.</summary>
@@ -96,10 +96,12 @@ namespace Wuxia
         }
 
         /// <summary>Pays the AP and food for one sparring session.</summary>
-        internal bool PaySpar()
+        internal bool PaySpar(IList<string> ids = null)
         {
+            if (ids?.Any(id => AssignmentSystem.Block(this, id) != null) == true) return false;
             if (Food < SparFoodCost || !TrySpendAp(SparApCost, "sparring")) return false;
             Pay(new Cost { food = SparFoodCost });
+            if (ids != null) AssignmentSystem.Commit(this, ids);
             return true;
         }
 
@@ -165,6 +167,7 @@ namespace Wuxia
             for (int place = 0; place < order.Count; place++)
             {
                 string id = order[place];
+                AssignmentSystem.Credit(this, id, place == 0 ? 2 : 1);
                 float gain = (place == 0 ? 1.2f : Mathf.Max(.5f, .9f - .1f * (place - 1))) * exp;
                 var gains = new List<string>();
                 if (id == HeroId)

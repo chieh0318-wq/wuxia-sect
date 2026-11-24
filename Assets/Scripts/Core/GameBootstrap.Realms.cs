@@ -65,13 +65,19 @@ namespace Wuxia
         }
 
         /// <summary>Hides the scene, fights on the battle screen, then returns to the scene with the result.</summary>
+        private string[] expeditionParty;
+        private string ExpeditionLeader => expeditionParty?.FirstOrDefault() ?? GameState.HeroId;
+
         private void SceneBattle(BattleRequest request, Action<bool> after)
         {
+            request.expeditionParty = expeditionParty;
             ui.Scene.Hide();
             request.onComplete = won =>
             {
                 if (controls != null) controls.enabled = false;
                 ui.Refresh(state);
+                if (won && request.expeditionParty != null)
+                    foreach (string id in request.expeditionParty) AssignmentSystem.Credit(state, id, 2);
                 after(won);
             };
             ui.StartTurnBattle(state, request, this);
@@ -79,6 +85,7 @@ namespace Wuxia
 
         private void CloseScene(string message = null)
         {
+            expeditionParty = null;
             ui.Scene.Close();
             if (controls != null) controls.enabled = true;
             ui.Refresh(state);
@@ -96,17 +103,19 @@ namespace Wuxia
             return rows;
         }
 
-        private static string AttrTag(GameState state, string attr, float chance) =>
-            $"{SecretRealms.AttrName(attr)} {AttributeSystem.Value(state.HeroAttributes, attr)}・成功率 {chance:P0}";
+        private string AttrTag(GameState state, string attr, float chance) =>
+            $"{SecretRealms.AttrName(attr)} {AssignmentSystem.Attribute(state, ExpeditionLeader, attr)}・成功率 {chance:P0}";
 
         // ---- 山道巡訪 (C15) --------------------------------------------------------------------------
 
         /// <summary>Road patrol scene. AP / cost are already paid. Keeps the old 奇遇 breakthrough and realm discovery rolls.</summary>
         private void ExploreRoad(ActionData action)
         {
+            float fortune = .012f * (AssignmentSystem.Attribute(state, ExpeditionLeader, "luk") - AttributeSystem.Base)
+                + .003f * (AssignmentSystem.Attribute(state, ExpeditionLeader, "agi") - AttributeSystem.Base);
             float rumor = state.ConsumeRumors();
-            string breakthrough = state.TryBreakthrough("qiyu_cliff_cave", state.Story.insightChance + state.AdventureBonus + rumor);
-            bool realm = UnityEngine.Random.value < state.RealmChance + rumor;
+            string breakthrough = state.TryBreakthrough("qiyu_cliff_cave", state.Story.insightChance + fortune + rumor);
+            bool realm = UnityEngine.Random.value < Mathf.Clamp(.22f + 2 * fortune + rumor, .05f, .9f);
             state.Apply(action.effect);
             var road = RealmContent.PickRoadEvent();
             if (road == null)
@@ -140,7 +149,7 @@ namespace Wuxia
             {
                 string tags = choice.type switch
                 {
-                    "check" => AttrTag(state, choice.attr, state.RoadChance(choice)),
+                    "check" => AttrTag(state, choice.attr, state.RoadChance(choice, ExpeditionLeader)),
                     "battle" => $"回合實戰：{choice.battle?.lead}",
                     _ => null
                 };
@@ -187,7 +196,7 @@ namespace Wuxia
             switch (choice.type)
             {
                 case "check":
-                    Finish(UnityEngine.Random.value < state.RoadChance(choice));
+                    Finish(UnityEngine.Random.value < state.RoadChance(choice, ExpeditionLeader));
                     break;
                 case "battle" when choice.battle != null:
                     SceneBattle(RealmContent.Battle(choice.battle, BattleGround.Road), Finish);
@@ -201,6 +210,22 @@ namespace Wuxia
         // ---- 秘境探尋 (C15): the three-floor random realms as scenes --------------------------------------
 
         private void EnterSecretRealm(string source)
+        {
+            if (expeditionParty == null && !capturing)
+            {
+                ui.ChooseAssignment(state, "秘境探尋", "secret_realm", 3, party =>
+                {
+                    if (!AssignmentSystem.Commit(state, party)) return;
+                    expeditionParty = party;
+                    foreach (string id in party) AssignmentSystem.Credit(state, id, 1);
+                    StartSecretRealm(source);
+                });
+                return;
+            }
+            StartSecretRealm(source);
+        }
+
+        private void StartSecretRealm(string source)
         {
             LeaveCourtyardForScene();
             ui.CloseModal(force: true);
@@ -222,7 +247,7 @@ namespace Wuxia
             var cards = stage.choices.Select(choice => new SceneChoice
             {
                 label = choice.label, desc = choice.text, icon = UiKit.AttrIcon(AttributeSystem.Index(choice.attr)),
-                tags = AttrTag(state, choice.attr, SecretRealms.Chance(state, choice, run.stage)),
+                tags = AttrTag(state, choice.attr, SecretRealms.Chance(state, choice, run.stage, ExpeditionLeader)),
                 impact = "成：闖關成績 +1　敗：主角傷勢 +1",
                 run = () => ResolveRealm(choice)
             }).ToList();
@@ -248,7 +273,7 @@ namespace Wuxia
         {
             var run = realmRun;
             if (run == null) return;
-            bool success = SecretRealms.Resolve(state, run, choice);
+            bool success = SecretRealms.Resolve(state, run, choice, ExpeditionLeader);
             AfterRealmFloor(run, success);
         }
 
@@ -300,6 +325,12 @@ namespace Wuxia
         /// <summary>Entered from the world map card: closes the map, spends 1 AP and plays the site.</summary>
         private void EnterTreasure(TreasureSite site)
         {
+            if (map != null && map.IsOpen) map.Close();
+            ui.ChooseAssignment(state, site.name, "secret_realm", 3, party => StartTreasure(site, party));
+        }
+
+        private void StartTreasure(TreasureSite site, string[] party)
+        {
             string block = state.TreasureBlock(site);
             if (block != null)
             {
@@ -307,7 +338,11 @@ namespace Wuxia
                 return;
             }
             if (map != null && map.IsOpen) map.Close();
-            if (!state.TrySpendAp(1, "treasure:" + site.id)) return;
+            if (party.Any(id => AssignmentSystem.Block(state, id) != null) ||
+                !state.TrySpendAp(1, "treasure:" + site.id)) return;
+            AssignmentSystem.Commit(state, party);
+            expeditionParty = party;
+            foreach (string id in party) AssignmentSystem.Credit(state, id, 1);
             LeaveCourtyardForScene();
             treasureRun = new TreasureRun { site = site };
             var guardian = site.Guarded ? GuardianFigure(site.guardian) : null;
@@ -335,11 +370,11 @@ namespace Wuxia
             var cards = stage.choices.Select(choice => new SceneChoice
             {
                 label = choice.label, desc = choice.text, icon = UiKit.AttrIcon(AttributeSystem.Index(choice.attr)),
-                tags = AttrTag(state, choice.attr, state.TreasureChance(choice, run.stage)),
+                tags = AttrTag(state, choice.attr, state.TreasureChance(choice, run.stage, ExpeditionLeader)),
                 impact = "成：順利前進　敗：主角傷勢 +1（仍可前進）",
                 run = () =>
                 {
-                    bool success = state.ResolveTreasureStage(run, choice);
+                    bool success = state.ResolveTreasureStage(run, choice, ExpeditionLeader);
                     AudioManager.Play(success ? "complete" : "page");
                     ui.Scene.Say(new[] { Narration(run.log.Last()) }, () => TreasureStage(guardian), "繼續深入");
                 }

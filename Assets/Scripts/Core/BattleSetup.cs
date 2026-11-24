@@ -52,7 +52,7 @@ namespace Wuxia
         /// v1124 C17 同門切磋: the player side is exactly these fighters ("hero" or disciple ids) and the opposing side
         /// is built from <see cref="sparOpponents"/> with the same stat derivation — no bandits involved.
         /// </summary>
-        public string[] sparParty, sparOpponents;
+        public string[] sparParty, sparOpponents, expeditionParty;
         public bool IsSparring => sparParty is { Length: > 0 } && sparOpponents is { Length: > 0 };
         public bool IsBoss => encounter == BattleEncounter.Boss;
         public string MusicCue => IsBoss ? "boss" : "battle";
@@ -76,9 +76,16 @@ namespace Wuxia
             if (req.IsSparring)
                 return Sparring(state, req, catalog);
             var stats = state.HeroStats;
-            var players = new List<BattleCombatant> { Hero(state, catalog) };
-            foreach (var d in state.Disciples.Where(member => member != null).Take(2))
-                players.Add(Member(state, d, catalog, true));
+            var players = new List<BattleCombatant>();
+            var ids = req.expeditionParty ?? new[] { GameState.HeroId }
+                .Concat(state.Disciples.Where(member => member != null).Take(2).Select(member => member.id)).ToArray();
+            foreach (string id in ids)
+            {
+                if (id == GameState.HeroId) players.Add(Hero(state, catalog));
+                else if (state.Disciples.Find(member => member?.id == id) is DiscipleData member)
+                    players.Add(Member(state, member, catalog, true));
+            }
+            if (players.Count == 0) players.Add(Hero(state, catalog));
 
             // Build enemy squad
             var enemies = new List<BattleCombatant>();
@@ -194,7 +201,7 @@ namespace Wuxia
             var lines = d.lines is { Length: > 0 }
                 ? d.lines
                 : RankSystem.Seed(null, d.rank, d.cap, RankSystem.BaseCap, RankSystem.BaseRank);
-            var derived = AttributeSystem.Derive(d.attrs, lines, state.WeaponRankDelta(d.weapon));
+            var derived = AttributeSystem.Derive(state.DiscipleAttributes(d), lines, state.WeaponRankDelta(d.weapon));
             return new BattleCombatant
             {
                 name = d.name,

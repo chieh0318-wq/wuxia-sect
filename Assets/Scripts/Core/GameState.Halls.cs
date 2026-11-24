@@ -108,13 +108,18 @@ namespace Wuxia
             return null;
         }
 
-        internal string BuildHall(HallData hall)
+        internal string BuildHall(HallData hall, string worker = HeroId)
         {
+            if (AssignmentSystem.Block(this, worker) is string unavailable) return unavailable;
             string block = HallBuildBlock(hall);
             if (block != null) return block;
             var cost = HallCost(hall);
+            float quality = AssignmentSystem.Predict(this, "build", worker).Quality;
+            cost = new Cost { silver = Mathf.CeilToInt(cost.silver / Mathf.Max(1, quality)), food = cost.food };
             if (!TrySpendAp(hall.ap, "hall:" + hall.id)) return "行動力不足";
             Pay(cost);
+            AssignmentSystem.Commit(this, new[] { worker });
+            AssignmentSystem.Credit(this, worker, 2);
             int level = HallLevel(hall.id) + 1;
             SetValue(ref Story.flags, "hall_" + hall.id, level, false);
             if (level == 1) ApplyEffects(hall.found);
@@ -129,18 +134,22 @@ namespace Wuxia
         }
 
         /// <summary>Runs a hall command. target is a person id ("hero" / disciple) or a gear slot when the command needs one.</summary>
-        internal string RunHallFunction(HallData hall, HallFunction function, string target)
+        internal string RunHallFunction(HallData hall, HallFunction function, string target, string worker)
         {
+            if (AssignmentSystem.Block(this, worker) is string unavailable) return unavailable;
+            float quality = AssignmentSystem.Predict(this, function.id, worker).Quality;
             string block = HallFunctionBlock(function);
             if (block != null) return block;
             if (!TrySpendAp(function.ap, "hall:" + function.id)) return "行動力不足";
             Pay(new Cost { silver = function.silver, food = function.food });
+            AssignmentSystem.Commit(this, new[] { worker });
+            AssignmentSystem.Credit(this, worker, 1);
             int level = Mathf.Max(1, HallLevel(hall.id));
             switch (function.id)
             {
                 case "seclusion":
                 {
-                    float amount = 2.5f + (level - 1);
+                    float amount = (2.5f + (level - 1)) * quality;
                     if (target == HeroId || string.IsNullOrEmpty(target))
                     {
                         var line = RankSystem.Major(Protagonist.lines, Protagonist.major);
@@ -156,9 +165,9 @@ namespace Wuxia
                 }
                 case "forge":
                 {
-                    int forging = RankSystem.Index(Array.Find(Protagonist.lines ?? Array.Empty<SkillLine>(), line => line.id == "forging")?.rank);
+                    int forging = AssignmentSystem.Skill(this, worker, "forging");
                     float legendary = .04f + .02f * forging + .04f * (level - 1), fine = .25f + .04f * forging + .08f * (level - 1);
-                    float roll = UnityEngine.Random.value;
+                    float roll = UnityEngine.Random.value / quality;
                     int grade = roll < legendary ? 3 : roll < legendary + fine ? 2 : 1;
                     string slot = Array.IndexOf(GearSlots, target) >= 0 ? target : GearSlots[0];
                     return "鑄造堂爐火通紅，打成一件" + EquipOrStore(MakeGear(slot, grade));
@@ -166,13 +175,12 @@ namespace Wuxia
                 case "alchemy":
                 {
                     LegacySystem.AddInventory(Story, "item_jinchuang", 2);
-                    var alchemy = Array.Find(Protagonist.lines ?? Array.Empty<SkillLine>(), line => line.id == "alchemy");
-                    bool pill = level >= 2 || RankSystem.Index(alchemy?.rank) >= RankSystem.Index("B");
+                    bool pill = level >= 2 || AssignmentSystem.Skill(this, worker, "alchemy") >= RankSystem.Index("B");
                     if (pill) LegacySystem.AddInventory(Story, "item_jiuzhuan", 1);
                     return "丹爐開了七日七夜，煉成金創靈藥 ×2" + (pill ? "、九轉回元丹 ×1" : "") + "。";
                 }
                 case "treat":
-                    for (int i = 0; i < 2; i++) RecoverInjuries();
+                    for (int i = 0; i < Mathf.RoundToInt(2 * quality); i++) RecoverInjuries();
                     Protagonist.injury = Mathf.Max(0, Protagonist.injury - 1);
                     return "藥堂延醫煎藥，主角與全門弟子傷勢減輕。";
                 case "host":
@@ -188,10 +196,10 @@ namespace Wuxia
                 case "lecture":
                     foreach (var member in Disciples)
                     {
-                        TrainLine(RankSystem.BestCombat(member.lines), 1.2f);
+                        TrainLine(RankSystem.BestCombat(member.lines), 1.2f * quality);
                         member.loyalty = Mathf.Clamp(member.loyalty + 2, 0, 100);
                     }
-                    return $"{Protagonist.name}開壇傳功，全門弟子武學進度 +1.2、忠誠 +2。";
+                    return $"{SparName(worker)}開壇傳功，全門弟子武學進度 +{1.2f * quality:0.0}、忠誠 +2。";
             }
             return $"{function.name}完成。";
         }

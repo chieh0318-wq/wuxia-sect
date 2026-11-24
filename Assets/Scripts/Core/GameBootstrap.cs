@@ -273,6 +273,7 @@ namespace Wuxia
                 ui.UpdateStoryBeat();
                 return;
             }
+            if (ui.HandleAssignmentBack()) return;
             if (ui.SceneOpen) return; // v1124 C15–C18: scene pages own the input
             if (HandleWorldMapInput()) return; // M2-B map input
             if (!capturing && !ui.ModalOpen && !ui.DialogueOpen && !choosingBuilding)
@@ -383,6 +384,7 @@ namespace Wuxia
                 ("人事", "招募弟子、查閱門派與主角資料", Matching(action => action.type == "recruit").Concat(new[]
                 {
                     ("門派政務　行動力 0", $"{HousingInfo()}　轄下據點 {state.Story.heldNodes?.Length ?? 0} 處", (System.Action)ShowSect, false),
+                    ("門中位階 ›", "查閱貢獻並升階", (System.Action)(() => ui.ShowRankLadder(state, null)), false),
                     ("主角　行動力 0", $"{state.Protagonist.name}的武學、屬性與裝備", (System.Action)ShowProtagonist, false)
                 }).ToArray()),
                 ("探險", "走訪山道，探尋秘境", Matching(action => action.id is "explore" or "secret_realm")),
@@ -461,9 +463,21 @@ namespace Wuxia
                 return;
             }
 
-            if (!SpendActionAp(action))
-                return;
+            bool expedition = action.id is "explore" or "secret_realm";
+            ui.ChooseAssignment(state, action.name, action.id, expedition ? 3 : 1,
+                party => ExecuteAssignedAction(action, party));
+        }
+
+        private void ExecuteAssignedAction(ActionData action, string[] party)
+        {
+            if (!state.CanPay(action.cost) || party.Any(id => AssignmentSystem.Block(state, id) != null) ||
+                !SpendActionAp(action)) return;
+            AssignmentSystem.Commit(state, party);
             state.Pay(action.cost);
+            string worker = party[0];
+            var prediction = AssignmentSystem.Predict(state, action.id, worker);
+            foreach (string id in party) AssignmentSystem.Credit(state, id, 1);
+            if (action.id is "explore" or "secret_realm") expeditionParty = party;
             if (action.id == "secret_realm")
             {
                 state.Apply(action.effect);
@@ -485,7 +499,7 @@ namespace Wuxia
                 "train" => state.TrainMartial(),
                 "explore" => state.TryBreakthrough("qiyu_cliff_cave", state.Story.insightChance + state.AdventureBonus + rumor),
                 "feast" => state.Feast(),
-                "forge_gear" => state.ForgeGear(),
+                "forge_gear" => state.ForgeGear(worker),
                 "decree" => state.Decree(),
                 "lodge" => state.Lodge(),
                 _ => ""
@@ -493,8 +507,14 @@ namespace Wuxia
             bool realm = action.id == "explore" && UnityEngine.Random.value < state.RealmChance + rumor;
             if (action.id == "gather_rumors")
                 realm = state.GatherRumors();
-            state.Apply(action.effect);
-            if (action.effect.silver > 0)
+            var output = new Yield
+            {
+                silver = Mathf.RoundToInt(action.effect.silver * prediction.Quality),
+                food = Mathf.RoundToInt(action.effect.food * prediction.Quality),
+                reputation = Mathf.RoundToInt(action.effect.reputation * prediction.Quality)
+            };
+            state.Apply(output);
+            if (output.silver > 0)
                 AudioManager.Play("coin");
             if (action.id == "medicine")
             {
@@ -513,7 +533,7 @@ namespace Wuxia
             ShowCommands();
             if (openBuilding != null && ui.BuildingOpen)
                 ShowBuilding(openBuilding);
-            string message = $"{action.name}完成。{Changes(action.effect)}";
+            string message = $"{state.SparName(worker)}完成{action.name}。{Changes(output)}";
             if (action.id == "lodge")
                 message = $"{breakthrough}{HousingInfo()}".TrimEnd();
             else if (action.id == "gather_rumors")
@@ -608,17 +628,21 @@ namespace Wuxia
                 return;
             }
 
+            ui.ChooseAssignment(state, $"興建{buildChoice.name}", "build", 1, party => CompleteConstruction(index, party[0]));
+        }
+
+        private void CompleteConstruction(int index, string worker)
+        {
+            if (buildChoice == null || state.Buildings[index] != null || !state.IsAvailable(buildChoice) ||
+                AssignmentSystem.Block(state, worker) != null) return;
             string grant = TutorialBuildAid();
             var total = BuildTotal(buildChoice);
-            if (!state.CanPay(total))
-            {
-                ui.Message("銀兩或糧食不足。");
-                return;
-            }
-
-            if (!SpendActionAp(buildAction))
-                return;
+            float quality = AssignmentSystem.Predict(state, "build", worker).Quality;
+            total.silver = Mathf.CeilToInt(total.silver / Mathf.Max(1, quality));
+            if (!state.CanPay(total) || !SpendActionAp(buildAction)) return;
             state.Pay(total);
+            AssignmentSystem.Commit(state, new[] { worker });
+            AssignmentSystem.Credit(state, worker, 2);
             state.Apply(buildAction.effect);
             state.Buildings[index] = buildChoice;
             world.PlaceBuilding(index, buildChoice);

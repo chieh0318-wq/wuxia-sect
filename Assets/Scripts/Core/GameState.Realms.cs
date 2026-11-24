@@ -178,13 +178,13 @@ namespace Wuxia
         }
 
         /// <summary>Scene check odds for a treasure-realm floor (same curve as the random secret realms).</summary>
-        internal float TreasureChance(RealmChoice choice, int stage) => SecretRealms.Chance(this, choice, stage);
+        internal float TreasureChance(RealmChoice choice, int stage, string worker = HeroId) => SecretRealms.Chance(this, choice, stage, worker);
 
-        internal bool ResolveTreasureStage(TreasureRun run, RealmChoice choice)
+        internal bool ResolveTreasureStage(TreasureRun run, RealmChoice choice, string worker = HeroId)
         {
-            bool success = UnityEngine.Random.value < TreasureChance(choice, run.stage);
+            bool success = UnityEngine.Random.value < TreasureChance(choice, run.stage, worker);
             if (success) run.score++;
-            else Injure(1);
+            else InjureWorker(worker);
             run.log.Add($"{choice.label}（{SecretRealms.AttrName(choice.attr)}）{(success ? "成功" : "失手")}：" +
                 (success ? choice.success : choice.failure));
             run.stage++;
@@ -206,8 +206,8 @@ namespace Wuxia
             choice.cost != null && !CanPay(choice.cost) ? "銀兩或糧食不足" : null;
 
         /// <summary>Odds of a check choice (attribute based, like a first-floor realm check).</summary>
-        internal float RoadChance(RoadChoice choice) =>
-            SecretRealms.Chance(this, new RealmChoice { attr = choice.attr }, 0);
+        internal float RoadChance(RoadChoice choice, string worker = HeroId) =>
+            SecretRealms.Chance(this, new RealmChoice { attr = choice.attr }, 0, worker);
 
         /// <summary>The 「影響」 line for a road choice: costs, success effects and (for checks / fights) the failure.</summary>
         internal string RoadImpact(RoadChoice choice)

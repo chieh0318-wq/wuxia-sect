@@ -75,8 +75,18 @@ namespace Wuxia
             }
         }
 
+        private string recruiter = GameState.HeroId;
+
         private void Visit(RecruitMethod method)
         {
+            if (capturing) { Visit(method, GameState.HeroId); return; }
+            ui.ChooseAssignment(state, method.name, "recruit", 1,
+                party => Visit(method, party[0]), () => OpenRecruitment(recruitmentAction));
+        }
+
+        private void Visit(RecruitMethod method, string worker)
+        {
+            if (AssignmentSystem.Block(state, worker) != null) return;
             var cost = new Cost { silver = Mathf.Max(0, method.silverCost) };
             tutorial?.Fund("recruit", cost);
             if (!state.CanPay(cost))
@@ -85,6 +95,9 @@ namespace Wuxia
                 !(tutorial?.CanFund("recruit") == true && state.TrySpendAp(state.ActionPoints, method.id)))
                 return;
             state.Pay(cost);
+            recruiter = worker;
+            AssignmentSystem.Commit(state, new[] { worker });
+            AssignmentSystem.Credit(state, worker, 1);
             activeMethod = method;
             accepted = 0;
             FillCandidates();
@@ -104,7 +117,7 @@ namespace Wuxia
                     special.lines = RankSystem.Seed(special.lines, special.rank, special.cap, "B");
                     special.attrs = AttributeSystem.Normalize(special.attrs);
                     var personality = Recruitment.personalities?.FirstOrDefault(entry => entry.name == special.personality);
-                    special.loyalty = Mathf.Clamp(50 + (personality?.loyalty ?? 0) + state.Story.loyaltyBonus + 2 * state.AttributeBonus("cha"), 0, 100);
+                    special.loyalty = Mathf.Clamp(50 + (personality?.loyalty ?? 0) + state.Story.loyaltyBonus + 2 * (AssignmentSystem.Eloquence(state, recruiter) - 15), 0, 100);
                     if (special.look == null || string.IsNullOrEmpty(special.look.hairStyle))
                         special.look = CharacterFactory.ForRecruit(special.gender, special.title ?? "入門弟子");
                     candidates[count - 1] = special;
@@ -132,7 +145,7 @@ namespace Wuxia
                 RankSystem.Shift(Pick(production), 1, false);
             }
             var talents = (RecruitTalents.talents ?? Array.Empty<CreationOption>())
-                .Where(talent => talent.rarity == "common" || Random.value < method.rareChance)
+                .Where(talent => talent.rarity == "common" || Random.value < method.rareChance * AssignmentSystem.Predict(state, "recruit", recruiter).Quality)
                 .OrderBy(talent => -Mathf.Log(Mathf.Max(.00001f, Random.value)) / Math.Max(1, talent.weight))
                 .Take(Random.Range(0, 3)).Select(talent => talent.id).ToArray();
             string name = (Pick(Recruitment.surnames) ?? Pick(new[] { "杜", "何", "葛", "林", "沈" })) +
@@ -144,7 +157,7 @@ namespace Wuxia
                 gender = gender, age = Random.Range(12, 31), title = "入門弟子",
                 origin = origin?.name ?? "山下鄉里", blurb = (Pick(origin?.blurbs) ?? "聞訊來到山門，願在宗門習藝。").Replace("{name}", name),
                 personality = personality?.name ?? "沉著", trait = personality?.name ?? "沉著",
-                loyalty = Mathf.Clamp(50 + (personality?.loyalty ?? 0) + state.Story.loyaltyBonus + 2 * state.AttributeBonus("cha"), 0, 100),
+                loyalty = Mathf.Clamp(50 + (personality?.loyalty ?? 0) + state.Story.loyaltyBonus + 2 * (AssignmentSystem.Eloquence(state, recruiter) - 15), 0, 100),
                 attrs = Enumerable.Range(0, AttributeSystem.Count).Select(_ =>
                     Mathf.Clamp(Random.Range(6, 14) + 2 * method.quality, AttributeSystem.Min, AttributeSystem.Max)).ToArray(),
                 aptitude = new Aptitude { bone = Random.Range(1, 11), insight = Random.Range(1, 11) },

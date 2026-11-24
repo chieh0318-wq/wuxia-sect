@@ -228,7 +228,7 @@ namespace Wuxia
                 actor.intent = null;
                 if (!move.all && !target.Alive)
                     Emit($"{actor.name} 的{move.label}失去目標。");
-                else if ((move.qi > 0 || actor.knownMoves.Contains(id)) && Effects(actor).Any(status => status.seal))
+                else if ((move.qi > 0 || actor.knownMoves.Contains(move.id)) && Effects(actor).Any(status => status.seal))
                     Emit($"{actor.name} 被封招，{move.label}無法施展。");
                 else
                     Use(actor, move, target);

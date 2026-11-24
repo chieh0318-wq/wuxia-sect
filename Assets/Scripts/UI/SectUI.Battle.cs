@@ -206,9 +206,10 @@ namespace Wuxia
                 actButtons[id] = (btn, border, glyph, title, detail);
             }
 
-            var previousMoves = Button(commandPanel, "‹", () => PageMoves(-1));
+            Action<int> pageMoves = null;
+            var previousMoves = Button(commandPanel, "‹", () => pageMoves?.Invoke(-1));
             Anchor(previousMoves, Vector2.zero, Vector2.zero, new(932, 147), new(980, 181));
-            var nextMoves = Button(commandPanel, "›", () => PageMoves(1));
+            var nextMoves = Button(commandPanel, "›", () => pageMoves?.Invoke(1));
             Anchor(nextMoves, Vector2.zero, Vector2.zero, new(1076, 147), new(1124, 181));
             var pageLabel = BattleLabel(commandPanel, "", 19, TextAnchor.MiddleCenter, new(983, 147), new(1074, 181));
 
@@ -262,6 +263,7 @@ namespace Wuxia
             Anchor(fleeBtn, Vector2.one, Vector2.one, new(-124, -148), new(-20, -104));
             UiKit.Skin(fleeBtn.GetComponent<Image>(), "Wood");
 
+            pageMoves = PageMoves;
             choose = SelectAction;
             changeTab = ChangeTab;
             startAuto = () => runner.StartCoroutine(Advance());

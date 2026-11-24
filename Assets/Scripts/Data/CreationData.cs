@@ -131,10 +131,17 @@ namespace Wuxia
         }
     }
 
+    [Serializable] public sealed class AssignmentRecord
+    {
+        public string id;
+        public int rank, month, used, contribution;
+    }
+
     [Serializable] public sealed class StoryProgress
     {
         public string disasterId, responseId, locationId, mapNode, delegateId, partyNode;
         public int day = 1;
+        public AssignmentRecord[] assignments = Array.Empty<AssignmentRecord>();
         public string[] knownFactions = Array.Empty<string>();
         public StoryValue[] buildingLevels = Array.Empty<StoryValue>();
         public int apBonus, loyaltyBonus, recruitPoolSize, recruitCostPct, buildCostPct, trainBonusPct;

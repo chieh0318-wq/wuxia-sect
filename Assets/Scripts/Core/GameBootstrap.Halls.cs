@@ -60,9 +60,12 @@ namespace Wuxia
             ui.ShowHalls(cards, header, hallMessage, () => CloseScene(hallMessage));
         }
 
-        private void BuildHall(HallData hall)
+        private void BuildHall(HallData hall) =>
+            ui.ChooseAssignment(state, hall.name, "build", 1, party => BuildHall(hall, party[0]), ShowHalls);
+
+        private void BuildHall(HallData hall, string worker)
         {
-            hallMessage = state.BuildHall(hall);
+            hallMessage = state.BuildHall(hall, worker);
             AudioManager.Play(state.HallLevel(hall.id) > 0 ? "complete" : "page");
             ui.Refresh(state);
             ShowHalls();
@@ -73,7 +76,7 @@ namespace Wuxia
             switch (function.target)
             {
                 case "person":
-                    ui.ShowHallTargets(function.name, function.desc, state.SparCandidates.Select(id =>
+                    ui.ShowHallTargets(function.name, function.desc, state.SparCandidates.Where(id => AssignmentSystem.Block(state, id) == null).Select(id =>
                     {
                         var member = state.Disciples.FirstOrDefault(d => d.id == id);
                         var image = id == GameState.HeroId
@@ -97,7 +100,18 @@ namespace Wuxia
 
         private void RunHall(HallData hall, HallFunction function, string target)
         {
-            hallMessage = state.RunHallFunction(hall, function, target);
+            if (function.target != "person")
+            {
+                ui.ChooseAssignment(state, function.name, function.id, 1,
+                    party => CompleteHallFunction(hall, function, target, party[0]), ShowHalls);
+                return;
+            }
+            CompleteHallFunction(hall, function, target, target);
+        }
+
+        private void CompleteHallFunction(HallData hall, HallFunction function, string target, string worker)
+        {
+            hallMessage = state.RunHallFunction(hall, function, target, worker);
             AudioManager.Play(function.id == "forge" ? "complete" : "page");
             ui.Refresh(state);
             ShowHalls();

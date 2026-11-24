@@ -7,13 +7,13 @@ namespace Wuxia
 {
     /// <summary>
     /// v1126b 決定 3: thresholds of the four long-term routes (外交結盟、武力征服、富甲天下、天下第一), read from
-    /// <c>victory_routes.json</c>. Defaults are the calibrated values (see the PC2 status note) so a missing file still plays.
+    /// <c>victory_routes.json</c>. Defaults match the integrated build calibration so a missing file still plays.
     /// </summary>
     [Serializable] internal sealed class RouteRules
     {
         [Serializable] internal sealed class Diplomacy
         {
-            public int loyal = 12, subjects = 6, reputation = 400, holdMonths = 6;
+            public int loyal = 12, subjects = 6, reputation = 380, holdMonths = 6;
         }
 
         [Serializable] internal sealed class Conquest
@@ -30,8 +30,8 @@ namespace Wuxia
         [Serializable] internal sealed class Champion
         {
             /// <summary>主修階位、擊敗成名高手人數、其中 SS 級宗師人數、聲望。</summary>
-            public string rank = "SSS";
-            public int masters = 12, grandmasters = 4, reputation = 600;
+            public string rank = "SS";
+            public int masters = 9, grandmasters = 3, reputation = 600;
             /// <summary>A master accepts a challenge when our 聲望 ≥ their 聲望 × this, and the hero is at most one tier below.</summary>
             public float reputationRatio = 1f;
             public int tierGap = 1, apCost = 2, silverCost = 20, retryMonths = 3;

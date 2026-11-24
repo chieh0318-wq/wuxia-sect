@@ -38,13 +38,13 @@
     "depart": "{envoy}收拾行裝，帶著禮單與掌門手書下了山。",
     "arrive": {
       "cold": "{envoy}到了{seat}，在山門外被晾了半個時辰，才有人出來引路。",
-      "neutral": "{envoy}一路風塵，到了{seat}。通報之後，等了一盞茶的工夫，被請進正堂。",
-      "warm": "{envoy}還沒走到{seat}山門，{faction}的弟子已經迎了出來。"
+      "neutral": "{envoy}一路風塵，到了{seat}。通報之後，候了一盞茶的工夫，方被請進正堂。",
+      "warm": "{envoy}還未走到{seat}山門，{faction}的弟子已迎了出來。"
     },
     "arriveSelf": {
-      "cold": "{player}親自到了{seat}。{faction}的人看見是掌門親至，臉色變了變，才往裡通報。",
-      "neutral": "{player}親自下山，到了{seat}。{faction}的人聽說是掌門親至，連忙往裡通報。",
-      "warm": "{player}親自到了{seat}。{leader}聽說掌門親至，親自迎到了山門口。"
+      "cold": "{player}親至{seat}。{faction}的人見是掌門親來，臉色變了一變，才往裡通報。",
+      "neutral": "{player}親自下山，到了{seat}。{faction}的人聽說掌門親至，連忙往裡通報。",
+      "warm": "{player}親至{seat}。{leader}聽說掌門親來，親自迎到了山門口。"
     }
   },
   "personas": [
@@ -60,8 +60,8 @@
         "warm": "阿彌陀佛。{sect}的朋友來了，寺中上下都歡喜。"
       },
       "hint": {
-        "dashixiong": "少林的老和尚吃軟不吃硬。你拍一下桌子，他念一聲佛，事情就沒了。",
-        "shijie": "少林最重誠意。多說實話，少說場面話，千萬別提威嚇。"
+        "dashixiong": "少林的老和尚吃軟不吃硬。你拍一下桌子，他念一聲佛，事情便黃了。",
+        "shijie": "少林最重誠意。多說實話，少說場面話，切莫以勢相逼。"
       }
     },
     {
@@ -72,13 +72,13 @@
         "funiu"
       ],
       "greet": {
-        "cold": "哎呀，稀客。{sect}的人也會上門？坐，坐。舊帳嘛，慢慢算。",
-        "neutral": "都是江湖上的一家人，何必客氣。說吧，有什麼事要{faction}幫忙？",
-        "warm": "哈哈，{sect}的朋友！正想著你們呢。來人，上好茶。"
+        "cold": "哎呀，稀客。{sect}的人也會上門？坐，坐。舊帳麼，慢慢算。",
+        "neutral": "都是江湖上的自家人，何必客氣。說罷，有甚麼事要{faction}幫忙？",
+        "warm": "哈哈，{sect}的朋友！正念著你們呢。來人，上好茶。"
       },
       "hint": {
-        "dashixiong": "{leader}嘴上叫兄弟，背後記帳本。好話他愛聽，聽完照樣算你的利息。",
-        "shijie": "{faction}吃奉承、吃讓利。別硬碰硬，他們記仇記得比誰都久。"
+        "dashixiong": "{leader}嘴上稱兄道弟，背後記著帳本。好話他愛聽，聽完照樣算你的利錢。",
+        "shijie": "{faction}吃奉承、吃讓利。莫要硬碰硬，他們記仇記得比誰都久。"
       }
     },
     {
@@ -92,11 +92,11 @@
       "greet": {
         "cold": "山中清淨，不常見客。請說，說完便請下山。",
         "neutral": "遠客到此，坐下喝杯清茶。山中無事，也無俗禮。",
-        "warm": "{sect}的朋友，山高雲深，難為你們找得到路。"
+        "warm": "{sect}的朋友，山高雲深，難為你們尋得到路。"
       },
       "hint": {
-        "dashixiong": "那些山上的清高人，聽不得銅臭，也聽不得馬屁。跟他們論武，他們才肯坐下。",
-        "shijie": "{faction}不問俗務。論道、坦誠；不要談錢，不要奉承。"
+        "dashixiong": "那些山上的清高人，聽不得銅臭，也聽不得奉承。同他們論武，他們才肯坐下。",
+        "shijie": "{faction}不問俗務。論道、坦誠；莫談錢財，莫說奉承話。"
       }
     },
     {
@@ -106,13 +106,13 @@
         "emei"
       ],
       "greet": {
-        "cold": "{faction}向來不與是非之人往來。有話，請簡短。",
+        "cold": "{faction}向來不與是非之人往來。有話，請長話短說。",
         "neutral": "請坐。{faction}門下多女弟子，還請貴使守禮。",
         "warm": "{sect}的使者，請進。{leader}還記著貴派上回的情。"
       },
       "hint": {
-        "dashixiong": "那位師太的規矩比許雁還多。輕佻一句，人就請你出去。",
-        "shijie": "{faction}重名節。守禮、坦誠，別奉承，也別擺架子。"
+        "dashixiong": "那位師太的規矩比許雁還多。輕佻一句，便請你出門。",
+        "shijie": "{faction}重名節。守禮、坦誠，莫奉承，也莫擺架子。"
       }
     },
     {
@@ -122,13 +122,13 @@
         "zhurong"
       ],
       "greet": {
-        "cold": "{sect}？還有臉上門！有話快說，說完滾！",
-        "neutral": "{sect}的人？說吧，{faction}不愛繞彎子。",
+        "cold": "{sect}？還有臉上門！有話快說，說完便滾！",
+        "neutral": "{sect}的人？說罷，{faction}不愛繞彎子。",
         "warm": "哈哈！{sect}的兄弟來了！拿酒來！"
       },
       "hint": {
         "dashixiong": "{leader}的脾氣比掌法還烈。最恨人拍馬屁，你直說，他反倒敬你。",
-        "shijie": "{faction}吃直不吃軟。千萬別奉承，那是火上澆油。"
+        "shijie": "{faction}吃直不吃軟。切莫奉承，那是火上澆油。"
       }
     },
     {
@@ -138,13 +138,13 @@
         "yeyu"
       ],
       "greet": {
-        "cold": "樓主不見客。有什麼話，對著簾子說。",
-        "neutral": "樓裡只做生意。客人想買什麼？",
-        "warm": "{sect}是樓裡的老主顧了。請坐，簾子今天可以捲起一半。"
+        "cold": "樓主不見客。有甚麼話，對著簾子說。",
+        "neutral": "樓裡只做買賣。客官想買甚麼？",
+        "warm": "{sect}是樓裡的老主顧了。請坐，簾子今日可以捲起一半。"
       },
       "hint": {
-        "dashixiong": "夜雨樓只認銀子。跟他們講交情，等於對著牆說話。",
-        "shijie": "夜雨樓不吃人情，只吃價碼。議價可以，奉承沒用。"
+        "dashixiong": "夜雨樓只認銀子。同他們講交情，好比對著牆說話。",
+        "shijie": "夜雨樓不吃人情，只看價碼。議價可以，奉承無用。"
       }
     },
     {
@@ -161,8 +161,8 @@
         "warm": "老朋友來了！今年的貨，給貴派留了最好的一批。"
       },
       "hint": {
-        "dashixiong": "跟商人打交道，先亮貨，再亮刀。好話他們不缺。",
-        "shijie": "{faction}先看秤再看人。把價開清楚、讓一點利，比什麼都管用。"
+        "dashixiong": "同商人打交道，先亮貨，再亮刀。好話他們聽得多了。",
+        "shijie": "{faction}先看秤再看人。把價開清楚、讓一點利，比甚麼都管用。"
       }
     },
     {
@@ -172,13 +172,13 @@
         "cuishi"
       ],
       "greet": {
-        "cold": "恕我孤陋寡聞，{sect}是哪一家？",
+        "cold": "恕在下孤陋寡聞，{sect}是哪一家？",
         "neutral": "遠來是客。只是{faction}家規森嚴，還請貴使依禮行事。",
-        "warm": "{sect}的使者，請上座。貴派近來的名聲，連長安都聽說了。"
+        "warm": "{sect}的使者，請上座。貴派近來的名聲，連長安都傳遍了。"
       },
       "hint": {
-        "dashixiong": "世家的人看門第不看劍。去之前把衣裳換乾淨，說話文縐縐一點——這我是學不來。",
-        "shijie": "{faction}重禮法、重門第。守禮、奉承都用得上，千萬別粗魯。"
+        "dashixiong": "世家的人看門第不看劍。去之前把衣裳換乾淨，說話斯文些——這個林某是學不來了。",
+        "shijie": "{faction}重禮法、重門第。守禮、奉承都用得上，切莫粗魯。"
       }
     },
     {
@@ -191,13 +191,13 @@
         "henan_fu"
       ],
       "greet": {
-        "cold": "江湖門派上衙門來，要嘛告狀，要嘛求情。你是哪一種？",
+        "cold": "江湖門派上衙門來，不是告狀，便是求情。你是哪一樣？",
         "neutral": "公務繁忙，有話長話短說。",
-        "warm": "{sect}的人？坐吧。上頭還記著貴派的好。"
+        "warm": "{sect}的人？坐罷。上頭還記著貴派的好。"
       },
       "hint": {
         "dashixiong": "官府的人，嘴上公事公辦，手上等著接東西。禮送到了，話才說得出口。",
-        "shijie": "{faction}吃厚禮，也講規矩。禮數周到，別強硬；官府翻臉，比江湖人狠。"
+        "shijie": "{faction}吃厚禮，也講規矩。禮數周到，莫要強硬；官府翻起臉來，比江湖人還狠。"
       }
     },
     {
@@ -210,13 +210,13 @@
         "heishan"
       ],
       "greet": {
-        "cold": "江湖人跑到軍營來？說清楚來意，不然當細作拿了。",
+        "cold": "江湖人跑到軍營來？說清來意，不然當細作拿了。",
         "neutral": "說。軍中不講虛禮。",
         "warm": "{sect}的人？進來。上回你們的弟子，打得不錯。"
       },
       "hint": {
         "dashixiong": "當兵的不吃客套，說話要短、要實。我當過兵，我知道。",
-        "shijie": "{faction}重實力。坦誠相告，拿得出實力，比什麼話都管用。"
+        "shijie": "{faction}重實力。坦誠相告，拿得出真本事，比甚麼話都管用。"
       }
     },
     {
@@ -232,13 +232,13 @@
         "taishan_xiangma"
       ],
       "greet": {
-        "cold": "{sect}的？老子正想找你們算帳，自己送上門來了！",
+        "cold": "{sect}的？老子正想找你們算帳，倒自己送上門來了！",
         "neutral": "喲，名門正派也來山寨串門？有話快說。",
-        "warm": "哈哈，{sect}的兄弟！來來來，先喝三碗！"
+        "warm": "哈哈，{sect}的兄弟！來來來，先乾三碗！"
       },
       "hint": {
-        "dashixiong": "草莽吃硬不吃軟。你客客氣氣，他當你怕；你拍桌子，他才肯聽。",
-        "shijie": "山寨的人看的是實力和銀子。別跟他們講大道理，也別讓弟子落單。"
+        "dashixiong": "草莽吃硬不吃軟。你客客氣氣，他當你怕；你一拍桌子，他才肯聽。",
+        "shijie": "山寨的人看的是實力和銀子。莫同他們講大道理，也莫讓弟子落單。"
       }
     },
     {
@@ -251,13 +251,13 @@
         "nanzhao"
       ],
       "greet": {
-        "cold": "（通譯轉述）{leaderTitle}說：唐人的江湖門派，跑到這裡來做什麼？",
-        "neutral": "（通譯轉述）{leaderTitle}說：遠道而來的客人，先喝一碗奶茶再說。",
-        "warm": "（通譯轉述）{leaderTitle}說：{sect}的朋友，我們記得你們的信義。"
+        "cold": "通譯轉述{leaderTitle}的話：唐人的江湖門派，跑到這裡來做甚麼？",
+        "neutral": "通譯轉述{leaderTitle}的話：遠道而來的客人，先喝一碗奶茶再說。",
+        "warm": "通譯轉述{leaderTitle}的話：{sect}的朋友，我們記得你們的信義。"
       },
       "hint": {
-        "dashixiong": "邊外人說話隔著通譯，好話傳過去也剩一半。禮送重一點，比說好話管用。",
-        "shijie": "{faction}重禮重信。厚禮、守禮，別逞強；邊外的人最記仇。"
+        "dashixiong": "邊外人說話隔著通譯，好話傳過去也只剩一半。禮送重些，比說好話管用。",
+        "shijie": "{faction}重禮重信。厚禮、守禮，莫要逞強；邊外的人最記仇。"
       }
     }
   ],
@@ -270,35 +270,35 @@
           "tier": "low",
           "band": "any",
           "recommends": "polite",
-          "text": "掌門大人要送禮？送吧，銀子又不是我賺的。只是{faction}若看不起我們，送得越多，越像磕頭。"
+          "text": "掌門要送禮？送罷，橫豎銀子不是我掙的。只是{faction}若瞧不起咱們，送得越多，越像磕頭。"
         },
         {
           "role": "dashixiong",
           "tier": "mid",
           "band": "any",
           "recommends": "polite",
-          "text": "老三，禮送一份就夠，送兩份就成了討好。照規矩送，別讓人看輕。"
+          "text": "老三，禮送一份便夠，送兩份就成了討好。照規矩送，莫教人看輕。"
         },
         {
           "role": "dashixiong",
           "tier": "high",
           "band": "any",
           "recommends": "polite",
-          "text": "師{弟妹}，送禮我不攔。只一條：頌辭別寫。我們是去交朋友，不是去拜碼頭。"
+          "text": "師{弟妹}，送禮我不攔。只一條：頌辭莫寫。咱們是去交朋友，不是去拜碼頭。"
         },
         {
           "role": "dashixiong",
           "tier": "any",
           "band": "cold",
           "recommends": "lavish",
-          "text": "人家正看我們不順眼，禮送輕了，十有八九被退回來。真要送，就送重一點，讓他們退不好意思。"
+          "text": "人家正瞧咱們不順眼，禮送輕了，十有八九被退回來。真要送，便送重些，教他們不好意思退。"
         },
         {
           "role": "shijie",
           "tier": "low",
           "band": "any",
           "recommends": "polite",
-          "text": "掌門，二十五兩是全門半個月的菜錢。送是可以送，別再加碼了。"
+          "text": "掌門，二十五兩是全門半個月的菜錢。送是可以送，莫再加碼了。"
         },
         {
           "role": "shijie",
@@ -312,28 +312,28 @@
           "tier": "high",
           "band": "any",
           "recommends": "lavish",
-          "text": "師{弟妹}，要送就送厚一些。結一份交情，抵得上一隊護院。門裡的帳我來挪。"
+          "text": "師{弟妹}，要送便送厚些。結下一份交情，抵得上一隊護院。門中的帳我來挪。"
         },
         {
           "role": "shijie",
           "tier": "any",
           "band": "warm",
           "recommends": "polite",
-          "text": "交情已經不壞了，禮數到了就好，不必加碼。"
+          "text": "交情已經不壞了，禮數到了便好，不必加碼。"
         },
         {
           "role": "disciple_pro_dashixiong",
           "tier": "low",
           "band": "any",
           "recommends": "polite",
-          "text": "……林師兄說得對。照規矩送就好。"
+          "text": "……林師兄說得對。照規矩送便好。"
         },
         {
           "role": "disciple_pro_dashixiong",
           "tier": "mid",
           "band": "any",
           "recommends": "polite",
-          "text": "……可以添一箱金創藥。他們山上用得著，比綢緞實在。"
+          "text": "……可以添一箱金創藥。他們山上用得著，比綾羅綢緞實在。"
         },
         {
           "role": "disciple_pro_dashixiong",
@@ -347,27 +347,27 @@
           "tier": "low",
           "band": "any",
           "recommends": "polite",
-          "text": "照許師姐的意思，這錢該省著花。真要送，就照禮單，一文都別多。"
+          "text": "照許師姐的意思，這錢該省著花。真要送，便照禮單，一文也莫多。"
         },
         {
           "role": "disciple_pro_shijie",
           "tier": "mid",
           "band": "any",
           "recommends": "flatter",
-          "text": "送禮也是生意。頌辭不花錢，對方愛聽，這筆就賺了。"
+          "text": "送禮也是買賣。頌辭不花錢，對方愛聽，這一筆便賺了。"
         },
         {
           "role": "disciple_pro_shijie",
           "tier": "high",
           "band": "any",
           "recommends": "lavish",
-          "text": "掌門師{兄姐}，加碼吧。這份人情將來收得回三倍，帳我包了。"
+          "text": "掌門師{兄姐}，加碼罷。這份人情將來收得回三倍，帳我包了。"
         }
       ],
       "opening": {
         "cold": "{sect}的禮？倒是頭一回收。無事獻殷勤，所為何來？",
-        "neutral": "{sect}遠道送禮，有心了。只是禮收了要還，不知貴派想要些什麼？",
-        "warm": "又讓{sect}破費了。上回的茶還沒喝完，這回又送來這許多。"
+        "neutral": "貴派遠道致禮，盛情心領。只是禮尚往來，不知貴派此番，所求何事？",
+        "warm": "又教{sect}破費了。上回的茶還沒喝完，這回又送來這許多。"
       },
       "options": [
         {
@@ -376,7 +376,7 @@
           "mods": {},
           "line": "敝派掌門命在下奉上薄禮，聊表敬意，別無他求。",
           "reaction": {
-            "cold": "別無他求？江湖上最貴的，就是這四個字。……東西先放下吧。",
+            "cold": "別無他求？江湖上最貴的，便是這四個字。……東西先放下罷。",
             "warm": "好，好。貴派的心意，收到了。"
           }
         },
@@ -441,11 +441,11 @@
           "personaReaction": [
             {
               "id": "fierce",
-              "text": "少來這套！最聽不得的就是馬屁。禮留下，話收回去！"
+              "text": "少來這套！最聽不得的便是奉承。禮留下，話收回去！"
             },
             {
               "id": "recluse",
-              "text": "……頌辭就不必念了。山中人，聽不慣這些。"
+              "text": "……頌辭便不必念了。山中人，聽不慣這些。"
             },
             {
               "id": "austere",
@@ -475,11 +475,11 @@
       "failure": [
         {
           "speaker": "leader",
-          "text": "無功不受祿。東西請帶回去吧，{faction}受不起。"
+          "text": "無功不受祿。東西請帶回去罷，{faction}受不起。"
         },
         {
           "speaker": "narrator",
-          "text": "{envoy}把禮原封不動地挑回山門，一路上沒說一句話。"
+          "text": "{envoy}把禮原封不動挑回山門，一路上不發一語。"
         }
       ]
     },
@@ -491,14 +491,14 @@
           "tier": "low",
           "band": "any",
           "recommends": "candid",
-          "text": "派人上門看看也好。掌門大人坐鎮山上，跑腿的事，底下人最擅長。去了別繞彎子。"
+          "text": "派人上門看看也好。掌門坐鎮山上，跑腿的事，底下人最在行。去了莫繞彎子。"
         },
         {
           "role": "dashixiong",
           "tier": "mid",
           "band": "any",
           "recommends": "candid",
-          "text": "老三，去了別繞彎子。有話直說，人家反倒看得起。"
+          "text": "老三，去了莫繞彎子。有話直說，人家反倒看得起。"
         },
         {
           "role": "dashixiong",
@@ -512,21 +512,21 @@
           "tier": "any",
           "band": "cold",
           "recommends": "probe",
-          "text": "那邊對我們有氣，上門直說，只會被趕出來。旁敲側擊吧，先摸清底細。"
+          "text": "那邊對咱們有氣，上門直說，只會被趕出來。旁敲側擊罷，先摸清底細。"
         },
         {
           "role": "shijie",
           "tier": "low",
           "band": "any",
           "recommends": "talk",
-          "text": "掌門，派誰去都行，別派小滿。上回他把人家的點心吃了一半。先論武，再說事。"
+          "text": "掌門，派誰去都成，莫派小滿。上回他把人家的點心吃了一半。先論武，再說事。"
         },
         {
           "role": "shijie",
           "tier": "mid",
           "band": "any",
           "recommends": "talk",
-          "text": "三師{弟妹}，{faction}的人愛談武學。先論武，再說來意，順得多。"
+          "text": "三師{弟妹}，{faction}的人愛談武學。先論武，再說來意，順當得多。"
         },
         {
           "role": "shijie",
@@ -540,7 +540,7 @@
           "tier": "any",
           "band": "warm",
           "recommends": "candid",
-          "text": "交情不壞，直說來意就好，不必拐彎抹角。"
+          "text": "交情不壞，直說來意便好，不必拐彎抹角。"
         },
         {
           "role": "disciple_pro_dashixiong",
@@ -554,7 +554,7 @@
           "tier": "mid",
           "band": "any",
           "recommends": "talk",
-          "text": "去的人帶一包傷藥。人家受了傷，會記得。"
+          "text": "去的人帶一包傷藥。人家受了傷，會記得的。"
         },
         {
           "role": "disciple_pro_dashixiong",
@@ -568,25 +568,25 @@
           "tier": "low",
           "band": "any",
           "recommends": "probe",
-          "text": "照許師姐的單子問就好。說錯一句，要用十兩銀子去補。"
+          "text": "照許師姐的單子問便好。說錯一句，要用十兩銀子去補。"
         },
         {
           "role": "disciple_pro_shijie",
           "tier": "mid",
           "band": "any",
           "recommends": "probe",
-          "text": "順便看看他們山下的市集：什麼貴、什麼便宜，比他們掌門的話還實在。"
+          "text": "順道看看他們山下的市集：甚麼貴、甚麼賤，比他們掌門的話還實在。"
         },
         {
           "role": "disciple_pro_shijie",
           "tier": "high",
           "band": "any",
           "recommends": "candid",
-          "text": "掌門師{兄姐}，讓我同去吧。他們的帳房跟我熟——好吧，以後就熟了。"
+          "text": "掌門師{兄姐}，讓我同去罷。他們的帳房跟我熟——好罷，往後便熟了。"
         }
       ],
       "opening": {
-        "cold": "{sect}的人？上門何事？說完了就請回。",
+        "cold": "{sect}的人？上門何事？說完了便請回。",
         "neutral": "{sect}的使者？遠來是客。請坐，看茶。",
         "warm": "原來是{sect}的朋友。快請進，這一路辛苦了。"
       },
@@ -630,7 +630,7 @@
             },
             {
               "id": "bandit",
-              "text": "論什麼道？老子聽不懂！有話直說！"
+              "text": "論甚麼道？老子聽不懂！有話直說！"
             },
             {
               "id": "shadow",
@@ -665,8 +665,8 @@
           },
           "line": "敝派掌門命在下前來，一是問安，二是想看看兩家往後能否多些往來。",
           "reaction": {
-            "cold": "往來？貴派倒是直接。……好，至少不繞彎子。",
-            "warm": "好！痛快。這話愛聽。"
+            "cold": "往來？貴派倒是直截了當。……好，至少不繞彎子。",
+            "warm": "好！痛快。這話中聽。"
           }
         },
         {
@@ -679,7 +679,7 @@
           },
           "line": "在下只是路過貴地，順道代掌門問安。久聞貴處人才濟濟，不知近來可好？",
           "reaction": {
-            "cold": "路過？{seat}可不在什麼大路上。",
+            "cold": "路過？{seat}可不在甚麼大路上。",
             "warm": "還好、還好。來人，帶這位四處走走。"
           }
         }
@@ -701,7 +701,7 @@
         },
         {
           "speaker": "leader",
-          "text": "回去吧。{faction}與貴派，沒什麼好談的。"
+          "text": "請回罷。{faction}與貴派，沒甚麼好談的。"
         }
       ]
     },
@@ -713,49 +713,49 @@
           "tier": "low",
           "band": "any",
           "recommends": "bargain",
-          "text": "做生意？掌門大人如今連算盤都摸上了。別讓人看出我們缺錢，那樣價就壓不住。"
+          "text": "做買賣？掌門如今連算盤都摸上了。莫教人瞧出咱們缺錢，否則價便壓不住。"
         },
         {
           "role": "dashixiong",
           "tier": "mid",
           "band": "any",
           "recommends": "bargain",
-          "text": "老三，買賣歸買賣，別讓人覺得我們求著他。"
+          "text": "老三，買賣歸買賣，莫教人覺得咱們求著他。"
         },
         {
           "role": "dashixiong",
           "tier": "high",
           "band": "any",
           "recommends": "fair",
-          "text": "師{弟妹}，該讓的讓，別讓康瑟把人家逼急了。細水長流。"
+          "text": "師{弟妹}，該讓的讓，莫教康瑟把人家逼急了。細水長流。"
         },
         {
           "role": "dashixiong",
           "tier": "any",
           "band": "cold",
           "recommends": "concede",
-          "text": "他們本就看不起我們，再跟他們爭價，談不成的。先讓一點，把路打通再說。"
+          "text": "他們本就瞧不起咱們，再同他們爭價，是談不成的。先讓一點，把路打通再說。"
         },
         {
           "role": "shijie",
           "tier": "low",
           "band": "any",
           "recommends": "fair",
-          "text": "掌門，通商是長久的事。按市價就好，別貪一時的利。"
+          "text": "掌門，通商是長久之事。按市價便好，莫貪一時之利。"
         },
         {
           "role": "shijie",
           "tier": "mid",
           "band": "any",
           "recommends": "concede",
-          "text": "三師{弟妹}，第一年讓一成利，換一條商路，划算。"
+          "text": "三師{弟妹}，頭一年讓一成利，換一條商路，划得來。"
         },
         {
           "role": "shijie",
           "tier": "high",
           "band": "any",
           "recommends": "bargain",
-          "text": "師{弟妹}，兩家的貨單我比過了：我們的藥材他們缺，他們的鹽我們缺得沒那麼急。底氣在我們這邊。"
+          "text": "師{弟妹}，兩家的貨單我比過了：咱們的藥材他們缺，他們的鹽咱們倒不那麼急。底氣在咱們這邊。"
         },
         {
           "role": "shijie",
@@ -769,14 +769,14 @@
           "tier": "low",
           "band": "any",
           "recommends": "bargain",
-          "text": "……林師兄說，別讓人看出我們缺錢。"
+          "text": "……林師兄說，莫教人瞧出咱們缺錢。"
         },
         {
           "role": "disciple_pro_dashixiong",
           "tier": "mid",
           "band": "any",
           "recommends": "bargain",
-          "text": "藥材的價，我知道。別讓他們壓。"
+          "text": "藥材的價，我心裡有數。莫讓他們壓了。"
         },
         {
           "role": "disciple_pro_dashixiong",
@@ -790,14 +790,14 @@
           "tier": "low",
           "band": "any",
           "recommends": "fair",
-          "text": "照許師姐說的，按市價。我不是怕，是這種事一貪就砸。"
+          "text": "照許師姐說的，按市價。我不是怕，是這種事一貪便砸。"
         },
         {
           "role": "disciple_pro_shijie",
           "tier": "mid",
           "band": "any",
           "recommends": "concede",
-          "text": "讓一成利，頭一年少賺十幾兩，第二年起路就是我們的。這帳算得過來。"
+          "text": "讓一成利，頭一年少賺十幾兩，第二年起這條路便是咱們的。這帳算得過來。"
         },
         {
           "role": "disciple_pro_shijie",
@@ -808,9 +808,9 @@
         }
       ],
       "opening": {
-        "cold": "互市？{sect}有什麼貨，值得{faction}開一條路？",
-        "neutral": "做買賣好說。只是不知貴派拿得出什麼貨色。",
-        "warm": "好啊。兩家早該這麼辦了，坐下來慢慢談。"
+        "cold": "互市？{sect}有甚麼貨，值得{faction}開一條路？",
+        "neutral": "做買賣好說。只是不知貴派拿得出甚麼貨色。",
+        "warm": "好啊。兩家早該如此，坐下來慢慢談。"
       },
       "options": [
         {
@@ -819,8 +819,8 @@
           "mods": {},
           "line": "敝派山中出藥材、山貨，願按市價與貴處互通有無，兩家都不吃虧。",
           "reaction": {
-            "cold": "按市價？……{sect}的貨，未必值市價。",
-            "warm": "公道。既然貴派肯公道，那就好說。"
+            "cold": "按市價？……{sect}的貨，未必值得市價。",
+            "warm": "公道。既然貴派肯公道，那便好說。"
           }
         },
         {
@@ -846,7 +846,7 @@
           "personaReaction": [
             {
               "id": "trader",
-              "text": "三成？哈哈，在這張桌子上開這種價，你是頭一個。……先說說貨色。"
+              "text": "三成？哈哈，在這張桌上開這種價，你是頭一個。……先說說貨色。"
             },
             {
               "id": "shadow",
@@ -873,17 +873,17 @@
               "tradeIncome": -2
             }
           },
-          "line": "兩家頭一回往來，敝派願讓一成利，只求這條路走得長。",
+          "line": "兩家頭一回往來，敝派願讓一成利，只求這條路走得長遠。",
           "reaction": {
             "cold": "讓利？……看來{sect}是真心的。",
-            "warm": "貴派如此誠意，我們也不能小氣。"
+            "warm": "貴派這般誠意，我們也不能小氣。"
           }
         }
       ],
       "success": [
         {
           "speaker": "leader",
-          "text": "就這麼定了。下個月起，商隊從{seat}出發，每月一趟。"
+          "text": "就這麼定了。下月起，商隊從{seat}出發，每月一趟。"
         },
         {
           "speaker": "narrator",
@@ -893,11 +893,11 @@
       "failure": [
         {
           "speaker": "leader",
-          "text": "貨色寒酸，價錢倒不便宜。這生意，{faction}不做。"
+          "text": "貨色寒酸，價錢倒不便宜。這樁買賣，{faction}不做。"
         },
         {
           "speaker": "narrator",
-          "text": "{envoy}把貨樣收回箱裡，回山的路上，把對方帳房的話又想了一遍。"
+          "text": "{envoy}把貨樣收回箱裡，回山路上，把對方帳房的話又想了一遍。"
         }
       ]
     },
@@ -909,7 +909,7 @@
           "tier": "low",
           "band": "any",
           "recommends": "fair",
-          "text": "賠罪？掌門大人要低頭，我攔不住。只是別低到讓人踩。"
+          "text": "賠罪？掌門要低頭，林某攔不住。只是莫低到教人踩。"
         },
         {
           "role": "dashixiong",
@@ -923,21 +923,21 @@
           "tier": "high",
           "band": "any",
           "recommends": "fair",
-          "text": "師{弟妹}，該賠的賠，不該賠的一個字也別認。這趟我陪你去。"
+          "text": "師{弟妹}，該賠的賠，不該賠的一個字也莫認。這一趟我陪你去。"
         },
         {
           "role": "dashixiong",
           "tier": "any",
           "band": "cold",
           "recommends": "elder",
-          "text": "仇已經結深了，空口說和，人家不信。請個有分量的前輩作保吧。"
+          "text": "仇已經結深了，空口說和，人家不信。請一位有分量的前輩作保罷。"
         },
         {
           "role": "shijie",
           "tier": "low",
           "band": "any",
           "recommends": "humble",
-          "text": "掌門，仇再結下去，吃虧的是底下的弟子。該低頭時就低頭。"
+          "text": "掌門，仇再結下去，吃虧的是底下的弟子。該低頭時便低頭。"
         },
         {
           "role": "shijie",
@@ -951,21 +951,21 @@
           "tier": "high",
           "band": "any",
           "recommends": "humble",
-          "text": "師{弟妹}，賠罪不丟人。門派能多一個不是敵人的鄰居，比什麼都要緊。"
+          "text": "師{弟妹}，賠罪不丟人。門派能多一個不為敵的鄰居，比甚麼都要緊。"
         },
         {
           "role": "disciple_pro_dashixiong",
           "tier": "low",
           "band": "any",
           "recommends": "fair",
-          "text": "……林師兄說，別白白認錯。"
+          "text": "……林師兄說，莫白白認錯。"
         },
         {
           "role": "disciple_pro_dashixiong",
           "tier": "mid",
           "band": "any",
           "recommends": "humble",
-          "text": "他們那邊若有人受過傷，我可以去看看。藥比賠罪實在。"
+          "text": "他們那邊若有人受過傷，我可以去瞧瞧。藥比賠罪實在。"
         },
         {
           "role": "disciple_pro_dashixiong",
@@ -979,7 +979,7 @@
           "tier": "low",
           "band": "any",
           "recommends": "humble",
-          "text": "許師姐說低頭，那就低頭。賠罪的錢，比打一仗便宜多了。"
+          "text": "許師姐說低頭，那便低頭。賠罪的錢，比打一仗便宜多了。"
         },
         {
           "role": "disciple_pro_shijie",
@@ -997,8 +997,8 @@
         }
       ],
       "opening": {
-        "cold": "{sect}還敢上門？舊帳還沒算，又要擺什麼酒？",
-        "neutral": "和頭酒？……先說說，貴派打算怎麼和。",
+        "cold": "{sect}還敢上門？舊帳還沒算，又要擺甚麼酒？",
+        "neutral": "和頭酒？……先說說，貴派打算如何和法。",
         "warm": "舊事一場誤會，說開了也好。"
       },
       "options": [
@@ -1017,7 +1017,7 @@
           "personaReaction": [
             {
               "id": "bandit",
-              "text": "賠罪？哈！名門正派也有低頭的一天。……行，酒我喝了。"
+              "text": "賠罪？哈！名門正派也有低頭的一日。……也罷，酒我喝了。"
             }
           ]
         },
@@ -1065,7 +1065,7 @@
           "personaReaction": [
             {
               "id": "fierce",
-              "text": "好！痛快！錯就是錯，誰怕認！這杯我喝了！"
+              "text": "好！痛快！錯便是錯，誰怕認！這杯我喝了！"
             },
             {
               "id": "schemer",
@@ -1073,7 +1073,7 @@
             },
             {
               "id": "general",
-              "text": "軍中也是這麼斷的。說吧，怎麼了結。"
+              "text": "軍中也是這般斷的。說罷，如何了結。"
             }
           ]
         }
@@ -1085,13 +1085,13 @@
         },
         {
           "speaker": "narrator",
-          "text": "席散時，兩家的人已經在互相敬酒。江湖上傳開了：{sect}掌門是講道理的人。"
+          "text": "席散時，兩家的人已在互相敬酒。江湖上傳開了：{sect}掌門是講道理的人。"
         }
       ],
       "failure": [
         {
           "speaker": "leader",
-          "text": "酒是好酒，話不中聽。這仇，沒那麼容易了。"
+          "text": "酒是好酒，話不中聽。這仇，沒那麼容易解了。"
         },
         {
           "speaker": "narrator",
@@ -1107,28 +1107,28 @@
           "tier": "low",
           "band": "any",
           "recommends": "limited",
-          "text": "共同防禦？掌門大人是要我們去替人家守牆？說清楚，出多少人，守多久。"
+          "text": "共同防禦？掌門是要咱們去替人家守牆？說清楚，出多少人，守多久。"
         },
         {
           "role": "dashixiong",
           "tier": "mid",
           "band": "any",
           "recommends": "limited",
-          "text": "老三，立約可以，分寸要講明。不然人家有事叫我們去送死，去是不去？"
+          "text": "老三，立約可以，分寸要講明。不然人家有事喚咱們去送死，去是不去？"
         },
         {
           "role": "dashixiong",
           "tier": "high",
           "band": "any",
           "recommends": "generous",
-          "text": "師{弟妹}，結個守望之約好。我先帶幾個人去他們那邊站一陣，人家看了才放心。"
+          "text": "師{弟妹}，結個守望之約好。我先帶幾個人去他們那邊站一陣，人家瞧了才放心。"
         },
         {
           "role": "shijie",
           "tier": "low",
           "band": "any",
           "recommends": "limited",
-          "text": "掌門，約一立，兩家的命就綁在一起。條款寫清楚，別讓門裡的人白白送命。"
+          "text": "掌門，約一立，兩家的命便綁在一處。條款寫清楚，莫讓門中的人白白送命。"
         },
         {
           "role": "shijie",
@@ -1142,7 +1142,7 @@
           "tier": "high",
           "band": "any",
           "recommends": "generous",
-          "text": "師{弟妹}，先送幾個弟子去幫他們守一陣，比一百句誓言都管用。門裡我撐著。"
+          "text": "師{弟妹}，先送幾個弟子去幫他們守一陣，比一百句誓言都管用。門中我撐著。"
         },
         {
           "role": "disciple_pro_dashixiong",
@@ -1163,14 +1163,14 @@
           "tier": "high",
           "band": "any",
           "recommends": "generous",
-          "text": "我可以先去他們那裡住一陣，替受傷的人看看。"
+          "text": "我可以先去他們那裡住一陣，替受傷的人瞧瞧。"
         },
         {
           "role": "disciple_pro_shijie",
           "tier": "low",
           "band": "any",
           "recommends": "limited",
-          "text": "照許師姐的意思，條款寫死。寫不死的約，就是空話。"
+          "text": "照許師姐的意思，條款寫死。寫不死的約，便是空話。"
         },
         {
           "role": "disciple_pro_shijie",
@@ -1184,13 +1184,13 @@
           "tier": "high",
           "band": "any",
           "recommends": "generous",
-          "text": "掌門師{兄姐}，先送二十兩去替他們修牆。修的是他們的牆，買的是我們的心安。"
+          "text": "掌門師{兄姐}，先送二十兩去替他們修牆。修的是他們的牆，買的是咱們的心安。"
         }
       ],
       "opening": {
-        "cold": "守望相助？{sect}自己的牆都還沒修好吧。",
+        "cold": "守望相助？{sect}自家的牆都還沒修好罷。",
         "neutral": "近來山下確實不太平。貴派想怎麼個守法？",
-        "warm": "早想跟貴派說這事。兩家離得不遠，本就該互相照應。"
+        "warm": "早想同貴派說這事。兩家離得不遠，本就該互相照應。"
       },
       "options": [
         {
@@ -1214,7 +1214,7 @@
           },
           "line": "敝派願立守望之約。只是話說在前頭：出人以二十為度，不涉兩家之外的恩怨。",
           "reaction": {
-            "cold": "說得這麼清楚，倒顯得沒誠意。……不過也好，清楚。",
+            "cold": "說得這般清楚，倒顯得沒誠意。……不過也好，清楚。",
             "warm": "好，說清楚了，大家都安心。"
           },
           "personaReaction": [
@@ -1241,7 +1241,7 @@
           "line": "掌門已命弟子先行，替貴處守一個月的山門。立約與否，這份心意不變。",
           "reaction": {
             "cold": "……人已經來了？{sect}這是真心的。",
-            "warm": "這、這怎麼好意思。貴派這份情，記下了。"
+            "warm": "這、這如何過意得去。貴派這份情，記下了。"
           }
         }
       ],
@@ -1274,42 +1274,42 @@
           "tier": "low",
           "band": "any",
           "recommends": "sworn",
-          "text": "結義？要結就結金蘭，磕頭見真心。聯姻？掌門大人打算把誰嫁出去？"
+          "text": "結義？要結便結金蘭，磕頭見真心。聯姻？掌門打算把誰嫁出去？"
         },
         {
           "role": "dashixiong",
           "tier": "mid",
           "band": "any",
           "recommends": "sworn",
-          "text": "老三，金蘭結義最乾脆。聯姻那套，把弟子當貨賣，我不幹。"
+          "text": "老三，金蘭結義最乾脆。聯姻那一套，是把弟子當貨物賣，我不幹。"
         },
         {
           "role": "dashixiong",
           "tier": "high",
           "band": "any",
           "recommends": "sworn",
-          "text": "師{弟妹}，要結就光明正大地結。只是結了以後，人家的仇也是我們的仇，你想清楚。"
+          "text": "師{弟妹}，要結便光明正大地結。只是結了以後，人家的仇也是咱們的仇，你想清楚。"
         },
         {
           "role": "shijie",
           "tier": "low",
           "band": "any",
           "recommends": "quiet",
-          "text": "掌門，結義一事，江湖上人人看著。對方的宿敵會記仇，別大張旗鼓。"
+          "text": "掌門，結義一事，江湖上人人看著。對方的宿敵會記仇，莫要大張旗鼓。"
         },
         {
           "role": "shijie",
           "tier": "mid",
           "band": "any",
           "recommends": "quiet",
-          "text": "三師{弟妹}，低調些。先把盟書寫下，酒席以後再擺。"
+          "text": "三師{弟妹}，低調些。先把盟書寫下，酒席往後再擺。"
         },
         {
           "role": "shijie",
           "tier": "high",
           "band": "any",
           "recommends": "marriage",
-          "text": "師{弟妹}，對方若重門第，聯姻比結義牢靠。只是要先問過當事人願不願意。"
+          "text": "師{弟妹}，對方若重門第，聯姻比結義牢靠。只是須先問過當事人願不願意。"
         },
         {
           "role": "disciple_pro_dashixiong",
@@ -1330,7 +1330,7 @@
           "tier": "high",
           "band": "any",
           "recommends": "sworn",
-          "text": "掌門師{兄姐}，結就結。歃血用的刀口，我替你上藥，不疼。"
+          "text": "掌門師{兄姐}，結便結。歃血的刀口，我替你上藥，不疼。"
         },
         {
           "role": "disciple_pro_shijie",
@@ -1344,7 +1344,7 @@
           "tier": "mid",
           "band": "any",
           "recommends": "marriage",
-          "text": "聯姻的聘禮四十兩，換來的是兩家幾十年的往來。這筆買賣做得。"
+          "text": "聯姻的聘禮四十兩，換來兩家幾十年的往來。這筆買賣做得。"
         },
         {
           "role": "disciple_pro_shijie",
@@ -1357,7 +1357,7 @@
       "opening": {
         "cold": "結義？{sect}未免想得太遠了。",
         "neutral": "結義？這可不是一頓酒的事。貴派想清楚了？",
-        "warm": "兩家走到今天，也該有個名分了。"
+        "warm": "兩家走到今日，也該有個名分了。"
       },
       "options": [
         {
@@ -1381,13 +1381,13 @@
           },
           "line": "敝派掌門願與{leader}焚香結義，從此兩派同進同退，一家有事，兩家同當。",
           "reaction": {
-            "cold": "同進同退？說得容易。",
+            "cold": "同進同退？說來容易。",
             "warm": "好！早就等這句話了。"
           },
           "personaReaction": [
             {
               "id": "fierce",
-              "text": "痛快！拿酒來！今日就拜！"
+              "text": "痛快！拿酒來！今日便拜！"
             },
             {
               "id": "recluse",
@@ -1444,9 +1444,9 @@
               "rivalShift": 6
             }
           },
-          "line": "敝派不求大張旗鼓。兩家立一紙盟書，各藏於祖師殿中；有事時拿出來，便是兄弟。",
+          "line": "敝派不求大張旗鼓。兩家立一紙盟書，各藏於祖師殿中；有事時取出來，便是兄弟。",
           "reaction": {
-            "cold": "藏起來的盟書？……{sect}是怕得罪人吧。",
+            "cold": "藏起來的盟書？……{sect}是怕得罪人罷。",
             "warm": "穩當。江湖上眼紅的人多，不張揚也好。"
           }
         }
@@ -1464,11 +1464,11 @@
       "failure": [
         {
           "speaker": "leader",
-          "text": "長老們爭了三天，沒個結果。這事……還是緩一緩吧。"
+          "text": "長老們爭了三日，沒個結果。這事……還是緩一緩罷。"
         },
         {
           "speaker": "narrator",
-          "text": "{envoy}在{seat}等了三日，等來的是一封措辭客氣的回絕信。"
+          "text": "{envoy}在{seat}等了三日，等來的是一封措辭客氣的回絕書。"
         }
       ]
     },
@@ -1480,28 +1480,28 @@
           "tier": "low",
           "band": "any",
           "recommends": "force",
-          "text": "威懾？好啊，掌門大人總算說了句我愛聽的。帶人去他們山下站一站，比什麼帖子都管用。"
+          "text": "威懾？好，掌門總算說了句林某愛聽的。帶人去他們山下站一站，比甚麼帖子都管用。"
         },
         {
           "role": "dashixiong",
           "tier": "mid",
           "band": "any",
           "recommends": "force",
-          "text": "老三，要嚇人就嚇到底。帖子是讀書人用的，山寨的人不識字。"
+          "text": "老三，要嚇人便嚇到底。帖子是讀書人用的，山寨的人不識字。"
         },
         {
           "role": "dashixiong",
           "tier": "high",
           "band": "any",
           "recommends": "face",
-          "text": "師{弟妹}，我帶人去。話你來說，刀我來亮。只是別逼得太死，狗急了也跳牆。"
+          "text": "師{弟妹}，我帶人去。話你來說，刀我來亮。只是莫逼得太死，狗急了也會跳牆。"
         },
         {
           "role": "dashixiong",
           "tier": "any",
           "band": "cold",
           "recommends": "force",
-          "text": "他們本就恨我們，再嚇一嚇，恨得更深。要嚇，就嚇得他們不敢恨。"
+          "text": "他們本就恨咱們，再嚇一嚇，恨得更深。要嚇，便嚇得他們不敢恨。"
         },
         {
           "role": "shijie",
@@ -1515,7 +1515,7 @@
           "tier": "mid",
           "band": "any",
           "recommends": "letter",
-          "text": "三師{弟妹}，發英雄帖就夠了，讓江湖人都看著。不必動刀兵。"
+          "text": "三師{弟妹}，發英雄帖便夠了，讓江湖人都看著。不必動刀兵。"
         },
         {
           "role": "shijie",
@@ -1529,7 +1529,7 @@
           "tier": "any",
           "band": "warm",
           "recommends": "face",
-          "text": "人家原本跟我們不壞，這一嚇，交情就沒了。千萬留餘地。"
+          "text": "人家原本與咱們不壞，這一嚇，交情便沒了。千萬留些餘地。"
         },
         {
           "role": "disciple_pro_dashixiong",
@@ -1543,7 +1543,7 @@
           "tier": "mid",
           "band": "any",
           "recommends": "letter",
-          "text": "要動刀兵，先讓我知道人數。藥要備夠。……能不動，最好。"
+          "text": "要動刀兵，先讓我知道人數。藥要備足。……能不動，最好。"
         },
         {
           "role": "disciple_pro_dashixiong",
@@ -1557,27 +1557,27 @@
           "tier": "low",
           "band": "any",
           "recommends": "face",
-          "text": "許師姐說得對，留餘地。把人逼急了，賠的是我們。"
+          "text": "許師姐說得對，留餘地。把人逼急了，賠的是咱們。"
         },
         {
           "role": "disciple_pro_shijie",
           "tier": "mid",
           "band": "any",
           "recommends": "letter",
-          "text": "英雄帖一張十文錢，陳兵山下一天十兩。哪個划算，不用我說。"
+          "text": "英雄帖一張十文錢，陳兵山下一日十兩。哪個划算，不必我說。"
         },
         {
           "role": "disciple_pro_shijie",
           "tier": "high",
           "band": "any",
           "recommends": "letter",
-          "text": "掌門師{兄姐}，發帖吧。帖子我寫得狠一點，錢就省下來了。"
+          "text": "掌門師{兄姐}，發帖罷。帖子我寫得狠些，錢便省下來了。"
         }
       ],
       "opening": {
         "cold": "{sect}的人？擺這麼大的陣仗，是來打架還是來說話？",
-        "neutral": "聽說{sect}最近風頭正盛。有何貴幹？",
-        "warm": "這是做什麼？兩家不是好好的嗎？"
+        "neutral": "聽說{sect}近來風頭正盛。有何貴幹？",
+        "warm": "這是做甚麼？兩家不是好好的麼？"
       },
       "options": [
         {
@@ -1597,7 +1597,7 @@
               }
             ]
           },
-          "line": "敝派弟子已在山下紮營。掌門的話很簡單：此地從今往後，以{sect}馬首是瞻。",
+          "line": "敝派弟子已在山下紮營。掌門的話很簡單：此地從今往後，唯{sect}馬首是瞻。",
           "reaction": {
             "cold": "……山下那些人，是你們的？",
             "warm": "你們……這是要翻臉？"
@@ -1605,11 +1605,11 @@
           "personaReaction": [
             {
               "id": "bandit",
-              "text": "好傢伙，人都堵到寨門口了。……兄弟們，先別動手。"
+              "text": "好傢伙，人都堵到寨門口了。……兄弟們，先莫動手。"
             },
             {
               "id": "fierce",
-              "text": "陳兵山下？好！要打便打，{faction}沒怕過誰！"
+              "text": "陳兵山下？好！要打便打，{faction}怕過誰來！"
             }
           ]
         },
@@ -1620,7 +1620,7 @@
           "line": "英雄帖已發遍{seat}四方。江湖人都在看：貴處是要與{sect}為友，還是為敵。",
           "reaction": {
             "cold": "拿江湖人來壓我們？",
-            "warm": "……英雄帖？貴派這是何必。"
+            "warm": "……英雄帖？貴派這又何必。"
           }
         },
         {
@@ -1631,9 +1631,9 @@
             "gain": 5,
             "fail": 6
           },
-          "line": "敝派無意與貴處為難。只是這一帶總要有人說了算；掌門希望，說了算的人肯給貴處留個位子。",
+          "line": "敝派無意與貴處為難。只是這一帶總要有人說了算；掌門盼著，說了算的人肯給貴處留個位子。",
           "reaction": {
-            "cold": "……留個位子？話說得倒客氣。",
+            "cold": "……留個位子？話倒說得客氣。",
             "warm": "這話說得明白。容我們想想。"
           }
         }
@@ -1655,7 +1655,7 @@
         },
         {
           "speaker": "narrator",
-          "text": "{faction}的嘲笑傳遍了附近的山頭。{sect}的臉，這回丟得不輕。"
+          "text": "{faction}的嘲笑傳遍了附近的山頭。{sect}的臉面，這回丟得不輕。"
         }
       ]
     },
@@ -1667,7 +1667,7 @@
           "tier": "low",
           "band": "any",
           "recommends": "press",
-          "text": "收附庸？掌門大人胃口不小。要收就得壓得住，朝貢少一文，人家就當你軟。"
+          "text": "收附庸？掌門胃口不小。要收便得壓得住，朝貢少一文，人家便當你軟。"
         },
         {
           "role": "dashixiong",
@@ -1681,35 +1681,35 @@
           "tier": "high",
           "band": "any",
           "recommends": "protect",
-          "text": "師{弟妹}，收了就是自家人。他們有難，我第一個去。這話可以替我帶過去。"
+          "text": "師{弟妹}，收了便是自家人。他們有難，我第一個去。這話可以替我帶過去。"
         },
         {
           "role": "dashixiong",
           "tier": "any",
           "band": "cold",
           "recommends": "press",
-          "text": "他們本就怕我們，趁熱打鐵，朝貢一文不讓。"
+          "text": "他們本就怕咱們，趁熱打鐵，朝貢一文不讓。"
         },
         {
           "role": "shijie",
           "tier": "low",
           "band": "any",
           "recommends": "light",
-          "text": "掌門，收附庸是要擔責任的。朝貢少收些，他們才不會一年就叛。"
+          "text": "掌門，收附庸是要擔責任的。朝貢少收些，他們才不會一年便叛。"
         },
         {
           "role": "shijie",
           "tier": "mid",
           "band": "any",
           "recommends": "protect",
-          "text": "三師{弟妹}，他們最怕的是被吞掉。許以庇護、保留山門，比什麼都要緊。"
+          "text": "三師{弟妹}，他們最怕的是被吞了。許以庇護、保留山門，比甚麼都要緊。"
         },
         {
           "role": "shijie",
           "tier": "high",
           "band": "any",
           "recommends": "light",
-          "text": "師{弟妹}，朝貢少收四成。我們要的是人心，不是那幾兩銀子。"
+          "text": "師{弟妹}，朝貢少收四成。咱們要的是人心，不是那幾兩銀子。"
         },
         {
           "role": "disciple_pro_dashixiong",
@@ -1723,49 +1723,49 @@
           "tier": "mid",
           "band": "any",
           "recommends": "protect",
-          "text": "收了之後，他們的傷病弟子我也管。可以這麼告訴他們。"
+          "text": "收了之後，他們的傷病弟子我也管。可以這般告訴他們。"
         },
         {
           "role": "disciple_pro_dashixiong",
           "tier": "high",
           "band": "any",
           "recommends": "light",
-          "text": "掌門師{兄姐}，他們人少，日子苦。少收些吧。"
+          "text": "掌門師{兄姐}，他們人少，日子苦。少收些罷。"
         },
         {
           "role": "disciple_pro_shijie",
           "tier": "low",
           "band": "any",
           "recommends": "light",
-          "text": "照許師姐的，少收四成。叛一回，損失的不只是朝貢。"
+          "text": "照許師姐的，少收四成。叛一回，損的不只是朝貢。"
         },
         {
           "role": "disciple_pro_shijie",
           "tier": "mid",
           "band": "any",
           "recommends": "light",
-          "text": "朝貢多一成少一成，差的是幾兩；叛不叛，差的是全部。少收。"
+          "text": "朝貢多一成少一成，差的是幾兩；叛與不叛，差的是全部。少收。"
         },
         {
           "role": "disciple_pro_shijie",
           "tier": "high",
           "band": "any",
           "recommends": "protect",
-          "text": "掌門師{兄姐}，照常收就好。帳上我會替他們留一點餘裕，不會逼死人。"
+          "text": "掌門師{兄姐}，照常收便好。帳上我會替他們留些餘裕，不會逼死人。"
         }
       ],
       "opening": {
         "cold": "附庸？{sect}是要我們跪著過日子？",
         "neutral": "奉貴派為上宗……這話，總得有個說法。",
-        "warm": "這些年{faction}確實撐得辛苦。貴派的意思，大概明白了。"
+        "warm": "這些年{faction}確實撐得辛苦。貴派的意思，大抵明白了。"
       },
       "openingByPersona": [
         {
           "id": "bandit",
           "lines": {
-            "cold": "招安？老子落草，就是不想被人管！",
-            "neutral": "招安？說來聽聽，給兄弟們什麼好處？",
-            "warm": "招安……兄弟們確實也想過幾天安穩日子。"
+            "cold": "招安？老子落草，就是不想教人管！",
+            "neutral": "招安？說來聽聽，給兄弟們甚麼好處？",
+            "warm": "招安……兄弟們確也想過幾天安穩日子。"
           }
         }
       ],
@@ -1840,11 +1840,11 @@
       "success": [
         {
           "speaker": "leader",
-          "text": "罷了。{faction}奉上名冊印信，自此奉{sect}號令。"
+          "text": "罷了。{faction}奉上名冊印信，自此聽{sect}號令。"
         },
         {
           "speaker": "narrator",
-          "text": "{envoy}捧著{faction}的名冊回山。{seat}的旗竿上，{sect}的號旗升了起來。"
+          "text": "{envoy}捧著{faction}的名冊回山。{seat}的旗竿上，升起了{sect}的號旗。"
         }
       ],
       "failure": [
@@ -1854,7 +1854,7 @@
         },
         {
           "speaker": "narrator",
-          "text": "{envoy}被客客氣氣地送下山。{faction}的山門，在身後重重關上。"
+          "text": "{envoy}被客客氣氣送下山。{faction}的山門，在身後重重關上。"
         }
       ]
     },
@@ -1866,14 +1866,14 @@
           "tier": "low",
           "band": "any",
           "recommends": "branch",
-          "text": "併入？掌門大人要把人家連根拔了？好，只是別指望人家的老弟子真心叫你一聲掌門。留個舊名吧。"
+          "text": "併入？掌門要把人家連根拔了？好，只是莫指望人家的老弟子真心喚你一聲掌門。留個舊名罷。"
         },
         {
           "role": "dashixiong",
           "tier": "mid",
           "band": "any",
           "recommends": "unify",
-          "text": "老三，要併就併乾淨。分堂那套，三年後就是另一個門派。"
+          "text": "老三，要併便併乾淨。分堂那一套，三年後便是另一個門派。"
         },
         {
           "role": "dashixiong",
@@ -1887,7 +1887,7 @@
           "tier": "low",
           "band": "any",
           "recommends": "branch",
-          "text": "掌門，他們的祖師牌位不能動。動了，就是結仇。"
+          "text": "掌門，他們的祖師牌位不能動。動了，便是結仇。"
         },
         {
           "role": "shijie",
@@ -1901,7 +1901,7 @@
           "tier": "high",
           "band": "any",
           "recommends": "elder",
-          "text": "師{弟妹}，他們的武學我會一卷一卷收進藏經閣，一個字都不會丟。這話可以說給他們聽。"
+          "text": "師{弟妹}，他們的武學我會一卷一卷收進藏經閣，一個字也不會丟。這話可以說給他們聽。"
         },
         {
           "role": "disciple_pro_dashixiong",
@@ -1922,34 +1922,34 @@
           "tier": "high",
           "band": "any",
           "recommends": "elder",
-          "text": "掌門師{兄姐}，併就併。他們的人，我一個一個去看。"
+          "text": "掌門師{兄姐}，併便併。他們的人，我一個一個去瞧。"
         },
         {
           "role": "disciple_pro_shijie",
           "tier": "low",
           "band": "any",
           "recommends": "branch",
-          "text": "許師姐說得對，留舊名。換塊匾額不花錢，換人心要花大錢。"
+          "text": "許師姐說得對，留舊名。換塊匾額不花錢，換人心卻要花大錢。"
         },
         {
           "role": "disciple_pro_shijie",
           "tier": "mid",
           "band": "any",
           "recommends": "elder",
-          "text": "首領進長老堂，多三十兩的供奉。換一整個門派，便宜。"
+          "text": "首領進長老堂，多三十兩的供奉。換來一整個門派，便宜。"
         },
         {
           "role": "disciple_pro_shijie",
           "tier": "high",
           "band": "any",
           "recommends": "unify",
-          "text": "掌門師{兄姐}，一統門牆吧。帳目合一，省得兩本帳對不上。"
+          "text": "掌門師{兄姐}，一統門牆罷。帳目合一，省得兩本帳對不上。"
         }
       ],
       "opening": {
-        "cold": "併入？{faction}的祖師爺在天上看著呢。",
+        "cold": "併入？{faction}的祖師在天上看著呢。",
         "neutral": "{faction}跟了貴派這些日子，也算一家人了。只是改換門庭，老弟子們心裡不好受。",
-        "warm": "這一天遲早要來。說吧，{sect}打算怎麼安頓我們的人。"
+        "warm": "這一日遲早要來。說罷，{sect}打算如何安頓我們的人。"
       },
       "options": [
         {
@@ -1964,7 +1964,7 @@
           "line": "{faction}的名號不改，從此作{sect}的分堂。祖師牌位照舊供奉，香火不斷。",
           "reaction": {
             "cold": "……祖師牌位照舊？",
-            "warm": "名號留著，那就好。老弟子們能接受。"
+            "warm": "名號留著，那便好。老弟子們能接受。"
           }
         },
         {
@@ -1977,7 +1977,7 @@
           "line": "掌門有意請{leader}入{sect}長老堂，門中大事，一同商議。",
           "reaction": {
             "cold": "長老堂？……這是給一個體面。",
-            "warm": "到了這個年紀，還能有個說話的地方，也夠了。"
+            "warm": "到了這把年紀，還能有個說話的地方，也夠了。"
           }
         },
         {
@@ -1992,7 +1992,7 @@
           "line": "{sect}只有一個山門、一部門規。{faction}的弟子，從今往後都是{sect}的弟子。",
           "reaction": {
             "cold": "說得乾脆。……老弟子們未必肯。",
-            "warm": "一家人，就該一個門。好。"
+            "warm": "一家人，便該一個門。好。"
           }
         }
       ],
@@ -2003,7 +2003,7 @@
         },
         {
           "speaker": "narrator",
-          "text": "{seat}的山門上，{sect}的旗號升了起來。{faction}的老弟子們排成一行，向新的祖師殿行禮。"
+          "text": "{seat}的山門上，升起了{sect}的旗號。{faction}的老弟子們排成一行，向新的祖師殿行禮。"
         }
       ],
       "failure": [
@@ -2033,28 +2033,28 @@
           "tier": "low",
           "band": "any",
           "recommends": "lavish",
-          "text": "壽宴？掌門大人去喝酒，我們在家喝粥。……去吧，臉面要緊。"
+          "text": "壽宴？掌門去喝酒，咱們在家喝粥。……去罷，臉面要緊。"
         },
         {
           "role": "dashixiong",
           "tier": "mid",
           "band": "any",
           "recommends": "lavish",
-          "text": "老三，去就備厚禮，不去就別去。派個小的去致意，最難看。"
+          "text": "老三，去便備厚禮，不去便別去。派個小的去致意，最是難看。"
         },
         {
           "role": "dashixiong",
           "tier": "high",
           "band": "any",
           "recommends": "lavish",
-          "text": "師{弟妹}，去吧。順便看看席上都坐了誰，誰跟誰坐得近。"
+          "text": "師{弟妹}，去罷。順道看看席上都坐了誰，誰與誰坐得近。"
         },
         {
           "role": "shijie",
           "tier": "low",
           "band": "any",
           "recommends": "token",
-          "text": "掌門，三十兩不是小數。遣個弟子去致意，禮數到了就好。"
+          "text": "掌門，三十兩不是小數。遣個弟子去致意，禮數到了便好。"
         },
         {
           "role": "shijie",
@@ -2068,35 +2068,35 @@
           "tier": "high",
           "band": "any",
           "recommends": "lavish",
-          "text": "師{弟妹}，賀禮我已經備下了，你去就是。"
+          "text": "師{弟妹}，賀禮我已備下了，你去便是。"
         },
         {
           "role": "disciple_pro_dashixiong",
           "tier": "any",
           "band": "any",
           "recommends": "lavish",
-          "text": "……林師兄說去，那就去。席上的菜油重，少吃些。"
+          "text": "……林師兄說去，那便去。席上的菜油重，少吃些。"
         },
         {
           "role": "disciple_pro_shijie",
           "tier": "low",
           "band": "any",
           "recommends": "token",
-          "text": "許師姐說得對，派個弟子去就好。三十兩能換一倉米。"
+          "text": "許師姐說得對，派個弟子去便好。三十兩能換一倉米。"
         },
         {
           "role": "disciple_pro_shijie",
           "tier": "mid",
           "band": "any",
           "recommends": "lavish",
-          "text": "去吧。這種場合結下的人脈，以後都是生意。"
+          "text": "去罷。這種場合結下的人脈，往後都是買賣。"
         },
         {
           "role": "disciple_pro_shijie",
           "tier": "high",
           "band": "any",
           "recommends": "lavish",
-          "text": "掌門師{兄姐}，賀禮我來挑：花得少，看著貴。"
+          "text": "掌門師{兄姐}，賀禮我來挑：花得少，瞧著貴。"
         }
       ],
       "options": [
@@ -2111,7 +2111,7 @@
           },
           "aftermath": {
             "role": "dashixiong",
-            "text": "席上那些人看你的眼神，跟當年看師父差不多。……還差一點。"
+            "text": "席上那些人看你的眼神，與當年看師父差不多了。……還差一點。"
           }
         },
         {
@@ -2120,12 +2120,12 @@
           "label": "遣弟子致意",
           "line": "門中事忙，脫不開身。派個穩重的弟子，帶上賀帖去。",
           "reaction": {
-            "cold": "哦，派了個弟子來。……也好，坐末席吧。",
+            "cold": "哦，派了個弟子來。……也好，坐末席罷。",
             "warm": "貴派掌門事忙，明白。這份心意，收到了。"
           },
           "aftermath": {
             "role": "shijie",
-            "text": "禮數到了，錢也省了。這樣就好。"
+            "text": "禮數到了，錢也省了。如此便好。"
           }
         },
         {
@@ -2139,7 +2139,7 @@
           },
           "aftermath": {
             "role": "dashixiong",
-            "text": "不去也好，省得看那些人假笑。只是明天起，江湖上要說我們架子大了。"
+            "text": "不去也好，省得看那些人假笑。只是明日起，江湖上要說咱們架子大了。"
           }
         }
       ]
@@ -2158,42 +2158,42 @@
           "tier": "low",
           "band": "any",
           "recommends": "accept",
-          "text": "人家送上門的約，接就接吧。省得掌門大人再跑一趟。"
+          "text": "人家送上門的約，接便接罷。省得掌門再跑一趟。"
         },
         {
           "role": "dashixiong",
           "tier": "mid",
           "band": "any",
           "recommends": "accept",
-          "text": "老三，接。有人肯替我們守背後，求之不得。"
+          "text": "老三，接。有人肯替咱們守背後，求之不得。"
         },
         {
           "role": "dashixiong",
           "tier": "high",
           "band": "any",
           "recommends": "accept",
-          "text": "接。只是記著：約一立，人家有難，我們也得去。"
+          "text": "接。只是記著：約一立，人家有難，咱們也得去。"
         },
         {
           "role": "shijie",
           "tier": "low",
           "band": "any",
           "recommends": "decline",
-          "text": "掌門，約一立，門裡的人就要替別人流血。想清楚。"
+          "text": "掌門，約一立，門中的人便要替旁人流血。想清楚。"
         },
         {
           "role": "shijie",
           "tier": "mid",
           "band": "any",
           "recommends": "accept",
-          "text": "三師{弟妹}，{faction}的人我看過，可靠。可以接。"
+          "text": "三師{弟妹}，{faction}的人我看過，靠得住。可以接。"
         },
         {
           "role": "shijie",
           "tier": "high",
           "band": "any",
           "recommends": "accept",
-          "text": "師{弟妹}，接吧。門的後頭有人守著，我也安心。"
+          "text": "師{弟妹}，接罷。山門後頭有人守著，我也安心。"
         },
         {
           "role": "disciple_pro_dashixiong",
@@ -2221,7 +2221,7 @@
           "tier": "high",
           "band": "any",
           "recommends": "accept",
-          "text": "掌門師{兄姐}，接吧。帳上撐得住。"
+          "text": "掌門師{兄姐}，接罷。帳上撐得住。"
         }
       ],
       "options": [
@@ -2232,7 +2232,7 @@
           "line": "{faction}這份心意，{sect}領了。這約，我們立。",
           "reaction": {
             "cold": "好。貴派爽快。",
-            "warm": "好！回去就稟告掌門，擇日歃血。"
+            "warm": "好！回去便稟告掌門，擇日歃血。"
           },
           "aftermath": {
             "role": "dashixiong",
@@ -2250,7 +2250,7 @@
           },
           "aftermath": {
             "role": "shijie",
-            "text": "門裡的人不必替別人流血了。……只是人情，就這麼欠下了。"
+            "text": "門中的人不必替旁人流血了。……只是這份人情，就這麼欠下了。"
           }
         }
       ]
@@ -2260,7 +2260,7 @@
       "arrive": [
         {
           "speaker": "messenger",
-          "text": "上宗救命！山下來了一夥強人，把山門圍了三天，弟子們撐不住了！"
+          "text": "上宗救命！山下來了一夥強人，把山門圍了三日，弟子們撐不住了！"
         }
       ],
       "advisors": [
@@ -2269,14 +2269,14 @@
           "tier": "low",
           "band": "any",
           "recommends": "send",
-          "text": "去。掌門大人收了人家，人家有難就得去。不去，往後誰還肯當附庸？"
+          "text": "去。掌門收了人家，人家有難便得去。不去，往後誰還肯做附庸？"
         },
         {
           "role": "dashixiong",
           "tier": "mid",
           "band": "any",
           "recommends": "send",
-          "text": "老三，我帶人去，今晚就走。"
+          "text": "老三，我帶人去，今夜便走。"
         },
         {
           "role": "dashixiong",
@@ -2290,49 +2290,49 @@
           "tier": "low",
           "band": "any",
           "recommends": "send",
-          "text": "掌門，派人去可以，別派太多。門裡也得有人守。"
+          "text": "掌門，派人去可以，莫派太多。門中也得有人守。"
         },
         {
           "role": "shijie",
           "tier": "mid",
           "band": "any",
           "recommends": "send",
-          "text": "三師{弟妹}，附庸看的就是這一回。必須去。"
+          "text": "三師{弟妹}，附庸看的便是這一回。非去不可。"
         },
         {
           "role": "shijie",
           "tier": "high",
           "band": "any",
           "recommends": "lead",
-          "text": "師{弟妹}，你親自去，門裡我守著。"
+          "text": "師{弟妹}，你親自去，門中我守著。"
         },
         {
           "role": "disciple_pro_dashixiong",
           "tier": "any",
           "band": "any",
           "recommends": "send",
-          "text": "……我去備藥。林師兄帶隊吧。"
+          "text": "……我去備藥。林師兄帶隊罷。"
         },
         {
           "role": "disciple_pro_shijie",
           "tier": "low",
           "band": "any",
           "recommends": "send",
-          "text": "許師姐說別派太多。十兩盤纏就夠。"
+          "text": "許師姐說莫派太多。十兩盤纏便夠。"
         },
         {
           "role": "disciple_pro_shijie",
           "tier": "mid",
           "band": "any",
           "recommends": "send",
-          "text": "不去的話，明年的朝貢就沒了。去。"
+          "text": "不去的話，明年的朝貢便沒了。去。"
         },
         {
           "role": "disciple_pro_shijie",
           "tier": "high",
           "band": "any",
           "recommends": "lead",
-          "text": "掌門師{兄姐}，你去吧。帳我看著，一文都不會亂。"
+          "text": "掌門師{兄姐}，你去罷。帳我看著，一文也不會亂。"
         }
       ],
       "options": [
@@ -2340,14 +2340,14 @@
           "index": 0,
           "id": "send",
           "label": "派人馳援",
-          "line": "挑幾個手腳快的，連夜下山！上宗的話，說到就要做到。",
+          "line": "挑幾個手腳快的，連夜下山！上宗的話，說到便要做到。",
           "reaction": {
-            "cold": "……上宗真的來了？",
+            "cold": "……上宗當真來了？",
             "warm": "上宗的人來了！兄弟們，撐住！"
           },
           "aftermath": {
             "role": "dashixiong",
-            "text": "強人散了。他們的掌門拉著我的手不放，我差點拔刀。"
+            "text": "強人散了。他們掌門拉著我的手不放，我險些拔刀。"
           }
         },
         {
@@ -2375,21 +2375,21 @@
           },
           "aftermath": {
             "role": "shijie",
-            "text": "你不在的這幾日，門裡一切照舊。……下回出門，至少留句話。"
+            "text": "你不在的這幾日，門中一切照舊。……下回出門，至少留句話。"
           }
         },
         {
           "index": 1,
           "id": "ignore",
           "label": "置之不理",
-          "line": "門中人手不足，讓他們再撐幾日。",
+          "line": "門中人手不足，教他們再撐幾日。",
           "reaction": {
-            "cold": "……再撐幾日？好，撐。只是撐過去了，別怪我們記著。",
-            "warm": "上宗……真的不來？"
+            "cold": "……再撐幾日？好，撐。只是撐過去了，莫怪我們記著。",
+            "warm": "上宗……當真不來？"
           },
           "aftermath": {
             "role": "dashixiong",
-            "text": "附庸附庸，有難不救，就只剩一個「附」字。掌門大人好算計。"
+            "text": "附庸附庸，有難不救，便只剩一個「附」字。掌門好算計。"
           }
         }
       ]
@@ -2403,7 +2403,7 @@
         },
         {
           "speaker": "leader",
-          "text": "{sect}跟{rival}勾勾搭搭，誰知道在圖謀什麼？"
+          "text": "{sect}與{rival}勾勾搭搭，誰知道在圖謀甚麼？"
         }
       ],
       "advisors": [
@@ -2412,14 +2412,14 @@
           "tier": "low",
           "band": "any",
           "recommends": "retaliate",
-          "text": "以牙還牙！掌門大人不會連這口氣都咽得下吧？"
+          "text": "以牙還牙！掌門總不會連這口氣都嚥得下罷？"
         },
         {
           "role": "dashixiong",
           "tier": "mid",
           "band": "any",
           "recommends": "retaliate",
-          "text": "老三，他們造謠，我們就說實話——說他們的實話。"
+          "text": "老三，他們造謠，咱們便說實話——說他們的實話。"
         },
         {
           "role": "dashixiong",
@@ -2440,14 +2440,14 @@
           "tier": "mid",
           "band": "any",
           "recommends": "clarify",
-          "text": "三師{弟妹}，他們手上沒證據。遣使澄清，流言自己會散。"
+          "text": "三師{弟妹}，他們手上沒有證據。遣使澄清，流言自會散去。"
         },
         {
           "role": "shijie",
           "tier": "high",
           "band": "any",
           "recommends": "clarify",
-          "text": "師{弟妹}，以牙還牙是解氣，但氣解完了，仇也深了。澄清吧。"
+          "text": "師{弟妹}，以牙還牙固然解氣，可氣解完了，仇也深了。澄清罷。"
         },
         {
           "role": "disciple_pro_dashixiong",
@@ -2468,7 +2468,7 @@
           "tier": "high",
           "band": "any",
           "recommends": "clarify",
-          "text": "掌門師{兄姐}，我把我們跟{rival}的帳目抄一份給他們看，乾乾淨淨。"
+          "text": "掌門師{兄姐}，我把咱們與{rival}的帳目抄一份給他們看，乾乾淨淨。"
         }
       ],
       "options": [
@@ -2483,7 +2483,7 @@
           },
           "aftermath": {
             "role": "shijie",
-            "text": "話說開了。流言這種東西，曬一曬就沒了。"
+            "text": "話說開了。流言這東西，曬一曬便沒了。"
           }
         },
         {
@@ -2507,21 +2507,21 @@
           },
           "aftermath": {
             "role": "dashixiong",
-            "text": "你一進門，他們的臉就白了。這招我喜歡。"
+            "text": "你一進門，他們的臉便白了。這一招我喜歡。"
           }
         },
         {
           "index": 1,
           "id": "retaliate",
           "label": "以牙還牙",
-          "line": "他們會說，我們也會說。把{faction}那些見不得人的事，也放出去。",
+          "line": "他們會說，咱們也會說。把{faction}那些見不得人的事，也放出去。",
           "reaction": {
             "cold": "好啊，{sect}也會使這種手段。",
-            "warm": "……沒想到{sect}也會這樣。"
+            "warm": "……想不到{sect}也會如此。"
           },
           "aftermath": {
             "role": "shijie",
-            "text": "江湖人看了場熱鬧。我們的名聲沒少，只是也沒乾淨多少。"
+            "text": "江湖人看了一場熱鬧。咱們的名聲沒少，只是也沒乾淨多少。"
           }
         }
       ]
@@ -2531,7 +2531,7 @@
       "arrive": [
         {
           "speaker": "messenger",
-          "text": "兩家合辦的商隊在半路被劫，貨一件都沒剩。這筆帳，貴派打算怎麼算？"
+          "text": "兩家合辦的商隊在半路被劫，貨一件也沒剩。這筆帳，貴派打算如何算？"
         }
       ],
       "advisors": [
@@ -2540,42 +2540,42 @@
           "tier": "low",
           "band": "any",
           "recommends": "hunt",
-          "text": "追！劫我們的貨，就是打我們的臉。掌門大人該不會想賠錢了事吧？"
+          "text": "追！劫咱們的貨，便是打咱們的臉。掌門總不會想賠錢了事罷？"
         },
         {
           "role": "dashixiong",
           "tier": "mid",
           "band": "any",
           "recommends": "hunt",
-          "text": "老三，我帶人去追，三天之內把貨奪回來。"
+          "text": "老三，我帶人去追，三日之內把貨奪回來。"
         },
         {
           "role": "dashixiong",
           "tier": "high",
           "band": "any",
           "recommends": "hunt",
-          "text": "師{弟妹}，我去追。你留下跟他們的帳房說話。"
+          "text": "師{弟妹}，我去追。你留下與他們的帳房說話。"
         },
         {
           "role": "shijie",
           "tier": "low",
           "band": "any",
           "recommends": "compensate",
-          "text": "掌門，先賠。生意要做下去，信義比貨要緊。"
+          "text": "掌門，先賠。買賣要做下去，信義比貨要緊。"
         },
         {
           "role": "shijie",
           "tier": "mid",
           "band": "any",
           "recommends": "compensate",
-          "text": "三師{弟妹}，賠了這一筆，{faction}會記得我們講信義。"
+          "text": "三師{弟妹}，賠了這一筆，{faction}會記得咱們講信義。"
         },
         {
           "role": "shijie",
           "tier": "high",
           "band": "any",
           "recommends": "compensate",
-          "text": "師{弟妹}，能賠能追，兩件事不衝突。可眼下只能選一樣，就賠吧。"
+          "text": "師{弟妹}，能賠能追，兩件事不相衝。可眼下只能選一樣，便賠罷。"
         },
         {
           "role": "disciple_pro_dashixiong",
@@ -2596,7 +2596,7 @@
           "tier": "mid",
           "band": "any",
           "recommends": "compensate",
-          "text": "賠吧。追回來的貨，路上還得再損三成。"
+          "text": "賠罷。追回來的貨，路上還得再損三成。"
         },
         {
           "role": "disciple_pro_shijie",
@@ -2611,10 +2611,10 @@
           "index": 0,
           "id": "compensate",
           "label": "出資賠補",
-          "line": "貨在{sect}的路上丟的，就由{sect}來賠。",
+          "line": "貨在{sect}的路上丟的，便由{sect}來賠。",
           "reaction": {
             "cold": "……貴派倒是講信義。",
-            "warm": "好！跟貴派做生意，放心。"
+            "warm": "好！同貴派做買賣，放心。"
           },
           "aftermath": {
             "role": "shijie",
@@ -2625,14 +2625,14 @@
           "index": 1,
           "id": "hunt",
           "label": "追剿劫匪",
-          "line": "賠錢容易，可劫匪不除，下回還會再劫。人，我來追。",
+          "line": "賠錢容易，可劫匪不除，下回還要再劫。人，我來追。",
           "reaction": {
             "cold": "追？但願追得回來。",
             "warm": "好！有貴派出手，那幫劫匪跑不了。"
           },
           "aftermath": {
             "role": "dashixiong",
-            "text": "追了三天三夜，奪回大半。剩下的，算他們的買命錢。"
+            "text": "追了三日三夜，奪回大半。剩下的，算他們的買命錢。"
           }
         }
       ]
@@ -2655,7 +2655,7 @@
           "tier": "low",
           "band": "any",
           "recommends": "accept",
-          "text": "人家都拜到門口了，收吧。只是收了就得養。掌門大人的米缸夠深嗎？"
+          "text": "人家都拜到門口了，收罷。只是收了便得養。掌門的米缸夠深麼？"
         },
         {
           "role": "dashixiong",
@@ -2676,21 +2676,21 @@
           "tier": "low",
           "band": "any",
           "recommends": "refuse",
-          "text": "掌門，收下他們，就是多幾十張嘴。送些盤纏，勸他們自強，情分也到了。"
+          "text": "掌門，收下他們，便多了幾十張嘴。送些盤纏，勸他們自強，情分也到了。"
         },
         {
           "role": "shijie",
           "tier": "mid",
           "band": "any",
           "recommends": "accept",
-          "text": "三師{弟妹}，收吧。只是要保住他們的山門與名號。"
+          "text": "三師{弟妹}，收罷。只是須保住他們的山門與名號。"
         },
         {
           "role": "shijie",
           "tier": "high",
           "band": "any",
           "recommends": "accept",
-          "text": "師{弟妹}，收。落難的人，師父當年也收過我們。"
+          "text": "師{弟妹}，收。落難的人，師父當年也收過咱們。"
         },
         {
           "role": "disciple_pro_dashixiong",
@@ -2711,7 +2711,7 @@
           "tier": "high",
           "band": "any",
           "recommends": "accept",
-          "text": "掌門師{兄姐}，收吧。帳我來想辦法。"
+          "text": "掌門師{兄姐}，收罷。帳我來想辦法。"
         }
       ],
       "options": [
@@ -2719,7 +2719,7 @@
           "index": 0,
           "id": "accept",
           "label": "收為附庸",
-          "line": "{leader}請起。從今往後，{faction}的事，就是{sect}的事。",
+          "line": "{leader}請起。從今往後，{faction}的事，便是{sect}的事。",
           "reaction": {
             "cold": "……多謝上宗。",
             "warm": "多謝上宗！{faction}上下，感念不忘。"
@@ -2733,14 +2733,14 @@
           "index": 1,
           "id": "refuse",
           "label": "婉言相勸",
-          "line": "{faction}的基業不該斷在這裡。這些盤纏請收下，回去好好撐著。{sect}記得這份交情。",
+          "line": "{faction}的基業不該斷在這裡。這些盤纏請收下，回去好生撐著。{sect}記得這份交情。",
           "reaction": {
             "cold": "……{sect}的好意，記住了。",
             "warm": "{sect}掌門的恩情，{faction}不敢忘。"
           },
           "aftermath": {
             "role": "dashixiong",
-            "text": "送出去的盤纏，比收下他們便宜。掌門大人這帳，算得比康瑟還精。"
+            "text": "送出去的盤纏，比收下他們便宜。掌門這筆帳，算得比康瑟還精。"
           }
         }
       ]

@@ -148,7 +148,7 @@ namespace Wuxia
             bool sect = IsSectPerson(person);
             bool hero = person.id == HeroCharacterId;
             bool friendOfHero = person.id == state.FriendId;
-            string stance = hero ? "代掌門" : sect ? "本門" : friendOfHero ? $"{QuestBoardData.Data.guestRole}・{QuestBoardData.Data.advisorTitle}" :
+            string stance = hero ? "代掌門" : sect ? "本門" : friendOfHero ? QuestBoardData.Data.advisorTitle :
                 faction != null ? faction.RelationWith(state.RelationShift(faction.id)) : kind == 1 ? "敵對" : "江湖散人";
             // v1126 #18: every known line is listed (hero and friend the same way as any disciple).
             var lines = (DirectorySkillLines(person) ?? Array.Empty<SkillLine>()).Where(line => line != null && !string.IsNullOrEmpty(line.id)
@@ -206,7 +206,7 @@ namespace Wuxia
             actions.Add(("「列傳詳情」", () => ShowCharacterDetail(person, back)));
             return new CharacterDossier
             {
-                person = person, faction = friendOfHero ? GuestSect : sect || hero ? state.Data.Start.sectName : faction?.Label ?? person.faction, stance = stance, kind = kind,
+                person = person, faction = friendOfHero ? GuestLabel : sect || hero ? state.Data.Start.sectName : faction?.Label ?? person.faction, stance = stance, kind = kind,
                 talents = TalentSummary(state.TalentsOf(hero ? GameState.HeroId : person.id)),
                 relation = relation, attrs = person.attrs ?? disciple?.attrs ?? EstimateAttributes(person),
                 estimated = person.attrs == null && disciple?.attrs == null, arts = arts, biography = biography,

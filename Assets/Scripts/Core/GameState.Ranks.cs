@@ -14,7 +14,7 @@ namespace Wuxia
             {
                 best = Mathf.Max(best, WorkerProduction(disciple.id, disciple.lines));
             }
-            return best > 0 ? best : RankSystem.Multiplier(RankSystem.At(-1));
+            return best > 0 ? best : RankSystem.Multiplier("E");
 
             float WorkerProduction(string worker, SkillLine[] lines) =>
                 RankSystem.Multiplier(lines?.FirstOrDefault(line => line.id == id)?.rank) *
@@ -55,6 +55,7 @@ namespace Wuxia
             if (TalentValue(worker, "growth", 1) > 0) experience *= Year <= 3 ? .9f : 1.3f;
             string major = hero ? Protagonist.major : RankSystem.BestCombat(lines)?.id;
             if (line.id == major) experience *= 1.2f;
+            if (art != null) experience *= 1 + TalentValue(worker, "read", 43) / 100f;
             TrainLine(line, experience);
             if (art != null)
             {

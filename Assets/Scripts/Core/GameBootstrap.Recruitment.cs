@@ -146,6 +146,7 @@ namespace Wuxia
             }
             float quality = AssignmentSystem.Predict(state, "recruit", recruiter).Quality;
             var pool = (RecruitTalents.talents ?? Array.Empty<CreationOption>())
+                .Where(talent => talent.modifiers?.Length > 0)
                 .Where(talent => talent.rarity == "common" || Random.value < method.rareChance * quality)
                 .OrderBy(talent => -Mathf.Log(Mathf.Max(.00001f, Random.value)) / Math.Max(1, talent.weight))
                 .ToArray();

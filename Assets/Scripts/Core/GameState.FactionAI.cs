@@ -26,7 +26,7 @@ namespace Wuxia
 
     [Serializable] public sealed class FactionEnvoy
     {
-        public string faction, kind;
+        public string faction, kind, target;
         public int due, silver, food;
     }
 
@@ -37,6 +37,7 @@ namespace Wuxia
         public FactionConflict[] wars = Array.Empty<FactionConflict>();
         public FactionAccord[] accords = Array.Empty<FactionAccord>();
         public FactionEnvoy envoy;
+        public SectRaid[] invasions = Array.Empty<SectRaid>();
     }
 
     [Serializable] internal sealed class FactionPolicy
@@ -49,6 +50,11 @@ namespace Wuxia
     {
         internal FactionCampaign FactionWorld => Story.factionCampaign ??= new FactionCampaign();
         private static WorldMapData FactionMap => WorldMapData.Load();
+        internal string FactionDifficultyLabel => FactionWorld.difficulty switch
+        {
+            0 => "寬鬆", 2 => "險峻", _ => "一般"
+        };
+
         private FactionPolicy Policy => Diplomacy.Data.factionPolicy ?? new FactionPolicy();
 
         private void SeedFactionWorld()
@@ -72,8 +78,21 @@ namespace Wuxia
             var news = new List<string>();
             int difficulty = Mathf.Clamp(world.difficulty, 0, 2);
             int age = MonthStamp - 13;
+            if (Story.sectRaid == null && world.invasions.Length > 0)
+            {
+                var raid = world.invasions.OrderBy(r => r.due).First();
+                world.invasions = world.invasions.Where(r => r != raid).ToArray();
+                raid.due = Math.Max(raid.due, MonthStamp + 1);
+                Story.sectRaid = raid;
+                news.Add(raid.detected ? $"【已證實】{NameOf(raid.faction)}來軍接近{WarNode(raid.target)}。"
+                    : "【傳聞】山下另有一支人馬逼近。");
+            }
             world.accords = world.accords.Where(accord => accord.until > MonthStamp).ToArray();
-            if (world.envoy != null && world.envoy.due < MonthStamp) AnswerFactionEnvoy("reject");
+            if (world.envoy != null && world.envoy.due < MonthStamp)
+            {
+                string expired = AnswerFactionEnvoy("reject");
+                if (expired.Contains("已出兵")) news.Add("【已證實】" + expired);
+            }
             var busy = new HashSet<string>();
             foreach (var realm in world.realms.Where(Active))
             {
@@ -90,6 +109,7 @@ namespace Wuxia
                 if (!Active(attacker) || !Active(defender) || !defender.holdings.Contains(war.target) || HoldsNode(war.target) ||
                     Protected(attacker.id, defender.id))
                 {
+                    if (Active(attacker)) attacker.troops += war.troops;
                     world.wars = world.wars.Where(entry => entry != war).ToArray();
                     continue;
                 }
@@ -139,7 +159,8 @@ namespace Wuxia
                     (expansion || UnityEngine.Random.value < .10f) && UnityEngine.Random.value < .24f)
                 {
                     var target = world.realms.Where(other => other != realm && Active(other) && !FindFaction(other.id).Court &&
-                            !Protected(other.id, realm.id) && !world.wars.Any(war => war.defender == other.id))
+                            !Protected(other.id, realm.id) && !world.wars.Any(war => war.defender == other.id ||
+                                war.attacker == other.id && war.defender == realm.id))
                         .Select(other => (realm: other, days: FactionMap.Route(faction.seat, FindFaction(other.id).seat)?.Days ?? 999,
                             node: other.holdings.FirstOrDefault(node => !realm.holdings.Contains(node) && !HoldsNode(node))))
                         .Where(entry => entry.node != null && entry.days <= (expansion ? 45 : 28))
@@ -202,22 +223,37 @@ namespace Wuxia
 
         private bool TryPlayerPlan(FactionRealm realm, MapFaction faction, int difficulty, List<string> news)
         {
-            int days = FactionMap.Route(faction.seat, StartNode)?.Days ?? 999;
+            string target = StartNode;
+            int days = FactionMap.Route(faction.seat, target)?.Days ?? 999;
+            if (Story.fieldDispatches.Length == 0)
+            {
+                foreach (string holding in Story.heldNodes)
+                {
+                    int distance = FactionMap.Route(faction.seat, holding)?.Days ?? 999;
+                    if (distance >= days) continue;
+                    target = holding;
+                    days = distance;
+                }
+            }
             if (days > 45 || realm.nextOffer > MonthStamp || realm.id == Story.patronFaction ||
-                HasTie(realm.id, Diplomacy.Pact | Diplomacy.Alliance | Diplomacy.Merged | Diplomacy.Vassal)) return false;
+                HasTie(realm.id, Diplomacy.Pact | Diplomacy.Alliance | Diplomacy.Merged | Diplomacy.Vassal) ||
+                Protected(HeroId, realm.id)) return false;
             bool hostile = Attitude(faction) <= -25;
             float defense = 150 + SectPower * 2 + 50 * (WarWorks("wall") + WarWorks("watchtower"))
                 - Story.fieldDispatches.Length * 70;
-            if (hostile && Story.sectRaid == null && MonthStamp >= Story.raidResolvedMonth + 4 &&
+            bool freeFront = FactionWorld.invasions.Length + (Story.sectRaid == null ? 0 : 1) < difficulty + 1 &&
+                Story.sectRaid?.faction != realm.id && !FactionWorld.invasions.Any(r => r.faction == realm.id);
+            if (hostile && freeFront && MonthStamp >= Story.raidResolvedMonth + 4 &&
                 FactionWorld.envoy == null && realm.food >= 40 && UnityEngine.Random.value < .30f &&
                 MarchingStrength(realm) / Mathf.Max(180, defense) >= Threshold(faction.aiPrimary, days, difficulty))
             {
                 FactionWorld.envoy = new FactionEnvoy { faction = faction.id, kind = "ultimatum",
-                    due = MonthStamp + 1, silver = 35, food = 25 };
+                    target = target, due = MonthStamp + 1, silver = 35, food = 25 };
                 news.Add($"【已證實】{faction.Label}送來最後通牒。");
                 return true;
             }
-            if (FactionWorld.envoy != null || UnityEngine.Random.value >= .025f) return false;
+            if (FactionWorld.envoy != null || UnityEngine.Random.value >= .025f ||
+                faction.type == "court" && (Patron != null || Attitude(faction) < 0)) return false;
             string kind = faction.type == "court" ? "submission" :
                 faction.type == "foreign" || faction.aiPrimary == "trade" ? "trade" : hostile ? "peace" : "aid";
             if (kind == "trade" && HasTie(faction.id, Diplomacy.Trade)) return false;
@@ -250,40 +286,68 @@ namespace Wuxia
             {
                 Silver -= silver;
                 Food -= food;
-                if (offer.kind == "trade") SetTie(faction, Diplomacy.Trade, true);
-                else if (offer.kind == "aid") SetTie(faction, Diplomacy.Alliance, true);
-                else SetTie(faction, Diplomacy.Pact, true);
-                if (offer.kind == "submission") Story.patronFaction = faction.id;
+                if (offer.kind == "trade")
+                {
+                    SetTie(faction, Diplomacy.Trade, true);
+                    Tie(faction.id).tradeIncome = faction.type == "foreign" ? 12 : 8;
+                }
+                else if (offer.kind == "aid")
+                {
+                    SetTie(faction, Diplomacy.Alliance, true);
+                    Tie(faction.id).pactPower = 8;
+                }
+                else if (offer.kind == "submission")
+                    Story.patronFaction = faction.id;
+                else
+                {
+                    MakeAccord(HeroId, faction.id, "peace", 6);
+                    ShiftAttitude(faction, 10);
+                }
                 return $"已與{faction.Label}議定{OfferLabel(offer.kind)}。";
             }
-            if (offer.kind == "ultimatum" && Story.sectRaid == null && Active(realm))
+            if (offer.kind == "ultimatum" && Active(realm))
             {
                 int difficulty = Mathf.Clamp(FactionWorld.difficulty, 0, 2);
                 int troops = MarchingStrength(realm);
                 realm.troops -= troops / 6;
-                Story.sectRaid = new SectRaid
+                var invasion = new SectRaid
                 {
-                    faction = realm.id, target = StartNode, troops = troops, due = MonthStamp + 3 - difficulty,
+                    faction = realm.id, target = HoldsNode(offer.target) ? offer.target : StartNode, troops = troops, due = MonthStamp + 3 - difficulty,
                     detected = WarWorks("spy_lodge") + WarWorks("watchtower") > 0
                 };
+                if (Story.sectRaid == null) Story.sectRaid = invasion;
+                else FactionWorld.invasions = FactionWorld.invasions.Append(invasion).ToArray();
                 FactionWorld.raids++;
                 return $"{faction.Label}已出兵，宜遣細作探查。";
             }
             return "議約未成，使者告辭。";
         }
 
+        internal string FactionWarning
+        {
+            get
+            {
+                var rising = FactionWorld.realms?.Where(r => Active(r) && IsFactionKnown(r.id) &&
+                    !FindFaction(r.id).Court && r.holdings.Length > 2)
+                    .OrderByDescending(r => r.holdings.Length).FirstOrDefault();
+                return rising == null ? null : $"{NameOf(rising.id)}近來據地漸廣，宜遣人察其動向。";
+            }
+        }
+
         internal IEnumerable<MapFaction> FactionControllers(MapNode node)
         {
             if (FactionWorld.realms == null) return FactionMap.Controllers(node);
             var original = FactionMap.Controllers(node).Where(f => Realm(f.id)?.holdings.Contains(node.id) != false);
-            return original.Concat(FactionWorld.realms.Where(r => r.holdings.Contains(node.id))
-                .Select(r => FindFaction(r.id))).Distinct();
+            var occupiers = FactionWorld.realms.Where(r => r.holdings.Contains(node.id))
+                .Select(r => FindFaction(r.id)).Where(f => f != null && !f.Controls(node.id));
+            return occupiers.Concat(original);
         }
 
         internal string FactionMapNotice(string node)
         {
-            var raid = Story.sectRaid;
-            if (raid?.detected == true && raid.target == node)
+            var raid = FactionWorld.invasions.Prepend(Story.sectRaid)
+                .FirstOrDefault(entry => entry?.detected == true && entry.target == node);
+            if (raid != null)
                 return $"{NameOf(raid.faction)}來軍　{(raid.due - 1) % 12 + 1}月抵達";
             var war = FactionWorld.wars.FirstOrDefault(w => w.target == node && IsFactionKnown(w.attacker));
             return war == null ? null : $"{NameOf(war.attacker)}交戰中";

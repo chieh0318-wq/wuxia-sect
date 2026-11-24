@@ -421,6 +421,7 @@ namespace Wuxia
 
         private string AdvisorAdvice((int silver, int food, int reputation) net)
         {
+            if (state.FactionWarning is string warning) return warning;
             int meals = Math.Max(1, state.Disciples.Count * state.Data.Start.foodPerDisciple);
             int foodMonths = state.Food / meals;
             if (foodMonths < 2)

@@ -8,9 +8,16 @@ namespace Wuxia
     {
         private (string filename, Action show)[] Pb2CaptureSteps() => new (string, Action)[]
         {
+            ("PB2_00_creation_talents.png", () =>
+            {
+                CleanupV1125PaCapture();
+                EnsureCaptureCourtyard();
+                CaptureFlow().CaptureTalents();
+            }),
             ("PB2_01_hero_talents.png", () =>
             {
                 VerifyFactionSimulation();
+                VerifyTalentNumbers();
                 CleanupV1125PaCapture();
                 EnsureCaptureCourtyard();
                 state.Protagonist.talents = new[] { "keen_eye", "brute_force" };
@@ -63,6 +70,14 @@ namespace Wuxia
                 RequirePb2(state.Story.sectRaid == null && state.Silver == Math.Max(0, silver - 35) &&
                     state.Food == Math.Max(0, food - 25) && state.Reputation == reputation - 5,
                     "retreat resolves raid and charges defeat losses");
+            }),
+            ("PB2_09_jianghu_news.png", () =>
+            {
+                var before = (state.Silver, state.Food, state.Reputation);
+                var report = state.EndMonth();
+                int headline = report.Lines.IndexOf("江湖大事");
+                RequirePb2(headline >= 0, "month report includes faction news");
+                ShowMonthReport("門派月報", report.Lines.Skip(headline).ToList(), before, null);
             })
         };
 
@@ -101,5 +116,33 @@ namespace Wuxia
         }
 
         private void VerifyFactionSimulation() => VerifyFactionSimulation(data);
+
+        private void VerifyTalentNumbers()
+        {
+            var sample = new GameState(data);
+            sample.Protagonist.talents = new[] { "brute_force", "heavy_force", "wind_speed", "swift_feet",
+                "keen_eye", "side_step", "inspect_iron", "pure_forge" };
+            var combatant = sample.ApplyBattleTalents(GameState.HeroId,
+                new BattleCombatant { attack = 40, speed = 27, maxHp = 80, maxQi = 50 });
+            RequirePb2(combatant.attack == 51 && combatant.speed == 33 &&
+                Mathf.Approximately(combatant.talentHit, .06f) && Mathf.Approximately(combatant.dodge, .05f),
+                "fixed attack and speed apply before multipliers, and hit/dodge use percentage points");
+            RequirePb2(Mathf.Approximately(sample.TalentValue(GameState.HeroId, "forge", 20), 20),
+                "over-cap effects in a restored talent list clamp to twenty percent");
+
+            string save = System.IO.Path.Combine(Application.temporaryCachePath, "pb2_" + Guid.NewGuid() + ".json");
+            try
+            {
+                sample.FactionWorld.difficulty = 2;
+                sample.EndMonth();
+                RequirePb2(sample.Save(save), "temporary PB2 save written");
+                var restored = GameState.LoadSave(data, save);
+                RequirePb2(restored?.FactionWorld.difficulty == 2 &&
+                    restored.FactionWorld.realms.Length == sample.FactionWorld.realms.Length &&
+                    restored.Protagonist.talents.SequenceEqual(sample.Protagonist.talents),
+                    "faction state and selected talents survive save and reload");
+            }
+            finally { if (System.IO.File.Exists(save)) System.IO.File.Delete(save); }
+        }
     }
 }

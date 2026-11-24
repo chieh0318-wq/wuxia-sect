@@ -23,6 +23,7 @@ namespace Wuxia
         private DiplomacyPanel diplomacy;
         private MapFaction cardFaction;
         private readonly List<(MapNode node, RectTransform plate, Text label, Vector2 point)> labels = new();
+        private readonly Dictionary<string, Text> factionAlerts = new();
         private readonly List<RectTransform> regionNames = new();
         private RectTransform openedCard;
         private readonly List<(RectTransform marker, float size)> nodeMarkers = new();
@@ -302,6 +303,14 @@ namespace Wuxia
             art.texture = texture;
             art.color = texture == null ? MapUi.Ink : Color.white;
             art.raycastTarget = true;
+            var alert = MapUi.Text(marker, "戰", width - 12, -14, 28, 28, 21, Color.white,
+                TextAnchor.MiddleCenter, "Names");
+            alert.raycastTarget = false;
+            var alertBacking = alert.gameObject.AddComponent<Outline>();
+            alertBacking.effectColor = MapUi.Red;
+            alertBacking.effectDistance = new Vector2(2, 2);
+            alert.gameObject.SetActive(false);
+            factionAlerts[node.id] = alert;
 
             bool major = node.type is "capital" or "city" or "sect";
             var plate = MapUi.Panel(plateLayer, "Nameplate", 0, 0, 80, 30, MapUi.Ink);
@@ -839,6 +848,11 @@ namespace Wuxia
 
         private void UpdateAp()
         {
+            if (host is GameState campaign)
+            {
+                foreach (var (node, label) in factionAlerts)
+                    label.gameObject.SetActive(campaign.FactionMapNotice(node) != null);
+            }
             ap.text = $"{host.DateText}　行動力 {host.ActionPoints}";
             if (host is not GameState game) return;
             var v = game.Victory;

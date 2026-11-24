@@ -213,6 +213,8 @@ namespace Wuxia
         {
             var faction = (host is GameState game ? game.FactionControllers(node) : data.Controllers(node)).FirstOrDefault();
             string head = $"{node.Label}　{TypeName(node.type)}";
+            if (host is GameState campaign && campaign.FactionMapNotice(node.id) is string notice)
+                head += "\n" + notice;
             if (host != null && host.HoldsNode(node.id)) return head + "\n本派據點";
             if (faction == null) return head + "\n無人據守";
             bool known = host != null && host.IsFactionKnown(faction.id);

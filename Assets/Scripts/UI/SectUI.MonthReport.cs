@@ -40,6 +40,12 @@ namespace Wuxia
             foreach (string raw in lines.Skip(heading == (lines.Count > 0 ? lines[0] : null) ? 1 : 0))
             {
                 if (string.IsNullOrWhiteSpace(raw)) continue;
+                if (raw == "江湖大事")
+                {
+                    MapUi.Text(rows, raw, 24, y + 4, 980, 54, 30, MapUi.Red, role: "Titles");
+                    y += 60;
+                    continue;
+                }
                 var (icon, tone) = ReportStyle(raw);
                 int height = raw.Length > 40 ? 76 : 48;
                 var row = MapUi.Rect(rows, "條", 0, y, 1040, height);

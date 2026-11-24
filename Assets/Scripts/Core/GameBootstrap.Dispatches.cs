@@ -5,10 +5,20 @@ namespace Wuxia
 {
     public sealed partial class GameBootstrap
     {
+        private void ChooseTreasureDispatch()
+        {
+            var sites = RealmContent.Data.treasures.Where(site => state.TreasureBlock(site) == null
+                && !state.Story.fieldDispatches.Any(mission => mission.site == site.id)).ToArray();
+            ui.ShowCreation("派隊探寶", sites.Length == 0 ? new[] { "目前沒有可派隊的秘境。" } : Array.Empty<string>(),
+                new[] { ("返回外派名單", (Action)ShowFieldDispatches) }, ShowFieldDispatches);
+            foreach (var site in sites)
+                ui.CreationChoice(site.name, state.WarNode(site.node), null, () => EnterTreasure(site));
+        }
+
         private void ShowFieldDispatches()
         {
             ui.ShowCreation("外派名單", state.Story.fieldDispatches.Length == 0 ? new[] { "目前無人在外。" } : Array.Empty<string>(),
-                new[] { ("返回", (Action)(() => ui.CloseModal(force: true))) }, null);
+                new[] { ("派隊探寶", (Action)ChooseTreasureDispatch), ("返回", (Action)(() => ui.CloseModal(force: true))) }, null);
             foreach (var mission in state.Story.fieldDispatches)
             {
                 var site = RealmContent.Treasure(mission.site);

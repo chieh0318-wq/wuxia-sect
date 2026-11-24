@@ -89,7 +89,8 @@ namespace Wuxia
                 : state.Disciples.Any(member => member.id == id && member.injury < 3 && id != state.Story.delegateId)).ToArray();
             guards = guards.Where(id => !state.IsDispatched(id)).ToArray();
             if (guards.Length == 0)
-                guards = new[] { GameState.HeroId }.Concat(state.Disciples.Where(member => member.injury < 3
+                guards = (state.Protagonist.injury < 3 ? new[] { GameState.HeroId } : Array.Empty<string>())
+                    .Concat(state.Disciples.Where(member => member.injury < 3
                     && member.id != state.Story.delegateId).Select(member => member.id))
                     .Where(id => !state.IsDispatched(id)).Take(4).ToArray();
             if (guards.Length == 0) { ui.Message(state.FinishRaid(false, "山中無將可出戰。")); ShowRaidDesk(); return; }

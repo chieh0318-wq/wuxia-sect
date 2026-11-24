@@ -10,7 +10,7 @@ namespace Wuxia
         internal float ProductionMultiplier(string id)
         {
             int best = RankSystem.Index(Array.Find(Protagonist.lines, line => line.id == id)?.rank);
-            foreach (var disciple in Disciples.Where(member => member.id != Story.delegateId))
+            foreach (var disciple in Disciples.Where(member => member.id != Story.delegateId && !IsDispatched(member.id)))
             {
                 var line = disciple.lines?.FirstOrDefault(entry => entry.id == id);
                 best = Math.Max(best, RankSystem.Index(line?.rank));

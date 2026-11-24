@@ -36,7 +36,7 @@ namespace Wuxia
         {
             var canvas = target != null ? target.GetComponentInParent<Canvas>() : null;
             if (canvas == null || string.IsNullOrEmpty(text)) return;
-            var root = (RectTransform)canvas.rootCanvas.transform;
+            var root = target.IsChildOf(modal) ? modal : (RectTransform)canvas.rootCanvas.transform;
             if (attributeTip == null || attributeTip.parent != root)
             {
                 if (attributeTip != null) UnityEngine.Object.Destroy(attributeTip.gameObject);
@@ -65,7 +65,7 @@ namespace Wuxia
             float y = below.y - 6;
             if (y - size.y < bounds.yMin + 8) y = above.y + size.y + 6;
             y = Mathf.Clamp(y, bounds.yMin + size.y + 8, bounds.yMax - 8);
-            attributeTip.anchoredPosition = new Vector2(x, y);
+            attributeTip.anchoredPosition = new Vector2(x, y) - bounds.center;
             attributeTip.SetAsLastSibling();
             attributeTip.gameObject.SetActive(true);
         }

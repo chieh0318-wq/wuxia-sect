@@ -143,6 +143,10 @@ namespace Wuxia
             var hover = ui.Canvas.GetComponentsInChildren<EventTrigger>().Last(trigger =>
                 trigger.name == AttributeSystem.Names[0]);
             hover.OnPointerEnter(new PointerEventData(EventSystem.current));
+            var tooltip = ui.Canvas.GetComponentsInChildren<RectTransform>()
+                .LastOrDefault(rect => rect.name == "屬性提示");
+            RequirePd2(tooltip != null && tooltip.GetComponentInChildren<Text>()?.text.Contains("外功傷害 +5%") == true,
+                "martial attribute tooltip lists its per-point attack bonus");
         }
 
         private static void RequirePd2(bool condition, string description)

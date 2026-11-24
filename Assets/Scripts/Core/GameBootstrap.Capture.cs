@@ -151,6 +151,7 @@ namespace Wuxia
                     try
                     {
                         step.show();
+                        if (step.filename == "PD2_00_attribute_hover.png") RevealPd2AttributeTooltip();
                     }
                     catch (System.Exception error)
                     {
@@ -160,7 +161,7 @@ namespace Wuxia
                     }
                     yield return new WaitForSecondsRealtime(.3f);
                     ui.RevealStoryForCapture();
-                    if (step.filename == "PD2_00_attribute_hover.png") RevealPd2AttributeTooltip();
+
                     if (!SaveShot(step.filename))
                         yield break;
                     if (step.filename == "30_exit_confirmation.png" &&

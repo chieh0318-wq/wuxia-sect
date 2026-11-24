@@ -755,7 +755,8 @@ namespace Wuxia
 
         private string FormatStory(string text) => CastDialogue.Format(state, text).Replace("{title}", UiKit.HeroTitle(state.Protagonist))
             .Replace("{name}", state.Protagonist.name)
-            .Replace("{friend}", Friend()?.name ?? "故友").Replace("{he}", state.Protagonist.gender == "女" ? "她" : "他");
+            .Replace("{friend}", Friend()?.name ?? "故友").Replace("{he}", state.Protagonist.gender == "女" ? "她" : "他")
+            .Replace("{guestSect}", QuestBoardData.Data.guestSect);
 
         private void Finish()
         {

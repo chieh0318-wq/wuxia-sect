@@ -148,16 +148,18 @@ namespace Wuxia
 
         private static readonly string[] FriendLines =
         {
-            "{name}，帳我又對了一遍。銀兩夠撐三個月，糧食得早做打算。",
-            "洛陽那年你說要闖出名堂，如今真當上代掌門了。別愁眉苦臉，我在。",
-            "江湖上的消息我都記著。哪家敵、哪家友，問我便是。",
-            "先別急著出兵。人手、糧草、時機，三樣缺一不可。"
+            // v1126 #6/#7: spoken lines never use the hero's (random) name; a plainer, older register.
+            "帳我又對了一遍。銀兩尚可支撐三月，糧食卻須早作打算。",
+            "洛陽那年你說要闖出一番名堂，如今真做了代掌門。莫要愁眉苦臉，有我在。",
+            "江湖上的風聲，我都記著。哪家是敵、哪家是友，問我便是。",
+            "且慢出兵。人手、糧草、時機，三樣缺一不可。",
+            "家裡又捎了信來，洛陽城裡近來不太平。有什麼要打聽的，儘管開口。"
         };
 
         private void TalkWithFriend(StoryCharacter friend)
         {
             string line = FriendLines[UnityEngine.Random.Range(0, FriendLines.Length)].Replace("{name}", state.Protagonist.name);
-            ui.ShowTalk(new PortraitLine(friend.name, "軍師・青梅竹馬", friend.portrait ?? friend.id, friend.gender, line));
+            ui.ShowTalk(new PortraitLine(friend.name, $"{QuestBoardData.Data.guestRole}・軍師", friend.portrait ?? friend.id, friend.gender, line));
         }
 
         // ── #5 / #9: disciple page actions ──────────────────────────────────────────────────────────────────
@@ -412,7 +414,7 @@ namespace Wuxia
         {
             var friend = StoryCharacters.FirstOrDefault(person => person.id == state.FriendId);
             if (friend == null || AbsenceReason(friend.id) != null) return null;
-            string summary = $"{state.Protagonist.name}，本月結算：銀兩 {net.silver:+0;−0;0}、糧食 {net.food:+0;−0;0}、聲望 {net.reputation:+0;−0;0}。";
+            string summary = $"本月結算：銀兩 {net.silver:+0;−0;0}、糧食 {net.food:+0;−0;0}、聲望 {net.reputation:+0;−0;0}。";
             return new PortraitLine(friend.name, "軍師・本月總結", friend.portrait ?? friend.id, friend.gender,
                 summary + AdvisorAdvice(net), right: true);
         }

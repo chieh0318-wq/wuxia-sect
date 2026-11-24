@@ -292,7 +292,6 @@ namespace Wuxia
                 if (effect.key == "cap") RankSystem.Raise(line, 0, value);
                 else RankSystem.Raise(line, value, 0);
             }
-            RankSystem.ClampCreation(preview);
             return preview;
         }
 
@@ -325,7 +324,7 @@ namespace Wuxia
             if (!string.IsNullOrEmpty(option.category) && RankSystem.Categories.Any(entry => entry.id == option.category))
             {
                 int steps = RankSystem.LearnSteps(option);
-                details.Insert(0, $"習得階位 +{steps}・潛力上限 +{steps}");
+                details.Insert(0, $"習得階位 +{steps}・潛力上限 +{RankSystem.LearnCap(option)}");
             }
             return string.Join("・", details);
         }
@@ -363,7 +362,6 @@ namespace Wuxia
             var lines = PreviewLines(talentList);
             foreach (var art in skillList)
                 RankSystem.Learn(lines, art);
-            RankSystem.ClampCreation(lines);
             var sheet = new CreationSheet
             {
                 name = hero.name, title = UiKit.HeroTitle(hero) == hero.name ? "" : UiKit.HeroTitle(hero), portrait = hero.portrait ?? hero.lookId, gender = hero.gender,
@@ -528,8 +526,6 @@ namespace Wuxia
                          .Where(option => option != null && state.Protagonist.skills.Contains(option.id)))
                 RankSystem.Learn(state.Protagonist.lines, art);
             state.ApplyEffects(skillEffects);
-            // v1124 C13: creation alone (background + talents + arts) never lifts a line past the opening ceiling.
-            RankSystem.ClampCreation(state.Protagonist.lines);
             LegacySystem.ApplyCarried(state, legacyPicks);
             AudioManager.Music("title");
             Play(story.openingBeats, PlaySuccession, SkipStory);

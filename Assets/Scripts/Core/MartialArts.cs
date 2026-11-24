@@ -74,7 +74,7 @@ namespace Wuxia
 
         /// <summary>
         /// v1124 C14/C13: learns an art in play (秘笈、奇遇、秘境、師承). The art's line gains a rank and its cap may
-        /// rise by one tier, but never past the art's own tier — this is the road to S and beyond.
+        /// rise by one tier, including when the current potential already matches the art's tier.
         /// Returns a result line, or "" when the art is unknown or already learned.
         /// </summary>
         internal string LearnArt(string id)
@@ -84,8 +84,7 @@ namespace Wuxia
             Protagonist.arts = (Protagonist.arts ?? Array.Empty<string>()).Append(art.id).ToArray();
             var line = Array.Find(Protagonist.lines ?? Array.Empty<SkillLine>(), entry => entry?.id == art.category);
             if (line == null) return $"習得《{art.name}》";
-            if (RankSystem.Index(line.cap) < RankSystem.Index(art.tier))
-                RankSystem.Shift(line, 1, true);
+            RankSystem.Shift(line, 1, true);
             if (RankSystem.Index(line.rank) < RankSystem.Index(line.cap))
                 RankSystem.Shift(line, 1, false);
             else

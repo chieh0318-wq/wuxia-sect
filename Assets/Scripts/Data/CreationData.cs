@@ -54,13 +54,13 @@ namespace Wuxia
 
     [Serializable] internal sealed class TalentCatalog
     {
-        public int budget = 20, maxPicks = 8, rerollFree;
-        /// <summary>v1124 C13: explains the creation ceiling (開局上限至多 A) for the talent screen.</summary>
+        public int budget = 30, maxPicks = 8, rerollFree;
+        /// <summary>Explains how to improve potential during creation and play.</summary>
         public string ceilingNote;
         public CreationOption[] talents;
     }
 
-    [Serializable] internal sealed class SkillCatalog { public int budget = 20; public CreationOption[] skills; public SkillCategory[] categories; }
+    [Serializable] internal sealed class SkillCatalog { public int budget = 12; public CreationOption[] skills; public SkillCategory[] categories; }
     [Serializable] internal sealed class StoryBeat { public string speaker, portrait, image, text; }
     [Serializable] internal sealed class StoryResponse : CreationOption { public StoryBeat[] beats; }
     [Serializable] internal sealed class StoryDisaster : CreationOption

@@ -92,23 +92,6 @@ namespace Wuxia
             }).ToArray();
         }
 
-        /// <summary>
-        /// v1124 C13: the highest tier creation alone can reach (background + talents + starting arts). Anything at
-        /// S or above must come from 秘笈、奇遇、秘境 or the master's teaching during play.
-        /// </summary>
-        internal const string CreationCeiling = "A";
-
-        internal static void ClampCreation(SkillLine[] lines)
-        {
-            int ceiling = Index(CreationCeiling);
-            foreach (var line in lines ?? Array.Empty<SkillLine>())
-            {
-                if (line == null) continue;
-                line.cap = At(Math.Min(Index(line.cap), ceiling));
-                line.rank = At(Math.Min(Index(line.rank), Index(line.cap)));
-            }
-        }
-
         /// <summary>v1124 C12: the protagonist's chosen 主修 line, falling back to the strongest combat line.</summary>
         internal static SkillLine Major(SkillLine[] lines, string major) =>
             (IsCombat(major) ? Array.Find(lines ?? Array.Empty<SkillLine>(), line => line?.id == major) : null)
@@ -153,14 +136,16 @@ namespace Wuxia
             line.rank = At(rank);
         }
 
-        /// <summary>Tiers a creation skill adds to both its line's rank and cap: one per point spent (1–3).</summary>
+        /// <summary>Training tiers earned by the creation pick, bounded by the resulting potential.</summary>
         internal static int LearnSteps(CreationOption art) => Mathf.Clamp(art?.cost ?? 0, 1, 3);
+
+        internal static int LearnCap(CreationOption art) => Mathf.Clamp(art.capBonus, 0, art.cost >= 3 ? 2 : 1);
 
         internal static void Learn(SkillLine[] lines, CreationOption art)
         {
             var line = Array.Find(lines, entry => entry.id == art.category);
-            int steps = LearnSteps(art);
-            Raise(line, steps, steps);
+            Shift(line, LearnCap(art), true);
+            Shift(line, LearnSteps(art), false);
         }
     }
 }

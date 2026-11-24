@@ -53,7 +53,7 @@ namespace Wuxia
                 AttributeSystem.StudyFactor(AssignmentSystem.Attribute(this, worker, "wit"));
             // v1126b 決定 1: training speed comes from 悟性 only (武力 no longer adds its own share).
             if (hero)
-                    experience *= StudyMultiplier(line.id);
+                experience *= StudyMultiplier(line.id);
             if (TalentValue(worker, "growth", 1) > 0) experience *= Year <= 3 ? .9f : 1.3f;
             string major = hero ? Protagonist.major : RankSystem.BestCombat(lines)?.id;
             if (line.id == major) experience *= 1.2f;

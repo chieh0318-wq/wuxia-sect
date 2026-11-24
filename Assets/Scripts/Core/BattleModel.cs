@@ -325,6 +325,10 @@ namespace Wuxia
 
             var targets = move.all ? (actor.isPlayer ? enemies : party).Where(u => u.Alive).ToArray()
                 : new[] { target };
+            int baseAttack = actor.internalAttack > 0 && catalog.InternalMoves.Contains(move.id)
+                ? actor.internalAttack : actor.attack;
+            if (move.id == "attack") baseAttack += actor.talentBasicAttack;
+            float attack = Effects(actor).Aggregate((float)baseAttack, (value, effect) => value * effect.attack);
             foreach (var victim in targets)
             {
                 var evasion = Effects(victim).FirstOrDefault(status => status.evade);
@@ -335,7 +339,6 @@ namespace Wuxia
                     continue;
                 }
 
-                float attack = Effects(actor).Aggregate((float)actor.attack + (move.id == "attack" ? actor.talentBasicAttack : 0), (value, effect) => value * effect.attack);
                 float defense = Effects(victim).Aggregate((float)victim.defense, (value, effect) => value * effect.defense);
                 int counter = Counter(move.element, victim.element);
                 double multiplier = counter > 0 ? 1.25 : counter < 0 ? .8 : 1;

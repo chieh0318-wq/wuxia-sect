@@ -72,8 +72,11 @@ namespace Wuxia
 
         internal BattleCombatant ApplyBattleTalents(string id, BattleCombatant unit)
         {
-            unit.attack = Mathf.RoundToInt((unit.attack + TalentValue(id, "attack", 12)) *
-                (1 + TalentValue(id, "attackPct", 20) / 100f));
+            float attackBonus = TalentValue(id, "attack", 12);
+            float attackMultiplier = 1 + TalentValue(id, "attackPct", 20) / 100f;
+            unit.attack = Mathf.RoundToInt((unit.attack + attackBonus) * attackMultiplier);
+            if (unit.internalAttack > 0)
+                unit.internalAttack = Mathf.RoundToInt((unit.internalAttack + attackBonus) * attackMultiplier);
             unit.speed = Mathf.RoundToInt((unit.speed + TalentValue(id, "speed", 8)) *
                 (1 + TalentValue(id, "speedPct", 20) / 100f));
             unit.hp = unit.maxHp += Mathf.RoundToInt(TalentValue(id, "hp", 40));

@@ -13,7 +13,7 @@ namespace Wuxia
         public int level, hp, maxHp, qi, maxQi, attack, speed;
         public float dodge, hit, crit = AttributeSystem.BaseCrit;
         public float talentHit, talentCrit, talentReduction;
-        public int talentBasicAttack, qiRegen;
+        public int talentBasicAttack, qiRegen, internalAttack;
         public int defense, phase = 1, intentRound;
         public string element, enemyProfile;
         public BattleSkill intent;
@@ -73,6 +73,10 @@ namespace Wuxia
     // Encounter construction preserves the stats derived from each party member.
     internal static class BattleSetup
     {
+        // Translate displayed inner power to the same damage scale as outer attack.
+        private static int ScaleInnerAttack(int power) =>
+            Mathf.RoundToInt(power * (AttributeSystem.BaseAttack / (float)AttributeSystem.BaseQiPower));
+
         public static (List<BattleCombatant> party, List<BattleCombatant> enemies) Create(GameState state, BattleRequest req, BattleCatalog catalog)
         {
             if (req.IsSparring)
@@ -196,6 +200,7 @@ namespace Wuxia
                 element = "木",
                 dodge = stats.Dodge,
                 hit = stats.Hit, crit = stats.Crit, qiRegen = stats.QiRegen,
+                internalAttack = ScaleInnerAttack(stats.QiPower),
                 personalArts = true,
                 knownMoves = MartialArts.KnownMoves(state.ProtagonistArts, state.Protagonist.major, catalog.Skills.ContainsKey),
                 moves = MartialArts.Moves(state.ProtagonistArts,
@@ -224,6 +229,7 @@ namespace Wuxia
                 element = "水",
                 dodge = derived.Dodge,
                 hit = derived.Hit, crit = derived.Crit, qiRegen = derived.QiRegen,
+                internalAttack = ScaleInnerAttack(derived.QiPower),
                 personalArts = true,
                 knownMoves = MartialArts.KnownMoves(state.ArtsOf(d), RankSystem.BestCombat(lines)?.id, catalog.Skills.ContainsKey),
                 moves = MartialArts.Moves(state.ArtsOf(d), RankSystem.BestCombat(lines)?.id, catalog.Skills.ContainsKey)

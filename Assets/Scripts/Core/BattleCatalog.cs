@@ -22,6 +22,9 @@ namespace Wuxia
         public readonly Dictionary<string, BattleEnemy> Enemies =
             Load<EnemyTable>("battle_enemies").entries.ToDictionary(entry => entry.id);
 
+        internal readonly HashSet<string> InternalMoves = new(MartialArts.KnownMoves(
+            MartialArts.All.Where(art => art.category == "neigong"), "neigong", _ => true));
+
         private static T Load<T>(string name) =>
             JsonUtility.FromJson<T>(File.ReadAllText(Path.Combine(Application.streamingAssetsPath, "Data", name + ".json")));
     }

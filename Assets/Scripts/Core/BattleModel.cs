@@ -298,6 +298,13 @@ namespace Wuxia
                 }
             }
 
+            // Stronghold leaders retain authored telegraphs and phase transitions.
+            // An ordinary strike can instead use an affordable technique from their own repertoire.
+            if (moveId == "attack" && opening == null && !sealedMoves && round % 3 == 0)
+            {
+                moveId = actor.knownMoves.Select(id => catalog.Skills[id])
+                    .FirstOrDefault(move => move.qi <= qi && move.power > 0 && !move.telegraph)?.id ?? moveId;
+            }
             var alive = party.Where(u => u.Alive).ToArray();
             double preference = decision.NextDouble();
             var victim = preference < .5 ? alive.OrderBy(u => (double)u.hp / u.maxHp).First()

@@ -150,11 +150,12 @@ namespace Wuxia
         private static readonly string[] FriendLines =
         {
             // v1126 #6/#7: spoken lines never use the hero's (random) name; a plainer, older register.
-            "帳我又對了一遍。銀兩尚可支撐三月，糧食卻須早作打算。",
-            "洛陽那年你說要闖出一番名堂，如今真做了代掌門。莫要愁眉苦臉，有我在。",
+            "帳我又對過一遍。銀兩尚可支撐三月，糧食卻須早作打算。",
+            "洛陽那年你說要闖出一番名堂，如今真挑起了一派門戶。莫要愁眉不展，有我在。",
             "江湖上的風聲，我都記著。哪家是敵、哪家是友，問我便是。",
-            "且慢出兵。人手、糧草、時機，三樣缺一不可。",
-            "家裡又捎了信來，洛陽城裡近來不太平。有什麼要打聽的，儘管開口。"
+            "且慢出兵。人手、糧草、天時，三樣缺一不可。",
+            "家中又捎了信來，洛陽城裡近來不太平。有甚麼要打聽的，儘管開口。",
+            "鳴琴館的故人捎了話來：兩京古道上一切如常。你且安心。"
         };
 
         private void TalkWithFriend(StoryCharacter friend)
@@ -425,19 +426,19 @@ namespace Wuxia
             int meals = Math.Max(1, state.Disciples.Count * state.Data.Start.foodPerDisciple);
             int foodMonths = state.Food / meals;
             if (foodMonths < 2)
-                return $"糧倉只夠撐{(foodMonths <= 0 ? "不到一" : "一")}個月，下月務必先顧糧食：開伙前先興建田舍、伙房，或拿銀兩去買糧。";
+                return $"糧倉只撐得{(foodMonths <= 0 ? "不到一" : "一")}個月了。來月頭一件事便是糧食：或興建田舍、伙房，或撥銀兩去買糧。";
             if (net.silver < 0)
-                return $"入不敷出，每月少了 {-net.silver} 兩。下月宜興建能生財的屋舍，或派善經商的弟子去打點買賣。";
+                return $"入不敷出，每月要虧 {-net.silver} 兩。來月宜修些生財的屋舍，或遣善於經商的弟子下山打點買賣。";
             var hostile = WorldMapData.Load().Factions.Where(faction => state.IsFactionKnown(faction.id) &&
                 faction.StanceWith(state.RelationShift(faction.id)) == "hostile").Select(faction => faction.Label).FirstOrDefault();
             int injured = state.Disciples.Count(member => member.injury > 0);
             if (injured > 0)
-                return $"門中有 {injured} 人帶傷，下月先施藥義診，別急著出兵。" + (hostile != null ? $"{hostile}那邊也還虎視眈眈。" : "");
+                return $"門中有 {injured} 人帶傷，來月先施藥調養，莫急著出兵。" + (hostile != null ? $"{hostile}那邊也還虎視眈眈。" : "");
             if (hostile != null)
-                return $"{hostile}對我們敵意未消，下月出門歷練多帶幾個好手，也可派人去外交斡旋。";
+                return $"{hostile}對咱們敵意未消。來月弟子下山歷練，須多帶幾個好手；也可遣使前去斡旋。";
             if (state.Disciples.Count < 6)
-                return "人手還太少，下月不妨開門收徒，派得出去的人多了，事情才辦得快。";
-            return "門中諸事順遂。下月可以讓弟子外出歷練，或去探一探江湖傳聞裡的秘境。";
+                return "山上人手還少，來月不妨開門收徒。派得出去的人多了，事情才辦得快。";
+            return "門中諸事順遂。來月可遣弟子下山歷練，或去探一探江湖傳聞中的秘境。";
         }
 
         /// <summary>
@@ -474,7 +475,7 @@ namespace Wuxia
                 var cast = CastDialogue.Find(member.id)?.daily?.Get(CastDialogue.Tier(CastDialogue.Score(state, member)));
                 var fallback = (member.dialogue ?? Array.Empty<string>()).Concat(state.Data.GeneralLines)
                     .Where(line => !string.IsNullOrWhiteSpace(line)).ToArray();
-                text = CastDialogue.Format(state, CastDialogue.Pick(cast) ?? CastDialogue.Pick(fallback) ?? "新的一月，請吩咐。", member.id);
+                text = CastDialogue.Format(state, CastDialogue.Pick(cast) ?? CastDialogue.Pick(fallback) ?? "新的一月，請掌門吩咐。", member.id);
             }
             return new PortraitLine(pick.name, $"{month}・新月　{pick.title}", pick.portrait, pick.gender, text);
         }

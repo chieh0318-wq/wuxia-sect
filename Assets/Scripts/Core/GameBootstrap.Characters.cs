@@ -304,7 +304,7 @@ namespace Wuxia
             var friend = StoryCharacters.FirstOrDefault(person => person.id == state.FriendId);
             return (text ?? "").Replace("{title}", UiKit.HeroTitle(hero)).Replace("{name}", hero.name)
                 .Replace("{sect}", state.Data.Start.sectName).Replace("{friend}", friend?.name ?? "故友")
-                .Replace("{he}", hero.gender == "女" ? "她" : "他").Replace("{guestSect}", GuestSect);
+                .Replace("{he}", "他") /* v1126b: 唐人「他」不分男女，指主角一律用「他」 */.Replace("{guestSect}", GuestSect);
         }
     }
 }

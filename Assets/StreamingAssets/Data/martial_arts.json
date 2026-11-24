@@ -689,11 +689,12 @@
       "category": "hidden",
       "tier": "S",
       "source": "faction",
-      "how": "洛陽謝家女的獨門針法",
+      "how": "洛陽鳴琴館秘傳針法，琴中藏針、以音點穴",
       "slot": "skill",
       "desc": "撫琴時藏針於弦，九針應九音。",
       "holders": [
-        "謝蘊"
+        "謝蘊",
+        "謝瑾"
       ],
       "move": "mv_art_4dda15ba",
       "techniques": ["mv_art_4dda15ba_variant"]
@@ -704,11 +705,12 @@
       "category": "qinggong",
       "tier": "A",
       "source": "faction",
-      "how": "洛陽謝家女的輕身法",
+      "how": "洛陽鳴琴館輕身法",
       "slot": "skill",
       "desc": "月下踏水而行，衣帶不濕。",
       "holders": [
-        "謝蘊"
+        "謝蘊",
+        "謝瑾"
       ],
       "move": "mv_art_c5206ac4",
       "techniques": ["mv_art_c5206ac4_variant"]

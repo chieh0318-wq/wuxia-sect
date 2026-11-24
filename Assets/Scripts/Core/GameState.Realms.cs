@@ -231,11 +231,11 @@ namespace Wuxia
         }
 
         /// <summary>Applies a road outcome (cost already paid) and returns the reward lines.</summary>
-        internal List<string> ResolveRoad(RoadChoice choice, bool success) =>
-            GrantRealmRewards(success ? choice.successEffects : choice.failureEffects);
+        internal List<string> ResolveRoad(RoadChoice choice, bool success, string worker = HeroId) =>
+            GrantRealmRewards(success ? choice.successEffects : choice.failureEffects, worker);
 
         /// <summary>Applies reward effects one by one and returns one readable line per effect.</summary>
-        internal List<string> GrantRealmRewards(IEnumerable<GameEffect> effects)
+        internal List<string> GrantRealmRewards(IEnumerable<GameEffect> effects, string worker = HeroId)
         {
             var lines = new List<string>();
             foreach (var effect in effects ?? Array.Empty<GameEffect>())
@@ -248,7 +248,10 @@ namespace Wuxia
                     "cap" or "rank" or "lineRank" => CapLine(effect),
                     _ => EffectText.Describe(effect, this)
                 };
-                if (effect.key is not ("gear" or "art" or "cap" or "rank" or "lineRank"))
+                if (effect.key == "injury" && worker != HeroId &&
+                    Disciples.Find(member => member.id == worker) is DiscipleData member)
+                    member.injury = Mathf.Clamp(member.injury + Mathf.RoundToInt(effect.value), 0, 9);
+                else if (effect.key is not ("gear" or "art" or "cap" or "rank" or "lineRank"))
                     ApplyEffects(new[] { effect });
                 if (effect.key == "art" && string.IsNullOrEmpty(text))
                 {

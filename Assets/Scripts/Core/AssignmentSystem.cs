@@ -131,7 +131,9 @@ namespace Wuxia
                 "farming" or "feast" => ("farming", "con"),
                 "build" or "gather_materials" => ("construction", "wit"),
                 "commerce" or "recruit" or "host" or "diplomacy" => ("commerce", "cha"),
-                "train" or "lecture" => ("teaching", "wit"),
+                "train" or "lecture" or "study" => ("teaching", "wit"),
+                "seclusion" => ("neigong", "wit"),
+                "gather_rumors" => ("commerce", "cha"),
                 "explore" or "secret_realm" => ("qinggong", "luk"),
                 _ => ("commerce", "wit")
             };

@@ -10,6 +10,7 @@ namespace Wuxia
             int scale = state.SectScale;
             void Back()
             {
+                ui.TrackPanelBack(null);
                 ui.CloseModal(force: true);
                 if (choosingBuilding) ShowBuildMenu();
                 else ShowCommands();

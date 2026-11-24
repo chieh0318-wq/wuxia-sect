@@ -44,9 +44,12 @@ namespace Wuxia
             ui.ShowTechTree(header, branches, CloseTechTree);
         }
 
-        private void ResearchTech(TechNode node)
+        private void ResearchTech(TechNode node) =>
+            ui.ChooseAssignment(state, node.name, "study", 1, party => ResearchTech(node, party[0]), ShowTechTree);
+
+        private void ResearchTech(TechNode node, string worker)
         {
-            techMessage = state.Research(node);
+            techMessage = state.Research(node, worker);
             AudioManager.Play(state.HasTech(node.id) ? "complete" : "page");
             ui.Refresh(state);
             ShowCommands();

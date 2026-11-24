@@ -39,15 +39,15 @@ namespace Wuxia
 
         private static SceneLine Narration(string text) => new() { side = "narrator", text = text };
 
-        /// <summary>Placeholders in realm text: {俠} → 少俠／女俠, {hero} → the protagonist's name.</summary>
-        private string Fill(string text) => text?.Replace("{俠}", state.Protagonist.gender == "女" ? "女俠" : "少俠")
-            .Replace("{hero}", state.Protagonist.name);
+        /// <summary>Realm dialogue addresses the expedition leader.</summary>
+        private string Fill(string text) => text?.Replace("{俠}", (ExpeditionMember?.gender ?? state.Protagonist.gender) == "女" ? "女俠" : "少俠")
+            .Replace("{hero}", state.SparName(ExpeditionLeader));
 
         private SceneLine Speak(RealmLine line, SceneLine npc)
         {
             switch (line?.speaker)
             {
-                case "hero": return HeroFigure(line.text);
+                case "hero": return ExpeditionFigure(line.text);
                 case "npc":
                 case "guardian":
                     if (npc == null) return Narration(Fill(line.text));
@@ -66,6 +66,21 @@ namespace Wuxia
 
         private string[] expeditionParty;
         private string ExpeditionLeader => expeditionParty?.FirstOrDefault() ?? GameState.HeroId;
+        private DiscipleData ExpeditionMember => state.Disciples.Find(member => member.id == ExpeditionLeader);
+        private string ExpeditionInjury => $"{state.SparName(ExpeditionLeader)}傷勢 {ExpeditionMember?.injury ?? state.Protagonist.injury}";
+
+        private SceneLine ExpeditionFigure(string text = null)
+        {
+            var member = ExpeditionMember;
+            if (member == null) return HeroFigure(text);
+            return new SceneLine
+            {
+                name = member.name, subtitle = AssignmentSystem.RankOf(state, member.id).Name,
+                side = "left", text = Fill(text),
+                figure = CharacterFactory.StandeeTexture(PortraitService.IdOrDefault(member.portrait, member.id), member.gender,
+                    portraitFallback: true)
+            };
+        }
 
         /// <summary>Hides the scene, fights on the battle screen, then returns to the scene with the result.</summary>
         private void SceneBattle(BattleRequest request, Action<bool> after)
@@ -134,7 +149,7 @@ namespace Wuxia
             LeaveCourtyardForScene();
             var npc = road.speaker == null ? null
                 : NpcFigure(road.speaker.name, road.speaker.subtitle, road.speaker.portrait, road.speaker.gender, road.speaker.standee);
-            ui.Scene.Begin(road.title, $"山道巡訪　{state.DateWithDay}", road.scene, HeroFigure(), npc);
+            ui.Scene.Begin(road.title, $"山道巡訪　{state.DateWithDay}", road.scene, ExpeditionFigure(), npc);
             AudioManager.Play("page");
             var lines = (road.lines ?? Array.Empty<RealmLine>()).Select(line => Speak(line, npc)).ToList();
             var prompt = lines.LastOrDefault();
@@ -161,7 +176,7 @@ namespace Wuxia
                     run = () => ResolveRoadChoice(road, npc, choice, breakthrough, realm)
                 };
             }).ToList();
-            ui.Scene.Choose(prompt, new[] { $"主角傷勢 {state.Protagonist.injury}", $"行動力 {state.ActionPoints}／{state.ApMax}" }, cards,
+            ui.Scene.Choose(prompt, new[] { ExpeditionInjury, $"行動力 {state.ActionPoints}／{state.ApMax}" }, cards,
                 null, null);
         }
 
@@ -176,7 +191,7 @@ namespace Wuxia
             {
                 AudioManager.Play(success ? "complete" : "page");
                 var effects = success ? choice.successEffects : choice.failureEffects;
-                var gains = state.ResolveRoad(choice, success);
+                var gains = state.ResolveRoad(choice, success, ExpeditionLeader);
                 string story = Fill(success ? choice.success : choice.failure);
                 ui.Scene.Say(new[] { Narration(story) }, () =>
                 {
@@ -231,7 +246,7 @@ namespace Wuxia
             ui.CloseModal(force: true);
             realmRun = new RealmRun { realm = SecretRealms.Pick() };
             realmRun.log.Clear();
-            ui.Scene.Begin(realmRun.realm.name, "江湖秘境", realmRun.realm.scene, HeroFigure(), null);
+            ui.Scene.Begin(realmRun.realm.name, "江湖秘境", realmRun.realm.scene, ExpeditionFigure(), null);
             AudioManager.Play("page");
             ui.Scene.Say(new[] { Narration($"{source}，你來到{realmRun.realm.name}。{realmRun.realm.intro}") }, () => ShowRealmStage());
         }
@@ -243,7 +258,7 @@ namespace Wuxia
             var stage = run.realm.stages[run.stage];
             bool bossFloor = run.realm.bossStage == run.stage && run.realm.boss != null;
             var boss = bossFloor ? run.realm.boss : null;
-            ui.Scene.SetFigures(HeroFigure(), boss == null ? null : NpcFigure(boss.lead, "秘境守護", boss.portrait, "男", boss.standee));
+            ui.Scene.SetFigures(ExpeditionFigure(), boss == null ? null : NpcFigure(boss.lead, "秘境守護", boss.portrait, "男", boss.standee));
             var cards = stage.choices.Select(choice => new SceneChoice
             {
                 label = choice.label, desc = choice.text, icon = UiKit.AttrIcon(AttributeSystem.Index(choice.attr)),
@@ -265,7 +280,7 @@ namespace Wuxia
                     })
                 });
             ui.Scene.Choose(Narration($"【{SecretRealms.StageTitles[run.stage]}】{stage.text}"),
-                new[] { $"闖關成績 {run.score}／{run.stage}", $"主角傷勢 {state.Protagonist.injury}", "成功越多，秘寶品級越高" },
+                new[] { $"闖關成績 {run.score}／{run.stage}", ExpeditionInjury, "成功越多，秘寶品級越高" },
                 cards, "撤出秘境", LeaveRealm);
         }
 
@@ -281,7 +296,7 @@ namespace Wuxia
         private void RecordRealm(RealmRun run, RealmChoice choice, bool success)
         {
             if (success) run.score++;
-            else state.Injure(1);
+            else state.InjureWorker(ExpeditionLeader);
             run.log.Add($"{SecretRealms.StageTitles[run.stage]}　{choice.label}{(success ? "得勝" : "失利")}：" +
                 (success ? choice.success : choice.failure));
             run.stage++;
@@ -352,7 +367,7 @@ namespace Wuxia
             treasureRun = new TreasureRun { site = site };
             var guardian = site.Guarded ? GuardianFigure(site.guardian) : null;
             ui.Scene.Begin(site.name, $"寶物秘境・{WorldMapData.Load().NodeLabel(site.node)}　{site.KindLabel}　{site.TypeLabel}：{site.treasure}",
-                site.scene, HeroFigure(), null);
+                site.scene, ExpeditionFigure(), null);
             AudioManager.Play("page");
             ui.Scene.Say(new[] { Narration(site.intro) }, () => TreasureStage(guardian));
         }
@@ -371,7 +386,7 @@ namespace Wuxia
                 return;
             }
             var stage = run.site.stages[run.stage];
-            ui.Scene.SetFigures(HeroFigure(), null);
+            ui.Scene.SetFigures(ExpeditionFigure(), null);
             var cards = stage.choices.Select(choice => new SceneChoice
             {
                 label = choice.label, desc = choice.text, icon = UiKit.AttrIcon(AttributeSystem.Index(choice.attr)),
@@ -385,7 +400,7 @@ namespace Wuxia
                 }
             }).ToList();
             ui.Scene.Choose(Narration(stage.text),
-                new[] { $"第 {run.stage + 1}／{run.site.stages.Length} 關", $"主角傷勢 {state.Protagonist.injury}", $"秘寶：{run.site.treasure}" },
+                new[] { $"第 {run.stage + 1}／{run.site.stages.Length} 關", ExpeditionInjury, $"秘寶：{run.site.treasure}" },
                 cards, "撤出秘境", () => LeaveTreasure(false));
         }
 
@@ -393,13 +408,13 @@ namespace Wuxia
         {
             var run = treasureRun;
             var keeper = run.site.guardian;
-            ui.Scene.SetFigures(HeroFigure(), guardian);
+            ui.Scene.SetFigures(ExpeditionFigure(), guardian);
             var lines = (keeper.lines ?? Array.Empty<RealmLine>()).Select(line => Speak(line, guardian)).ToList();
             string rewards = EffectText.Describe(run.site.rewards, state);
             ui.Scene.Say(lines, () => ui.Scene.Choose(
                 new SceneLine { name = keeper.name, subtitle = keeper.subtitle, side = "right", figure = guardian?.figure,
                     text = $"{keeper.name}擋在秘寶之前。要取{run.site.treasure}，就得擊敗他。" },
-                new[] { $"主角傷勢 {state.Protagonist.injury}", "鎮守者極強，可先回山休整" },
+                new[] { ExpeditionInjury, "鎮守者極強，可先回山休整" },
                 new[]
                 {
                     new SceneChoice
@@ -413,7 +428,7 @@ namespace Wuxia
                                 ui.Scene.Say(new[] { Narration(Fill(keeper.win)) }, ClaimTreasure, "取寶");
                             else
                             {
-                                state.Injure(1);
+                                state.InjureWorker(ExpeditionLeader);
                                 ui.Scene.Say(new[] { Narration(Fill(keeper.lose)) }, () => LeaveTreasure(true), "撤出");
                             }
                         })
@@ -444,7 +459,7 @@ namespace Wuxia
             treasureRun = null;
             var log = run?.log.ToList() ?? new List<string>();
             log.Add(defeated ? "鎮守者太強，你負傷退出。秘寶仍在原處等著你。" : "你撤出了秘境，秘寶仍在原處。");
-            ui.Scene.Result(run?.site.name ?? "寶物秘境", new[] { ("act_defend", $"主角傷勢 {state.Protagonist.injury}") }, log, "回山",
+            ui.Scene.Result(run?.site.name ?? "寶物秘境", new[] { ("act_defend", ExpeditionInjury) }, log, "回山",
                 () => CloseScene(run == null ? null : $"你退出了{run.site.name}。"));
         }
     }

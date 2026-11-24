@@ -82,17 +82,21 @@ namespace Wuxia
         internal int BuildingLevel(string id) => Buildings != null && Buildings.Any(building => building?.id == id)
             ? (Story.buildingLevels.FirstOrDefault(entry => entry.id == id)?.value ?? 1) : 0;
 
-        internal void UpgradeCouncil()
+        internal void UpgradeCouncil(string worker = HeroId)
         {
+            if (AssignmentSystem.Block(this, worker) != null) return;
             int level = BuildingLevel("council");
             if (level is <= 0 or >= 3)
                 return;
-            int silver = BuildSilver(18 * level);
+            float quality = AssignmentSystem.Predict(this, "build", worker).Quality;
+            int silver = UnityEngine.Mathf.CeilToInt(BuildSilver(18 * level) / System.Math.Max(1, quality));
             var cost = new Cost { silver = silver };
             if (!CanPay(cost) || !TrySpendAp(1, "council_upgrade"))
                 return;
             Pay(cost);
             SetValue(ref Story.buildingLevels, "council", level + 1, false);
+            AssignmentSystem.Commit(this, new[] { worker });
+            AssignmentSystem.Credit(this, worker, 2);
         }
 
         internal void ToggleDelegate(DiscipleData disciple)

@@ -144,10 +144,16 @@ namespace Wuxia
                 var production = lines.Where(line => !RankSystem.IsCombat(line.id)).ToArray();
                 RankSystem.Shift(Pick(production), 1, false);
             }
+            float quality = AssignmentSystem.Predict(state, "recruit", recruiter).Quality;
             var talents = (RecruitTalents.talents ?? Array.Empty<CreationOption>())
-                .Where(talent => talent.rarity == "common" || Random.value < method.rareChance * AssignmentSystem.Predict(state, "recruit", recruiter).Quality)
+                .Where(talent => talent.rarity == "common" || Random.value < method.rareChance * quality)
                 .OrderBy(talent => -Mathf.Log(Mathf.Max(.00001f, Random.value)) / Math.Max(1, talent.weight))
                 .Take(Random.Range(0, 3)).Select(talent => talent.id).ToArray();
+            int tier = RankSystem.Index(rank);
+            var signature = MartialArts.All.Where(art => art.Combat && art.source == "creation" &&
+                    RankSystem.Index(art.tier) <= tier + 1)
+                .OrderBy(art => Random.value).Take(tier >= RankSystem.Index("B") ? 2 : 1)
+                .Select(art => art.id).ToArray();
             string name = (Pick(Recruitment.surnames) ?? Pick(new[] { "杜", "何", "葛", "林", "沈" })) +
                 (Pick(female ? Recruitment.givenFemale : Recruitment.givenMale) ?? Pick(new[] { "青", "春山", "雲生", "照雨", "小滿" }));
             return new Candidate
@@ -161,7 +167,7 @@ namespace Wuxia
                 attrs = Enumerable.Range(0, AttributeSystem.Count).Select(_ =>
                     Mathf.Clamp(Random.Range(6, 14) + 2 * method.quality, AttributeSystem.Min, AttributeSystem.Max)).ToArray(),
                 aptitude = new Aptitude { bone = Random.Range(1, 11), insight = Random.Range(1, 11) },
-                lines = lines, talents = talents, silverCost = Mathf.Max(0, state.Data.Start.recruitCost + method.quality),
+                lines = lines, talents = talents, signatureSkills = signature, silverCost = Mathf.Max(0, state.Data.Start.recruitCost + method.quality),
                 look = CharacterFactory.ForRecruit(gender, "入門弟子")
             };
         }

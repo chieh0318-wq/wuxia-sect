@@ -175,13 +175,14 @@ namespace Wuxia
                 }
                 case "alchemy":
                 {
-                    LegacySystem.AddInventory(Story, "item_jinchuang", 2);
+                    int portions = Mathf.Clamp(Mathf.RoundToInt(2 * quality), 1, 4);
+                    LegacySystem.AddInventory(Story, "item_jinchuang", portions);
                     bool pill = level >= 2 || AssignmentSystem.Skill(this, worker, "alchemy") >= RankSystem.Index("B");
                     if (pill) LegacySystem.AddInventory(Story, "item_jiuzhuan", 1);
-                    return "丹爐開了七日七夜，煉成金創靈藥 ×2" + (pill ? "、九轉回元丹 ×1" : "") + "。";
+                    return $"丹爐開了七日七夜，煉成金創靈藥 ×{portions}" + (pill ? "、九轉回元丹 ×1" : "") + "。";
                 }
                 case "treat":
-                    for (int i = 0; i < Mathf.RoundToInt(2 * quality); i++) RecoverInjuries();
+                    for (int i = 0; i < 2; i++) RecoverInjuries(worker);
                     Protagonist.injury = Mathf.Max(0, Protagonist.injury - 1);
                     return "藥堂延醫煎藥，主角與全門弟子傷勢減輕。";
                 case "host":

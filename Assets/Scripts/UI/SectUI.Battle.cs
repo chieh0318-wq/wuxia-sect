@@ -21,6 +21,7 @@ namespace Wuxia
         }
 
         private RectTransform battleScreen;
+        private int battlePreviousCanvasOrder;
         internal bool BattleOpen => battleScreen != null;
 
         internal void StartTurnBattle(GameState state, BattleRequest req, MonoBehaviour runner,
@@ -31,14 +32,15 @@ namespace Wuxia
 
             var catalog = new BattleCatalog();
             var (players, enemies) = BattleSetup.Create(state, req, catalog);
-            if (players.Count > 0)
-                players[0].name = state.Protagonist.name;
             int seed = captureSeed ?? UnityEngine.Random.Range(0, int.MaxValue);
             var model = new BattleModel(players, enemies, catalog, seed,
                 () => MedicineCount("item_jiuzhuan") > 0 || MedicineCount("item_jinchuang") > 0,
                 UseMedicine);
             var views = new Dictionary<BattleCombatant, BattleUnitView>();
 
+            var battleCanvas = canvas.GetComponent<Canvas>();
+            battlePreviousCanvasOrder = battleCanvas.sortingOrder;
+            battleCanvas.sortingOrder = Mathf.Max(70, battlePreviousCanvasOrder);
             battleScreen = Panel("TurnBattle", canvas, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero);
             battleScreen.GetComponent<Image>().color = Color.black;
 
@@ -839,6 +841,7 @@ namespace Wuxia
             battleScreen.gameObject.SetActive(false);
             UnityEngine.Object.Destroy(battleScreen.gameObject);
             battleScreen = null;
+            canvas.GetComponent<Canvas>().sortingOrder = battlePreviousCanvasOrder;
         }
     }
 }

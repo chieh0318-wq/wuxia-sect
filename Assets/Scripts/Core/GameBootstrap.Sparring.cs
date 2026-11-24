@@ -31,6 +31,7 @@ namespace Wuxia
                 string note = id == GameState.HeroId
                     ? $"戰力 {state.SparPower(id):0}　傷勢 {state.Protagonist.injury}"
                     : $"戰力 {state.SparPower(id):0}　好感 {CastDialogue.Score(state, member)}　傷勢 {member?.injury ?? 0}";
+                note += $"　餘 {AssignmentSystem.Remaining(state, id)} 次";
                 if (sparPicks.Count == 1 && order < 0)
                     note += $"\n對{state.SparName(sparPicks[0])}勝率 {state.SparOdds(id, sparPicks[0]):P0}";
                 return new SparCard

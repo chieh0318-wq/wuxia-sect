@@ -70,14 +70,22 @@ namespace Wuxia
             BuildingLevel("library") > 0 && Silver >= node.silver && ActionPoints >= node.ap;
 
         /// <summary>Researches a node, applying its permanent effects; returns the result line.</summary>
-        internal string Research(TechNode node)
+        internal string Research(TechNode node, string worker = null)
         {
             if (node == null || HasTech(node.id)) return "此功法已經研習過了。";
             if (BuildingLevel("library") <= 0) return "須先有藏經閣，才能研習功法。";
             if (node.requires != null && !HasTech(node.requires)) return $"需先研習「{Tech(node.requires)?.name}」。";
-            if (Silver < node.silver) return "銀兩不足，買不起燈油紙墨。";
+            if (worker != null && AssignmentSystem.Block(this, worker) is string unavailable) return unavailable;
+            float quality = worker == null ? 1 : AssignmentSystem.Predict(this, "study", worker).Quality;
+            int silver = Mathf.CeilToInt(node.silver / Mathf.Max(1, quality));
+            if (Silver < silver) return "銀兩不足，買不起燈油紙墨。";
             if (!TrySpendAp(node.ap, "tech:" + node.id)) return "行動力不足。";
-            Silver -= node.silver;
+            Silver -= silver;
+            if (worker != null)
+            {
+                AssignmentSystem.Commit(this, new[] { worker });
+                AssignmentSystem.Credit(this, worker, 1);
+            }
             SetValue(ref Story.flags, "tech_" + node.id, 1, false);
             SkillLine Line(string id) => Array.Find(Protagonist.lines ?? Array.Empty<SkillLine>(), entry => entry.id == id);
             switch (node.id)
@@ -268,10 +276,10 @@ namespace Wuxia
         }
 
         /// <summary>江湖聽風: raises the next qi-yu chance; sometimes the rumour leads straight to a secret realm.</summary>
-        internal bool GatherRumors()
+        internal bool GatherRumors(string worker = HeroId)
         {
             Story.rumorBonus = Mathf.Min(.75f, Story.rumorBonus + .25f);
-            return UnityEngine.Random.value < .35f + AdventureBonus;
+            return UnityEngine.Random.value < .35f + .025f * (AssignmentSystem.Eloquence(this, worker) - 15);
         }
 
         /// <summary>Chance that 山道巡訪 stumbles on a secret realm (幸運 / 身法 and gathered rumours help).</summary>

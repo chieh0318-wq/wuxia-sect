@@ -440,10 +440,13 @@ namespace Wuxia
                 bool mayUpgrade = state.ActionPoints >= 1 && state.Silver >= silver;
                 actions.Add(($"擴建　行動力 1／銀 {silver}", $"升為 {level + 1} 級：每月行動力上限再 +1", mayUpgrade ? () =>
                 {
-                    state.UpgradeCouncil();
-                    ui.Refresh(state);
-                    ShowCommands();
-                    ShowBuilding(building);
+                    ui.ChooseAssignment(state, "擴建議事堂", "build", 1, party =>
+                    {
+                        state.UpgradeCouncil(party[0]);
+                        ui.Refresh(state);
+                        ShowCommands();
+                        ShowBuilding(building);
+                    });
                 } : null));
             }
             ui.ShowBuilding(building, actions, level);
@@ -472,6 +475,11 @@ namespace Wuxia
                 return;
             }
 
+            if (action.id == "lodge" && state.Story.lodgeMonth == state.Year * 12 + state.Month)
+            {
+                ui.Message($"本月已安頓過弟子。{HousingInfo()}");
+                return;
+            }
             bool expedition = action.id is "explore" or "secret_realm";
             ui.ChooseAssignment(state, action.name, action.id, expedition ? 3 : 1,
                 party => ExecuteAssignedAction(action, party));
@@ -502,20 +510,16 @@ namespace Wuxia
                 ExploreRoad(action);
                 return;
             }
-            float rumor = action.id == "explore" ? state.ConsumeRumors() : 0;
             string breakthrough = action.id switch
             {
                 "train" => state.TrainMartial(worker),
-                "explore" => state.TryBreakthrough("qiyu_cliff_cave", state.Story.insightChance + state.AdventureBonus + rumor),
                 "feast" => state.Feast(),
                 "forge_gear" => state.ForgeGear(worker),
                 "decree" => state.Decree(),
                 "lodge" => state.Lodge(),
                 _ => ""
             };
-            bool realm = action.id == "explore" && UnityEngine.Random.value < state.RealmChance + rumor;
-            if (action.id == "gather_rumors")
-                realm = state.GatherRumors();
+            bool realm = action.id == "gather_rumors" && state.GatherRumors(worker);
             var output = new Yield
             {
                 silver = Mathf.RoundToInt(action.effect.silver * prediction.Quality),
@@ -552,8 +556,7 @@ namespace Wuxia
                 message = $"{breakthrough}　{Changes(action.effect)}".TrimEnd();
             ui.Message(message);
             if (realm)
-                OfferSecretRealm(action.id == "gather_rumors" ? "茶客壓低聲音說起一處無人敢去的秘境，連路徑都畫給了你。"
-                    : "山道盡頭的藤蔓後，竟藏著一道幽深的石門——是一處江湖秘境的入口！");
+                OfferSecretRealm("茶客壓低聲音說起一處無人敢去的秘境，連路徑都畫給了你。");
         }
 
         private void BeginBuild(ActionData action)

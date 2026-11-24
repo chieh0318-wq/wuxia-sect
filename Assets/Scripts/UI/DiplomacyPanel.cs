@@ -18,12 +18,12 @@ namespace Wuxia
         private readonly Action changed;
         private readonly RectTransform root, listView, rows, detail, side, wide, overlay;
         private readonly Text header;
-        private readonly Button factionsTab, victoryTab;
+        private readonly Button factionsTab, specialTab, victoryTab;
         private GameState state;
         private MapFaction selected;
         private DiploAction selectedAction;
         private string result = "";
-        private bool victoryView;
+        private bool victoryView, specialView;
         private DiplomacyTalk talk;
         private readonly Dictionary<string, string> lastDissent = new();
         public bool IsOpen => root.gameObject.activeSelf;
@@ -41,8 +41,9 @@ namespace Wuxia
             header = MapUi.Text(masthead, "", 290, 14, 1066, 52, 20, MapUi.Paper, TextAnchor.MiddleLeft, "Numbers");
             MapUi.Button(masthead, "返回地圖", 1376, 16, 176, 48, Close, MapUi.Red);
             MapUi.Docket(root, "外交卷冊", 14, 99, 1572, 784);
-            factionsTab = MapUi.Button(root, "諸勢力", 34, 113, 180, 44, () => { victoryView = false; Refresh(); });
-            victoryTab = MapUi.Button(root, "勝利之路", 224, 113, 180, 44, () => { victoryView = true; Refresh(); });
+            factionsTab = MapUi.Button(root, "江湖勢力", 34, 113, 144, 44, () => SelectRoster(false));
+            specialTab = MapUi.Button(root, "特殊勢力", 187, 113, 144, 44, () => SelectRoster(true));
+            victoryTab = MapUi.Button(root, "勝利之路", 340, 113, 144, 44, ShowVictoryTab);
 
             MapUi.Kit(root, "名冊", 26, 158, 466, 716, "Wood", false);
             listView = MapUi.Panel(root, "名冊視窗", 34, 166, ListWidth, ListHeight, Soft);
@@ -66,7 +67,9 @@ namespace Wuxia
         internal void Open(GameState state, MapFaction focus = null)
         {
             this.state = state ?? throw new ArgumentNullException(nameof(state));
-            selected = focus ?? selected ?? Roster().FirstOrDefault();
+            selected = focus ?? selected;
+            specialView = selected?.Court == true;
+            selected ??= Roster().FirstOrDefault();
             victoryView = false;
             result = "";
             selectedAction = GameState.DiploActionById("gift");
@@ -96,6 +99,7 @@ namespace Wuxia
         internal void Select(MapFaction faction)
         {
             selected = faction;
+            specialView = faction.Court;
             result = "";
             victoryView = false;
             Refresh();
@@ -132,7 +136,19 @@ namespace Wuxia
             });
         }
 
-        private IEnumerable<MapFaction> Roster() => data.Factions
+        private void SelectRoster(bool special)
+        {
+            specialView = special;
+            victoryView = false;
+            if (selected?.Court != special)
+            {
+                selected = Roster().FirstOrDefault();
+                result = "";
+            }
+            Refresh();
+        }
+
+        private IEnumerable<MapFaction> Roster() => data.Factions.Where(faction => faction.Court == specialView)
             .OrderBy(f => Diplomacy.Group(f) switch { "jianghu" => 0, "court" => 1, _ => 2 })
             .ThenByDescending(f => state?.IsFactionKnown(f.id) ?? true)
             .ThenByDescending(f => state?.Attitude(f) ?? 0);
@@ -143,7 +159,8 @@ namespace Wuxia
             int eloquence = state.Eloquence(out string envoy);
             header.text = $"銀兩 {state.Silver}　聲望 {state.Reputation}　行動力 {state.ActionPoints}／{state.ApMax}　" +
                 $"本派聲威 {state.Prestige}　使者 {envoy}（口才 {eloquence}）";
-            MapUi.Select(factionsTab, !victoryView);
+            MapUi.Select(factionsTab, !victoryView && !specialView);
+            MapUi.Select(specialTab, !victoryView && specialView);
             MapUi.Select(victoryTab, victoryView);
             listView.gameObject.SetActive(!victoryView);
             detail.gameObject.SetActive(!victoryView);
@@ -224,7 +241,7 @@ namespace Wuxia
 
             int strength = Diplomacy.Strength(faction), prestige = state.Prestige;
             float ratio = Diplomacy.Data.weakRatio;
-            string weak = Diplomacy.Group(faction) == "court" ? "朝廷外邦，只可交好" :
+            string weak = Diplomacy.Group(faction) == "court" ? "可遣使議約" :
                 prestige >= strength * ratio ? "衰弱門派，已可收為附庸" : prestige >= strength ? "可以聲望威懾" : "實力尚在本派之上";
             MapUi.Text(detail, $"實力 {strength}　本派聲威 {prestige}　{weak}", 0, 170, 630, 28, 19, MapUi.Ink);
             var tie = state.Tie(faction.id);
@@ -254,7 +271,7 @@ namespace Wuxia
             string note = string.IsNullOrEmpty(result)
                 ? selectedAction?.desc ?? "" : result;
             MapUi.Kit(detail, "結果", 0, 650, 630, 104, "Wood", false);
-            MapUi.Text(detail, note, 16, 660, 420, 85, 19, MapUi.Paper, TextAnchor.UpperLeft, "Narration");
+            MapUi.Text(detail, note, 16, 660, selectedAction == null ? 594 : 420, 85, 19, MapUi.Paper, TextAnchor.UpperLeft, "Narration");
             if (selectedAction != null)
             {
                 var enter = MapUi.Button(detail, "入席議事", 454, 675, 160, 52, () => BeginTalk(selectedAction), MapUi.Red);
@@ -332,8 +349,8 @@ namespace Wuxia
         private void ApplyResult(string text)
         {
             result = text;
-            DrawDetail();
-            DrawSide();
+            changed?.Invoke();
+            Refresh();
         }
 
         private string Preview(DiscipleData member)

@@ -109,10 +109,10 @@ namespace Wuxia
             if (Story.raidResolvedMonth + 3 > MonthStamp || Month % 3 != 0) return;
             var map = WorldMapData.Load();
             var opponents = map.Factions.Where(f => Attitude(f) <= -25
-                && f.id != Patron?.id && !HasTie(f.id, Diplomacy.Pact | Diplomacy.Alliance | Diplomacy.Merged)).ToArray();
+                && f.id != Story.patronFaction && !HasTie(f.id, Diplomacy.Pact | Diplomacy.Alliance | Diplomacy.Merged)).ToArray();
             if (opponents.Length == 0) return;
             var attacker = opponents[UnityEngine.Random.Range(0, opponents.Length)];
-            var holdings = (Story.heldNodes ?? Array.Empty<string>()).Where(map.Nodes.ContainsKey).Append(StartNode).ToArray();
+            var holdings = (Story.heldNodes ?? Array.Empty<string>()).Where(map.Nodes.ContainsKey).Append(StartNode).Distinct().ToArray();
             Story.sectRaid = new SectRaid
             {
                 faction = attacker.id, due = MonthStamp + 1,

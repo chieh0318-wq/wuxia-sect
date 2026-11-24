@@ -66,7 +66,8 @@ namespace Wuxia
             var raid = state.Story.sectRaid;
             var foe = GameState.FindFaction(raid.faction);
             var guards = (raid.guards ?? Array.Empty<string>()).Where(id => id == GameState.HeroId
-                || state.Disciples.Any(member => member.id == id)).ToArray();
+                ? state.Protagonist.injury < 3
+                : state.Disciples.Any(member => member.id == id && member.injury < 3 && id != state.Story.delegateId)).ToArray();
             if (guards.Length == 0)
                 guards = new[] { GameState.HeroId }.Concat(state.Disciples.Where(member => member.injury < 3
                     && member.id != state.Story.delegateId).Take(3).Select(member => member.id)).ToArray();

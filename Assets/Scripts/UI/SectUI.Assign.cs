@@ -27,6 +27,7 @@ namespace Wuxia
                     onConfirm(picked.ToArray());
                 }));
                 ShowCreation(title, new[] { limit == 1 ? "挑選一位執行此事。"
+                    : actionId == "campaign" ? $"可派 1～{limit} 位將領，首選者為主將。"
                     : $"可派 1～{limit} 人。首選者領隊，戰鬥與途中判定使用此次隊伍。" }, buttons, null);
                 foreach (string id in new[] { GameState.HeroId }.Concat(state.Disciples.Select(member => member.id)))
                 {
@@ -35,9 +36,10 @@ namespace Wuxia
                     string block = AssignmentSystem.Block(state, id);
                     int index = picked.IndexOf(id);
                     string mark = index < 0 ? "" : index == 0 ? "【領隊】" : "【同行】";
+                    if (actionId == "campaign" && index >= 0) mark = index == 0 ? "【主將】" : "【將領】";
                     string condition = limit > 1 && actionId == "explore" ? "（幸運判定參考）" : "";
                     string preview = actionId == "campaign" && chance == null
-                        ? $"位階帶兵基數 {rank.Troops}・統率依悟性與魅力計算" : $"{prediction.Detail}\n預估成功率 {chance?.Invoke(id) ?? prediction.Success:P0}{condition}　預估品質 {prediction.Quality:P0}";
+                        ? $"可帶兵 {SectCampaign.CommandCapacity(state, id)}・統率依悟性與魅力計算" : $"{prediction.Detail}\n預估成功率 {chance?.Invoke(id) ?? prediction.Success:P0}{condition}　預估品質 {prediction.Quality:P0}";
                     CreationChoice($"{mark}{state.SparName(id)}　{rank.Name}　餘 {AssignmentSystem.Remaining(state, id)}／{rank.Monthly} 次",
                         block ?? preview, null, block == null ? (Action)(() =>
                         {

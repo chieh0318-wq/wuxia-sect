@@ -87,7 +87,7 @@ namespace Wuxia
         }
         public string RelationWith(int shift) => RelationLabel(StanceWith(shift));
         private static string RelationLabel(string value) => value == "friendly" ? "友好" : value == "hostile" ? "敵對" : "中立";
-        public bool Court => special || type == "court" || type == "military";
+        public bool Court => special || type is "court" or "military" or "foreign";
         /// <summary>草莽勢力: bandit / outlaw holds, weakly garrisoned and open to 率眾攻討.</summary>
         public bool Outlaw => type == "bandit" || type == "outlaw";
         public string TypeName => type switch

@@ -32,7 +32,7 @@ namespace Wuxia
             Shield -= absorbed;
             damage -= absorbed;
             int screening = Math.Min(Troops / 4, damage / 2);
-            Troops -= Math.Min(Troops, screening * 4);
+            Troops = Math.Max(0, Troops - 4 * (damage / 2));
             Health = Math.Max(0, Math.Min(MaxHealth, Health - damage + screening));
             if (!Alive) Troops = 0;
             Shield = Math.Min(Shield, Troops / 5);
@@ -63,8 +63,7 @@ namespace Wuxia
             Allies = roster.Select((fighter, i) =>
             {
                 string id = party[i];
-                int command = (AssignmentSystem.Attribute(state, id, "wit") + AssignmentSystem.Attribute(state, id, "cha")) / 2;
-                int cap = AssignmentSystem.RankOf(state, id).Troops * (60 + 4 * command) / 100;
+                int cap = CommandCapacity(state, id);
                 return new WarUnit
                 {
                     Id = id, Name = fighter.name, Portrait = fighter.portraitId, Commander = i == 0, Rear = i >= 5,
@@ -81,6 +80,12 @@ namespace Wuxia
                 Troops = strength / divisions + (i < strength % divisions ? 1 : 0), BaseHealth = i == 0 ? 155 : 105,
                 Attack = 21 + Math.Min(20, foe.reputation / 5), Defense = 6, Speed = 15 + i * 2
             }).ToArray();
+        }
+
+        internal static int CommandCapacity(GameState state, string id)
+        {
+            int command = (AssignmentSystem.Attribute(state, id, "wit") + AssignmentSystem.Attribute(state, id, "cha")) / 2;
+            return AssignmentSystem.RankOf(state, id).Troops * (60 + 4 * command) / 100;
         }
 
         internal void Deploy()

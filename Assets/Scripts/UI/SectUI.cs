@@ -849,6 +849,7 @@ namespace Wuxia
         {
             if (ModalOpen && !modalDismissible && !force)
                 return;
+            HideAttributeTip();
             modal.gameObject.SetActive(false);
             var callback = modalClosed;
             modalClosed = null;

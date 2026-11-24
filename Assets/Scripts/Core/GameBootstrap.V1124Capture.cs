@@ -69,7 +69,8 @@ namespace Wuxia
             ("82_c15_road_result.png", () =>
             {
                 int silver = state.Silver;
-                CaptureClick("場景選項:報出門派名號喝退");
+                var road = RealmContent.Data.roadEvents.First(entry => entry.id == "road_robbery");
+                CaptureClick("場景選項:" + road.choices[1].label);
                 CaptureClickThrough(2);
                 Debug.Log($"[Capture] v1124 C15 road result: silver {silver} → {state.Silver}, injury {state.Protagonist.injury}.");
             }),
@@ -87,6 +88,7 @@ namespace Wuxia
             ("84_c16_treasure_guardian.png", () =>
             {
                 LeaveRealm();
+                state.Protagonist.injury = 0;
                 var site = RealmContent.Treasure("tr_zhongnan_guan");
                 state.PartyNode = site.node;
                 state.RefillAp();
@@ -125,6 +127,7 @@ namespace Wuxia
                 map.Close();
                 ui.Canvas.enabled = true;
                 state.RefillAp();
+                state.Protagonist.injury = 0;
                 state.Apply(new Yield { food = 20 });
                 StartSparring();
                 ToggleSpar(GameState.HeroId);
@@ -151,7 +154,8 @@ namespace Wuxia
                 foreach (string id in new[] { "training_hall", "pharmacy_hall" })
                 {
                     state.RefillAp();
-                    Debug.Log("[Capture] v1124 C18: " + state.BuildHall(GameState.Hall(id)));
+                    Debug.Log("[Capture] v1124 C18: " + state.BuildHall(GameState.Hall(id),
+                        state.Disciples.First(member => AssignmentSystem.Block(state, member.id) == null).id));
                 }
                 state.RefillAp();
                 var report = new MonthlyReport();

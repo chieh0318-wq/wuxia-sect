@@ -17,6 +17,7 @@ namespace Wuxia
         internal void AttributeHover(RectTransform target, int slot, Func<int> value)
         {
             if (target == null) return;
+            if (target.TryGetComponent<Graphic>(out var surface)) surface.raycastTarget = true;
             var trigger = target.gameObject.GetComponent<EventTrigger>() ?? target.gameObject.AddComponent<EventTrigger>();
             var enter = new EventTrigger.Entry { eventID = EventTriggerType.PointerEnter };
             enter.callback.AddListener(_ => ShowAttributeTip(target, AttributePerPoint.Tip(slot, value())));

@@ -133,7 +133,8 @@ namespace Wuxia
                         if (person != null) ShowCharacterDetail(person, ShowCharacterDirectory);
                     })
                 }.Concat(M6CaptureSteps()).Concat(V1124CaptureSteps()).Concat(V1125PaCaptureSteps())
-                    .Concat(V1125PdCaptureSteps()).Concat(V1126PaCaptureSteps()).Concat(Pb2CaptureSteps()).ToArray();
+                    .Concat(V1125PdCaptureSteps()).Concat(V1126PaCaptureSteps()).Concat(Pb2CaptureSteps())
+                    .Concat(Pd2CaptureSteps()).ToArray();
                 // "-wuxiaCaptureOnly 8" runs just the shots whose file names start with that prefix (v1124 P1B-2: 80–89).
                 int only = System.Array.IndexOf(args, "-wuxiaCaptureOnly");
                 string prefix = only >= 0 && only + 1 < args.Length ? args[only + 1] : null;
@@ -142,6 +143,11 @@ namespace Wuxia
 
                 foreach (var step in steps)
                 {
+                    if (step.filename == "PD2_05_campaign_duel_result.png")
+                    {
+                        float deadline = Time.realtimeSinceStartup + 75;
+                        while (ui.BattleOpen && Time.realtimeSinceStartup < deadline) yield return null;
+                    }
                     try
                     {
                         step.show();
@@ -154,6 +160,7 @@ namespace Wuxia
                     }
                     yield return new WaitForSecondsRealtime(.3f);
                     ui.RevealStoryForCapture();
+                    if (step.filename == "PD2_00_attribute_hover.png") RevealPd2AttributeTooltip();
                     if (!SaveShot(step.filename))
                         yield break;
                     if (step.filename == "30_exit_confirmation.png" &&

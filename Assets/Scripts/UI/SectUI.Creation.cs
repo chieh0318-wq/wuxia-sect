@@ -644,7 +644,7 @@ namespace Wuxia
             string name = AttributeSystem.Names[index];
             Color tint = AttributeSystem.Tints[index];
             bool showPerPoint = !string.IsNullOrEmpty(perPoint);
-            var row = CreationRow(name, showPerPoint ? 108 : 84);
+            var row = CreationRow(name, showPerPoint ? 120 : 84);
             var card = Panel(name, row, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero, false);
             UiKit.Skin(card.GetComponent<Image>(), "Wood");
             AttributeHover(card, index, () => current); // v1126b 決定 1: every per-point effect on hover
@@ -671,7 +671,7 @@ namespace Wuxia
             Anchor(caption.rectTransform, Vector2.up, Vector2.up, new(90, -42), new(196, -6));
             var benefit = Label(card, description, 18, TextAnchor.MiddleLeft);
             benefit.color = CardMuted;
-            Anchor(benefit.rectTransform, Vector2.zero, Vector2.right, new(90, showPerPoint ? 32 : 6), new(-300, showPerPoint ? 58 : 36));
+            Anchor(benefit.rectTransform, Vector2.zero, Vector2.right, new(90, showPerPoint ? 46 : 6), new(-300, showPerPoint ? 69 : 36));
             if (showPerPoint)
             {
                 // v1126 #4: what one more point buys, computed from the live formulas (AttributePerPoint).
@@ -680,7 +680,7 @@ namespace Wuxia
                 each.color = new Color(.99f, .80f, .45f);
                 each.resizeTextMinSize = 15;
                 each.resizeTextMaxSize = 18;
-                Anchor(each.rectTransform, Vector2.zero, Vector2.right, new(90, 4), new(-300, 30));
+                Anchor(each.rectTransform, Vector2.zero, Vector2.right, new(90, 4), new(-300, 44));
             }
 
             var track = Rect("Attribute pips", card);

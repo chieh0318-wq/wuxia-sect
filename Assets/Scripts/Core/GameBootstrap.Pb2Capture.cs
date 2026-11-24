@@ -10,6 +10,7 @@ namespace Wuxia
         {
             ("PB2_00_creation_talents.png", () =>
             {
+                if (map != null && map.IsOpen) map.Close();
                 CleanupV1125PaCapture();
                 EnsureCaptureCourtyard();
                 CaptureFlow().CaptureTalents();
@@ -30,6 +31,7 @@ namespace Wuxia
             ("PB2_05_ambush.png", () =>
             {
                 ui.CloseModal(force: true);
+                state.Story.fieldDispatches = Array.Empty<FieldDispatch>();
                 state.RefillAp();
                 var site = RealmContent.Data.treasures.First(entry =>
                     WorldMapData.Load().Route(state.StartNode, entry.node)?.Nodes.Count > 2);

@@ -7,7 +7,7 @@ namespace Wuxia
 {
     [Serializable] internal sealed class HallRequirement
     {
-        public int reputation, year, knownFactions, realmsCleared, treasures;
+        public int reputation, year, knownFactions, realmsCleared, treasures, scale;
         public string building, flag;
     }
 
@@ -67,6 +67,7 @@ namespace Wuxia
         internal IEnumerable<(string text, bool met)> HallRequirements(HallData hall)
         {
             var need = hall.requires;
+            if (need.scale > 0 && need.scale < Scales.Length) yield return ($"山門規模須達{Scales[need.scale].name}", SectScale >= need.scale);
             if (need.reputation > 0) yield return ($"聲望 {need.reputation}（目前 {Reputation}）", Reputation >= need.reputation);
             if (need.year > 0) yield return ($"開元{need.year}年以後", Year >= need.year);
             if (!string.IsNullOrEmpty(need.building))

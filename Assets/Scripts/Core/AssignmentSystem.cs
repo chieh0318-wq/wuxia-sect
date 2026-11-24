@@ -129,7 +129,7 @@ namespace Wuxia
                 "alchemy" => ("alchemy", "wit"),
                 "treat" or "medicine" => ("medicine", "wit"),
                 "farming" or "feast" => ("farming", "con"),
-                "build" => ("construction", "wit"),
+                "build" or "gather_materials" => ("construction", "wit"),
                 "commerce" or "recruit" or "host" or "diplomacy" => ("commerce", "cha"),
                 "train" or "lecture" => ("teaching", "wit"),
                 "explore" or "secret_realm" => ("qinggong", "luk"),

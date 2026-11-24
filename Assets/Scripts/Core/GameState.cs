@@ -145,7 +145,8 @@ namespace Wuxia
             ActionPoints = ApMax;
         }
 
-        public bool IsAvailable(BuildingData building) => !building.unique || !Buildings.Contains(building);
+        public bool IsAvailable(BuildingData building) => building != null && building.scale <= SectScale &&
+            LandUsed + Footprint(building) <= LandCapacity && BuildingCount(building) < BuildingLimit(building);
         public bool CanPay(Cost cost, int extraSilver = 0) =>
             Silver >= cost.silver && Silver - cost.silver >= extraSilver && Food >= cost.food;
 
@@ -160,13 +161,14 @@ namespace Wuxia
             Silver += effect.silver;
             Food += effect.food;
             Reputation += effect.reputation;
+            Story.materials = System.Math.Max(0, Story.materials + effect.materials);
         }
 
         public MonthlyReport EndMonth()
         {
             var report = new MonthlyReport();
             report.Lines.Add($"{Date}結算");
-            int silver = 0, food = 0, reputation = 0, upkeep = 0;
+            int silver = 0, food = 0, reputation = 0, upkeep = 0, materials = 0;
             foreach (var building in Buildings)
             {
                 if (building == null)
@@ -175,10 +177,13 @@ namespace Wuxia
                 food += building.income.food;
                 reputation += building.income.reputation;
                 upkeep += building.upkeep;
+                materials += building.income.materials;
             }
 
             silver = UnityEngine.Mathf.RoundToInt(silver * ProductionMultiplier("commerce"));
             food = UnityEngine.Mathf.RoundToInt(food * ProductionMultiplier("farming"));
+            Story.materials += materials;
+            if (materials > 0) report.Lines.Add($"作坊材料　+{materials}");
             M6MonthIncome(ref silver, ref food, report);
             DiplomacyMonth(report);
             HallsMonth(report); // v1124 C18

@@ -237,6 +237,51 @@
         "food": 0,
         "reputation": 1
       }
+    },
+    {
+      "id": "farming",
+      "name": "耕作",
+      "description": "照料田畦，補充糧食",
+      "summary": "照料田畦，補充糧食",
+      "type": "generic",
+      "apCost": 1,
+      "cost": {
+        "silver": 0,
+        "food": 0
+      },
+      "effect": {
+        "food": 5
+      }
+    },
+    {
+      "id": "gather_materials",
+      "name": "採集材料",
+      "description": "整備木料與礦料",
+      "summary": "整備木料與礦料",
+      "type": "generic",
+      "apCost": 1,
+      "cost": {
+        "silver": 0,
+        "food": 0
+      },
+      "effect": {
+        "materials": 4
+      }
+    },
+    {
+      "id": "commerce",
+      "name": "經營作坊",
+      "description": "出售百工製品，補充銀兩",
+      "summary": "出售百工製品，補充銀兩",
+      "type": "generic",
+      "apCost": 1,
+      "cost": {
+        "silver": 0,
+        "food": 0
+      },
+      "effect": {
+        "silver": 5
+      }
     }
   ]
 }

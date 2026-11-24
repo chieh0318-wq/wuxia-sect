@@ -2,77 +2,245 @@
   "note": "v1124 C18 山門堂口. Unlocked step by step by reputation / resources / story. requires: reputation, year (game year), building (courtyard building id), knownFactions, realmsCleared, treasures (fixed treasure realms cleared), flag. cost is paid once to found; levelCost per further level (max maxLevel). monthly: GameEffect list applied each month-end per level. functions: the hall's commands (handled in GameState.Halls.cs).",
   "halls": [
     {
-      "id": "training_hall", "name": "練武堂", "icon": "skill_sword", "art": "Halls/training_hall",
+      "id": "training_hall",
+      "name": "練武堂",
+      "icon": "skill_sword",
+      "art": "Halls/training_hall",
       "desc": "青石鋪地、木樁成林的大堂，四壁掛滿歷代先輩的兵器。弟子在這裡閉關苦修，進境遠勝院中操練。",
-      "requires": { "reputation": 12 },
-      "cost": { "silver": 50, "food": 10 }, "ap": 1,
-      "maxLevel": 3, "levelCost": { "silver": 80, "food": 10 }, "levelReputation": 25,
-      "monthly": [ { "key": "progress", "ref": "martial", "value": 0.4 } ],
-      "found": [ { "key": "trainBonusPct", "value": 10 } ],
+      "requires": {
+        "reputation": 12,
+        "scale": 0
+      },
+      "cost": {
+        "silver": 50,
+        "food": 10
+      },
+      "ap": 1,
+      "maxLevel": 3,
+      "levelCost": {
+        "silver": 80,
+        "food": 10
+      },
+      "levelReputation": 25,
+      "monthly": [
+        {
+          "key": "progress",
+          "ref": "martial",
+          "value": 0.4
+        }
+      ],
+      "found": [
+        {
+          "key": "trainBonusPct",
+          "value": 10
+        }
+      ],
       "functions": [
-        { "id": "seclusion", "name": "閉關苦修", "ap": 1, "food": 3, "silver": 0, "target": "person",
-          "desc": "選一位同門（或自己）閉關：主修／最強武學修習進度 +2.5（每級堂口再 +1）" }
+        {
+          "id": "seclusion",
+          "name": "閉關苦修",
+          "ap": 1,
+          "food": 3,
+          "silver": 0,
+          "target": "person",
+          "desc": "選一位同門（或自己）閉關：主修／最強武學修習進度 +2.5（每級堂口再 +1）"
+        }
       ],
       "summary": "督促操練修習進度 +10%；每月主修武學進度 +0.4×等級；解鎖【閉關苦修】"
     },
     {
-      "id": "forge_hall", "name": "鑄造堂", "icon": "skill_forging", "art": "Halls/forge_hall",
+      "id": "forge_hall",
+      "name": "鑄造堂",
+      "icon": "skill_forging",
+      "art": "Halls/forge_hall",
       "desc": "三座高爐日夜不熄，鐵砧聲從早響到晚。比院中的兵器坊更講究，能照門人的身手量身打造兵甲。",
-      "requires": { "reputation": 20, "building": "smithy" },
-      "cost": { "silver": 80, "food": 0 }, "ap": 1,
-      "maxLevel": 3, "levelCost": { "silver": 100, "food": 0 }, "levelReputation": 35,
-      "monthly": [ { "key": "silver", "value": 4 } ],
+      "requires": {
+        "reputation": 20,
+        "building": "smithy",
+        "scale": 1
+      },
+      "cost": {
+        "silver": 80,
+        "food": 0
+      },
+      "ap": 1,
+      "maxLevel": 3,
+      "levelCost": {
+        "silver": 100,
+        "food": 0
+      },
+      "levelReputation": 35,
+      "monthly": [
+        {
+          "key": "silver",
+          "value": 4
+        }
+      ],
       "found": [],
       "functions": [
-        { "id": "forge", "name": "打造兵甲", "ap": 1, "food": 0, "silver": 20, "target": "slot",
-          "desc": "指定部位打造：保底良品，鍛造技藝與堂口等級越高越易出精品、神兵" }
+        {
+          "id": "forge",
+          "name": "打造兵甲",
+          "ap": 1,
+          "food": 0,
+          "silver": 20,
+          "target": "slot",
+          "desc": "指定部位打造：保底良品，鍛造技藝與堂口等級越高越易出精品、神兵"
+        }
       ],
       "summary": "每月銀兩 +4×等級；解鎖【打造兵甲】（可指定部位，保底良品）"
     },
     {
-      "id": "pharmacy_hall", "name": "藥堂", "icon": "skill_alchemy", "art": "Halls/pharmacy_hall",
+      "id": "pharmacy_hall",
+      "name": "藥堂",
+      "icon": "skill_alchemy",
+      "art": "Halls/pharmacy_hall",
       "desc": "藥櫃頂天立地，百子格裡分門別類收著山中採來的藥材。丹爐旁常有弟子守夜看火。",
-      "requires": { "reputation": 16, "building": "infirmary" },
-      "cost": { "silver": 45, "food": 5 }, "ap": 1,
-      "maxLevel": 3, "levelCost": { "silver": 70, "food": 5 }, "levelReputation": 30,
-      "monthly": [ { "key": "heal", "value": 1 } ],
+      "requires": {
+        "reputation": 16,
+        "building": "infirmary",
+        "scale": 0
+      },
+      "cost": {
+        "silver": 45,
+        "food": 5
+      },
+      "ap": 1,
+      "maxLevel": 3,
+      "levelCost": {
+        "silver": 70,
+        "food": 5
+      },
+      "levelReputation": 30,
+      "monthly": [
+        {
+          "key": "heal",
+          "value": 1
+        }
+      ],
       "found": [],
       "functions": [
-        { "id": "alchemy", "name": "開爐煉丹", "ap": 1, "food": 0, "silver": 12, "target": "none",
-          "desc": "煉成金創靈藥 ×2（煉丹技藝 B 以上或藥堂二級起另得九轉回元丹 ×1）" },
-        { "id": "treat", "name": "延醫療傷", "ap": 1, "food": 0, "silver": 6, "target": "none",
-          "desc": "主角與全體弟子傷勢 −2" }
+        {
+          "id": "alchemy",
+          "name": "開爐煉丹",
+          "ap": 1,
+          "food": 0,
+          "silver": 12,
+          "target": "none",
+          "desc": "煉成金創靈藥 ×2（煉丹技藝 B 以上或藥堂二級起另得九轉回元丹 ×1）"
+        },
+        {
+          "id": "treat",
+          "name": "延醫療傷",
+          "ap": 1,
+          "food": 0,
+          "silver": 6,
+          "target": "none",
+          "desc": "主角與全體弟子傷勢 −2"
+        }
       ],
       "summary": "每月額外療傷一次；解鎖【開爐煉丹】【延醫療傷】"
     },
     {
-      "id": "guest_hall", "name": "客堂", "icon": "skill_commerce", "art": "Halls/guest_hall",
+      "id": "guest_hall",
+      "name": "客堂",
+      "icon": "skill_commerce",
+      "art": "Halls/guest_hall",
       "desc": "一進清幽的院落，專門接待來訪的江湖朋友與各派使者。茶香與消息，都從這裡流進山門。",
-      "requires": { "reputation": 25, "building": "teahouse" },
-      "cost": { "silver": 60, "food": 10 }, "ap": 1,
-      "maxLevel": 2, "levelCost": { "silver": 90, "food": 10 }, "levelReputation": 45,
-      "monthly": [ { "key": "silver", "value": 3 }, { "key": "reputation", "value": 1 } ],
+      "requires": {
+        "reputation": 25,
+        "building": "teahouse",
+        "scale": 2
+      },
+      "cost": {
+        "silver": 60,
+        "food": 10
+      },
+      "ap": 1,
+      "maxLevel": 2,
+      "levelCost": {
+        "silver": 90,
+        "food": 10
+      },
+      "levelReputation": 45,
+      "monthly": [
+        {
+          "key": "silver",
+          "value": 3
+        },
+        {
+          "key": "reputation",
+          "value": 1
+        }
+      ],
       "found": [],
       "functions": [
-        { "id": "host", "name": "延請江湖客", "ap": 1, "food": 2, "silver": 8, "target": "none",
-          "desc": "下次奇遇機率 +25%、聲望 +2，並與一個已知勢力關係 +4" }
+        {
+          "id": "host",
+          "name": "延請江湖客",
+          "ap": 1,
+          "food": 2,
+          "silver": 8,
+          "target": "none",
+          "desc": "下次奇遇機率 +25%、聲望 +2，並與一個已知勢力關係 +4"
+        }
       ],
       "summary": "每月銀兩 +3、聲望 +1（×等級）；解鎖【延請江湖客】"
     },
     {
-      "id": "scripture_tower", "name": "傳功閣", "icon": "skill_teaching", "art": "Halls/scripture_tower",
+      "id": "scripture_tower",
+      "name": "傳功閣",
+      "icon": "skill_teaching",
+      "art": "Halls/scripture_tower",
       "desc": "藏經閣後新起的三層小樓，收著從各處秘境帶回的秘笈拓本。長老在此為弟子講解心法。",
-      "requires": { "reputation": 35, "treasures": 1 },
-      "cost": { "silver": 90, "food": 0 }, "ap": 2,
-      "maxLevel": 2, "levelCost": { "silver": 120, "food": 0 }, "levelReputation": 55,
-      "monthly": [ { "key": "discipleProgress", "value": 0.5 } ],
-      "found": [ { "key": "insightChance", "value": 0.03 } ],
+      "requires": {
+        "reputation": 35,
+        "treasures": 1,
+        "scale": 3
+      },
+      "cost": {
+        "silver": 90,
+        "food": 0
+      },
+      "ap": 2,
+      "maxLevel": 2,
+      "levelCost": {
+        "silver": 120,
+        "food": 0
+      },
+      "levelReputation": 55,
+      "monthly": [
+        {
+          "key": "discipleProgress",
+          "value": 0.5
+        }
+      ],
+      "found": [
+        {
+          "key": "insightChance",
+          "value": 0.03
+        }
+      ],
       "functions": [
-        { "id": "lecture", "name": "開壇傳功", "ap": 1, "food": 2, "silver": 0, "target": "none",
-          "desc": "主角講授武學：全體弟子最強武學進度 +1.2，忠誠 +2" }
+        {
+          "id": "lecture",
+          "name": "開壇傳功",
+          "ap": 1,
+          "food": 2,
+          "silver": 0,
+          "target": "none",
+          "desc": "主角講授武學：全體弟子最強武學進度 +1.2，忠誠 +2"
+        }
       ],
       "summary": "感悟機率 +3%；每月弟子武學進度 +0.5×等級；解鎖【開壇傳功】（需先取得一處寶物秘境）"
     }
   ],
-  "slots": ["武器", "護腕", "飾品", "冠帽", "衣袍", "履靴"]
+  "slots": [
+    "武器",
+    "護腕",
+    "飾品",
+    "冠帽",
+    "衣袍",
+    "履靴"
+  ]
 }

@@ -16,18 +16,22 @@ namespace Wuxia
         private readonly Dictionary<Collider, DiscipleData> discipleTargets = new();
         private readonly Dictionary<string, Material> surfaces = new();
         private readonly List<Vector3> entrances = new();
+        private readonly List<Transform> buildingLabels = new();
         private readonly List<Rect> buildingFootprints = new();
         private readonly List<(Rect area, float height)> paving = new();
         private readonly Dictionary<string, (Transform root, float height)> landmarks = new();
         private readonly TangBuildingFactory halls;
         private readonly MaterialPropertyBlock paint = new();
 
-        public Courtyard(Transform parent, SectUI ui, SlotData[] slots)
+        private readonly float yardWidth;
+
+        public Courtyard(Transform parent, SectUI ui, SlotData[] slots, int scale = 0)
         {
             root = new GameObject("Courtyard").transform;
             root.SetParent(parent, false);
             this.ui = ui;
             this.slots = slots;
+            yardWidth = 42 + scale * 16;
             plots = new Renderer[slots.Length];
             plotFrames = new Renderer[slots.Length][];
             halls = new TangBuildingFactory(this);
@@ -38,15 +42,16 @@ namespace Wuxia
             BuildPackedEarth();
             BuildMountainRidges();
             foreach (float lane in new[] { -14f, -4f, 6f, 14f })
-                Path(0, lane, 40, 1.4f);
+                Path(0, lane, yardWidth - 2, 1.4f);
             Path(5, 0, 2.8f, 48, true);
             Path(0, 9.5f, 12, 5.1f);
 
-            Wall(0, 21, 42, .55f);
-            Wall(-21, 0, .55f, 42);
-            Wall(21, 0, .55f, 42);
-            Wall(-9.7f, -21, 22.6f, .55f);
-            Wall(17.1f, -21, 7.8f, .55f);
+            float extension = (yardWidth - 42) / 2;
+            Wall(0, 21, yardWidth, .55f);
+            Wall(-yardWidth / 2, 0, .55f, 42);
+            Wall(yardWidth / 2, 0, .55f, 42);
+            Wall(-9.7f - extension / 2, -21, 22.6f + extension, .55f);
+            Wall(17.1f + extension / 2, -21, 7.8f + extension, .55f);
             var gate = new GameObject("South mountain gate").transform;
             gate.SetParent(root, false);
             gate.localPosition = new Vector3(5, 0, -21);
@@ -89,7 +94,7 @@ namespace Wuxia
             {
                 float x = (float)random.NextDouble() * 97 - 48;
                 float z = (float)random.NextDouble() * 89 - 36;
-                if (Mathf.Abs(x) < 23 && Mathf.Abs(z) < 23 || Mathf.Abs(x - 5) < 4 && z < -21)
+                if (Mathf.Abs(x) < yardWidth / 2 + 2 && Mathf.Abs(z) < 23 || Mathf.Abs(x - 5) < 4 && z < -21)
                     continue;
                 Tree(x, z, Mathf.Lerp(.65f, 1.6f, (float)random.NextDouble()), i % 3 == 0);
                 if (i % 4 == 0)
@@ -175,6 +180,15 @@ namespace Wuxia
                 }
                 labelHeight = 1.6f;
             }
+            else if (data.id is "field" or "vegetable")
+            {
+                Part("Planting ground", PrimitiveType.Cube, building, new(0, .035f, 0),
+                    new(w, .12f, d), Tint("#70503B"), "Earth");
+                for (int row = -2; row <= 2; row++)
+                    Part("Planted row", PrimitiveType.Cube, building, new(row * w / 6, .12f, 0),
+                        new(.21f, .24f, d * .86f), Tint(data.id == "field" ? "#B0A063" : "#75894B"), "Grass");
+                labelHeight = 1.35f;
+            }
             else
                 labelHeight = halls.Build(building, data.id, w, h, d);
             foreach (var collider in building.GetComponentsInChildren<Collider>())
@@ -184,6 +198,7 @@ namespace Wuxia
             }
             landmarks[data.id] = (building, labelHeight);
             entrances.Add(building.position + Vector3.back * (d / 2 + 1.25f));
+            buildingLabels.Add(building);
             ui.AddWorldLabel(building, Vector3.up * labelHeight, data.name);
             StaticBatchingUtility.Combine(building.gameObject);
         }

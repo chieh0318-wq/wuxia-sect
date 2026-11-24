@@ -9,7 +9,7 @@ namespace Wuxia
         internal static readonly Quaternion CourtyardRotation = Quaternion.Euler(Pitch, 0, 0);
         internal event System.Action<string> Changed;
         private Vector2 focus = new(1.1f, -2.5f);
-        private float height = 37.5f;
+        private float height = 37.5f, extentX = 20f, maxHeight = 46f;
         private Vector3 lastMouse;
         private bool dragging;
         private bool dragBlocked;
@@ -38,8 +38,8 @@ namespace Wuxia
             dragging = held;
             lastMouse = mouse;
             if (!overUi && !(held && dragBlocked))
-                height = Mathf.Clamp(height - Input.mouseScrollDelta.y * 2.6f, 12f, 46f);
-            focus.x = Mathf.Clamp(focus.x, -20f, 20f);
+                height = Mathf.Clamp(height - Input.mouseScrollDelta.y * 2.6f, 12f, maxHeight);
+            focus.x = Mathf.Clamp(focus.x, -extentX, extentX);
             focus.y = Mathf.Clamp(focus.y, -20f, 20f);
             PositionCamera();
             if (focus != previousFocus)
@@ -49,6 +49,12 @@ namespace Wuxia
         }
 
         private void Awake() => PositionCamera();
+
+        internal void SetCourtyardScale(int scale)
+        {
+            extentX = 20 + scale * 8;
+            maxHeight = 46 + scale * 6;
+        }
 
         internal void Frame(Vector2 point, float altitude)
         {

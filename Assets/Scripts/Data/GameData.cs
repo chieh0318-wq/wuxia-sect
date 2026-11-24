@@ -8,13 +8,14 @@ using UnityEngine;
 namespace Wuxia
 {
     [Serializable] public class Cost { public int silver, food; }
-    [Serializable] public class Yield { public int silver, food, reputation; }
+    [Serializable] public class Yield { public int silver, food, reputation, materials; }
     [Serializable] public class BuildingData
     {
         public string id, name, description, color, summary;
         public float[] size;
         public Cost cost;
-        public int upkeep;
+        public int upkeep, scale, footprint, limit;
+        public bool resource;
         public Yield income;
         public bool unique, startBuilt;
         public string[] actions;
@@ -60,6 +61,7 @@ namespace Wuxia
     [Serializable] public class SlotData
     {
         public float x, z;
+        public int scale;
         public string buildingId;
     }
 
@@ -123,7 +125,8 @@ namespace Wuxia
                 file.month >= 1 && file.month <= 12 && file.silver >= 0 && file.food >= 0 &&
                 file.recruitCost >= 0 && file.foodPerDisciple >= 1 && file.slots != null &&
                 file.slots.Length > 0 && file.slots.All(slot => slot != null &&
-                    Math.Abs(slot.x) <= 19f && Math.Abs(slot.z) <= 19f) &&
+                    slot.scale is >= 0 and <= 3 && Math.Abs(slot.x) <= 19f + slot.scale * 8f && Math.Abs(slot.z) <= 19f) &&
+                file.slots.Select(slot => slot.scale).SequenceEqual(file.slots.Select(slot => slot.scale).OrderBy(scale => scale)) &&
                 file.slots.Select(slot => (slot.x, slot.z)).Distinct().Count() == file.slots.Length)
                 ?? new StartData { sectName = "崤山劍門", year = 1, month = 1, silver = 60, food = 24,
                     recruitCost = 12, foodPerDisciple = 1, slots = new[]

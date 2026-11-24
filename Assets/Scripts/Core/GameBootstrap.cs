@@ -146,8 +146,10 @@ namespace Wuxia
 
         private void BuildCourtyard()
         {
-            world = new Courtyard(transform, ui, state.Data.Start.slots);
-            for (int index = 0; index < state.Buildings.Length; index++)
+            world = new Courtyard(transform, ui, state.Data.Start.slots.TakeWhile(slot => slot.scale <= state.SectScale).ToArray(),
+                state.SectScale);
+            controls?.SetCourtyardScale(state.SectScale);
+            for (int index = 0; index < state.Buildings.Length && state.PlotUnlocked(index); index++)
             {
                 if (state.Buildings[index] != null)
                     world.PlaceBuilding(index, state.Buildings[index]);
@@ -379,7 +381,7 @@ namespace Wuxia
             int ready = HallCatalog.Data.halls.Count(hall => state.HallLevel(hall.id) == 0 && state.HallUnlocked(hall));
             var categories = new (string name, string detail, (string label, string detail, System.Action run, bool selected)[] entries)[]
             {
-                ("建造", "興建宗門設施", Matching(action => action.type == "build").Append(
+                ("建造", "興建宗門設施", Matching(action => action.type == "build").Append(("擴建山門 ›", "查看規模與擴建條件", (System.Action)ShowSectExpansion, false)).Append(
                     ("山門堂口　行動力 0", $"已建 {halls}／{HallCatalog.Data.halls.Length}，{ready} 處可興建", (System.Action)OpenHalls, ready > 0)).ToArray()),
                 ("人事", "招募弟子、查閱門派與主角資料", Matching(action => action.type == "recruit").Concat(new[]
                 {
@@ -511,6 +513,7 @@ namespace Wuxia
             {
                 silver = Mathf.RoundToInt(action.effect.silver * prediction.Quality),
                 food = Mathf.RoundToInt(action.effect.food * prediction.Quality),
+                materials = Mathf.RoundToInt(action.effect.materials * prediction.Quality),
                 reputation = Mathf.RoundToInt(action.effect.reputation * prediction.Quality)
             };
             state.Apply(output);
@@ -548,7 +551,7 @@ namespace Wuxia
 
         private void BeginBuild(ActionData action)
         {
-            if (state.Buildings.All(building => building != null))
+            if (!state.Buildings.Where((_, index) => state.PlotUnlocked(index)).Any(building => building == null))
             {
                 ui.Message("院中已無空地。");
                 return;
@@ -579,19 +582,26 @@ namespace Wuxia
             {
                 ("返回指令", "取消建造，回到門派事務", CancelBuild, false)
             };
-            foreach (var building in state.Data.Buildings.Where(state.IsAvailable))
+            options.Add(("擴建山門 ›", $"{GameState.Scales[state.SectScale].name}　用地 {state.LandUsed}／{state.LandCapacity}　材料 {state.Materials}",
+                ShowSectExpansion, false));
+            foreach (var building in state.Data.Buildings.OrderByDescending(building => building.resource))
             {
                 var total = BuildTotal(building);
                 string cost = $"銀 {total.silver}" + (total.food > 0 ? $"・糧 {total.food}" : "") + $"・行動力 {buildAction.apCost}";
                 bool picked = building == buildChoice;
-                options.Add(($"{(picked ? "【已選】" : "")}{building.name}　{cost}", building.summary ?? building.description, () =>
+                string kind = building.resource ? "資源" : "特殊";
+                string plot = $"{kind}・占地 {GameState.Footprint(building)}・{building.size[0]:0.#} × {building.size[2]:0.#} 丈";
+                var available = state.IsAvailable(building);
+                string reason = available ? "" : building.scale > state.SectScale ? $"　須{GameState.Scales[building.scale].name}"
+                    : state.BuildingCount(building) >= state.BuildingLimit(building) ? "　已達棟數上限" : "　用地不足";
+                options.Add(($"{(picked ? "【已選】" : "")}{building.name}　{cost}", $"{plot}{reason}\n{building.summary ?? building.description}", available ? (System.Action)(() =>
                 {
                     buildChoice = building;
                     string aid = TutorialBuildAid();
                     world.HighlightPlots(true);
                     ShowBuildMenu();
                     ui.Message($"{aid}已選【{building.name}】，點擊亮綠色空地動工");
-                }, picked));
+                }) : null, picked));
             }
             ui.ShowCommands("建造", options);
         }
@@ -617,7 +627,7 @@ namespace Wuxia
 
         private void PlaceBuilding(int index)
         {
-            if (state.Buildings[index] != null)
+            if (!state.PlotUnlocked(index) || state.Buildings[index] != null)
             {
                 ui.Message("此處已有建築。請選擇綠色空地。");
                 return;
@@ -780,6 +790,7 @@ namespace Wuxia
             var changes = new List<string>();
             if (effect.silver != 0) changes.Add($"銀兩 {effect.silver:+0;-0}");
             if (effect.food != 0) changes.Add($"糧食 {effect.food:+0;-0}");
+            if (effect.materials != 0) changes.Add($"材料 {effect.materials:+0;-0}");
             if (effect.reputation != 0) changes.Add($"聲望 {effect.reputation:+0;-0}");
             return string.Join("、", changes);
         }

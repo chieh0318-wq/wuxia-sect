@@ -7,7 +7,15 @@ namespace Wuxia
     {
         private Texture2D courtyardEarth;
 
-        internal void Destroy() => Object.Destroy(courtyardEarth);
+        internal void Destroy()
+        {
+            foreach (var building in buildingLabels) ui.RemoveWorldLabel(building);
+            foreach (var target in discipleTargets.Keys) ui.RemoveWorldLabel(target.transform.parent);
+            HighlightPlots(false);
+            root.gameObject.SetActive(false);
+            Object.Destroy(root.gameObject);
+            Object.Destroy(courtyardEarth);
+        }
 
         private void BuildPackedEarth()
         {
@@ -23,7 +31,7 @@ namespace Wuxia
             for (int row = 0; row < resolution; row++)
             for (int column = 0; column < resolution; column++)
             {
-                float x = 42 * (column + .5f) / resolution - 21;
+                float x = yardWidth * (column + .5f) / resolution - yardWidth / 2;
                 float z = 42 * (row + .5f) / resolution - 21;
                 float patch = Mathf.PerlinNoise(x * .17f + 15, z * .17f + 23);
                 float grain = (float)random.NextDouble();
@@ -35,7 +43,7 @@ namespace Wuxia
                     wear = Mathf.Min(wear, Mathf.Abs(z - lane) - .7f);
                 float pathWear = 1 - Mathf.Clamp01(wear / 1.5f + patch * .42f);
                 Color color = Color.Lerp(packed, pebbles, Mathf.Clamp01(patch * .76f - .13f + pathWear * .37f));
-                float edge = 21 - Mathf.Max(Mathf.Abs(x), Mathf.Abs(z));
+                float edge = Mathf.Min(yardWidth / 2 - Mathf.Abs(x), 21 - Mathf.Abs(z));
                 foreach (SlotData slot in slots)
                 {
                     // The stone outlines on the three southern plots stay clear of foundation staining.
@@ -51,7 +59,7 @@ namespace Wuxia
             earth.SetPixels32(pixels);
             earth.Apply(true, true);
             var plane = Part("Packed courtyard earth", PrimitiveType.Plane, root,
-                new(0, -.055f, 0), new(4.2f, 1, 4.2f), Color.white);
+                new(0, -.055f, 0), new(yardWidth / 10, 1, 4.2f), Color.white);
             // Unity's plane UVs run in reverse world X and Z.
             PaintEarth(plane.GetComponent<Renderer>(), new Vector4(-1, -1, 1, 1), Color.white);
         }

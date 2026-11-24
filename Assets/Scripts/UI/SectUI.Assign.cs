@@ -51,6 +51,8 @@ namespace Wuxia
             AssignmentBack = Back;
         }
 
+        internal void TrackPanelBack(Action back) => AssignmentBack = back;
+
         internal Action AssignmentBack { get; private set; }
 
         internal bool HandleAssignmentBack()

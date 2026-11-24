@@ -31,21 +31,21 @@
       "weight": 12,
       "speaker": { "name": "趙掌櫃", "subtitle": "洛陽綢緞商", "portrait": "npc_mer02", "gender": "男" },
       "lines": [
-        { "speaker": "narrator", "text": "轉過山坳，前頭傳來哭喊。三五個蒙面漢子攔下一輛驢車，正把綢緞一匹匹往肩上扛。" },
-        { "speaker": "npc", "text": "這位{俠}——救命啊！這批貨是要送到長安的，丟了我全家老小都得上街討飯！" }
+        { "speaker": "narrator", "text": "[narrator] 轉過山坳，前頭傳來哭喊。三五個蒙面漢子攔下一輛驢車，正把綢緞一匹匹往肩上扛。" },
+        { "speaker": "npc", "text": "[npc] 這位{俠}——救命啊！這批貨是要送往長安的，丟了它，小人全家老小都得上街討飯！" }
       ],
       "choices": [
         { "label": "拔劍救人", "type": "battle", "text": "山賊不過烏合之眾，正好替鄉里除害。",
           "battle": { "lead": "攔路山賊頭目", "portrait": "npc_am06", "count": 3, "difficulty": 0.85, "minions": ["山賊嘍囉", "山賊刀手"] },
-          "success": "山賊丟下綢緞四散逃竄。趙掌櫃千恩萬謝，硬是塞來一袋碎銀。", "failure": "山賊人多勢眾，你護著掌櫃且戰且退，總算把人救下，貨卻丟了大半。",
+          "success": "山賊丟下綢緞四散奔逃。趙掌櫃千恩萬謝，硬是塞來一袋碎銀。", "failure": "山賊人多勢眾，你護著掌櫃且戰且退，總算把人救下，貨卻丟了大半。",
           "successEffects": [ { "key": "silver", "value": 20 }, { "key": "reputation", "value": 3 } ],
           "failureEffects": [ { "key": "reputation", "value": 1 }, { "key": "injury", "value": 1 } ] },
         { "label": "報出門派名號喝退", "type": "check", "attr": "cha", "text": "崤山劍門的名號，在這一帶還算響亮。",
-          "success": "「崤山劍門在此，誰敢放肆！」山賊面面相覷，扛著綢緞的手一鬆，轉身就跑。", "failure": "山賊頭目冷笑一聲：「崤山劍門？早就散了吧！」你只得動手，帶了點傷才把人趕走。",
+          "success": "「崤山劍門在此，誰敢放肆！」山賊面面相覷，扛著綢緞的手一鬆，轉身便逃。", "failure": "山賊頭目冷笑一聲：「崤山劍門？早散了罷！」你只得動手，帶了些傷才把人趕走。",
           "successEffects": [ { "key": "reputation", "value": 2 }, { "key": "silver", "value": 8 } ],
           "failureEffects": [ { "key": "reputation", "value": 1 }, { "key": "injury", "value": 1 } ] },
         { "label": "悄悄繞道", "type": "plain", "text": "門派元氣未復，不宜多生事端。",
-          "success": "你壓低斗笠，從林間小路繞了過去。身後的哭喊聲漸漸聽不見了。",
+          "success": "你壓低斗笠，從林間小路繞了過去。身後的哭喊聲，漸漸聽不見了。",
           "successEffects": [ { "key": "reputation", "value": -1 } ] }
       ]
     },
@@ -57,7 +57,7 @@
       "speaker": { "name": "藥農老秦", "subtitle": "崤山採藥人", "portrait": "npc_em03", "gender": "男" },
       "lines": [
         { "speaker": "narrator", "text": "半山的斷崖上，一個老藥農腰繫麻繩懸在半空，繩子被岩角磨得只剩幾股。" },
-        { "speaker": "npc", "text": "上頭那株崖柏底下長著一棵老參，我盯了它三年……誒，繩子、繩子要斷了！" }
+        { "speaker": "npc", "text": "[npc] 上頭那株崖柏底下長著一棵老參，老漢盯了它三年……哎喲，繩子、繩子要斷了！" }
       ],
       "choices": [
         { "label": "施展輕功攀崖救人", "type": "check", "attr": "agi", "text": "踏著岩縫借力，把人和參一起帶上來。",
@@ -77,11 +77,11 @@
       "weight": 8,
       "speaker": { "name": "厲三刀", "subtitle": "落魄刀客", "portrait": "npc_am09", "gender": "男" },
       "lines": [
-        { "speaker": "narrator", "text": "破廟門口靠著一個渾身是血的刀客，刀卻握得死緊。見你走近，他抬起頭，眼裡全是戒備。" },
-        { "speaker": "npc", "text": "你是哪條道上的？要是衝著我這把刀來，就先問過它。" }
+        { "speaker": "narrator", "text": "[narrator] 破廟門口倚著一個渾身是血的刀客，刀卻握得死緊。見你走近，他抬起頭，眼裡滿是戒備。" },
+        { "speaker": "npc", "text": "[npc] 閣下是哪條道上的？若是衝著我這把刀來，先問過它。" }
       ],
       "choices": [
-        { "label": "贈藥療傷", "type": "plain", "text": "花些銀兩買藥，先救人再說。", "cost": { "silver": 6 },
+        { "label": "贈藥療傷", "type": "plain", "text": "花些銀兩買藥，先救人要緊。", "cost": { "silver": 6 },
           "success": "你替他敷藥包紮。厲三刀沉默半晌，從懷裡摸出一本被血浸透的刀譜：「欠人情的滋味不好受，這個拿去。」",
           "successEffects": [ { "key": "art", "ref": "tiedan_dao", "value": 1 }, { "key": "reputation", "value": 1 } ] },
         { "label": "應他所請，過招一試", "type": "battle", "text": "刀客受了傷仍不肯低頭，只服打贏他的人。",
@@ -98,7 +98,7 @@
       "weight": 9,
       "lines": [
         { "speaker": "narrator", "text": "亂草叢中立著一方殘碑，碑文多已剝落，只剩一道道深淺不一的刻痕——那不像是字，倒像是劍痕。" },
-        { "speaker": "hero", "text": "這刻痕的走勢……有人曾在這裡練過劍。而且，不是一般人。" }
+        { "speaker": "hero", "text": "[hero] 這刻痕的走勢……有人曾在此練劍。而且，絕非尋常之輩。" }
       ],
       "choices": [
         { "label": "靜心參悟劍痕", "type": "check", "attr": "wit", "text": "盤膝坐下，順著刻痕推演出招的路數。",
@@ -106,7 +106,7 @@
           "successEffects": [ { "key": "progress", "ref": "martial", "value": 2 }, { "key": "insightChance", "value": 0.02 } ],
           "failureEffects": [ { "key": "progress", "ref": "martial", "value": 0.5 } ] },
         { "label": "拓下碑文帶回山門", "type": "plain", "text": "交給藏經閣慢慢參詳。", "cost": { "silver": 2 },
-          "success": "你買來紙墨把殘碑拓了下來。門中弟子圍著拓片議論了好幾天。",
+          "success": "你買來紙墨，把殘碑拓了下來。門中弟子圍著拓片議論了好幾日。",
           "successEffects": [ { "key": "reputation", "value": 2 }, { "key": "trainBonusPct", "value": 2 } ] }
       ]
     },
@@ -118,7 +118,7 @@
       "speaker": { "name": "獵戶阿牛", "subtitle": "山下獵戶", "portrait": "npc_am05", "gender": "男" },
       "lines": [
         { "speaker": "narrator", "text": "山下村口一陣騷亂。一頭吊睛白額的大蟲叼走了羊圈裡的羔羊，正往林子裡退。" },
-        { "speaker": "npc", "text": "那畜生上個月傷了兩個人，再不除掉，村裡就沒人敢上山砍柴了！" }
+        { "speaker": "npc", "text": "[npc] 那畜生上個月傷了兩個人，再不除掉，村裡便沒人敢上山砍柴了！" }
       ],
       "choices": [
         { "label": "追進林子除虎", "type": "battle", "text": "猛虎傷人，不能不管。",
@@ -127,7 +127,7 @@
           "successEffects": [ { "key": "food", "value": 15 }, { "key": "reputation", "value": 4 } ],
           "failureEffects": [ { "key": "injury", "value": 2 } ] },
         { "label": "教村民設陷阱", "type": "check", "attr": "wit", "text": "依山勢佈下絆索與陷坑。",
-          "success": "第三天夜裡，猛虎落進了陷坑。村民從此把崤山劍門的弟子當自家人。", "failure": "陷阱被猛虎識破，反倒踩壞了村民的菜園。",
+          "success": "第三日夜裡，猛虎落進了陷坑。村民從此把崤山劍門的弟子當作自家人。", "failure": "陷阱被猛虎識破，反倒踩壞了村民的菜園。",
           "successEffects": [ { "key": "food", "value": 8 }, { "key": "reputation", "value": 2 } ],
           "failureEffects": [ { "key": "reputation", "value": -1 } ] }
       ]
@@ -140,14 +140,14 @@
       "speaker": { "name": "清虛子", "subtitle": "樓觀道弟子", "portrait": "npc_tao01", "gender": "男" },
       "lines": [
         { "speaker": "narrator", "text": "山道上迎面來了一位背負長劍的年輕道人，見了你的劍穗，便停步打個稽首。" },
-        { "speaker": "npc", "text": "貧道清虛子，奉師命下山採買丹砂。聽說崤山劍門遭了變故，不知貴派如今可還安好？" }
+        { "speaker": "npc", "text": "[npc] 貧道清虛子，奉師命下山採買丹砂。聽聞崤山劍門遭了變故，不知貴派如今可還安好？" }
       ],
       "choices": [
         { "label": "坦誠相告，結個善緣", "type": "check", "attr": "cha", "text": "門派的難處，不必諱言。",
-          "success": "清虛子聽完，鄭重地說：「回觀之後，貧道定將貴派近況稟告師尊。」", "failure": "清虛子聽得心不在焉，只客套了幾句便告辭了。",
+          "success": "清虛子聽罷，鄭重道：「回觀之後，貧道定將貴派近況稟告師尊。」", "failure": "清虛子聽得心不在焉，只客套了幾句便告辭了。",
           "successEffects": [ { "key": "relation", "ref": "louguan", "value": 6 }, { "key": "reputation", "value": 1 } ],
           "failureEffects": [ { "key": "relation", "ref": "louguan", "value": 1 } ] },
-        { "label": "請教劍理", "type": "check", "attr": "wit", "text": "道家劍法以柔克剛，正可他山之石。",
+        { "label": "請教劍理", "type": "check", "attr": "wit", "text": "道家劍法以柔克剛，正可借為他山之石。",
           "success": "兩人在松下拆了幾十招。清虛子的劍意綿長，你從中悟到了些許劍理。", "failure": "清虛子的劍理玄之又玄，你聽得似懂非懂。",
           "successEffects": [ { "key": "progress", "ref": "sword", "value": 1.5 }, { "key": "relation", "ref": "louguan", "value": 2 } ],
           "failureEffects": [ { "key": "progress", "ref": "sword", "value": 0.5 } ] }
@@ -169,8 +169,8 @@
       "guardian": { "name": "守碑道人", "subtitle": "古觀最後的守觀人", "portrait": "npc_tao02", "gender": "男", "count": 3, "difficulty": 1.35, "boss": true,
         "minions": ["守觀道童", "守觀道童"],
         "lines": [
-          { "speaker": "guardian", "text": "此碑守了一百二十年，來過的人不下三十個，沒有一個看得懂。" },
-          { "speaker": "guardian", "text": "看得懂又如何？純陽之功，心術不正者練之必遭反噬。你要看碑，先過老道這一關。" }
+          { "speaker": "guardian", "text": "[guardian] 此碑老道守了一百二十年，來過的人不下三十個，沒有一個看得懂。" },
+          { "speaker": "guardian", "text": "[guardian] 看得懂又如何？純陽之功，心術不正者練之，必遭反噬。你要看碑，先過老道這一關。" }
         ],
         "win": "老道收掌而退，長嘆一聲：「劍門後繼有人。」他讓開身子，石壁上的古篆在夕陽下泛著金光。",
         "lose": "老道一掌把你推出觀門：「功力未到，看了也是白看。改日再來。」" },
@@ -228,10 +228,10 @@
       "guardian": { "name": "守劍人", "subtitle": "七星劍冢", "portrait": "npc_am07", "gender": "男", "count": 2, "difficulty": 1.4, "boss": true,
         "minions": ["劍冢劍僮"],
         "lines": [
-          { "speaker": "guardian", "text": "崤山劍門？你們的祖師爺當年也來過，接了我師父五劍。" },
-          { "speaker": "guardian", "text": "七劍接得下，劍譜你拿走。接不下，留下你的劍。" }
+          { "speaker": "guardian", "text": "[guardian] 崤山劍門？你們祖師當年也來過，接了我師父五劍。" },
+          { "speaker": "guardian", "text": "[guardian] 七劍接得下，劍譜你拿走。接不下，留下你的劍。" }
         ],
-        "win": "第七劍過後，守劍人的劍斷成兩截。他看著斷劍笑了：「比你祖師爺多兩劍。」說罷從北斗第七洞取出一卷劍譜。",
+        "win": "第七劍過後，守劍人的劍斷成兩截。他看著斷劍笑了：「比你祖師多了兩劍。」說罷從北斗第七洞取出一卷劍譜。",
         "lose": "第五劍上，你的劍被挑飛。守劍人把劍插回你腳邊：「劍先還你，練好了再來。」" },
       "rewards": [ { "key": "art", "ref": "longquan_qixing", "value": 1 }, { "key": "cap", "ref": "sword", "value": 1 }, { "key": "reputation", "value": 4 } ]
     },
@@ -266,10 +266,10 @@
       ],
       "guardian": { "name": "應龍拳師", "subtitle": "隱世拳師", "portrait": "npc_em06", "gender": "男", "count": 1, "difficulty": 1.5, "boss": true,
         "lines": [
-          { "speaker": "guardian", "text": "這二十年，你是第四個闖進來的。前三個，一個斷了手，兩個再也不敢練拳。" },
-          { "speaker": "guardian", "text": "我不收徒弟。但你要是能在我掌下站滿三十招，這套掌法，我教你。" }
+          { "speaker": "guardian", "text": "[guardian] 這二十年，你是第四個闖進來的。前三個，一個斷了手，兩個再也不敢練拳。" },
+          { "speaker": "guardian", "text": "[guardian] 老夫不收徒弟。但你若能在我掌下站滿三十招，這套掌法，我便教你。" }
         ],
-        "win": "三十招過去，你仍站著。拳師盯著你看了很久，終於點頭：「坐下吧，從第一掌教起。」",
+        "win": "三十招過去，你仍站著。拳師盯著你看了許久，終於點頭：「坐下罷，從第一掌教起。」",
         "lose": "第十七招，你被一掌震出水簾，跌進深潭。洞裡傳來拳師的聲音：「根基還差得遠。」" },
       "rewards": [ { "key": "art", "ref": "yinglong_zhang", "value": 1 }, { "key": "str", "value": 1 }, { "key": "reputation", "value": 3 } ]
     },
@@ -287,11 +287,11 @@
       "guardian": { "name": "蒙面女鏢客", "subtitle": "千佛洞守洞人", "portrait": "npc_af08", "gender": "女", "count": 2, "difficulty": 1.35, "boss": true,
         "minions": ["持弩侍女"],
         "lines": [
-          { "speaker": "guardian", "text": "千手觀音，一手一鏢。我在這裡守了十年，還沒人見過第一千枚鏢長什麼樣。" },
-          { "speaker": "guardian", "text": "你想看？那就別眨眼。" }
+          { "speaker": "guardian", "text": "[guardian] 千手觀音，一手一鏢。我在此守了十年，還沒人見過第一千枚鏢是甚麼模樣。" },
+          { "speaker": "guardian", "text": "[guardian] 你想瞧？那便別眨眼。" }
         ],
-        "win": "最後一枚鏢被你用劍鞘擋下。女鏢客摘下面紗，笑了：「十年了，終於可以下山了。」她把鏢譜放在觀音像的掌心，轉身離去。",
-        "lose": "你肩頭中了一鏢，鏢上沒有餵毒。女鏢客的聲音從暗處傳來：「下回再來，就沒這麼客氣了。」" },
+        "win": "最後一枚鏢被你用劍鞘擋下。女鏢客摘下面紗，笑了：「十年了，總算可以下山了。」她把鏢譜放在觀音像的掌心，轉身離去。",
+        "lose": "你肩頭中了一鏢，鏢上並未餵毒。女鏢客的聲音從暗處傳來：「下回再來，便沒這麼客氣了。」" },
       "rewards": [ { "key": "art", "ref": "qianshou_biao", "value": 1 }, { "key": "gear", "ref": "護腕", "value": 2 } ]
     },
     {
@@ -302,7 +302,7 @@
         { "text": "別院的園子荒了多年，假山、迴廊、月洞門錯落有致，卻怎麼走都像在繞圈子。",
           "choices": [
             { "label": "推敲園林布局", "attr": "wit", "text": "江南園林講究移步換景，迷宮或許就藏在景致裡。", "success": "你發現每座月洞門都對著一叢蘭花，循著蘭花走，迴廊便到了盡頭。", "failure": "你繞了一個下午，最後在荷花池邊歇腳時才找到出路。" },
-            { "label": "向寺裡的老僧打聽", "attr": "cha", "text": "寒山寺的僧人或許知道些什麼。", "success": "老僧笑道：「那位施主最愛蘭花。」一句話便點醒了你。", "failure": "老僧只是念佛，什麼都不肯說。" }
+            { "label": "向寺裡的老僧打聽", "attr": "cha", "text": "寒山寺的僧人或許知道些什麼。", "success": "老僧笑道：「那位施主生平最愛蘭花。」一句話便點醒了你。", "failure": "老僧只是念佛，甚麼也不肯說。" }
           ] },
         { "text": "書房的窗台上擺著一盆枯死的蘭花，盆底壓著一張字條：「拂之即開。」",
           "choices": [
@@ -338,7 +338,7 @@
         { "text": "流沙在腳下流動，每走一步都會陷得更深。遠處的鳴沙發出低沉的轟鳴。",
           "choices": [
             { "label": "以輕功踏沙而行", "attr": "agi", "text": "腳不沾沙，就不會陷下去。", "success": "你身輕如燕，沙面上只留下一串淺淺的腳印。", "failure": "流沙吞沒了你的小腿，掙扎半天才脫身。" },
-            { "label": "找當地嚮導帶路", "attr": "cha", "text": "敦煌的駝夫最熟這片沙海。", "success": "一位粟特駝夫帶你繞開了流沙，還分了你一壺水。", "failure": "駝夫收了錢卻半路跑了。" }
+            { "label": "找當地嚮導帶路", "attr": "cha", "text": "敦煌的駝夫最熟這片沙海。", "success": "一位粟特駝夫帶你繞開了流沙，還分了你一壺水。", "failure": "駝夫收了錢，卻半路溜了。" }
           ] }
       ],
       "guardian": { "name": "金背巨蠍", "subtitle": "古窟之主", "portrait": "beast_scorpion", "standee": "Realms/beast_scorpion", "gender": "男", "count": 3, "difficulty": 1.3, "boss": true,
@@ -363,7 +363,7 @@
         { "text": "洞中幾株老茶樹的葉子泛著銀光。洞壁上刻著四個字：「靜心方飲」。",
           "choices": [
             { "label": "打坐靜心後煮茶", "attr": "qi", "text": "先讓真氣平靜下來。", "success": "一盞茶下肚，一股清氣從丹田直衝百會，你感到某處關竅豁然打通。", "failure": "心浮氣躁，茶的效力只發揮了一半。" },
-            { "label": "以悟性參悟刻字", "attr": "wit", "text": "靜心，靜的是什麼心？", "success": "你明白了：靜的不是心，是求。放下求茶之念，再飲時，一切了然。", "failure": "想得越多心越亂。" }
+            { "label": "以悟性參悟刻字", "attr": "wit", "text": "靜心，靜的是什麼心？", "success": "你明白了：靜的不是心，是求。放下求茶之念，再飲時，一切了然。", "failure": "想得越多，心越亂。" }
           ] }
       ],
       "rewards": [ { "key": "cap", "ref": "martial", "value": 1 }, { "key": "progress", "ref": "martial", "value": 2 }, { "key": "wit", "value": 1 } ]

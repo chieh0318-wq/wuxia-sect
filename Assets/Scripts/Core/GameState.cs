@@ -126,8 +126,7 @@ namespace Wuxia
             Food = data.Start.food;
             Reputation = data.Start.reputation;
             // Creation base: the sect's sword line starts C / B, every other line D / C; picks then stack on top.
-            Protagonist.lines = RankSystem.Seed(null, RankSystem.Catalog.protagonistPath?.defaultRank ?? RankSystem.PrimaryRank,
-                RankSystem.Catalog.protagonistPath?.defaultCap ?? RankSystem.PrimaryCap, RankSystem.BaseCap, RankSystem.BaseRank);
+            Protagonist.lines = RankSystem.ProtagonistSeed();
             Disciples = data.Disciples.Where(d => d.startInSect).Select(CloneDisciple).ToList();
             foreach (var disciple in Disciples) EnsurePortrait(disciple);
             Buildings = new BuildingData[data.Start.slots.Length];

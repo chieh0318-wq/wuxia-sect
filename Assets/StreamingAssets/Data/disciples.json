@@ -10,12 +10,12 @@
       "trait": "前府兵",
       "robeColor": "#536D8F",
       "startInSect": true,
-      "rank": "B",
+      "rank": "A",
       "cap": "A+",
       "lines": [
         {
           "id": "polearm",
-          "rank": "B",
+          "rank": "A",
           "cap": "A"
         },
         {
@@ -25,7 +25,7 @@
         },
         {
           "id": "sword",
-          "rank": "B",
+          "rank": "A",
           "cap": "A"
         },
         {
@@ -57,12 +57,12 @@
       "trait": "過目不忘",
       "robeColor": "#986257",
       "startInSect": true,
-      "rank": "B",
+      "rank": "A",
       "cap": "A",
       "lines": [
         {
           "id": "sword",
-          "rank": "B",
+          "rank": "A",
           "cap": "A"
         },
         {

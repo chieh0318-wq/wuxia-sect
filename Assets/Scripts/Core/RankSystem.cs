@@ -76,6 +76,18 @@ namespace Wuxia
             return value > 0 ? value : Multipliers[Index(tier)];
         }
 
+        internal static SkillLine[] ProtagonistSeed()
+        {
+            var path = Catalog.protagonistPath;
+            var lines = Seed(null, path?.defaultRank ?? PrimaryRank, path?.defaultCap ?? PrimaryCap, BaseCap, BaseRank);
+            foreach (var line in lines.Where(line => line.id is "medicine" or "commerce" or "teaching"))
+            {
+                line.rank = "A";
+                line.cap = "A+";
+            }
+            return lines;
+        }
+
         internal static SkillLine[] Seed(SkillLine[] existing, string rank, string cap, string defaultCap,
             string defaultRank = null)
         {

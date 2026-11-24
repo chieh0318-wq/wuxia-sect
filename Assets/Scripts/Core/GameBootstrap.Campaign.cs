@@ -97,13 +97,14 @@ namespace Wuxia
 
         private void StartOffensiveCampaign(MapNode node, MapFaction foe, Action<string> finished)
         {
-            if (campaignOpen || state.ActionPoints < 2 || state.PartyNode != node.id || state.HoldsNode(node.id) || state.Patron?.id == foe.id) return;
+            if (campaignOpen) return;
+            if (state.CampaignBlock(node, foe) is string blocked) { finished(blocked); return; }
             ui.ChooseCampaignAssignment(state, $"調兵攻取{node.Label}", party =>
             {
                 int troops = Mathf.Clamp(foe.disciples / 2, 200, 3200);
                 OpenCampaign(new SectCampaign(state, party, foe, troops, support: state.CampaignSupport),
                     $"門派戰役　{node.Label}攻防", foe, 2,
-                    () => state.ActionPoints >= 2 && state.PartyNode == node.id && !state.HoldsNode(node.id)
+                    () => state.CampaignBlock(node, foe) == null
                         && AssignmentSystem.Commit(state, party) && state.TrySpendAp(2, "campaign:" + node.id), won =>
                     {
                         if (won)

@@ -279,7 +279,7 @@ namespace Wuxia
         /// </summary>
         private SkillLine[] PreviewLines(IEnumerable<CreationOption> picks)
         {
-            var preview = RankSystem.Seed(null, RankSystem.PrimaryRank, RankSystem.PrimaryCap, RankSystem.BaseCap, RankSystem.BaseRank);
+            var preview = RankSystem.ProtagonistSeed();
             var effects = (background?.effects ?? Array.Empty<GameEffect>())
                 .Concat(picks.SelectMany(option => option.effects ?? Array.Empty<GameEffect>()));
             foreach (var effect in effects)

@@ -66,6 +66,21 @@ namespace Wuxia
             return "[可研習]";
         }
 
+        internal string CampaignBlock(MapNode node, MapFaction foe)
+        {
+            if (node == null || foe == null) return "此處沒有可攻打的據點。";
+            if (node.id == StartNode || HoldsNode(node.id)) return "此處由本門守備。";
+            if (!IsFactionKnown(foe.id)) return "先打探此地守軍。";
+            if (Patron?.id == foe.id || HasTie(foe.id, Diplomacy.Alliance | Diplomacy.Pact))
+                return $"仍與{foe.Label}有約，請先解除盟約。";
+            if (!foe.Outlaw && Attitude(foe) > -25)
+                return foe.Court ? $"攻打將與{foe.Label}為敵，須先在外交交惡。"
+                    : $"與{foe.Label}尚未敵對，須先在外交交惡。";
+            if (PartyNode != node.id) return "須先率隊抵達此地。";
+            if (ActionPoints < 2) return "攻打需要 2 點行動力。";
+            return null;
+        }
+
         internal bool CanResearch(TechNode node) => !HasTech(node.id) && (node.requires == null || HasTech(node.requires)) &&
             BuildingLevel("library") > 0 && Silver >= node.silver && ActionPoints >= node.ap;
 
@@ -75,6 +90,8 @@ namespace Wuxia
             if (node == null || HasTech(node.id)) return "此功法已經研習過了。";
             if (BuildingLevel("library") <= 0) return "須先有藏經閣，才能研習功法。";
             if (node.requires != null && !HasTech(node.requires)) return $"需先研習「{Tech(node.requires)?.name}」。";
+            if (worker != null && IsGuestOfficer(worker) && node.branch == "sword")
+                return "客將不可由本門傳授崤山武學。";
             if (worker != null && AssignmentSystem.Block(this, worker) is string unavailable) return unavailable;
             float quality = worker == null ? 1 : AssignmentSystem.Predict(this, "study", worker).Quality;
             int silver = Mathf.CeilToInt(node.silver / Mathf.Max(1, quality));

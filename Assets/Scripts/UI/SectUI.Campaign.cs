@@ -183,6 +183,7 @@ namespace Wuxia
                     onComplete = won =>
                     {
                         battle.ResolveDuel(won);
+                        state.RecordCommanderDuel(faction, battle.Allies[0].Id, won); // v1126b 決定 3: 天下第一
                         message = won ? "主將對決得勝，全軍士氣上揚。" : "主將對決失利，全軍士氣下降。";
                         board.gameObject.SetActive(true);
                         RegisterBack();

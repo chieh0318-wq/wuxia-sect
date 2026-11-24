@@ -73,10 +73,18 @@ namespace Wuxia
         /// v1126b 決定 3: one line of live progress for a long-term route (e.g. 「庫銀 1,240／3,000」), from
         /// <see cref="GameState.Route"/>. The route is matched by its progress key, else by its id.
         /// </summary>
+        /// <summary>The built-in route a quest-board route tracks (by progress key, else id); null for a custom route.</summary>
+        internal static string RouteId(QuestRoute route)
+        {
+            if (route == null) return null;
+            if (Array.IndexOf(GameState.RouteIds, route.progress) >= 0) return route.progress;
+            return Array.IndexOf(GameState.RouteIds, route.id) >= 0 ? route.id : null;
+        }
+
         internal static string RouteProgress(GameState state, QuestRoute route)
         {
-            string id = Array.IndexOf(GameState.RouteIds, route.progress) >= 0 ? route.progress : route.id;
-            if (Array.IndexOf(GameState.RouteIds, id) < 0)
+            string id = RouteId(route);
+            if (id == null)
                 return string.IsNullOrWhiteSpace(route.condition) ? "達成條件：待定" : route.condition;
             var live = state.Route(id);
             return live.Progress + (live.Declared ? "　已宣告" : live.Met ? "　已可宣告" : "");

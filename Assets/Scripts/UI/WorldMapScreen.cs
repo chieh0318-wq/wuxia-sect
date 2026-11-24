@@ -689,7 +689,8 @@ namespace Wuxia
                 return;
             }
             MapUi.Portrait(panel, PortraitService.Resolve(faction.PortraitId), 20, 149, 100, 119);
-            MapUi.Text(panel,$"首領　{faction.leader ?? "—"}",133,149,274,32,22,MapUi.Ink);
+            MapUi.Text(panel,$"首領　{faction.leader ?? "—"}",133,149,GameState.IsMaster(faction) ? 166 : 274,32,22,MapUi.Ink);
+            MasterChallengeButton(panel, faction); // v1126b 決定 3: 天下第一
             MapUi.Button(panel,"掌門",303,105,103,34,() => LeaderSelected?.Invoke(faction),MapUi.Red);
             MapUi.Text(panel,RankSystem.FormatKnown(faction.leaderRank,faction.leaderCap),133,183,270,30,22,RankSystem.Color(faction.leaderRank));
             if (!string.IsNullOrEmpty(faction.leaderWeapon))
@@ -839,8 +840,7 @@ namespace Wuxia
         {
             ap.text = $"{host.DateText}　行動力 {host.ActionPoints}";
             if (host is not GameState game) return;
-            var v = game.Victory;
-            victoryStrip.text = $"勝利　外交 {v.Loyal}/{v.Rules.loyalNeeded}　武力 {v.Held}/{v.Rules.conquestNodes}";
+            victoryStrip.text = RouteStrip(game); // v1126b 決定 3: the four routes
             if (diplomacyLabel != null) diplomacyLabel.text = game.PendingDiploEvent != null ? "外交・急報" : "外交";
         }
 

@@ -475,10 +475,13 @@ namespace Wuxia
             }
             bool expedition = action.id is "explore" or "secret_realm";
             ui.ChooseAssignment(state, action.name, action.id, expedition ? 3 : 1,
-                party => ExecuteAssignedAction(action, party));
+                party => {
+                    if (action.id == "train") ChooseTraining(action, party);
+                    else ExecuteAssignedAction(action, party);
+                });
         }
 
-        private void ExecuteAssignedAction(ActionData action, string[] party)
+        private void ExecuteAssignedAction(ActionData action, string[] party, string manual = null)
         {
             if (!state.CanPay(action.cost) || party.Any(id => AssignmentSystem.Block(state, id) != null) ||
                 !SpendActionAp(action)) return;
@@ -505,7 +508,7 @@ namespace Wuxia
             }
             string breakthrough = action.id switch
             {
-                "train" => state.TrainMartial(worker),
+                "train" => state.TrainMartial(worker, manual),
                 "feast" => state.Feast(),
                 "forge_gear" => state.ForgeGear(worker),
                 "decree" => state.Decree(),

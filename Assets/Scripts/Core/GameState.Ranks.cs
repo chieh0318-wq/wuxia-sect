@@ -28,32 +28,47 @@ namespace Wuxia
                 ?.effectiveRankDelta ?? 1;
         }
 
-        internal string TrainMartial(string worker = HeroId)
+        internal IEnumerable<MartialArt> TrainingManuals(string worker) =>
+            (worker == HeroId ? ProtagonistArts : ArtsOf(Disciples.Find(member => member.id == worker)))
+                .Where(art => art.Combat).GroupBy(art => art.id).Select(group => group.First());
+
+        internal string TrainMartial(string worker = HeroId, string manual = null)
         {
-            var hero = Protagonist;
-            hero.martialTraining++;
-            int monthKey = Year * 12 + Month;
-            if (hero.lastTrainingMonth != monthKey)
+            bool hero = worker == HeroId;
+            var lines = hero ? Protagonist.lines : Disciples.Find(member => member.id == worker)?.lines;
+            if (lines == null) return "";
+            var art = TrainingManuals(worker).FirstOrDefault(entry => entry.id == manual);
+            if (manual != null && art == null) return "";
+            var line = art != null ? Array.Find(lines, entry => entry.id == art.category) :
+                lines.Where(entry => RankSystem.IsCombat(entry.id) && RankSystem.Index(entry.rank) < RankSystem.Index(entry.cap))
+                    .OrderByDescending(entry => RankSystem.Index(entry.rank)).FirstOrDefault() ?? RankSystem.BestCombat(lines);
+            if (line == null) return "";
+
+            float experience = Mathf.Max(.1f, 1 + Story.trainBonusPct / 100f) *
+                AssignmentSystem.Predict(this, "train", worker).Quality * Mathf.Max(.5f, 1 + .05f * AttributeBonus("wit"));
+            if (hero)
+                experience *= Mathf.Max(.5f, 1 + .02f * AttributeBonus("str")) * StudyMultiplier(line.id);
+            if (hero && line.id == Protagonist.major) experience *= 1.2f;
+            TrainLine(line, experience);
+            if (art != null)
             {
-                hero.lastTrainingMonth = monthKey;
-                hero.trainingMonths++;
+                string id = worker + ":" + art.id;
+                var record = Story.manualTraining.FirstOrDefault(entry => entry.id == id);
+                if (record == null)
+                {
+                    record = new ManualPractice { id = id };
+                    Story.manualTraining = Story.manualTraining.Append(record).ToArray();
+                }
+                record.experience += experience;
             }
-            // v1124 C12: the protagonist drills the chosen 主修; once it sits at its cap, the next combat line below cap.
-            var line = RankSystem.Major(hero.lines, hero.major);
-            if (line != null && RankSystem.Index(line.rank) >= RankSystem.Index(line.cap))
-                line = hero.lines.Where(entry => RankSystem.IsCombat(entry.id) &&
-                        RankSystem.Index(entry.rank) < RankSystem.Index(entry.cap))
-                    .OrderByDescending(entry => RankSystem.Index(entry.rank)).FirstOrDefault() ?? line;
-            if (line == null)
-                return "";
-            // 悟性 speeds study for everyone; 武力 adds a little to the protagonist's own martial study.
-            float experience = Mathf.Max(.1f, 1 + Story.trainBonusPct / 100f) * AssignmentSystem.Predict(this, "train", worker).Quality *
-                Mathf.Max(.5f, 1 + .05f * AttributeBonus("wit"));
-            TrainLine(line, experience * Mathf.Max(.5f, 1 + .02f * AttributeBonus("str")) * StudyMultiplier(line.id));
-            foreach (var disciple in Disciples.Where(member => member.id != Story.delegateId))
-                TrainLine(RankSystem.BestCombat(disciple.lines), experience);
-
-
+            if (!hero) return "";
+            Protagonist.martialTraining++;
+            int monthKey = Year * 12 + Month;
+            if (Protagonist.lastTrainingMonth != monthKey)
+            {
+                Protagonist.lastTrainingMonth = monthKey;
+                Protagonist.trainingMonths++;
+            }
             return CheckMartialPath(false);
         }
 

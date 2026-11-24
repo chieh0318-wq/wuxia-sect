@@ -141,6 +141,7 @@ namespace Wuxia
     {
         public bool sameGenderChildhoodFriend;
         public int monthlyFood, monthlySilver;
+        public ManualPractice[] manualTraining = Array.Empty<ManualPractice>();
         public SectRaid sectRaid;
         public int raidResolvedMonth;
         public string patronFaction;
@@ -169,6 +170,8 @@ namespace Wuxia
         public DiploTie[] ties = Array.Empty<DiploTie>();
         public string diploEvent, diploEventTarget;
     }
+
+    [Serializable] public sealed class ManualPractice { public string id; public float experience; }
 
     [Serializable] public sealed class StoryValue { public string id; public int value; }
 

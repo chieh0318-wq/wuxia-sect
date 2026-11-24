@@ -1,50 +1,50 @@
 {
   "openingBeats": [
-    { "speaker": "", "portrait": "", "image": "cg_peace", "text": "開元二十餘年，天下承平。兩京斗米不過十數錢，西市的駝鈴一路響到洛陽南市，酒旗下盡是說胡語的客商。" },
-    { "speaker": "", "portrait": "", "image": "", "text": "崤山橫在兩京之間，古道自山腳穿過。{sect}的山門在半山腰，三進院落，十來個弟子；晨鐘一響，劍光便在霧裡亮起來。" },
-    { "speaker": "師父　褚寒山", "portrait": "master", "image": "", "text": "劍要練到心裡去。手上快三分，不如心裡早一步。老三，你入門不是最早，也最不愛練劍，悟性卻是你們幾個裡頭最好的。這句話替我記著，往後替我教給他們。" },
-    { "speaker": "大師兄　林照", "portrait": "lin", "image": "", "text": "{call:lin}，今早折衝府又來點兵，山下張家的兒子連夜跑了。這府兵……怕是撐不了幾年了。" },
-    { "speaker": "二師姐　許雁", "portrait": "xu", "image": "", "text": "師父近來夜夜上藏經閣頂樓，對著那只鐵匣，燈到四更才熄。我問他，他只說：「有些舊帳，終究要還。」" },
-    { "speaker": "", "portrait": "", "image": "", "text": "{friend}與你在洛陽同巷長大，一個讀兵書，一個讀雜書。謝家是洛陽累世士族，與范陽幕府也有往來；洛陽人都說，{friend}撫琴時眉目溫和，論起兵事，滿座將校都要噤聲。" },
-    { "speaker": "{friend}", "portrait": "friend", "image": "", "text": "我從洛陽帶了新譜的琴曲來。不過先說正事——近來兩京之間，佩刀的生面孔多了，都在打聽崤山。" },
-    { "speaker": "", "portrait": "", "image": "cg_master_leaves", "text": "那年秋末，一位洛陽來客上山，與師父在殿中談到天明。次日清晨，師父背著舊劍下山，只留下一句：「十年之約，到期了。」" },
-    { "speaker": "師父　褚寒山", "portrait": "master", "image": "", "text": "門中事務，交給老三。林照，你是大師兄，替{he}看著。我若三月不回……你們便當我雲遊去了，不必來找。" },
-    { "speaker": "大師兄　林照", "portrait": "lin", "image": "", "text": "……是。師父放心，我盯著。" },
-    { "speaker": "", "portrait": "", "image": "", "text": "三個月過去，又是三個月。石階生了青苔，師父始終沒有回來。山下驛路上的馬蹄聲，卻一夜比一夜急。" }
+    { "speaker": "", "portrait": "", "image": "cg_peace", "text": "開元二十餘年，天下承平。兩京斗米不過十數錢，西市駝鈴一路響到洛陽南市，酒旗底下盡是操著胡語的客商。" },
+    { "speaker": "", "portrait": "", "image": "", "text": "崤山橫亙兩京之間，古道自山腳穿過。{sect}山門設在半山，三進院落，弟子十餘人；晨鐘一響，劍光便自霧中亮起。" },
+    { "speaker": "師父　褚寒山", "portrait": "master", "image": "", "text": "劍要練到心上。手上快三分，不如心中早一步。老三，你入門不是最早，也最不愛練劍，悟性卻是你們幾個當中最好的。這句話替為師記著，日後替我傳給他們。" },
+    { "speaker": "大師兄　林照", "portrait": "lin", "image": "", "text": "{call:lin}，今早折衝府又來點兵，山下張家的兒子連夜逃了。這府兵……只怕撐不過幾年了。" },
+    { "speaker": "二師姐　許雁", "portrait": "xu", "image": "", "text": "師父近來夜夜登上藏經閣頂樓，對著那只鐵匣，燈火總要到四更才熄。我問起，他只道：「有些舊帳，終究是要還的。」" },
+    { "speaker": "", "portrait": "", "image": "", "text": "{friend}與你在洛陽同巷長大，一個讀兵書，一個讀雜書。謝家是洛陽累世士族，與范陽幕府亦有往來；洛陽人都說，{friend}撫琴時眉目溫和，論起兵事來，滿座將校都要噤聲。" },
+    { "speaker": "{friend}", "portrait": "friend", "image": "", "text": "我從洛陽帶了新譜的琴曲來。不過正事要緊——近來兩京道上佩刀的生面孔多了，個個都在打聽崤山。" },
+    { "speaker": "", "portrait": "", "image": "cg_master_leaves", "text": "那年秋末，有洛陽來客上山，與師父在殿中長談至天明。次日清晨，師父背著舊劍下山，只留一句：「十年之約，到期了。」" },
+    { "speaker": "師父　褚寒山", "portrait": "master", "image": "", "text": "門中庶務，便交與老三。林照，你是大師兄，替他看著些。我若三月未歸……只當我雲遊去了，不必相尋。" },
+    { "speaker": "大師兄　林照", "portrait": "lin", "image": "", "text": "……是。師父放心，弟子看著。" },
+    { "speaker": "", "portrait": "", "image": "", "text": "三月過去，又是三月。石階生了青苔，師父始終未歸。山下驛路上的馬蹄聲，卻一夜急過一夜。" }
   ],
   "successionBeats": [
-    { "speaker": "", "portrait": "", "image": "cg_succession", "text": "師父音訊全無，已近半年。這天清早晨鐘敲過，同門沒有去演武場，而是一個接一個進了正殿。" },
-    { "speaker": "二師姐　許雁", "portrait": "xu", "image": "", "text": "師父臨走時說，門中事務交給老三。這半年山門是誰守的、帳是誰管的、晨課是誰帶的，大家都看在眼裡。我提議——請老三暫代掌門，等師父回來。" },
-    { "speaker": "", "portrait": "", "image": "", "text": "殿裡靜了好一會兒。有人點頭，也有人悄悄往林照那邊看。" },
-    { "speaker": "藥房執事　韓守拙", "portrait": "han", "image": "", "text": "……論入門先後，大師兄在前；論資歷，二師姐管了七年藏經閣。我不是說三師{兄姐}不好，只是這個位子，原該是大師兄或二師姐的。" },
-    { "speaker": "外門弟子　康瑟", "portrait": "kang", "image": "", "text": "我也這麼想。不過——二師姐自己都推了三師{兄姐}，我沒話說。帳上的事我照舊盯著，一文錢也不會少。" },
-    { "speaker": "大師兄　林照", "portrait": "lin", "image": "", "text": "老三，別擺那張臉，又不是叫你去送死。師父把事交給你，不交給我，自有他的道理。我服的是師父，不是你——往後你哪裡做錯了，我第一個說。" },
-    { "speaker": "大師兄　林照", "portrait": "lin", "image": "", "text": "……可劍門要撐下去，總得有人站在前頭挨罵。那就你吧。後面，我替你看著。" },
-    { "speaker": "二師姐　許雁", "portrait": "xu", "image": "", "text": "三師{弟妹}，別逞強。累了就說一聲，帳我替你分一半；師弟妹的功課，我也替你盯著。" },
-    { "speaker": "{name}", "portrait": "hero", "image": "", "text": "我只是暫代。等師父回來，這個位子原樣還給他。在那之前——{sect}一個人都不能少。" },
-    { "speaker": "藥房執事　韓守拙", "portrait": "han", "image": "", "text": "……代掌門。我說話直，你別往心裡去。要練功、要幹活，叫我便是。" },
-    { "speaker": "", "portrait": "", "image": "", "text": "從這天起，山上的人改了口。你成了{sect}的代掌門；不服的人還有，卻沒有一個人下山。" }
+    { "speaker": "", "portrait": "", "image": "cg_succession", "text": "師父音訊全無，將近半年。這日清早晨鐘響過，同門沒有往演武場去，而是一個接一個進了正殿。" },
+    { "speaker": "二師姐　許雁", "portrait": "xu", "image": "", "text": "師父臨行時說，門中庶務交與老三。這半年山門是誰守的、帳是誰管的、晨課是誰帶的，大夥兒都看在眼裡。我有一議——請老三暫代掌門，待師父歸山。" },
+    { "speaker": "", "portrait": "", "image": "", "text": "殿中靜了好一陣。有人點頭，也有人悄悄朝林照那邊望去。" },
+    { "speaker": "藥房執事　韓守拙", "portrait": "han", "image": "", "text": "……論入門先後，大師兄在前；論資歷，二師姐掌了七年藏經閣。我不是說三師{兄姐}不好，只是這個位子，原該是大師兄或二師姐的。" },
+    { "speaker": "外門弟子　康瑟", "portrait": "kang", "image": "", "text": "我也這般想。不過——二師姐自己都推舉了三師{兄姐}，我無話可說。帳上的事我照舊盯著，一文錢也不會短。" },
+    { "speaker": "大師兄　林照", "portrait": "lin", "image": "", "text": "老三，別擺那副臉，又不是叫你去送死。師父把事交給你而不交給我，自有他的道理。我服的是師父，不是你——日後你哪裡做錯了，林某頭一個說。" },
+    { "speaker": "大師兄　林照", "portrait": "lin", "image": "", "text": "……可劍門要撐下去，總得有人站在前頭挨罵。那便是你了。身後，我替你看著。" },
+    { "speaker": "二師姐　許雁", "portrait": "xu", "image": "", "text": "三師{弟妹}，莫要逞強。累了便說一聲，帳我替你分一半；師弟師妹們的功課，我也替你盯著。" },
+    { "speaker": "{name}", "portrait": "hero", "image": "", "text": "我只是暫代。待師父歸來，這位子原樣奉還。在此之前——{sect}一個人也不能少。" },
+    { "speaker": "藥房執事　韓守拙", "portrait": "han", "image": "", "text": "……代掌門。我說話直，莫往心裡去。要練功、要出力，喚我一聲便是。" },
+    { "speaker": "", "portrait": "", "image": "", "text": "自這日起，山上眾人改了口。你成了{sect}的代掌門；心裡不服的仍有，卻沒有一個人下山。" }
   ],
   "friendBeats": [
-    { "speaker": "", "portrait": "", "image": "cg_friend_arrival", "text": "接任後第三天，山道上來了一匹瘦馬。馬上的人風塵僕僕，背上一張舊桐木琴——是{friend}。" },
-    { "speaker": "大師兄　林照", "portrait": "lin", "image": "", "text": "又是謝家的人。三天兩頭往劍門跑，這回又帶了什麼曲子來？" },
-    { "speaker": "{friend}", "portrait": "friend", "image": "", "text": "不帶曲子，帶了我自己。洛陽城裡都傳遍了：崤山劍門掌門失蹤，山門無主，佩刀的生面孔在山下打轉。我把城裡的差事辭了，連夜趕來。" },
-    { "speaker": "", "portrait": "", "image": "", "text": "{friend}不是崤山劍門的弟子，沒拜過你師父，也沒練過一天崤山劍，原是{guestSect}門下。只是與你在洛陽同一條巷子裡長大；你八歲被師父領上山後，{friend}便隔三差五上山蹭飯、看劍，順手把劍門的帳理得清清楚楚。" },
-    { "speaker": "{name}", "portrait": "hero", "image": "", "text": "你不是劍門的人，不必蹚這渾水。" },
-    { "speaker": "{friend}", "portrait": "friend", "image": "", "text": "我不是劍門的人，可我們是一起長大的。你管劍，我管帳、管糧、管那些看不見的刀子。你們劍門眼下缺的不是一把劍，是一個替你算路的人。" },
-    { "speaker": "{friend}", "portrait": "friend", "image": "", "text": "我也不是空手來的。謝家在洛陽還算說得上話，與范陽幕府也有些往來；家裡撥了一份錢糧，隨後便送上山。城裡的消息，往後也會一封封送到你案頭。" },
-    { "speaker": "大師兄　林照", "portrait": "lin", "image": "", "text": "……謝家肯出錢出力，又肯替劍門跑腿，這山上倒也沒人好再說什麼。" },
-    { "speaker": "二師姐　許雁", "portrait": "xu", "image": "", "text": "……也好。帳房那一攤，往後總算有人分著擔了。" },
-    { "speaker": "{friend}", "portrait": "friend", "image": "", "text": "我留下來。不拜師、不入門，以客將之身做你的軍師。你師父回來之前，我陪你把{sect}撐住。" },
-    { "speaker": "", "portrait": "", "image": "", "text": "那天夜裡，{friend}在藏經閣旁的廂房住下，案上攤開一張兩京形勢圖。同門開始叫{friend}「軍師」——起初是玩笑，後來便沒人再改口。" }
+    { "speaker": "", "portrait": "", "image": "cg_friend_arrival", "text": "接任後第三日，山道上來了一匹瘦馬。馬上的人風塵僕僕，背負一張舊桐木琴——正是{friend}。" },
+    { "speaker": "大師兄　林照", "portrait": "lin", "image": "", "text": "又是謝家的人。三天兩頭往劍門跑，這回又帶了甚麼新曲來？" },
+    { "speaker": "{friend}", "portrait": "friend", "image": "", "text": "這回不帶曲子，只帶了我自己。洛陽城裡早已傳遍：崤山劍門掌門下落不明，山門無主，山下盡是佩刀的生面孔。我已向鳴琴館告了長假，星夜兼程趕來。" },
+    { "speaker": "", "portrait": "", "image": "", "text": "{friend}並非崤山劍門弟子，不曾拜你師父，也未練過一日崤山劍，原是{guestSect}門下。那是洛陽士族子弟的琴社，百年前一位琴師以弦藏針自保，漸成一門，與崤山同在兩京古道左近，謝家子弟素常上山論劍。{friend}與你在洛陽同巷長大；你八歲隨師父上山後，{friend}便三天兩頭上山來，吃一頓齋飯、看一回劍，順手把劍門的帳目理得清清楚楚。" },
+    { "speaker": "{name}", "portrait": "hero", "image": "", "text": "你不是劍門中人，何苦蹚這渾水。" },
+    { "speaker": "{friend}", "portrait": "friend", "image": "", "text": "我不是劍門中人，可你我是一塊兒長大的。你管劍，我管帳、管糧、管那些瞧不見的刀子。劍門眼下缺的不是一柄劍，是一個替你算路的人。" },
+    { "speaker": "{friend}", "portrait": "friend", "image": "", "text": "我也不是空手來的。謝家在洛陽還說得上話，與范陽幕府也有些往來；家中撥了一份錢糧，隨後便送上山。城中消息，往後也會一封封遞到你案頭。" },
+    { "speaker": "大師兄　林照", "portrait": "lin", "image": "", "text": "……謝家肯出錢出力，又肯替劍門奔走，這山上倒也沒人好再說什麼。" },
+    { "speaker": "二師姐　許雁", "portrait": "xu", "image": "", "text": "……也好。帳房那一攤，往後總算有人分擔了。" },
+    { "speaker": "{friend}", "portrait": "friend", "image": "", "text": "我不走了。不入你門牆，只以客將之身替你籌謀帷幄。你師父歸山之前，這副擔子，我與你同挑。" },
+    { "speaker": "", "portrait": "", "image": "", "text": "當夜，{friend}在藏經閣旁的廂房住下，案上攤開一幅兩京形勢圖。同門開始喚{friend}「軍師」——起初是說笑，後來便再沒人改口。" }
   ],
-  "disasterPrompt": "師父去後第二年，禍事終於找上門來。那一年，崤山上發生了什麼？",
+  "disasterPrompt": "師父去後第二年，禍事終究找上門來。那一年，崤山上出了什麼事？",
   "disasters": [
     {
       "id": "treasure",
       "difficulty": 2,
       "name": "懷璧其罪",
-      "summary": "師父留下的鐵匣裡藏著《衛公兵法》殘卷。黑山鐵騎夜襲山門，{sect}毀於一旦；你只能投靠師父的老友——華嶽派掌門封伯陽。",
+      "summary": "師父留下的鐵匣中藏著《衛公兵法》殘卷。黑山鐵騎夜襲山門，{sect}毀於一旦；你只得投奔師父的故交——華嶽派掌門封伯陽。",
       "image": "cg_treasure_attack",
       "effects": [
         { "key": "relation", "value": -40, "ref": "heishan" },
@@ -53,27 +53,27 @@
         { "key": "food", "value": -20, "ref": "" }
       ],
       "beats": [
-        { "speaker": "", "portrait": "", "image": "cg_treasure_attack", "text": "那夜無月。二更時分，山腳下的狗忽然一齊不叫了。" },
-        { "speaker": "", "portrait": "", "image": "", "text": "火把從古道兩頭湧上來，像兩條燒紅的蛇。為首一騎披著狼裘，鞍旁掛的不是橫刀，是一柄長長的陌刀。" },
-        { "speaker": "黑山鐵騎　屈突烈", "portrait": "warlord", "image": "", "text": "崤山的聽著！褚老兒藏了《衛公兵法》殘卷，那是軍國之物，不是你們江湖人玩的東西。交出來，山上的人都能活。" },
-        { "speaker": "大師兄　林照", "portrait": "lin", "image": "", "text": "{call:lin}，至少兩百騎，帶著弩。這不是江湖尋仇，是打仗。" },
-        { "speaker": "二師姐　許雁", "portrait": "xu", "image": "", "text": "鐵匣在頂樓，我知道怎麼開。可師父說過，那東西落到這種人手裡，死的就不只是我們。" },
+        { "speaker": "", "portrait": "", "image": "cg_treasure_attack", "text": "那夜無月。二更時分，山腳下的狗忽然一齊噤了聲。" },
+        { "speaker": "", "portrait": "", "image": "", "text": "火把自古道兩頭湧上來，像兩條燒紅的長蛇。為首一騎披著狼裘，鞍旁掛的不是橫刀，是一柄長長的陌刀。" },
+        { "speaker": "黑山鐵騎　屈突烈", "portrait": "warlord", "image": "", "text": "崤山的聽著！褚老兒藏了《衛公兵法》殘卷，那是軍國重器，輪不到你們江湖草莽把玩。交出來，山上的人都能活命。" },
+        { "speaker": "大師兄　林照", "portrait": "lin", "image": "", "text": "{call:lin}，少說兩百騎，還帶著弩。這不是江湖尋仇，是打仗。" },
+        { "speaker": "二師姐　許雁", "portrait": "xu", "image": "", "text": "鐵匣在頂樓，我知道怎麼開。可師父說過，那東西若落到這種人手裡，死的便不只是咱們。" },
         { "speaker": "{name}", "portrait": "hero", "image": "", "text": "關山門，熄燈火。林照帶人守東牆，許雁護著小師弟從後山走。鐵匣——我來背。" },
-        { "speaker": "", "portrait": "", "image": "", "text": "箭雨落在瓦上，像一場驟來的冰雹。山門撐了半個時辰，終於在撞木聲中轟然倒下。" },
-        { "speaker": "", "portrait": "", "image": "cg_ruins", "text": "祖師殿燒了一整夜。天明時，{name}背著鐵匣，帶著七八個帶傷的同門，從後山小徑滾下了山澗。" },
-        { "speaker": "{friend}", "portrait": "friend", "image": "", "text": "我在澗口等了一夜。……鐵匣還在？好。從現在起，它比你的命還難保。" },
-        { "speaker": "{friend}", "portrait": "friend", "image": "", "text": "屈突烈的騎兵吃的是官糧，背後有人。普天下敢收留你的，只剩華嶽派封掌門，他與你師父是三十年的交情。" },
-        { "speaker": "華嶽派掌門　封伯陽", "portrait": "elder_villain", "image": "cg_elder_hall", "text": "好孩子，受苦了。褚兄的事，就是我封某的事。這鐵匣放你身上太險，先存在老夫的藏劍樓，誰也動不得。" },
-        { "speaker": "華嶽派掌門　封伯陽", "portrait": "elder_villain", "image": "", "text": "你的同門，就分去我門下幾處別院將養，吃穿不愁。{sect}掌門放心，都是一家人。" },
-        { "speaker": "", "portrait": "", "image": "", "text": "{name}跪在殿中，額頭觸著冰涼的青磚。{he}聽得見封伯陽笑聲裡的溫和，也聽得見那溫和底下，鐵匣被人捧走的腳步聲。" },
-        { "speaker": "{friend}", "portrait": "friend", "image": "", "text": "先忍著。寄人籬下，就要先數清楚屋簷有多低。" }
+        { "speaker": "", "portrait": "", "image": "", "text": "箭雨打在瓦上，像一場驟來的冰雹。山門撐了半個時辰，終於在撞木聲中轟然倒下。" },
+        { "speaker": "", "portrait": "", "image": "cg_ruins", "text": "祖師殿燒了一整夜。天明時，你背著鐵匣，領著七八個帶傷的同門，從後山小徑滾下了山澗。" },
+        { "speaker": "{friend}", "portrait": "friend", "image": "", "text": "我在澗口守了一夜。……鐵匣還在？好。從此刻起，它比你的命還難保。" },
+        { "speaker": "{friend}", "portrait": "friend", "image": "", "text": "屈突烈的騎兵吃的是官糧，背後有人。普天之下敢收留你的，只剩華嶽派封掌門，他與你師父有三十年交情。" },
+        { "speaker": "華嶽派掌門　封伯陽", "portrait": "elder_villain", "image": "cg_elder_hall", "text": "好孩子，受苦了。褚兄的事，便是我封某的事。這鐵匣放在你身上太險，先存在老夫的藏劍樓，誰也動不得。" },
+        { "speaker": "華嶽派掌門　封伯陽", "portrait": "elder_villain", "image": "", "text": "你的同門，便分到我門下幾處別院將養，吃穿不愁。{sect}掌門放心，都是自家人。" },
+        { "speaker": "", "portrait": "", "image": "", "text": "你跪在殿中，額頭觸著冰涼的青磚。你聽得見封伯陽笑聲裡的溫和，也聽得見那溫和底下，鐵匣被人捧走的腳步聲。" },
+        { "speaker": "{friend}", "portrait": "friend", "image": "", "text": "先忍著。寄人籬下，得先數清楚屋簷有多低。" }
       ],
-      "responsePrompt": "山門已破，鐵匣落入封伯陽之手，同門被分散各處。{name}該何去何從？",
+      "responsePrompt": "山門已破，鐵匣落入封伯陽之手，同門星散各處。你該何去何從？",
       "responses": [
         {
           "id": "submit",
           "name": "降黑山，保同門",
-          "summary": "向屈突烈遞降書，說出鐵匣的下落，換黑山鐵騎放過散落的同門。人命與錢糧都保住了，只是從此江湖上人人知道，{sect}低過頭。",
+          "summary": "向屈突烈遞上降書，說出鐵匣下落，換黑山鐵騎放過散落的同門。人命與錢糧都保住了，只是從此江湖上人人知道，{sect}低過頭。",
           "effects": [
             { "key": "silver", "value": 60, "ref": "" },
             { "key": "food", "value": 40, "ref": "" },
@@ -85,16 +85,16 @@
           ],
           "beats": [
             { "speaker": "{name}", "portrait": "hero", "image": "cg_crossroads", "text": "師父，弟子無能。今日這一跪，是替他們跪的。" },
-            { "speaker": "黑山鐵騎　屈突烈", "portrait": "warlord", "image": "", "text": "識時務。一只鐵匣的下落，換你同門十幾條命，這買賣不虧。往後我的人過崤函道，你的人替我帶路。" },
-            { "speaker": "大師兄　林照", "portrait": "lin", "image": "", "text": "……{call:lin}，我當過兵，知道打不贏的仗不該打。可這口氣，我咽不下去。" },
-            { "speaker": "{friend}", "portrait": "friend", "image": "", "text": "低頭不是輸，淮陰侯也受過胯下之辱。只是你要記住今天，記住每一張臉。" },
-            { "speaker": "", "portrait": "", "image": "", "text": "屈突烈撥了一車糧、一袋銀，說是「安家之資」。{name}收下了，收的時候，手一直在抖。" }
+            { "speaker": "黑山鐵騎　屈突烈", "portrait": "warlord", "image": "", "text": "識時務。一只鐵匣的下落，換你同門十幾條命，這筆交易不虧。往後我的人過崤函道，你的人替我引路。" },
+            { "speaker": "大師兄　林照", "portrait": "lin", "image": "", "text": "……{call:lin}，我當過兵，知道打不贏的仗不該打。可這口氣，我嚥不下。" },
+            { "speaker": "{friend}", "portrait": "friend", "image": "", "text": "低頭不是輸，淮陰侯也受過胯下之辱。只是你須記住今日，記住每一張臉。" },
+            { "speaker": "", "portrait": "", "image": "", "text": "屈突烈撥了一車糧、一袋銀，說是「安家之資」。你收下了，收的時候，手一直在抖。" }
           ]
         },
         {
           "id": "ally",
           "name": "暫棲華嶽門下",
-          "summary": "聽{friend}之計，暫借華嶽派的旗號立足。封伯陽撥你一處山場，卻把兩個同門留在華嶽「盡孝」——你欠下的，是一筆遲早要還的人情。",
+          "summary": "聽{friend}之計，暫借華嶽派旗號立足。封伯陽撥你一處山場，卻把兩個同門留在華嶽「盡孝」——你欠下的，是一筆遲早要還的人情。",
           "effects": [
             { "key": "relation", "value": 30, "ref": "huayue" },
             { "key": "silver", "value": 30, "ref": "" },
@@ -105,11 +105,11 @@
             { "key": "flag", "value": 1, "ref": "owes_huayue" }
           ],
           "beats": [
-            { "speaker": "{friend}", "portrait": "friend", "image": "cg_elder_hall", "text": "封伯陽要鐵匣，也要你的人。他給得越多，將來討得越狠。可眼下，我們需要他的旗號。" },
-            { "speaker": "華嶽派掌門　封伯陽", "portrait": "elder_villain", "image": "", "text": "好，{sect}掌門深明大義！老夫撥你一處山場，先把架子搭起來。小滿和康家丫頭，就留在華嶽替你盡孝。" },
+            { "speaker": "{friend}", "portrait": "friend", "image": "cg_elder_hall", "text": "封伯陽要鐵匣，也要你的人。他今日給得越多，來日便討得越狠。可眼下，咱們需要他的旗號。" },
+            { "speaker": "華嶽派掌門　封伯陽", "portrait": "elder_villain", "image": "", "text": "好，{sect}掌門深明大義！老夫撥你一處山場，先把架子搭起來。小滿和康家丫頭，便留在華嶽替你盡孝。" },
             { "speaker": "小師弟　羅小滿", "portrait": "luo", "image": "", "text": "{call:luo}……我會好好練劍的。你一定、一定要回來接我。" },
-            { "speaker": "", "portrait": "", "image": "", "text": "{name}點了點頭，沒有回答。{he}心裡明白，這是人質。" },
-            { "speaker": "{friend}", "portrait": "friend", "image": "", "text": "記帳吧。他今天借我們一座山，來日我們還他一座山——連本帶利。" }
+            { "speaker": "", "portrait": "", "image": "", "text": "你點了點頭，沒有作聲。你心裡明白，這是人質。" },
+            { "speaker": "{friend}", "portrait": "friend", "image": "", "text": "把帳記下。他今日借咱們一座山，來日咱們還他一座山——連本帶利。" }
           ]
         },
         {
@@ -127,12 +127,12 @@
             { "key": "flag", "value": 1, "ref": "broke_from_huayue" }
           ],
           "beats": [
-            { "speaker": "{name}", "portrait": "hero", "image": "cg_elder_hall", "text": "封掌門，弟子想借三十個人、二十匹馬，回崤山收殮師門舊物。鐵匣，就當弟子的抵押。" },
-            { "speaker": "華嶽派掌門　封伯陽", "portrait": "elder_villain", "image": "", "text": "哈哈，拿鐵匣作押，借幾個人馬，這買賣老夫做了。早去早回。" },
-            { "speaker": "{friend}", "portrait": "friend", "image": "cg_crossroads", "text": "出了潼關，就別回頭。人馬是他借的，人心是你的。" },
-            { "speaker": "", "portrait": "", "image": "", "text": "那一夜，散在華嶽各處別院的同門，一個接一個翻牆而出。到了三岔路口，{name}回頭一數，一個不少。" },
-            { "speaker": "老卒　魏老七", "portrait": "wei", "image": "", "text": "老子在安西跟突騎施砍過刀，最見不得嘴上叫兄弟、背後扣人質的。{call:wei}，算我一個。" },
-            { "speaker": "大師兄　林照", "portrait": "lin", "image": "", "text": "從今往後，我們不吃誰的飯，不看誰的臉。" }
+            { "speaker": "{name}", "portrait": "hero", "image": "cg_elder_hall", "text": "封掌門，弟子想借三十個人、二十匹馬，回崤山收殮師門舊物。鐵匣，便當作弟子的押物。" },
+            { "speaker": "華嶽派掌門　封伯陽", "portrait": "elder_villain", "image": "", "text": "哈哈，拿鐵匣作押，借幾個人馬，這樁交易老夫做了。早去早回。" },
+            { "speaker": "{friend}", "portrait": "friend", "image": "cg_crossroads", "text": "出了潼關，便莫回頭。人馬是他借的，人心卻是你的。" },
+            { "speaker": "", "portrait": "", "image": "", "text": "那一夜，散在華嶽各處別院的同門，一個接一個翻牆而出。到了三岔路口，你回頭一數，一個不少。" },
+            { "speaker": "老卒　魏老七", "portrait": "wei", "image": "", "text": "老子在安西跟突騎施砍過刀，最見不得嘴上稱兄道弟、背後扣人為質的。{call:wei}，算我一個。" },
+            { "speaker": "大師兄　林照", "portrait": "lin", "image": "", "text": "從今往後，咱們不吃誰的飯，不看誰的臉色。" }
           ]
         }
       ]
@@ -141,7 +141,7 @@
       "id": "court",
       "difficulty": 3,
       "name": "官府迫害",
-      "summary": "宮中大璫看上了崤山，{sect}不肯讓山。殿中侍御史范希仁一紙敕牒，指{sect}私藏甲兵、窩匿逃丁——羅網已經收口。",
+      "summary": "宮中大璫看上了崤山，{sect}不肯讓山。殿中侍御史范希仁一紙敕牒，指{sect}私藏甲兵、窩匿逃丁——羅網已然收口。",
       "image": "cg_court_persecution",
       "effects": [
         { "key": "relation", "value": -40, "ref": "yushitai" },
@@ -150,19 +150,19 @@
         { "key": "silver", "value": -20, "ref": "" }
       ],
       "beats": [
-        { "speaker": "", "portrait": "", "image": "cg_peace", "text": "入秋時，一位綠袍內侍坐著肩輿上了山。他說宮中有位大璫，看中了崤山的松林與泉水，想在此起一座別業。" },
-        { "speaker": "", "portrait": "", "image": "", "text": "{name}奉上清茶，只回了一句：「祖師的山，弟子不敢賣。」綠袍內侍笑了笑，茶一口沒喝。" },
-        { "speaker": "大師兄　林照", "portrait": "lin", "image": "", "text": "{call:lin}，那人臨走前在匾下站了很久。我在府兵裡見過這種眼神——那是在看要燒的地方。" },
-        { "speaker": "", "portrait": "", "image": "cg_court_persecution", "text": "十日後，天未亮，金吾衛甲士圍了山門。一紙敕牒貼在門上，墨跡還沒乾。" },
+        { "speaker": "", "portrait": "", "image": "cg_peace", "text": "入秋時，一位綠袍內侍乘著肩輿上山，說宮中有位大璫看中了崤山的松林泉水，欲在此起一座別業。" },
+        { "speaker": "", "portrait": "", "image": "", "text": "你奉上清茶，只回了一句：「祖師的山，弟子不敢賣。」綠袍內侍笑了笑，茶一口未飲。" },
+        { "speaker": "大師兄　林照", "portrait": "lin", "image": "", "text": "{call:lin}，那人臨走前在匾下站了許久。我在府兵裡見過這種眼神——那是在看要燒的地方。" },
+        { "speaker": "", "portrait": "", "image": "cg_court_persecution", "text": "十日後，天色未明，金吾衛甲士圍了山門。一紙敕牒貼在門上，墨跡未乾。" },
         { "speaker": "殿中侍御史　范希仁", "portrait": "official", "image": "", "text": "奉敕勘問：崤山{sect}私藏甲兵、窩匿逃丁，圖謀不軌。山上一干人等，聽候發落。" },
-        { "speaker": "", "portrait": "", "image": "", "text": "甲士從後院柴房拖出三領明光鎧。{name}從沒見過它們，可所有人都看見，它們是從{sect}的柴房裡拖出來的。" },
-        { "speaker": "二師姐　許雁", "portrait": "xu", "image": "", "text": "甲片上的漆是新的，編繩是官坊的樣式。這是栽贓，可我們拿什麼去說？" },
-        { "speaker": "殿中侍御史　范希仁", "portrait": "official", "image": "", "text": "唐律：私有甲三領，絞。你是掌門，這罪名，你一個人擔，還是讓師弟師妹們分著擔？" },
+        { "speaker": "", "portrait": "", "image": "", "text": "甲士自後院柴房拖出三領明光鎧。你從未見過這些甲，可人人都看見了，它們是從{sect}的柴房裡拖出來的。" },
+        { "speaker": "二師姐　許雁", "portrait": "xu", "image": "", "text": "甲片上的漆是新的，編繩是官坊的樣式。分明是栽贓，可咱們拿什麼去辯？" },
+        { "speaker": "殿中侍御史　范希仁", "portrait": "official", "image": "", "text": "唐律：私有甲三領，絞。你是掌門，這罪名，是你一人擔，還是讓師弟師妹們分著擔？" },
         { "speaker": "{friend}", "portrait": "friend", "image": "", "text": "范希仁是御史臺有名的「羅織手」。他要的不是你的命，是這座山。山給了他，命才保得住。" },
-        { "speaker": "", "portrait": "", "image": "cg_ruins", "text": "{sect}的匾額被摘下，山門貼上封條。同門被押下山時，山下的百姓沒有一個敢抬頭。" },
-        { "speaker": "{friend}", "portrait": "friend", "image": "", "text": "河南府裡我還有幾個說得上話的人。天亮之前，我們得決定往哪裡走。" }
+        { "speaker": "", "portrait": "", "image": "cg_ruins", "text": "{sect}的匾額被摘下，山門貼上封條。同門被押下山時，山下百姓沒有一個敢抬頭。" },
+        { "speaker": "{friend}", "portrait": "friend", "image": "", "text": "河南府裡我還有幾個說得上話的故舊。天亮之前，咱們得定下往哪裡走。" }
       ],
-      "responsePrompt": "罪名壓頂，山門被封。{name}要如何對付這張羅網？",
+      "responsePrompt": "罪名壓頂，山門被封。這張羅網，你要如何應對？",
       "responses": [
         {
           "id": "submit",
@@ -178,17 +178,17 @@
             { "key": "flag", "value": 1, "ref": "lin_exiled" }
           ],
           "beats": [
-            { "speaker": "{name}", "portrait": "hero", "image": "cg_court_persecution", "text": "山，我讓。罪，我認。我的同門，一個都不許動。" },
-            { "speaker": "殿中侍御史　范希仁", "portrait": "official", "image": "", "text": "爽快。不過三領甲，總得有個人流放，案卷才好結。" },
-            { "speaker": "大師兄　林照", "portrait": "lin", "image": "", "text": "{call:lin}，讓我去。二千里的路，我當府兵時走過不只一回。你得留下，帶著他們活。" },
-            { "speaker": "", "portrait": "", "image": "", "text": "林照戴枷那天，回頭笑了一下。{name}一直站到押解的隊伍轉過山腳，才把攥緊的拳頭鬆開。" },
-            { "speaker": "{friend}", "portrait": "friend", "image": "", "text": "范希仁得了山，大璫得了別業，往後他們不會再盯著你。這份太平，是林照換來的。別辜負他。" }
+            { "speaker": "{name}", "portrait": "hero", "image": "cg_court_persecution", "text": "山，我讓。罪，我認。我的同門，一個也不許動。" },
+            { "speaker": "殿中侍御史　范希仁", "portrait": "official", "image": "", "text": "爽快。只是三領甲，總得有人流放，案卷才好了結。" },
+            { "speaker": "大師兄　林照", "portrait": "lin", "image": "", "text": "{call:lin}，讓我去。二千里的路，我當府兵時走過不止一回。你得留下，帶著他們活下去。" },
+            { "speaker": "", "portrait": "", "image": "", "text": "林照戴枷那日，回頭笑了一笑。你一直站到押解的隊伍轉過山腳，才把攥緊的拳頭鬆開。" },
+            { "speaker": "{friend}", "portrait": "friend", "image": "", "text": "范希仁得了山，大璫得了別業，往後他們不會再盯著你。這份太平，是林照換來的。莫要辜負他。" }
           ]
         },
         {
           "id": "ally",
           "name": "投奔少林，借佛門庇護",
-          "summary": "少林寺當年助太宗擒王世充，至今有敕書護寺。{friend}引你上少室山求庇，御史臺的手伸不進山門——只是藥房的韓守拙，要留在寺中償這份情。",
+          "summary": "少林寺當年助太宗擒王世充，至今有敕書護寺。{friend}引你上少室山求庇，御史臺的手伸不進山門——只是藥房的韓守拙，須留在寺中還這份情。",
           "effects": [
             { "key": "relation", "value": 35, "ref": "shaolin" },
             { "key": "relation", "value": -10, "ref": "yushitai" },
@@ -199,17 +199,17 @@
             { "key": "flag", "value": 1, "ref": "shaolin_patron" }
           ],
           "beats": [
-            { "speaker": "{friend}", "portrait": "friend", "image": "", "text": "少林當年助太宗擒王世充，太宗親賜田地，敕書至今供在寺裡。御史臺的手，伸不進少林的山門。" },
+            { "speaker": "{friend}", "portrait": "friend", "image": "", "text": "少林當年助太宗擒王世充，太宗親賜田地，敕書至今供在寺中。御史臺的手，伸不進少林的山門。" },
             { "speaker": "", "portrait": "", "image": "cg_elder_hall", "text": "少林方丈聽完前因後果，只合十說了一句：「佛門不問是非，只救眼前人。」" },
-            { "speaker": "", "portrait": "", "image": "", "text": "范希仁的公文送到少室山下，被知客僧原封退了回去。羅網，暫時收了口。" },
-            { "speaker": "藥房執事　韓守拙", "portrait": "han", "image": "", "text": "……方丈說藥寮缺人。我留下。這是我們欠的。" },
-            { "speaker": "{friend}", "portrait": "friend", "image": "", "text": "人情要還，但少林的人情，還得起。等風頭過了，我們出去另尋一塊地。" }
+            { "speaker": "", "portrait": "", "image": "", "text": "范希仁的公文送到少室山下，被知客僧原封退了回去。羅網，暫且鬆了口。" },
+            { "speaker": "藥房執事　韓守拙", "portrait": "han", "image": "", "text": "……方丈說藥寮缺人手。我留下。這是咱們欠的。" },
+            { "speaker": "{friend}", "portrait": "friend", "image": "", "text": "人情要還，但少林的人情，還得起。待風頭過了，咱們再出去另覓一處地方。" }
           ]
         },
         {
           "id": "independent",
           "name": "劫獄出走，亡命江湖",
-          "summary": "{sect}沒有私藏甲兵，便一個字也不認。一位背劍的女鏢師夜開縣獄，眾人亡命出走。官府冊上是逃犯，江湖人嘴裡是好漢。",
+          "summary": "{sect}並未私藏甲兵，便一個字也不認。一位背劍的女鏢師夜開縣獄，眾人亡命出走。官府冊上是逃犯，江湖人口中是好漢。",
           "effects": [
             { "key": "reputation", "value": 20, "ref": "" },
             { "key": "relation", "value": -40, "ref": "yushitai" },
@@ -221,12 +221,12 @@
             { "key": "flag", "value": 1, "ref": "outlaw" }
           ],
           "beats": [
-            { "speaker": "{name}", "portrait": "hero", "image": "", "text": "{sect}沒有私藏甲兵。既然沒有，我便一個字也不認。" },
-            { "speaker": "", "portrait": "", "image": "", "text": "那夜，一個背劍的女子翻進縣獄後牆。她自稱沈青，押鏢多年，最看不得官府拿無辜的人頂罪。" },
-            { "speaker": "沈青", "portrait": "shen", "image": "", "text": "牢門我開了。往南三十里有條運炭的小路，天亮前出縣界。走不走，你自己定。" },
-            { "speaker": "大師兄　林照", "portrait": "lin", "image": "", "text": "走！這口氣我在府兵裡咽了六年，今天不咽了。" },
-            { "speaker": "", "portrait": "", "image": "cg_crossroads", "text": "天明時縣獄空了。海捕文書很快貼滿兩京驛道，畫像上的{name}，眉眼比本人兇了三分。" },
-            { "speaker": "{friend}", "portrait": "friend", "image": "", "text": "從今往後，你在官府冊上是逃犯，在江湖人嘴裡是好漢。這兩樣，都要用好。" }
+            { "speaker": "{name}", "portrait": "hero", "image": "", "text": "{sect}不曾私藏甲兵。既然沒有，我便一個字也不認。" },
+            { "speaker": "", "portrait": "", "image": "", "text": "那夜，一個背劍的女子翻進縣獄後牆。她自稱沈青，押鏢多年，最看不得官府拿無辜之人頂罪。" },
+            { "speaker": "沈青", "portrait": "shen", "image": "", "text": "牢門我開了。往南三十里有條運炭的小路，天亮前出得縣界。走不走，你自己拿主意。" },
+            { "speaker": "大師兄　林照", "portrait": "lin", "image": "", "text": "走！這口氣我在府兵裡嚥了六年，今日不嚥了。" },
+            { "speaker": "", "portrait": "", "image": "cg_crossroads", "text": "天明時縣獄已空。海捕文書很快貼滿兩京驛道，畫像上的你，眉眼比本人兇了三分。" },
+            { "speaker": "{friend}", "portrait": "friend", "image": "", "text": "從今往後，你在官府冊上是逃犯，在江湖人口中是好漢。這兩樣，都要用得好。" }
           ]
         }
       ]
@@ -244,20 +244,20 @@
         { "key": "flag", "value": 1, "ref": "funiu_betrayal" }
       ],
       "beats": [
-        { "speaker": "", "portrait": "", "image": "cg_peace", "text": "伏牛劍派與{sect}同盟二十年。當年師父與秦無咎在洛水邊歃血，說好「兩派一家，禍福同當」。" },
+        { "speaker": "", "portrait": "", "image": "cg_peace", "text": "伏牛劍派與{sect}同盟二十年。當年師父與秦無咎在洛水邊歃血為盟，說好「兩派一家，禍福同當」。" },
         { "speaker": "伏牛劍派掌門　秦無咎", "portrait": "rival_head", "image": "", "text": "賢侄，褚兄雲遊未歸，我這做師叔的放心不下。下月十五伏牛山重訂盟約，你把門中弟子都帶來，熱鬧熱鬧。" },
-        { "speaker": "二師姐　許雁", "portrait": "xu", "image": "", "text": "請帖上寫「闔門同至」。師父在時，兩派盟會只派執事去。他要我們全去，做什麼？" },
-        { "speaker": "{friend}", "portrait": "friend", "image": "", "text": "我也覺得不對。可你不去，便是你先失了禮數，他正好有說法。去吧，每人貼身藏一把短刀。" },
+        { "speaker": "二師姐　許雁", "portrait": "xu", "image": "", "text": "請帖上寫著「闔門同至」。師父在時，兩派盟會只派執事前往。他要咱們全去，意欲何為？" },
+        { "speaker": "{friend}", "portrait": "friend", "image": "", "text": "我也覺得不對。可你若不去，便是你先失了禮數，他正好有話說。去吧，每人貼身藏一把短刀。" },
         { "speaker": "", "portrait": "", "image": "cg_betrayal", "text": "盟會設在伏牛山議事廳。酒過三巡，秦無咎舉杯而起，杯子落地，碎成三片。" },
         { "speaker": "", "portrait": "", "image": "", "text": "兩廊屏風後頭，同時亮起數十柄長劍。" },
-        { "speaker": "伏牛劍派掌門　秦無咎", "portrait": "rival_head", "image": "", "text": "賢侄莫怪。崤函道一年過多少胡商，你算過嗎？這條路，不該由一群沒了師父的孩子守著。" },
+        { "speaker": "伏牛劍派掌門　秦無咎", "portrait": "rival_head", "image": "", "text": "賢侄莫怪。崤函道一年過多少胡商，你可曾算過？這條路，不該由一群沒了師父的孩子守著。" },
         { "speaker": "大師兄　林照", "portrait": "lin", "image": "", "text": "{call:lin}，往門口走！我斷後！" },
-        { "speaker": "", "portrait": "", "image": "", "text": "{name}拔劍時，聽見杜蘅的菜刀剁進木柱，聽見許雁喊著小師弟的名字，也聽見自己的心跳，一下一下，比劍還響。" },
-        { "speaker": "", "portrait": "", "image": "cg_ruins", "text": "衝出伏牛山的只剩一半人。等他們繞路回到崤山，山門上已經換了伏牛劍派的旗。" },
-        { "speaker": "{friend}", "portrait": "friend", "image": "", "text": "秦無咎昨夜就另派一路人上了崤山。他謀劃很久了……而他背後，未必只有他自己。" },
-        { "speaker": "{name}", "portrait": "hero", "image": "", "text": "二十年的盟約，一只酒杯就碎了。" }
+        { "speaker": "", "portrait": "", "image": "", "text": "你拔劍時，聽見杜蘅的菜刀剁進木柱，聽見許雁喊著小師弟的名字，也聽見自己的心跳，一下一下，比劍鳴還響。" },
+        { "speaker": "", "portrait": "", "image": "cg_ruins", "text": "衝出伏牛山的只剩一半人。待他們繞路回到崤山，山門上已換了伏牛劍派的旗。" },
+        { "speaker": "{friend}", "portrait": "friend", "image": "", "text": "秦無咎昨夜便另遣一路人上了崤山。他謀劃已久……而他背後，未必只有他自己。" },
+        { "speaker": "{name}", "portrait": "hero", "image": "", "text": "二十年的盟約，一只酒杯便碎了。" }
       ],
-      "responsePrompt": "盟友背刃，山門易主，還有同門被扣在伏牛山。{name}要如何收拾殘局？",
+      "responsePrompt": "盟友背刃，山門易主，尚有同門被扣在伏牛山。這殘局，你要如何收拾？",
       "responses": [
         {
           "id": "submit",
@@ -272,11 +272,11 @@
             { "key": "flag", "value": 1, "ref": "funiu_vassal" }
           ],
           "beats": [
-            { "speaker": "伏牛劍派掌門　秦無咎", "portrait": "rival_head", "image": "cg_betrayal", "text": "把崤函道讓出來，往後每年端午給伏牛山送一份孝敬。你的同門，今晚就放。" },
+            { "speaker": "伏牛劍派掌門　秦無咎", "portrait": "rival_head", "image": "cg_betrayal", "text": "把崤函道讓出來，往後每年端午給伏牛山送一份孝敬。你的同門，今晚便放。" },
             { "speaker": "{name}", "portrait": "hero", "image": "", "text": "……好。" },
-            { "speaker": "外門弟子　康瑟", "portrait": "kang", "image": "", "text": "他們把我們關在柴房，說你不答應，就把我賣給過路的駝隊。……{call:kang}，謝謝你答應。" },
-            { "speaker": "{friend}", "portrait": "friend", "image": "", "text": "你今天這個「好」字，我替你記著。有一天，要秦無咎原原本本吞回去。" },
-            { "speaker": "", "portrait": "", "image": "cg_crossroads", "text": "離開伏牛山時，秦家弟子在山道兩旁笑著拱手。那笑聲，{name}記了很多年。" }
+            { "speaker": "外門弟子　康瑟", "portrait": "kang", "image": "", "text": "他們把我們關在柴房，說你若不答應，便把我賣給過路的駝隊。……{call:kang}，多謝你答應。" },
+            { "speaker": "{friend}", "portrait": "friend", "image": "", "text": "你今日這個「好」字，我替你記著。總有一日，要秦無咎原原本本吞回去。" },
+            { "speaker": "", "portrait": "", "image": "cg_crossroads", "text": "離開伏牛山時，秦家弟子在山道兩旁笑著拱手。那笑聲，你記了許多年。" }
           ]
         },
         {
@@ -293,11 +293,11 @@
             { "key": "flag", "value": 1, "ref": "kang_missing" }
           ],
           "beats": [
-            { "speaker": "{friend}", "portrait": "friend", "image": "", "text": "華嶽派封伯陽與秦無咎素來不和。他未必是好人，但敵人的敵人，眼下就是盟友。" },
+            { "speaker": "{friend}", "portrait": "friend", "image": "", "text": "華嶽派封伯陽與秦無咎素來不和。他未必是好人，但敵人的敵人，眼下便是盟友。" },
             { "speaker": "華嶽派掌門　封伯陽", "portrait": "elder_villain", "image": "cg_elder_hall", "text": "秦無咎這小人！賢侄放心，華嶽替你出這口氣。只是師出要有名，你便以華嶽別院之名重立山門，如何？" },
             { "speaker": "", "portrait": "", "image": "", "text": "華嶽派的帖子一到，秦無咎果然放了人。只有康瑟，被一隊胡商連夜帶走，不知去向。" },
-            { "speaker": "{name}", "portrait": "hero", "image": "", "text": "康瑟……我一定把你找回來。" },
-            { "speaker": "{friend}", "portrait": "friend", "image": "", "text": "封伯陽這回出了力，下回就要收利錢。我們頭上的旗子，不過換了一面。" }
+            { "speaker": "{name}", "portrait": "hero", "image": "", "text": "康瑟……我定要把你找回來。" },
+            { "speaker": "{friend}", "portrait": "friend", "image": "", "text": "封伯陽這回出了力，下回便要收利錢。咱們頭上的旗子，不過換了一面。" }
           ]
         },
         {
@@ -314,12 +314,12 @@
             { "key": "flag", "value": 1, "ref": "raided_funiu" }
           ],
           "beats": [
-            { "speaker": "{name}", "portrait": "hero", "image": "", "text": "我不求誰，也不跪誰。今夜，我們自己去把人接回來。" },
-            { "speaker": "", "portrait": "", "image": "", "text": "帶路的是個十四歲的走索女孩，叫喬小檀。她在伏牛山下的戲班賣藝，親眼見過秦家弟子把人押進後山。" },
-            { "speaker": "喬小檀", "portrait": "qiao", "image": "", "text": "後山柴房的屋脊我走過，瓦片一片都不會響。你們踩著我的腳印走。" },
-            { "speaker": "", "portrait": "", "image": "cg_betrayal", "text": "三更，柴房鎖斷。同門一個個從窗口遞出來。{name}最後一個走，在議事廳柱上刻下八字：「廿年之盟，一刀兩斷。」" },
-            { "speaker": "大師兄　林照", "portrait": "lin", "image": "", "text": "痛快！只是從此伏牛山跟我們是死仇了。" },
-            { "speaker": "{friend}", "portrait": "friend", "image": "cg_crossroads", "text": "死仇就死仇。江湖上很快會傳開：{sect}的人，背叛不得，也扣不住。" }
+            { "speaker": "{name}", "portrait": "hero", "image": "", "text": "我不求誰，也不跪誰。今夜，咱們自己去把人接回來。" },
+            { "speaker": "", "portrait": "", "image": "", "text": "帶路的是個十四歲的走索女孩，名叫喬小檀。她在伏牛山下的戲班賣藝，親眼見過秦家弟子把人押進後山。" },
+            { "speaker": "喬小檀", "portrait": "qiao", "image": "", "text": "後山柴房的屋脊我走過，瓦片一片也不會響。你們踩著我的腳印走。" },
+            { "speaker": "", "portrait": "", "image": "cg_betrayal", "text": "三更，柴房鎖斷。同門一個個從窗口遞了出來。你最後一個走，在議事廳柱上刻下八字：「廿年之盟，一刀兩斷。」" },
+            { "speaker": "大師兄　林照", "portrait": "lin", "image": "", "text": "痛快！只是從此伏牛山與咱們便是死仇了。" },
+            { "speaker": "{friend}", "portrait": "friend", "image": "cg_crossroads", "text": "死仇便死仇。江湖上很快會傳開：{sect}的人，背叛不得，也扣不住。" }
           ]
         }
       ]
@@ -336,22 +336,22 @@
         { "key": "flag", "value": 1, "ref": "survived_plague" }
       ],
       "beats": [
-        { "speaker": "", "portrait": "", "image": "cg_peace", "text": "那年關中、河南先旱後澇。麥子還沒黃透，就爛在了田裡。" },
+        { "speaker": "", "portrait": "", "image": "cg_peace", "text": "那年關中、河南先旱後澇。麥子尚未黃透，便爛在了田裡。" },
         { "speaker": "", "portrait": "", "image": "", "text": "入夏，疫病從洛陽南市傳開。先是發熱，後是咳血，三日不起。坊門一關，屍首只能從牆頭往外遞。" },
-        { "speaker": "藥房執事　韓守拙", "portrait": "han", "image": "", "text": "……是時疫。山下已經有人上山求藥了。藥房的存貨，撐不過十天。" },
-        { "speaker": "伙房管事　杜蘅", "portrait": "du", "image": "", "text": "米缸也見底了。山下米行說漕船都去了長安，洛陽一粒也分不到。" },
-        { "speaker": "", "portrait": "", "image": "cg_ruins", "text": "{name}開了山門收留病人。七日後，第一個同門倒下；半月後，祖師殿裡躺滿了人，香案成了藥案。" },
-        { "speaker": "{friend}", "portrait": "friend", "image": "", "text": "你救不了整個河南道。再這樣下去，{sect}會跟著山下一起死。" },
+        { "speaker": "藥房執事　韓守拙", "portrait": "han", "image": "", "text": "……是時疫。山下已有人上山求藥了。藥房的存貨，撐不過十日。" },
+        { "speaker": "伙房管事　杜蘅", "portrait": "du", "image": "", "text": "米缸也見底了。山下米行說漕船都往長安去了，洛陽一粒也分不到。" },
+        { "speaker": "", "portrait": "", "image": "cg_ruins", "text": "你開了山門收留病人。七日後，頭一個同門倒下；半月後，祖師殿裡躺滿了人，香案成了藥案。" },
+        { "speaker": "{friend}", "portrait": "friend", "image": "", "text": "你救不了整個河南道。再這樣下去，{sect}會隨山下一起死。" },
         { "speaker": "{name}", "portrait": "hero", "image": "", "text": "那你說，該把誰關在門外？" },
-        { "speaker": "", "portrait": "", "image": "", "text": "秋風起時疫病退了。崤山的田荒了，倉空了，連祖師殿的大梁都被拆去一截，給病人燒了火。" },
-        { "speaker": "{friend}", "portrait": "friend", "image": "", "text": "這座山養不活人了。我們得走。往哪裡走、依靠誰，你來定。" }
+        { "speaker": "", "portrait": "", "image": "", "text": "秋風起時，疫病退了。崤山的田荒了，倉空了，連祖師殿的大梁都拆去一截，給病人燒了火。" },
+        { "speaker": "{friend}", "portrait": "friend", "image": "", "text": "這座山養不活人了。咱們得走。往哪裡走、依靠誰，你來定。" }
       ],
-      "responsePrompt": "大疫過後，崤山倉空田荒。{name}要帶著同門投向何處？",
+      "responsePrompt": "大疫過後，崤山倉空田荒。你要帶著同門投向何處？",
       "responses": [
         {
           "id": "submit",
           "name": "入籍官府，吃官糧",
-          "summary": "應河南府招募，全門入「團結兵」籍，官給口糧。人人吃得飽，卻要聽官府調遣，江湖上也笑{sect}成了衙門的看家犬。",
+          "summary": "應河南府招募，全門入「團結兵」籍，官給口糧。人人吃得飽，卻須聽官府調遣，江湖上也笑{sect}成了衙門的看家犬。",
           "effects": [
             { "key": "relation", "value": 35, "ref": "henan_fu" },
             { "key": "silver", "value": 30, "ref": "" },
@@ -362,10 +362,10 @@
             { "key": "flag", "value": 1, "ref": "henan_registered" }
           ],
           "beats": [
-            { "speaker": "", "portrait": "", "image": "cg_court_persecution", "text": "河南府貼出告示：凡有武藝者，可入團結兵，官給口糧。{name}帶著同門去應了名。" },
-            { "speaker": "{name}", "portrait": "hero", "image": "", "text": "吃官糧，聽官令。至少，他們不會再餓肚子。" },
-            { "speaker": "大師兄　林照", "portrait": "lin", "image": "", "text": "我逃出了府兵，到頭來又穿回這身皮。{call:lin}，這筆帳先記著。" },
-            { "speaker": "{friend}", "portrait": "friend", "image": "", "text": "官府的糧最好吃，也最難還。三年之內，我們得自己站起來。" }
+            { "speaker": "", "portrait": "", "image": "cg_court_persecution", "text": "河南府貼出告示：凡有武藝者，可入團結兵，官給口糧。你帶著同門去應了名。" },
+            { "speaker": "{name}", "portrait": "hero", "image": "", "text": "吃官糧，聽官令。至少，他們不必再挨餓。" },
+            { "speaker": "大師兄　林照", "portrait": "lin", "image": "", "text": "我從府兵裡逃出來，到頭來又穿回這身皮。{call:lin}，這筆帳先記著。" },
+            { "speaker": "{friend}", "portrait": "friend", "image": "", "text": "官府的糧最好吃，也最難還。三年之內，咱們得自己站起來。" }
           ]
         },
         {
@@ -383,10 +383,10 @@
             { "key": "flag", "value": 1, "ref": "sute_contract" }
           ],
           "beats": [
-            { "speaker": "外門弟子　康瑟", "portrait": "kang", "image": "", "text": "我舅舅的商隊要往涼州去，缺護衛。管吃管住，還給工錢，只要我們肯走。" },
-            { "speaker": "", "portrait": "", "image": "", "text": "薩寶安延年摸著大鬍子，把{name}從頭看到腳，才伸出三根手指：「三年。替我押三年貨，我替你養三年人。」" },
-            { "speaker": "{friend}", "portrait": "friend", "image": "", "text": "三年後，我們手裡有錢、有路、有消息。這是最好的買賣——前提是活得過三年。" },
-            { "speaker": "", "portrait": "", "image": "cg_crossroads", "text": "駝鈴響起時，{name}最後回望了一眼崤山。山很靜，像師父臨走那天一樣。" }
+            { "speaker": "外門弟子　康瑟", "portrait": "kang", "image": "", "text": "我舅舅的商隊要往涼州去，正缺護衛。管吃管住，還給工錢，只要咱們肯走。" },
+            { "speaker": "", "portrait": "", "image": "", "text": "薩寶安延年捋著大鬍子，把你從頭看到腳，才伸出三根手指：「三年。替我押三年貨，我替你養三年人。」" },
+            { "speaker": "{friend}", "portrait": "friend", "image": "", "text": "三年後，咱們手裡有錢、有路、有消息。這是最好的買賣——只要活得過這三年。" },
+            { "speaker": "", "portrait": "", "image": "cg_crossroads", "text": "駝鈴響起時，你最後回望了一眼崤山。山很靜，一如師父臨行那日。" }
           ]
         },
         {
@@ -404,10 +404,10 @@
             { "key": "flag", "value": 1, "ref": "plague_healers" }
           ],
           "beats": [
-            { "speaker": "{name}", "portrait": "hero", "image": "", "text": "我們不靠誰。山下活下來的人，都記得是誰給他們端過藥。" },
-            { "speaker": "宋秋娘", "portrait": "song", "image": "", "text": "我爹娘都沒熬過去。{title}，我力氣大，什麼都扛得動。讓我跟你們走吧。" },
-            { "speaker": "藥房執事　韓守拙", "portrait": "han", "image": "", "text": "……藥方，我都寫下來了。往後哪裡有疫，我們都能救。" },
-            { "speaker": "{friend}", "portrait": "friend", "image": "cg_crossroads", "text": "這名聲是拿命換的。到了新地方，它就是{sect}的第一塊磚。" }
+            { "speaker": "{name}", "portrait": "hero", "image": "", "text": "咱們不靠誰。山下活下來的人，都記得是誰給他們端過藥。" },
+            { "speaker": "宋秋娘", "portrait": "song", "image": "", "text": "我爹娘都沒熬過去。{title}，我力氣大，甚麼都扛得動。讓我跟你們走罷。" },
+            { "speaker": "藥房執事　韓守拙", "portrait": "han", "image": "", "text": "……藥方，我都寫下來了。往後哪裡有疫，咱們都能救。" },
+            { "speaker": "{friend}", "portrait": "friend", "image": "cg_crossroads", "text": "這名聲是拿命換的。到了新地方，它便是{sect}的第一塊磚。" }
           ]
         }
       ]
@@ -499,10 +499,10 @@
     }
   ],
   "closingBeats": [
-    { "speaker": "", "portrait": "", "image": "cg_new_mountain", "text": "一個月後，你站在新的山頭上。腳下是一座荒廢多年的山莊，屋瓦殘缺，殿宇猶在；風裡聞得到陌生的土味。" },
-    { "speaker": "{friend}", "portrait": "friend", "image": "", "text": "地方是你選的，路是大家一起走來的。從今天起，這裡就是{sect}。" },
+    { "speaker": "", "portrait": "", "image": "cg_new_mountain", "text": "一個月後，你站在新的山頭上。腳下是一座荒廢多年的山莊，屋瓦殘缺，殿宇猶存；風裡聞得到陌生的泥土氣息。" },
+    { "speaker": "{friend}", "portrait": "friend", "image": "", "text": "地方是你選的，路是大夥兒一同走來的。從今日起，這裡便是{sect}。" },
     { "speaker": "", "portrait": "", "image": "", "text": "跟來的同門掃落葉、補屋瓦、挑水劈柴。有人蹲在地上，用樹枝畫著將來的演武場該有多大。" },
-    { "speaker": "{name}", "portrait": "hero", "image": "", "text": "師父，弟子把{sect}帶到這裡了。您若雲遊路過，抬頭看一眼——山門會一直開著。" },
-    { "speaker": "", "portrait": "", "image": "", "text": "這一夜，你睡在新砌的灶台旁，聽著同門此起彼落的鼾聲，第一次覺得，天亮也許沒那麼可怕。" }
+    { "speaker": "{name}", "portrait": "hero", "image": "", "text": "師父，弟子把{sect}帶到這裡了。您若雲遊路過，抬頭看上一眼——山門會一直開著。" },
+    { "speaker": "", "portrait": "", "image": "", "text": "這一夜，你睡在新砌的灶台旁，聽著同門此起彼落的鼾聲，頭一回覺得，天亮也許沒那麼可怕。" }
   ]
 }

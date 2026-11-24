@@ -132,7 +132,7 @@ namespace Wuxia
             bool autoMode = false;
             string selectedAction = "attack";
             string inspectedAction = selectedAction;
-            int activeTab = 0;
+            int activeTab = 0, movePage = 0;
             var sideBar = Panel("SideTools", battleScreen, new(0, .5f), new(0, .5f), new(20, -135), new(106, 135), false);
             UiKit.Skin(sideBar.GetComponent<Image>(), "Lacquer");
             var sideV = sideBar.gameObject.AddComponent<VerticalLayoutGroup>();
@@ -206,6 +206,12 @@ namespace Wuxia
                 actButtons[id] = (btn, border, glyph, title, detail);
             }
 
+            var previousMoves = Button(commandPanel, "‹", () => PageMoves(-1));
+            Anchor(previousMoves, Vector2.zero, Vector2.zero, new(932, 147), new(980, 181));
+            var nextMoves = Button(commandPanel, "›", () => PageMoves(1));
+            Anchor(nextMoves, Vector2.zero, Vector2.zero, new(1076, 147), new(1124, 181));
+            var pageLabel = BattleLabel(commandPanel, "", 19, TextAnchor.MiddleCenter, new(983, 147), new(1074, 181));
+
             var timeline = Panel("TurnOrder", battleScreen, Vector2.up, Vector2.one,
                 new(20, -159), new(-148, -109), false);
             UiKit.Skin(timeline.GetComponent<Image>(), "Lacquer");
@@ -266,12 +272,42 @@ namespace Wuxia
             };
             onTargetChanged = () =>
             {
-                selectedAction = CommandReason(inspectedAction) == "" ? inspectedAction : null;
+                if (selectedAction != null) selectedAction = CommandReason(inspectedAction) == "" ? inspectedAction : null;
                 RefreshBattle();
             };
             RefreshBattle();
             captureRound?.Invoke(() => Advance(stopAfterRound: true));
             captureInspect?.Invoke(SelectAction);
+            runner.StartCoroutine(WatchCancel(battleScreen));
+
+            IEnumerator WatchCancel(RectTransform watchedScreen)
+            {
+                while (battleScreen == watchedScreen)
+                {
+                    if (!busy && (Input.GetMouseButtonDown(1) || Input.GetKeyDown(KeyCode.Escape)))
+                    {
+                        inspectedAction = "attack";
+                        selectedAction = null;
+                        RefreshActionButtons();
+                    }
+                    yield return null;
+                }
+            }
+
+            void PageMoves(int direction)
+            {
+                movePage = Mathf.Clamp(movePage + direction, 0, Mathf.Max(0, (model.KnownMoves.Length - 1) / 2));
+                inspectedAction = "attack";
+                selectedAction = null;
+                RefreshActionButtons();
+            }
+
+            string ResolveMove(string id) => id switch
+            {
+                "skill" => model.KnownMoves.ElementAtOrDefault(movePage * 2),
+                "ultimate" => model.KnownMoves.ElementAtOrDefault(movePage * 2 + 1),
+                _ => id
+            };
             if (captureRound == null && !model.NeedsCommand) runner.StartCoroutine(Advance());
 
             void ChangeTab(int tab)
@@ -283,8 +319,10 @@ namespace Wuxia
             void SelectAction(string id)
             {
                 activeTab = actionDefs.First(entry => entry.id == id).tab;
-                inspectedAction = id;
-                selectedAction = CommandReason(id) == "" ? id : null;
+                string move = ResolveMove(id);
+                if (move == null) return;
+                inspectedAction = move;
+                selectedAction = CommandReason(move) == "" ? move : null;
                 RefreshActionButtons();
             }
 
@@ -332,13 +370,21 @@ namespace Wuxia
                 for (int i = 0; i < tabs.Length; i++)
                     UiKit.Skin(tabs[i].GetComponent<Image>(), i == activeTab ? "Selected" : "Wood");
 
+                int pages = (model.KnownMoves.Length + 1) / 2;
+                previousMoves.gameObject.SetActive(activeTab == 0 && pages > 1);
+                nextMoves.gameObject.SetActive(activeTab == 0 && pages > 1);
+                pageLabel.text = activeTab == 0 && pages > 1 ? $"{movePage + 1} / {pages}" : "";
                 foreach (var (id, tab, _, _) in actionDefs)
                 {
                     var (root, border, seal, title, detail) = actButtons[id];
-                    root.gameObject.SetActive(tab == activeTab);
-                    string reason = CommandReason(id);
+                    string move = ResolveMove(id);
+                    root.gameObject.SetActive(tab == activeTab && move != null);
+                    if (move == null) continue;
+                    title.text = ActionName(move);
+                    if (id is "skill" or "ultimate") seal.text = "藝";
+                    string reason = CommandReason(move);
                     bool usable = reason.Length == 0;
-                    bool inspected = id == inspectedAction;
+                    bool inspected = move == inspectedAction;
                     var image = root.GetComponent<Image>();
                     if (usable)
                         UiKit.Skin(image, inspected ? "Selected" : "Wood");
@@ -352,7 +398,7 @@ namespace Wuxia
                     border.enabled = inspected;
                     border.effectColor = usable ? UiKit.HeaderGold : new Color(.62f, .62f, .62f);
                     seal.color = title.color = usable ? UiKit.HeaderGold : new Color(.65f, .65f, .65f);
-                    detail.text = usable ? ActionCost(id) : reason;
+                    detail.text = usable ? ActionCost(move) : reason;
                     detail.color = usable ? CardText : new Color(.86f, .86f, .86f);
                 }
 
@@ -582,6 +628,7 @@ namespace Wuxia
 
                 busy = false;
                 activeTab = 0;
+                movePage = 0;
                 inspectedAction = "attack";
                 selectedAction = "attack";
                 RefreshBattle();

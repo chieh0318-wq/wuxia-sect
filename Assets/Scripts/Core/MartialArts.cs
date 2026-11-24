@@ -9,7 +9,7 @@ namespace Wuxia
     [Serializable] internal sealed class MartialArt
     {
         public string id, name, category, tier, source, how, slot, desc, move;
-        public string[] holders;
+        public string[] holders, techniques;
         public string attribute;
         public int attributeBonus;
         internal bool Combat => RankSystem.IsCombat(category);
@@ -29,6 +29,13 @@ namespace Wuxia
 
         internal static MartialArt Find(string idOrName) => string.IsNullOrEmpty(idOrName) ? null :
             All.FirstOrDefault(art => art.id == idOrName) ?? All.FirstOrDefault(art => art.name == idOrName);
+
+        internal static string[] KnownMoves(IEnumerable<MartialArt> arts, string preferredLine, Func<string, bool> exists) =>
+            arts.Where(art => art.Combat)
+                .OrderByDescending(art => art.category == preferredLine)
+                .ThenByDescending(art => RankSystem.Order(art.tier))
+                .SelectMany(art => new[] { art.move }.Concat(art.techniques ?? Array.Empty<string>()))
+                .Where(id => !string.IsNullOrEmpty(id) && exists(id)).Distinct().ToArray();
 
         /// <summary>
         /// Battle slot overrides ("skill" / "ultimate" → battle_skills.json id) for a set of known arts: the

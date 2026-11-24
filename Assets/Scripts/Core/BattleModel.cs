@@ -115,6 +115,8 @@ namespace Wuxia
             return (move, target, null);
         }
 
+        internal string[] KnownMoves => Actor?.knownMoves ?? Array.Empty<string>();
+
         public string Reason(string id, BattleCombatant target)
         {
             if (!NeedsCommand) return "尚未輪到我方";
@@ -122,9 +124,11 @@ namespace Wuxia
             if (id == "item")
                 return !hasMedicine() ? "沒有靈藥" :
                     actor.hp == actor.maxHp && actor.qi == actor.maxQi ? "氣血內力已滿" : "";
+            if (actor.personalArts && ((id is "skill" or "ultimate") ||
+                (id.StartsWith("mv_", StringComparison.Ordinal) && !actor.knownMoves.Contains(id)))) return "未習得";
             var move = Skill(id);
             if (move.power > 0 && (target == null || !target.Alive)) return "沒有目標";
-            if (move.qi > 0 && Effects(actor).Any(status => status.seal)) return "已被封招";
+            if ((move.qi > 0 || actor.knownMoves.Contains(id)) && Effects(actor).Any(status => status.seal)) return "已被封招";
             if (TurnQi(actor) < move.qi) return "內力不足";
             if (id == "interrupt" && target.intent == null) return "目標未蓄勢";
             return "";
@@ -137,8 +141,10 @@ namespace Wuxia
             if (threatened != null && (threatened.intent.all || threatened.intentTarget == Actor))
                 return ("defend", target);
             if (Actor.hp * 3 < Actor.maxHp && Reason("item", target) == "") return ("item", target);
-            if (enemies.Count(u => u.Alive) > 1 && Reason("ultimate", target) == "") return ("ultimate", target);
-            if (Reason("skill", target) == "") return ("skill", target);
+            var own = KnownMoves.Where(id => Reason(id, target) == "" && Skill(id).power > 0)
+                .OrderByDescending(id => Skill(id).power * (Skill(id).all ? enemies.Count(unit => unit.Alive) : 1))
+                .FirstOrDefault();
+            if (own != null) return (own, target);
             return ("attack", target);
         }
 
@@ -222,7 +228,7 @@ namespace Wuxia
                 actor.intent = null;
                 if (!move.all && !target.Alive)
                     Emit($"{actor.name} 的{move.label}失去目標。");
-                else if (move.qi > 0 && Effects(actor).Any(status => status.seal))
+                else if ((move.qi > 0 || actor.knownMoves.Contains(id)) && Effects(actor).Any(status => status.seal))
                     Emit($"{actor.name} 被封招，{move.label}無法施展。");
                 else
                     Use(actor, move, target);
@@ -265,6 +271,13 @@ namespace Wuxia
                 ((enemies.IndexOf(actor) + 1) * 19349663)));
             var profile = catalog.Enemies[actor.enemyProfile];
             bool sealedMoves = Effects(actor).Any(status => status.seal);
+            if (actor.personalArts)
+            {
+                var available = actor.knownMoves.Select(id => catalog.Skills[id])
+                    .Where(move => !sealedMoves && move.qi <= qi && move.power > 0)
+                    .OrderByDescending(move => move.power).FirstOrDefault();
+                return (available ?? catalog.Skills["attack"], party.First(unit => unit.Alive));
+            }
             var rules = profile.moves.Where(rule =>
                 (rule.phase == 0 || rule.phase == phase) &&
                 (rule.every == 0 || round % rule.every == 0) &&

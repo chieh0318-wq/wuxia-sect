@@ -1,5 +1,5 @@
 {
-  "note": "v1124 C14: every martial art in the game. source: creation 開局可選 / faction 門派出身・勢力絕學 / mentor 師承 / manual 秘笈 / encounter 奇遇 / realm 秘境. tier: the cap this art can lift its line to when learned in play. move: battle_skills.json entry used in the skill or ultimate slot.",
+  "note": "v1124 C14: every martial art in the game. source: creation 開局可選 / faction 門派出身・勢力絕學 / mentor 師承 / manual 秘笈 / encounter 奇遇 / realm 秘境. tier: the art’s grade. move: battle_skills.json primary technique, with additional techniques where listed.",
   "arts": [
     {
       "id": "kaibei_shou",
@@ -600,7 +600,10 @@
       "slot": "ultimate",
       "desc": "十三處險隘連成一線，劍意如古道千里，師父一生所悟盡在其中。",
       "holders": [],
-      "move": "mv_xiaoshan13_true"
+      "move": "mv_xiaoshan13_true",
+      "techniques": ["mv_xiaoshan13_true_variant"],
+      "attribute": "str",
+      "attributeBonus": 1
     },
     {
       "id": "anxi_zhendao",
@@ -614,7 +617,8 @@
       "holders": [
         "褚寒山"
       ],
-      "move": "mv_anxi_zhendao"
+      "move": "mv_anxi_zhendao",
+      "techniques": ["mv_anxi_zhendao_variant"]
     },
     {
       "id": "houshan_yinfu",
@@ -628,7 +632,10 @@
       "holders": [
         "聶遠山"
       ],
-      "move": "mv_houshan_yinfu"
+      "move": "mv_houshan_yinfu",
+      "techniques": ["mv_houshan_yinfu_variant"],
+      "attribute": "qi",
+      "attributeBonus": 1
     },
     {
       "id": "dengxia_lunbing",
@@ -656,7 +663,10 @@
       "holders": [
         "謝瑾"
       ],
-      "move": "mv_art_765deea9"
+      "move": "mv_art_765deea9",
+      "techniques": ["mv_art_765deea9_variant"],
+      "attribute": "str",
+      "attributeBonus": 1
     },
     {
       "id": "art_3d4e672f",
@@ -670,7 +680,8 @@
       "holders": [
         "謝瑾"
       ],
-      "move": "mv_art_3d4e672f"
+      "move": "mv_art_3d4e672f",
+      "techniques": ["mv_art_3d4e672f_variant"]
     },
     {
       "id": "art_4dda15ba",
@@ -684,7 +695,8 @@
       "holders": [
         "謝蘊"
       ],
-      "move": "mv_art_4dda15ba"
+      "move": "mv_art_4dda15ba",
+      "techniques": ["mv_art_4dda15ba_variant"]
     },
     {
       "id": "art_c5206ac4",
@@ -698,7 +710,8 @@
       "holders": [
         "謝蘊"
       ],
-      "move": "mv_art_c5206ac4"
+      "move": "mv_art_c5206ac4",
+      "techniques": ["mv_art_c5206ac4_variant"]
     },
     {
       "id": "art_fa6c2b18",
@@ -712,7 +725,8 @@
       "holders": [
         "林照"
       ],
-      "move": "mv_art_fa6c2b18"
+      "move": "mv_art_fa6c2b18",
+      "techniques": ["mv_art_fa6c2b18_variant"]
     },
     {
       "id": "art_2bcbe4bd",
@@ -726,7 +740,8 @@
       "holders": [
         "許雁"
       ],
-      "move": "mv_art_2bcbe4bd"
+      "move": "mv_art_2bcbe4bd",
+      "techniques": ["mv_art_2bcbe4bd_variant"]
     },
     {
       "id": "art_9220adaa",
@@ -768,7 +783,8 @@
       "holders": [
         "杜蘅"
       ],
-      "move": "mv_art_e468a89f"
+      "move": "mv_art_e468a89f",
+      "techniques": ["mv_art_e468a89f_variant"]
     },
     {
       "id": "art_2c74da4c",
@@ -824,7 +840,8 @@
       "holders": [
         "沈青"
       ],
-      "move": "mv_art_2fbd9376"
+      "move": "mv_art_2fbd9376",
+      "techniques": ["mv_art_2fbd9376_variant"]
     },
     {
       "id": "art_5f93c1bc",
@@ -838,7 +855,8 @@
       "holders": [
         "魏老七"
       ],
-      "move": "mv_art_5f93c1bc"
+      "move": "mv_art_5f93c1bc",
+      "techniques": ["mv_art_5f93c1bc_variant"]
     },
     {
       "id": "art_ee1ea2e6",
@@ -866,7 +884,8 @@
       "holders": [
         "喬小檀"
       ],
-      "move": "mv_art_85f5167d"
+      "move": "mv_art_85f5167d",
+      "techniques": ["mv_art_85f5167d_variant"]
     },
     {
       "id": "art_78fa71a9",
@@ -880,7 +899,8 @@
       "holders": [
         "范希仁"
       ],
-      "move": "mv_art_78fa71a9"
+      "move": "mv_art_78fa71a9",
+      "techniques": ["mv_art_78fa71a9_variant"]
     },
     {
       "id": "art_c432cf89",
@@ -908,7 +928,8 @@
       "holders": [
         "屈突烈"
       ],
-      "move": "mv_art_1fd178e5"
+      "move": "mv_art_1fd178e5",
+      "techniques": ["mv_art_1fd178e5_variant"]
     },
     {
       "id": "art_653226c2",
@@ -922,7 +943,8 @@
       "holders": [
         "秦無咎"
       ],
-      "move": "mv_art_653226c2"
+      "move": "mv_art_653226c2",
+      "techniques": ["mv_art_653226c2_variant"]
     },
     {
       "id": "art_244ec5c0",
@@ -950,7 +972,8 @@
       "holders": [
         "葉青鸞"
       ],
-      "move": "mv_art_cf95afcd"
+      "move": "mv_art_cf95afcd",
+      "techniques": ["mv_art_cf95afcd_variant"]
     },
     {
       "id": "art_12efddbf",
@@ -964,7 +987,8 @@
       "holders": [
         "圓覺"
       ],
-      "move": "mv_art_12efddbf"
+      "move": "mv_art_12efddbf",
+      "techniques": ["mv_art_12efddbf_variant"]
     },
     {
       "id": "art_9db74c16",
@@ -978,7 +1002,8 @@
       "holders": [
         "曹拂延"
       ],
-      "move": "mv_art_9db74c16"
+      "move": "mv_art_9db74c16",
+      "techniques": ["mv_art_9db74c16_variant"]
     },
     {
       "id": "art_edc50eb4",
@@ -1006,7 +1031,8 @@
       "holders": [
         "崔湛"
       ],
-      "move": "mv_art_41fdac04"
+      "move": "mv_art_41fdac04",
+      "techniques": ["mv_art_41fdac04_variant"]
     },
     {
       "id": "art_92b11c57",
@@ -1020,7 +1046,8 @@
       "holders": [
         "殷照雪"
       ],
-      "move": "mv_art_92b11c57"
+      "move": "mv_art_92b11c57",
+      "techniques": ["mv_art_92b11c57_variant"]
     },
     {
       "id": "wuming_gujian",
@@ -1032,7 +1059,10 @@
       "slot": "ultimate",
       "desc": "前人刻在崖壁上的劍痕，無名無姓，一劍比一劍深。",
       "holders": [],
-      "move": "mv_wuming_gujian"
+      "move": "mv_wuming_gujian",
+      "techniques": ["mv_wuming_gujian_variant"],
+      "attribute": "str",
+      "attributeBonus": 1
     },
     {
       "id": "leisong_jianyi",
@@ -1044,7 +1074,10 @@
       "slot": "skill",
       "desc": "雷劈古松，枝折而根不動。",
       "holders": [],
-      "move": "mv_leisong_jianyi"
+      "move": "mv_leisong_jianyi",
+      "techniques": ["mv_leisong_jianyi_variant"],
+      "attribute": "str",
+      "attributeBonus": 1
     },
     {
       "id": "longquan_qixing",
@@ -1056,7 +1089,10 @@
       "slot": "skill",
       "desc": "劍走北斗七星方位，步步相連。",
       "holders": [],
-      "move": "mv_longquan_qixing"
+      "move": "mv_longquan_qixing",
+      "techniques": ["mv_longquan_qixing_variant"],
+      "attribute": "str",
+      "attributeBonus": 1
     },
     {
       "id": "yufeng_jian",
@@ -1068,7 +1104,10 @@
       "slot": "skill",
       "desc": "劍隨風動，風止劍停。",
       "holders": [],
-      "move": "mv_yufeng_jian"
+      "move": "mv_yufeng_jian",
+      "techniques": ["mv_yufeng_jian_variant"],
+      "attribute": "str",
+      "attributeBonus": 1
     },
     {
       "id": "kuangcao_dao",
@@ -1080,7 +1119,8 @@
       "slot": "skill",
       "desc": "刀勢如草書，忽斷忽連，不可端倪。",
       "holders": [],
-      "move": "mv_kuangcao_dao"
+      "move": "mv_kuangcao_dao",
+      "techniques": ["mv_kuangcao_dao_variant"]
     },
     {
       "id": "tiedan_dao",
@@ -1092,7 +1132,8 @@
       "slot": "skill",
       "desc": "刀背藏鐵膽，一刀兩響。",
       "holders": [],
-      "move": "mv_tiedan_dao"
+      "move": "mv_tiedan_dao",
+      "techniques": ["mv_tiedan_dao_variant"]
     },
     {
       "id": "yinglong_zhang",
@@ -1104,7 +1145,8 @@
       "slot": "skill",
       "desc": "掌出如龍抬頭，勁力層層疊加。",
       "holders": [],
-      "move": "mv_yinglong_zhang"
+      "move": "mv_yinglong_zhang",
+      "techniques": ["mv_yinglong_zhang_variant"]
     },
     {
       "id": "lanhua_fuxue",
@@ -1116,7 +1158,8 @@
       "slot": "skill",
       "desc": "五指如蘭，拂穴於無聲。",
       "holders": [],
-      "move": "mv_lanhua_fuxue"
+      "move": "mv_lanhua_fuxue",
+      "techniques": ["mv_lanhua_fuxue_variant"]
     },
     {
       "id": "tiexian_quan",
@@ -1140,7 +1183,8 @@
       "slot": "ultimate",
       "desc": "一揮手，滿天鏢影如千手。",
       "holders": [],
-      "move": "mv_qianshou_biao"
+      "move": "mv_qianshou_biao",
+      "techniques": ["mv_qianshou_biao_variant"]
     },
     {
       "id": "baibu_feijian",
@@ -1152,7 +1196,8 @@
       "slot": "skill",
       "desc": "擲劍如鏢，百步取人。",
       "holders": [],
-      "move": "mv_baibu_feijian"
+      "move": "mv_baibu_feijian",
+      "techniques": ["mv_baibu_feijian_variant"]
     },
     {
       "id": "tiyun_zong",
@@ -1164,7 +1209,10 @@
       "slot": "skill",
       "desc": "左腳踏右腳，凌空再起。",
       "holders": [],
-      "move": "mv_tiyun_zong"
+      "move": "mv_tiyun_zong",
+      "techniques": ["mv_tiyun_zong_variant"],
+      "attribute": "agi",
+      "attributeBonus": 1
     },
     {
       "id": "shuishang_piao",
@@ -1176,7 +1224,8 @@
       "slot": "skill",
       "desc": "踏水十步而不沉。",
       "holders": [],
-      "move": "mv_shuishang_piao"
+      "move": "mv_shuishang_piao",
+      "techniques": ["mv_shuishang_piao_variant"]
     },
     {
       "id": "zhoutian_banyun",
@@ -1188,7 +1237,10 @@
       "slot": "skill",
       "desc": "氣走大周天，一呼一吸皆是功夫。",
       "holders": [],
-      "move": "mv_zhoutian_banyun"
+      "move": "mv_zhoutian_banyun",
+      "techniques": ["mv_zhoutian_banyun_variant"],
+      "attribute": "qi",
+      "attributeBonus": 1
     },
     {
       "id": "chunyang_wuji",
@@ -1200,7 +1252,10 @@
       "slot": "ultimate",
       "desc": "純陽之氣，綿綿無極，傷敵於內。",
       "holders": [],
-      "move": "mv_chunyang_wuji"
+      "move": "mv_chunyang_wuji",
+      "techniques": ["mv_chunyang_wuji_variant"],
+      "attribute": "qi",
+      "attributeBonus": 1
     },
     {
       "id": "yangxin_jue",
@@ -1224,7 +1279,8 @@
       "slot": "skill",
       "desc": "六合歸一，一槍定中軍。",
       "holders": [],
-      "move": "mv_liuhe_qiang"
+      "move": "mv_liuhe_qiang",
+      "techniques": ["mv_liuhe_qiang_variant"]
     },
     {
       "id": "bawang_ji",
@@ -1236,7 +1292,8 @@
       "slot": "ultimate",
       "desc": "項王舊法，一戟橫掃千軍。",
       "holders": [],
-      "move": "mv_bawang_ji"
+      "move": "mv_bawang_ji",
+      "techniques": ["mv_bawang_ji_variant"]
     },
     {
       "id": "yanmen_qiang",
@@ -1248,7 +1305,8 @@
       "slot": "skill",
       "desc": "寒風裡練成的槍，槍尖帶霜。",
       "holders": [],
-      "move": "mv_yanmen_qiang"
+      "move": "mv_yanmen_qiang",
+      "techniques": ["mv_yanmen_qiang_variant"]
     },
     {
       "id": "taiyi_huandan",
@@ -1286,7 +1344,10 @@
       "holders": [
         "封伯陽"
       ],
-      "move": "mv_art_3a375b88"
+      "move": "mv_art_3a375b88",
+      "techniques": ["mv_art_3a375b88_variant"],
+      "attribute": "str",
+      "attributeBonus": 1
     },
     {
       "id": "art_2b82df15",
@@ -1300,7 +1361,8 @@
       "holders": [
         "封伯陽"
       ],
-      "move": "mv_art_2b82df15"
+      "move": "mv_art_2b82df15",
+      "techniques": ["mv_art_2b82df15_variant"]
     },
     {
       "id": "art_512011b2",
@@ -1314,7 +1376,8 @@
       "holders": [
         "屈突烈"
       ],
-      "move": "mv_art_512011b2"
+      "move": "mv_art_512011b2",
+      "techniques": ["mv_art_512011b2_variant"]
     },
     {
       "id": "art_9d80db36",
@@ -1329,7 +1392,8 @@
         "范希仁",
         "宇文嶠"
       ],
-      "move": "mv_art_9d80db36"
+      "move": "mv_art_9d80db36",
+      "techniques": ["mv_art_9d80db36_variant"]
     },
     {
       "id": "art_84ac33e2",
@@ -1343,7 +1407,10 @@
       "holders": [
         "秦無咎"
       ],
-      "move": "mv_art_84ac33e2"
+      "move": "mv_art_84ac33e2",
+      "techniques": ["mv_art_84ac33e2_variant"],
+      "attribute": "str",
+      "attributeBonus": 1
     },
     {
       "id": "art_2a48925f",
@@ -1357,7 +1424,8 @@
       "holders": [
         "秦無咎"
       ],
-      "move": "mv_art_2a48925f"
+      "move": "mv_art_2a48925f",
+      "techniques": ["mv_art_2a48925f_variant"]
     },
     {
       "id": "art_4ebefdae",
@@ -1371,7 +1439,8 @@
       "holders": [
         "獨孤鎮"
       ],
-      "move": "mv_art_4ebefdae"
+      "move": "mv_art_4ebefdae",
+      "techniques": ["mv_art_4ebefdae_variant"]
     },
     {
       "id": "art_3e0eca10",
@@ -1385,7 +1454,8 @@
       "holders": [
         "霍元昌"
       ],
-      "move": "mv_art_3e0eca10"
+      "move": "mv_art_3e0eca10",
+      "techniques": ["mv_art_3e0eca10_variant"]
     },
     {
       "id": "art_76d637cb",
@@ -1399,7 +1469,8 @@
       "holders": [
         "霍元昌"
       ],
-      "move": "mv_art_76d637cb"
+      "move": "mv_art_76d637cb",
+      "techniques": ["mv_art_76d637cb_variant"]
     },
     {
       "id": "art_c3d8ae35",
@@ -1427,7 +1498,8 @@
       "holders": [
         "渾元朗"
       ],
-      "move": "mv_art_d8fc6931"
+      "move": "mv_art_d8fc6931",
+      "techniques": ["mv_art_d8fc6931_variant"]
     },
     {
       "id": "art_bda3ceac",
@@ -1441,7 +1513,8 @@
       "holders": [
         "渾元朗"
       ],
-      "move": "mv_art_bda3ceac"
+      "move": "mv_art_bda3ceac",
+      "techniques": ["mv_art_bda3ceac_variant"]
     },
     {
       "id": "art_a11c105b",
@@ -1455,7 +1528,8 @@
       "holders": [
         "裴行遠"
       ],
-      "move": "mv_art_a11c105b"
+      "move": "mv_art_a11c105b",
+      "techniques": ["mv_art_a11c105b_variant"]
     },
     {
       "id": "art_0dd80a42",
@@ -1469,7 +1543,8 @@
       "holders": [
         "裴行遠"
       ],
-      "move": "mv_art_0dd80a42"
+      "move": "mv_art_0dd80a42",
+      "techniques": ["mv_art_0dd80a42_variant"]
     },
     {
       "id": "art_eb2e691d",
@@ -1483,7 +1558,8 @@
       "holders": [
         "張懷遠"
       ],
-      "move": "mv_art_eb2e691d"
+      "move": "mv_art_eb2e691d",
+      "techniques": ["mv_art_eb2e691d_variant"]
     },
     {
       "id": "art_bd39df63",
@@ -1497,7 +1573,8 @@
       "holders": [
         "張懷遠"
       ],
-      "move": "mv_art_bd39df63"
+      "move": "mv_art_bd39df63",
+      "techniques": ["mv_art_bd39df63_variant"]
     },
     {
       "id": "art_dc7742b0",
@@ -1511,7 +1588,8 @@
       "holders": [
         "了空大師"
       ],
-      "move": "mv_art_dc7742b0"
+      "move": "mv_art_dc7742b0",
+      "techniques": ["mv_art_dc7742b0_variant"]
     },
     {
       "id": "art_13bfabcf",
@@ -1525,7 +1603,10 @@
       "holders": [
         "了空大師"
       ],
-      "move": "mv_art_13bfabcf"
+      "move": "mv_art_13bfabcf",
+      "techniques": ["mv_art_13bfabcf_variant"],
+      "attribute": "qi",
+      "attributeBonus": 1
     },
     {
       "id": "art_dda66992",
@@ -1539,7 +1620,8 @@
       "holders": [
         "尹太初"
       ],
-      "move": "mv_art_dda66992"
+      "move": "mv_art_dda66992",
+      "techniques": ["mv_art_dda66992_variant"]
     },
     {
       "id": "art_2960a5ea",
@@ -1553,7 +1635,10 @@
       "holders": [
         "尹太初"
       ],
-      "move": "mv_art_2960a5ea"
+      "move": "mv_art_2960a5ea",
+      "techniques": ["mv_art_2960a5ea_variant"],
+      "attribute": "qi",
+      "attributeBonus": 1
     },
     {
       "id": "art_d3c1ef15",
@@ -1567,7 +1652,10 @@
       "holders": [
         "呂元貞"
       ],
-      "move": "mv_art_d3c1ef15"
+      "move": "mv_art_d3c1ef15",
+      "techniques": ["mv_art_d3c1ef15_variant"],
+      "attribute": "str",
+      "attributeBonus": 1
     },
     {
       "id": "art_c5721511",
@@ -1581,7 +1669,8 @@
       "holders": [
         "呂元貞"
       ],
-      "move": "mv_art_c5721511"
+      "move": "mv_art_c5721511",
+      "techniques": ["mv_art_c5721511_variant"]
     },
     {
       "id": "art_b86e01b4",
@@ -1595,7 +1684,8 @@
       "holders": [
         "靜玄師太"
       ],
-      "move": "mv_art_b86e01b4"
+      "move": "mv_art_b86e01b4",
+      "techniques": ["mv_art_b86e01b4_variant"]
     },
     {
       "id": "art_658fb1a6",
@@ -1610,7 +1700,8 @@
         "靜玄師太",
         "葉青鸞"
       ],
-      "move": "mv_art_658fb1a6"
+      "move": "mv_art_658fb1a6",
+      "techniques": ["mv_art_658fb1a6_variant"]
     },
     {
       "id": "art_a91d079d",
@@ -1625,7 +1716,10 @@
         "陸孤雲",
         "殷照雪"
       ],
-      "move": "mv_art_a91d079d"
+      "move": "mv_art_a91d079d",
+      "techniques": ["mv_art_a91d079d_variant"],
+      "attribute": "str",
+      "attributeBonus": 1
     },
     {
       "id": "art_414ca9fb",
@@ -1639,7 +1733,8 @@
       "holders": [
         "陸孤雲"
       ],
-      "move": "mv_art_414ca9fb"
+      "move": "mv_art_414ca9fb",
+      "techniques": ["mv_art_414ca9fb_variant"]
     },
     {
       "id": "art_0bf16cb2",
@@ -1653,7 +1748,8 @@
       "holders": [
         "鍾離熾"
       ],
-      "move": "mv_art_0bf16cb2"
+      "move": "mv_art_0bf16cb2",
+      "techniques": ["mv_art_0bf16cb2_variant"]
     },
     {
       "id": "art_e59f9995",
@@ -1681,7 +1777,10 @@
       "holders": [
         "夜雨樓主"
       ],
-      "move": "mv_art_54eded59"
+      "move": "mv_art_54eded59",
+      "techniques": ["mv_art_54eded59_variant"],
+      "attribute": "str",
+      "attributeBonus": 1
     },
     {
       "id": "art_b388822f",
@@ -1695,7 +1794,8 @@
       "holders": [
         "夜雨樓主"
       ],
-      "move": "mv_art_b388822f"
+      "move": "mv_art_b388822f",
+      "techniques": ["mv_art_b388822f_variant"]
     },
     {
       "id": "art_0335bcaf",
@@ -1709,7 +1809,8 @@
       "holders": [
         "錢四娘"
       ],
-      "move": "mv_art_0335bcaf"
+      "move": "mv_art_0335bcaf",
+      "techniques": ["mv_art_0335bcaf_variant"]
     },
     {
       "id": "art_f4cfd6f9",
@@ -1752,7 +1853,8 @@
       "holders": [
         "安延年"
       ],
-      "move": "mv_art_80f4893f"
+      "move": "mv_art_80f4893f",
+      "techniques": ["mv_art_80f4893f_variant"]
     },
     {
       "id": "art_13d26bb4",
@@ -1766,7 +1868,8 @@
       "holders": [
         "莫三川"
       ],
-      "move": "mv_art_13d26bb4"
+      "move": "mv_art_13d26bb4",
+      "techniques": ["mv_art_13d26bb4_variant"]
     },
     {
       "id": "art_2368d9f0",
@@ -1780,7 +1883,8 @@
       "holders": [
         "莫三川"
       ],
-      "move": "mv_art_2368d9f0"
+      "move": "mv_art_2368d9f0",
+      "techniques": ["mv_art_2368d9f0_variant"]
     },
     {
       "id": "art_8abe665a",
@@ -1808,7 +1912,8 @@
       "holders": [
         "程鐵牛"
       ],
-      "move": "mv_art_706e83ca"
+      "move": "mv_art_706e83ca",
+      "techniques": ["mv_art_706e83ca_variant"]
     },
     {
       "id": "art_eeb13c6f",
@@ -1822,7 +1927,8 @@
       "holders": [
         "程鐵牛"
       ],
-      "move": "mv_art_eeb13c6f"
+      "move": "mv_art_eeb13c6f",
+      "techniques": ["mv_art_eeb13c6f_variant"]
     },
     {
       "id": "art_47da2832",
@@ -1836,7 +1942,8 @@
       "holders": [
         "噶爾·恭頓"
       ],
-      "move": "mv_art_47da2832"
+      "move": "mv_art_47da2832",
+      "techniques": ["mv_art_47da2832_variant"]
     },
     {
       "id": "art_5ddc04c6",
@@ -1850,7 +1957,8 @@
       "holders": [
         "噶爾·恭頓"
       ],
-      "move": "mv_art_5ddc04c6"
+      "move": "mv_art_5ddc04c6",
+      "techniques": ["mv_art_5ddc04c6_variant"]
     },
     {
       "id": "art_d27dbf9c",
@@ -1864,7 +1972,8 @@
       "holders": [
         "藥羅葛·烏蘇"
       ],
-      "move": "mv_art_d27dbf9c"
+      "move": "mv_art_d27dbf9c",
+      "techniques": ["mv_art_d27dbf9c_variant"]
     },
     {
       "id": "art_fd0586e6",
@@ -1878,7 +1987,8 @@
       "holders": [
         "藥羅葛·烏蘇"
       ],
-      "move": "mv_art_fd0586e6"
+      "move": "mv_art_fd0586e6",
+      "techniques": ["mv_art_fd0586e6_variant"]
     },
     {
       "id": "art_03e680d2",
@@ -1892,7 +2002,8 @@
       "holders": [
         "骨咄祿·阿悉"
       ],
-      "move": "mv_art_03e680d2"
+      "move": "mv_art_03e680d2",
+      "techniques": ["mv_art_03e680d2_variant"]
     },
     {
       "id": "art_866b7daf",
@@ -1906,7 +2017,8 @@
       "holders": [
         "骨咄祿·阿悉"
       ],
-      "move": "mv_art_866b7daf"
+      "move": "mv_art_866b7daf",
+      "techniques": ["mv_art_866b7daf_variant"]
     },
     {
       "id": "art_495f4b45",
@@ -1920,7 +2032,8 @@
       "holders": [
         "蒙邏閣"
       ],
-      "move": "mv_art_495f4b45"
+      "move": "mv_art_495f4b45",
+      "techniques": ["mv_art_495f4b45_variant"]
     },
     {
       "id": "art_89cb91b7",
@@ -1934,7 +2047,8 @@
       "holders": [
         "蒙邏閣"
       ],
-      "move": "mv_art_89cb91b7"
+      "move": "mv_art_89cb91b7",
+      "techniques": ["mv_art_89cb91b7_variant"]
     }
   ]
 }

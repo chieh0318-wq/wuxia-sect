@@ -317,9 +317,11 @@ namespace Wuxia
             arts.color = CardText;
             arts.horizontalOverflow = HorizontalWrapMode.Wrap;
             arts.resizeTextForBestFit = false;
-            Anchor(arts.rectTransform, Vector2.up, Vector2.one, new(pad, lower - 92), new(-pad, lower - 40));
+            // v1125 #1/#18: the arts block (signature arts, 武學, 生活) takes the height its lines need.
+            float artsHeight = Mathf.Clamp(PreferredHeight(arts, sheet.rect.width - pad * 2) + 6, 52, 120);
+            Anchor(arts.rectTransform, Vector2.up, Vector2.one, new(pad, lower - 40 - artsHeight), new(-pad, lower - 40));
 
-            var bio = ScrollList(sheet, new Vector2(pad, 84), new Vector2(-pad - 14, lower - 98));
+            var bio = ScrollList(sheet, new Vector2(pad, 84), new Vector2(-pad - 14, lower - 46 - artsHeight));
             BioLine("生平列傳", 22, CardGold);
             BioLine(string.IsNullOrWhiteSpace(info.biography) ? "生平未詳。" : info.biography, 18, CardText);
             BioLine("與本門淵源", 22, CardGold);

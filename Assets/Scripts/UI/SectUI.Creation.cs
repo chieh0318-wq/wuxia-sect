@@ -469,7 +469,9 @@ namespace Wuxia
                     // v1125 #1: cards grow with their text — the description and the effect line wrap fully
                     // instead of being truncated; the grid / list row takes the tallest card's height.
                     var cell = creationGrid == null ? null : creationGrid.GetComponent<GridLayoutGroup>();
-                    float width = (cell != null ? cell.cellSize.x : creationListWidth) - left - 16;
+                    var fit = cell == null ? null : cell.GetComponent<FitGridColumns>();
+                    float estimate = cell == null ? creationListWidth : fit != null ? fit.Estimate : cell.cellSize.x;
+                    float width = (cell != null ? estimate * .88f : estimate) - left - 16; // columns may narrow (FitGridColumns)
                     chips.horizontalOverflow = HorizontalWrapMode.Wrap;
                     chips.alignment = TextAnchor.UpperLeft;
                     chips.text = tags.Replace(' ', ' ');
@@ -519,12 +521,12 @@ namespace Wuxia
         /// <summary>Height a wrapped legacy Text needs at <paramref name="width"/> reference pixels.</summary>
         private static float PreferredHeight(Text text, float width)
         {
+            // Same formula as Text.preferredHeight, but at an explicit width (the rect is not laid out yet).
             var settings = text.GetGenerationSettings(new Vector2(Mathf.Max(10, width), 0));
             settings.resizeTextForBestFit = false;
             settings.horizontalOverflow = HorizontalWrapMode.Wrap;
             settings.verticalOverflow = VerticalWrapMode.Overflow;
-            settings.scaleFactor = 1;
-            return text.cachedTextGeneratorForLayout.GetPreferredHeight(text.text, settings);
+            return text.cachedTextGeneratorForLayout.GetPreferredHeight(text.text, settings) / Mathf.Max(.01f, text.pixelsPerUnit);
         }
 
         internal void CreationName(string value, Action<string> changed, Func<string> suggest)

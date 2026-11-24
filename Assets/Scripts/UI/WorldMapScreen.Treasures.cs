@@ -106,7 +106,7 @@ namespace Wuxia
             var route = data.Route(host.PartyNode, node.id);
             bool here = node.id == host.PartyNode;
             string message = taken ? "秘寶已經取走。" : here ? "隊伍就在此地，可入境探寶（行動力 1）。" :
-                route == null ? "沒有可通的道路" : $"須先抵達：行軍 {route.Days} 日　行動力 {host.TravelCost(route.Ap)}";
+                route == null ? "沒有可通的道路" : $"須先抵達：行軍 {route.Days} 日" + (host.TravelCost(route.Ap) > 0 ? $"　行動力 {host.TravelCost(route.Ap)}" : "");
             MapUi.Text(panel, message, 20, y, 386, 40, 18, taken ? MapUi.Ink : MapUi.Jade, TextAnchor.UpperLeft);
 
             var enter = MapUi.Button(panel, "入境探寶\n行動力 1", 20, 610, 124, 48, () => TreasureRequested?.Invoke(site), MapUi.Red, 16);

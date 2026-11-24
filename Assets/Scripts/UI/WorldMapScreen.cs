@@ -582,7 +582,7 @@ namespace Wuxia
 
             var route = data.Route(host.PartyNode, node.id);
             string message = node.id == host.PartyNode ? "隊伍就在此地" : route == null ? "沒有可通的道路" :
-                $"行軍　{route.Days} 日　行動力 {host.TravelCost(route.Ap)}";
+                $"行軍　{route.Days} 日" + (host.TravelCost(route.Ap) > 0 ? $"　行動力 {host.TravelCost(route.Ap)}" : "");
             if (outlaw) message += $"　戰力 {host.SectPower}・攻討 2 點";
             MapUi.Text(panel, message, 20, y, 386, 28, 20, MapUi.Jade);
             if (route != null)

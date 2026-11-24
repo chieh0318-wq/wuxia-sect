@@ -116,6 +116,9 @@ namespace Wuxia
                 grid.spacing = new Vector2(gap, gap);
                 grid.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
                 grid.constraintCount = cols;
+                // v1125 #1: columns follow the real scroll width (the docked summary narrows it), so the third
+                // column is never clipped by the viewport mask.
+                gridObj.gameObject.AddComponent<FitGridColumns>().Estimate = grid.cellSize.x;
                 creationGrid = gridObj;
                 foreach (var option in options)
                     draw(option);
@@ -406,6 +409,31 @@ namespace Wuxia
                 float h = srcAspect / targetAspect;
                 raw.uvRect = new Rect(0f, (1f - h) * .72f, 1f, h);
             }
+        }
+    }
+
+    /// <summary>v1125 #1: keeps a fixed-column GridLayoutGroup's cells exactly as wide as the grid's own rect.</summary>
+    internal sealed class FitGridColumns : MonoBehaviour
+    {
+        private GridLayoutGroup grid;
+        private float width = -1;
+
+        /// <summary>Cell width the grid was laid out with before the layout pass (cards size their text to it).</summary>
+        internal float Estimate;
+
+        private void OnRectTransformDimensionsChange() => Fit();
+        private void LateUpdate() => Fit();
+
+        private void Fit()
+        {
+            grid ??= GetComponent<GridLayoutGroup>();
+            var rect = (RectTransform)transform;
+            // Ignore the default 100 px rect a fresh object has before its layout group sizes it.
+            if (grid == null || rect.rect.width < 300 || Mathf.Abs(rect.rect.width - width) < .5f) return;
+            width = rect.rect.width;
+            int columns = Mathf.Max(1, grid.constraintCount);
+            float cell = (width - grid.padding.horizontal - (columns - 1) * grid.spacing.x) / columns;
+            if (Mathf.Abs(cell - grid.cellSize.x) > .5f) grid.cellSize = new Vector2(cell, grid.cellSize.y);
         }
     }
 }

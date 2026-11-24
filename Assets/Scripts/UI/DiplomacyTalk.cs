@@ -218,7 +218,7 @@ namespace Wuxia
                 if (!Committed)
                     MapUi.Button(page, "再議", 1046, 808, 204, 50, () => finish(null));
                 if (council && incident == null)
-                    MapUi.Text(page, $"遣使花費　行動力 {action.ap}　銀兩 {action.silver} 兩　聲望 {action.reputation}",
+                    MapUi.Text(page, "遣使花費　" + (action.ap > 0 ? $"行動力 {action.ap}　" : "") + $"銀兩 {action.silver} 兩　聲望 {action.reputation}",
                         264, 804, 756, 56, 21, MapUi.Paper);
             }
         }

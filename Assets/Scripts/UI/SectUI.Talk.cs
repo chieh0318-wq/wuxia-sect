@@ -217,17 +217,20 @@ namespace Wuxia
         {
             var active = modalButtons.GetComponentsInChildren<Button>(false).Where(b => b.gameObject.activeSelf).ToArray();
             float need = 0;
+            bool twoLines = false;
             foreach (var button in active)
             {
                 var caption = button.GetComponentInChildren<Text>();
                 if (caption == null) continue;
-                int longest = caption.text.Split('\n').Max(line => line.Length);
+                var parts = caption.text.Split('\n');
+                int longest = parts.Max(line => line.Length);
+                twoLines |= parts.Length > 1;
                 var layout = button.GetComponent<LayoutElement>() ?? button.gameObject.AddComponent<LayoutElement>();
                 layout.flexibleWidth = Mathf.Max(.7f, longest / 5f);
-                layout.minWidth = Mathf.Min(260, longest * 19 + 24);
+                layout.minWidth = Mathf.Min(320, longest * 19 + 24);
                 need += layout.minWidth + 16;
                 caption.horizontalOverflow = HorizontalWrapMode.Wrap;
-                caption.lineSpacing = .95f;
+                caption.lineSpacing = .92f;
             }
             float width = Mathf.Max(minCardWidth, need + 60);
             if (width > modalCard.rect.width + 1)
@@ -236,6 +239,26 @@ namespace Wuxia
                 var size = modalCard.rect.height / 2;
                 Anchor(modalCard, Vector2.one * .5f, Vector2.one * .5f, new(-half, -size), new(half, size));
             }
+            // Two-line captions (label + cost / effect) need a taller action row; lift the page body above it.
+            if (twoLines)
+            {
+                Anchor(modalButtons, Vector2.zero, Vector2.right, new(30, 16), new(-30, 90));
+                var viewport = (RectTransform)modalList.parent;
+                if (viewport.offsetMin.y < 100) viewport.offsetMin = new Vector2(viewport.offsetMin.x, 100);
+                foreach (var button in active)
+                {
+                    var caption = button.GetComponentInChildren<Text>();
+                    if (caption == null) continue;
+                    caption.resizeTextMaxSize = Mathf.Min(caption.resizeTextMaxSize, 21);
+                    caption.fontSize = Mathf.Min(caption.fontSize, 21);
+                }
+            }
+        }
+
+        /// <summary>Resizes the open modal card (centred), e.g. for list pages with many entries.</summary>
+        internal void SizeModal(float width, float height)
+        {
+            Anchor(modalCard, Vector2.one * .5f, Vector2.one * .5f, new(-width / 2, -height / 2), new(width / 2, height / 2));
         }
 
         private static Texture2D talkWash;

@@ -183,6 +183,7 @@ namespace Wuxia
             } : null, first: true);
             if (ledgerOpen)
                 ui.AddModalAction("‹ 返回政務", ShowSect, first: true);
+            ui.FitModalButtons(1300);
         }
 
         private IEnumerable<(HallData hall, HallFunction function)> PersonHalls() =>
@@ -303,6 +304,7 @@ namespace Wuxia
             }))).ToList();
             buttons.Add(("‹ 返回主角頁", ShowProtagonist));
             ui.ShowModal("換裝備", lines, buttons);
+            ui.SizeModal(1300, 680);
             ui.FitModalButtons(1300);
         }
 
@@ -335,6 +337,7 @@ namespace Wuxia
             }))).ToList();
             buttons.Add(("‹ 返回主角頁", ShowProtagonist));
             ui.ShowModal("調整主修", new[] { "主修決定修練時優先精進哪一路武學，主修已達上限時改練其他未滿的武學。" }, buttons);
+            ui.SizeModal(1300, 680);
             ui.FitModalButtons(1300);
         }
 
@@ -358,6 +361,7 @@ namespace Wuxia
                 ("‹ 返回主角頁", ShowProtagonist)
             };
             ui.ShowModal("秘笈與丹藥", lines, buttons);
+            ui.SizeModal(1300, 680);
             ui.FitModalButtons(1300);
         }
 

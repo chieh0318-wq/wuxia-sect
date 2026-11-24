@@ -674,7 +674,7 @@ namespace Wuxia
             ui.ShowCharacter(disciple.name, DiscipleTitle(disciple), disciple.gender,
                 PortraitService.IdOrDefault(disciple.portrait, disciple.id), disciple.attrs, disciple.lines,
                 disciple.weapon, state.WeaponRankDelta(disciple.weapon),
-                senior ? (delegateRole ? "解除總管\n行動力 −1，恢復練武與生產" : "委任總管\n行動力 +1，此人不再練武、不計生產", () =>
+                senior ? (delegateRole ? "解除總管\n行動力−1・恢復練武生產" : "委任總管\n行動力+1・不練武・不計生產", () =>
                 {
                     state.ToggleDelegate(disciple);
                     ui.Refresh(state);

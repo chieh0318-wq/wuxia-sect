@@ -570,6 +570,7 @@ namespace Wuxia
         {
             CloseTalk(false); // v1125 #4: a page never opens under a lingering portrait talk
             ResetCreationLayout();
+            Anchor(modalButtons, Vector2.zero, Vector2.right, new Vector2(30, 22), new Vector2(-30, 72)); // v1125 #1
             Clear(modalList);
             foreach (Transform child in modalButtons)
             {

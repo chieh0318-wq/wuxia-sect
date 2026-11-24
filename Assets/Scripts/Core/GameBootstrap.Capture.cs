@@ -492,8 +492,14 @@ namespace Wuxia
         private bool VerifyCapturedGame(string directory)
         {
             string path = Path.Combine(directory, "capture-check-" + System.Guid.NewGuid().ToString("N") + ".json");
+            var previous = state;
             try
             {
+                // Earlier screenshots deliberately injure and deploy the hero. Test recruitment and
+                // construction against a fresh game with the tutorial's normal starting resources.
+                state = new GameState(data);
+                state.Protagonist.gender = previous.Protagonist.gender;
+                state.Protagonist.title = "代掌門";
                 var build = System.Array.Find(data.Actions, action => action.type == "build");
                 var plot = System.Array.IndexOf(state.Buildings, null);
                 if (build == null || plot < 0)
@@ -549,6 +555,7 @@ namespace Wuxia
             }
             finally
             {
+                state = previous;
                 File.Delete(path);
                 File.Delete(path + ".tmp");
             }

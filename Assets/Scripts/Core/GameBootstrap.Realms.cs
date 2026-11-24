@@ -64,10 +64,10 @@ namespace Wuxia
             if (controls != null) controls.enabled = false;
         }
 
-        /// <summary>Hides the scene, fights on the battle screen, then returns to the scene with the result.</summary>
         private string[] expeditionParty;
         private string ExpeditionLeader => expeditionParty?.FirstOrDefault() ?? GameState.HeroId;
 
+        /// <summary>Hides the scene, fights on the battle screen, then returns to the scene with the result.</summary>
         private void SceneBattle(BattleRequest request, Action<bool> after)
         {
             request.expeditionParty = expeditionParty;
@@ -325,7 +325,12 @@ namespace Wuxia
         /// <summary>Entered from the world map card: closes the map, spends 1 AP and plays the site.</summary>
         private void EnterTreasure(TreasureSite site)
         {
-            if (map != null && map.IsOpen) map.Close();
+            if (capturing) { StartTreasure(site, new[] { GameState.HeroId }); return; }
+            if (map != null && map.IsOpen)
+            {
+                ui.ChooseMapAssignment(state, site.name, party => StartTreasure(site, party));
+                return;
+            }
             ui.ChooseAssignment(state, site.name, "secret_realm", 3, party => StartTreasure(site, party));
         }
 

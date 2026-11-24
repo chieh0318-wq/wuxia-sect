@@ -80,6 +80,7 @@ namespace Wuxia
         public void Close()
         {
             if (!IsOpen || talk?.Committed == true) return;
+            state.EnvoyId = null;
             talk = null;
             overlay.gameObject.SetActive(false);
             root.gameObject.SetActive(false);
@@ -105,7 +106,9 @@ namespace Wuxia
             if (talk != null || state.DiploBlock(action, selected) != null) return;
             var scene = DiplomacyDialogue.Data.actions.FirstOrDefault(entry => entry.id == action.id && entry.options.Length > 0);
             if (scene == null) return;
-            OpenTalk(scene, selected, action, null);
+            var faction = selected;
+            if (state.ChooseEnvoy == null) OpenTalk(scene, faction, action, null);
+            else state.ChooseEnvoy(action, faction, id => { state.EnvoyId = id; OpenTalk(scene, faction, action, null); });
         }
 
         private void OpenTalk(TalkScene scene, MapFaction faction, DiploAction action, DiploEvent incident)
@@ -116,6 +119,7 @@ namespace Wuxia
                 if (role != null) lastDissent[faction.id] = role;
             }, text =>
             {
+                state.EnvoyId = null;
                 talk = null;
                 overlay.gameObject.SetActive(false);
                 if (text != null)

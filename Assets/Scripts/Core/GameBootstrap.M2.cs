@@ -122,8 +122,26 @@ namespace Wuxia
         private void StartMapAssaultBattle(BattleRequest encounter, System.Action<bool> done)
         {
             if (state == null || ui.BattleOpen) return;
+            if (!capturing && state.ChooseMapParty != null)
+            {
+                state.ChooseMapParty("率眾攻討", party =>
+                {
+                    if (state.ActionPoints < 2 || !AssignmentSystem.Commit(state, party)) return;
+                    encounter.expeditionParty = party;
+                    StartAssignedAssault(encounter, done);
+                });
+                return;
+            }
+            StartAssignedAssault(encounter, done);
+        }
+
+        private void StartAssignedAssault(BattleRequest encounter, System.Action<bool> done)
+        {
             encounter.onComplete = won =>
             {
+                if (won)
+                    foreach (string member in encounter.expeditionParty ?? System.Array.Empty<string>())
+                        AssignmentSystem.Credit(state, member, 2);
                 done?.Invoke(won);
                 ui.Refresh(state);
             };

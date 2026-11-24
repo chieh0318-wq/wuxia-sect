@@ -16,6 +16,18 @@ namespace Wuxia
 
         /// <summary>Month-end reports produced while travelling; the bootstrap shows them when the map closes.</summary>
         internal readonly List<MonthlyReport> PendingReports = new();
+        internal Action<string, Action<string[]>> ChooseMapParty;
+        private string[] travellingMembers;
+
+        internal bool CommitMapTravel(IEnumerable<string> party, int ap, string destination)
+        {
+            var members = party.ToArray();
+            if (members.Length == 0 || members.Any(id => AssignmentSystem.Block(this, id) != null) ||
+                !TrySpendAp(ap, "travel:" + destination)) return false;
+            AssignmentSystem.Commit(this, members);
+            travellingMembers = members;
+            return true;
+        }
 
         public int Day => Mathf.Clamp(Story.day, 1, DaysPerMonth);
         public string DateText => DateWithDay;
@@ -63,7 +75,13 @@ namespace Wuxia
 
         public string TravelFortune()
         {
-            float chance = Mathf.Clamp(.06f + 1.5f * AdventureBonus, .01f, .5f);
+            string leader = travellingMembers?.FirstOrDefault() ?? HeroId;
+            float fortune = .012f * (AssignmentSystem.Attribute(this, leader, "luk") - AttributeSystem.Base)
+                + .003f * (AssignmentSystem.Attribute(this, leader, "agi") - AttributeSystem.Base);
+            foreach (string member in travellingMembers ?? Array.Empty<string>())
+                AssignmentSystem.Credit(this, member, 1);
+            travellingMembers = null;
+            float chance = Mathf.Clamp(.06f + 1.5f * fortune, .01f, .5f);
             if (UnityEngine.Random.value >= chance)
                 return null;
             switch (UnityEngine.Random.Range(0, 3))

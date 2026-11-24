@@ -835,9 +835,13 @@ namespace Wuxia
         }
         private void MoveParty(Vector2 p) => party.anchoredPosition = new Vector2(p.x-19/zoom,-p.y-15/zoom);
 
-        private void StartTravel(MapRoute route,string destination)
+        private void StartTravel(MapRoute route,string destination, string[] assigned = null)
         {
-            if (traveling || !host.TrySpendAp(host.TravelCost(route.Ap),"travel:"+destination)) return;
+            if (traveling) return;
+            if (assigned == null && host is GameState { ChooseMapParty: not null } selecting)
+            { selecting.ChooseMapParty("江湖歷練", party => StartTravel(route, destination, party)); return; }
+            if (assigned != null && host is GameState state ? !state.CommitMapTravel(assigned, host.TravelCost(route.Ap), destination)
+                : !host.TrySpendAp(host.TravelCost(route.Ap), "travel:" + destination)) return;
             selected = destination;
             traveling = true;
             host.AdvanceDays(route.Days);

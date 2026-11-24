@@ -36,7 +36,8 @@ namespace Wuxia
                     string block = AssignmentSystem.Block(state, id);
                     int index = picked.IndexOf(id);
                     string mark = index < 0 ? "" : index == 0 ? "【領隊】" : "【同行】";
-                    string preview = $"{prediction.Detail}　預估成功率 {chance?.Invoke(id) ?? prediction.Success:P0}　預估品質 {prediction.Quality:P0}";
+                    string condition = limit > 1 ? "（幸運判定參考）" : "";
+                    string preview = $"{prediction.Detail}\n預估成功率 {chance?.Invoke(id) ?? prediction.Success:P0}{condition}　預估品質 {prediction.Quality:P0}";
                     CreationChoice($"{mark}{state.SparName(id)}　{rank.Name}　餘 {AssignmentSystem.Remaining(state, id)}／{rank.Monthly} 次",
                         block ?? preview, null, block == null ? (Action)(() =>
                         {
@@ -49,6 +50,26 @@ namespace Wuxia
             }
             Draw();
             AssignmentBack = Back;
+        }
+
+        internal void ChooseDiplomaticAssignment(GameState state, DiploAction action, MapFaction faction, Action<string> selected)
+        {
+            ChooseAboveMap(state, action.name, "diplomacy", 1,
+                party => selected(party[0]), id => state.DiploChance(action, faction, id));
+        }
+
+        internal void ChooseMapAssignment(GameState state, string title, Action<string[]> selected) =>
+            ChooseAboveMap(state, title, "explore", 3, selected);
+
+        private void ChooseAboveMap(GameState state, string title, string actionId, int limit,
+            Action<string[]> selected, Func<string, float> chance = null)
+        {
+            var layer = canvas.GetComponent<Canvas>();
+            int order = layer.sortingOrder;
+            layer.sortingOrder = 60;
+            void Restore() => layer.sortingOrder = order;
+            ChooseAssignment(state, title, actionId, limit,
+                party => { Restore(); selected(party); }, Restore, chance);
         }
 
         internal void TrackPanelBack(Action back) => AssignmentBack = back;

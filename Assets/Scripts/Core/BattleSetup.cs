@@ -138,6 +138,10 @@ namespace Wuxia
             }
 
             foreach (var enemy in enemies) enemy.element = catalog.Enemies[enemy.enemyProfile].element;
+            var leader = WorldMapData.Load().Factions.FirstOrDefault(faction => faction.PortraitId == req.enemyLeadPortrait);
+            var known = (leader?.martialArts ?? Array.Empty<string>()).Select(MartialArts.Find).Where(art => art != null);
+            enemies[0].knownMoves = MartialArts.KnownMoves(known, null, catalog.Skills.ContainsKey);
+            enemies[0].personalArts = enemies[0].knownMoves.Length > 0;
             return (players, enemies);
         }
 

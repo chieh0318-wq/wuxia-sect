@@ -113,6 +113,12 @@ namespace Wuxia
         private void EnterCourtyard(GameState next, bool startTutorial)
         {
             state = next;
+            ui.GoalsFromSystem = () => ui.ShowSectGoals(next, ui.ShowSystemMenu);
+            if (!capturing)
+            {
+                state.ChooseEnvoy = (action, faction, selected) => ui.ChooseDiplomaticAssignment(state, action, faction, selected);
+                state.ChooseMapParty = (title, selected) => ui.ChooseMapAssignment(state, title, selected);
+            }
             ui.CloseTitle();
             ShowCommands();
             ui.Refresh(state);
@@ -264,6 +270,7 @@ namespace Wuxia
             {
                 ui.UpdateStoryBeat();
                 ui.UpdateAppearance();
+                if (ui.HandleAssignmentBack()) return;
                 if (Input.GetKeyDown(KeyCode.Escape) && ui.ModalOpen)
                     ui.CloseModal();
                 return;
@@ -498,7 +505,7 @@ namespace Wuxia
             float rumor = action.id == "explore" ? state.ConsumeRumors() : 0;
             string breakthrough = action.id switch
             {
-                "train" => state.TrainMartial(),
+                "train" => state.TrainMartial(worker),
                 "explore" => state.TryBreakthrough("qiyu_cliff_cave", state.Story.insightChance + state.AdventureBonus + rumor),
                 "feast" => state.Feast(),
                 "forge_gear" => state.ForgeGear(worker),
@@ -521,10 +528,10 @@ namespace Wuxia
                 AudioManager.Play("coin");
             if (action.id == "medicine")
             {
-                state.RecoverInjuries();
+                state.RecoverInjuries(worker);
                 if (state.HasTech("craft1"))
                 {
-                    state.RecoverInjuries();
+                    state.RecoverInjuries(worker);
                     state.Apply(new Yield { reputation = 1 });
                 }
             }
@@ -594,7 +601,7 @@ namespace Wuxia
                 var available = state.IsAvailable(building);
                 string reason = available ? "" : building.scale > state.SectScale ? $"　須{GameState.Scales[building.scale].name}"
                     : state.BuildingCount(building) >= state.BuildingLimit(building) ? "　已達棟數上限" : "　用地不足";
-                options.Add(($"{(picked ? "【已選】" : "")}{building.name}　{cost}", $"{plot}{reason}\n{building.summary ?? building.description}", available ? (System.Action)(() =>
+                options.Add(($"{(picked ? "【已選】" : "")}{building.name}\n{cost}", $"{plot}{reason}\n{building.summary ?? building.description}", available ? (System.Action)(() =>
                 {
                     buildChoice = building;
                     string aid = TutorialBuildAid();
@@ -634,10 +641,11 @@ namespace Wuxia
             }
             if (!state.IsAvailable(buildChoice))
             {
-                ui.Message("此建築只能建造一棟。");
+                ui.Message("目前無法興建。請檢查占地、規模或棟數上限。");
                 return;
             }
 
+            if (capturing) { CompleteConstruction(index, GameState.HeroId); return; }
             ui.ChooseAssignment(state, $"興建{buildChoice.name}", "build", 1, party => CompleteConstruction(index, party[0]));
         }
 

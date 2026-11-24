@@ -184,14 +184,23 @@ namespace Wuxia
         }
 
         /// <summary>Envoy eloquence: the best 魅力 + 悟性/2 among the head and the uninjured disciples.</summary>
+        internal Action<DiploAction, MapFaction, Action<string>> ChooseEnvoy;
+        internal string EnvoyId;
+
         internal int Eloquence(out string envoy)
         {
+            if (!string.IsNullOrEmpty(EnvoyId))
+            {
+                envoy = SparName(EnvoyId);
+                return AssignmentSystem.Eloquence(this, EnvoyId);
+            }
+
             int Score(int[] attrs) => AttributeSystem.Value(attrs, "cha") + AttributeSystem.Value(attrs, "wit") / 2;
             int best = Score(HeroAttributes);
             envoy = string.IsNullOrWhiteSpace(Protagonist.name) ? "掌門" : Protagonist.name;
             foreach (var disciple in Disciples.Where(member => member != null && member.injury < 3))
             {
-                int score = Score(AttributeSystem.Normalize(disciple.attrs));
+                int score = Score(DiscipleAttributes(disciple));
                 if (score <= best) continue;
                 best = score;
                 envoy = disciple.name;
@@ -242,9 +251,9 @@ namespace Wuxia
             return null;
         }
 
-        internal float DiploChance(DiploAction action, MapFaction faction)
+        internal float DiploChance(DiploAction action, MapFaction faction, string worker = null)
         {
-            int eloquence = Eloquence(out _);
+            int eloquence = worker == null ? Eloquence(out _) : AssignmentSystem.Eloquence(this, worker);
             float gap = Mathf.Clamp((Prestige - Diplomacy.Strength(faction)) * .004f, -.2f, .2f);
             float chance = action.chance / 100f + (eloquence - 15) * .02f + Attitude(faction) * .003f + gap;
             return Mathf.Clamp(chance, .05f, .95f);
@@ -263,8 +272,12 @@ namespace Wuxia
             chance = 0;
             string block = DiploBlock(action, faction);
             if (block != null) return block;
+            if (EnvoyId != null && (block = AssignmentSystem.Block(this, EnvoyId)) != null) return block;
             chance = DiploChance(action, faction);
-            return DiploPay(action.ap, action.silver, action.reputation, $"diplomacy:{action.id}:{faction.id}");
+            block = DiploPay(action.ap, action.silver, action.reputation, $"diplomacy:{action.id}:{faction.id}");
+            if (block == null && EnvoyId != null)
+                AssignmentSystem.Commit(this, new[] { EnvoyId });
+            return block;
         }
 
         internal static float ModifiedDiploChance(float chance, TalkModifiers mods) =>
@@ -286,6 +299,8 @@ namespace Wuxia
         internal string DiploResolve(DiploAction action, MapFaction faction, TalkModifiers mods, float chance, bool success)
         {
             Eloquence(out string envoy);
+            AssignmentSystem.Credit(this, EnvoyId, success ? 2 : 1);
+            EnvoyId = null;
             if (!success)
             {
                 int fail = Mathf.Min(0, action.fail + mods.fail);

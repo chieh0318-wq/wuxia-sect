@@ -28,7 +28,7 @@ namespace Wuxia
                 ?.effectiveRankDelta ?? 1;
         }
 
-        internal string TrainMartial()
+        internal string TrainMartial(string worker = HeroId)
         {
             var hero = Protagonist;
             hero.martialTraining++;
@@ -47,7 +47,7 @@ namespace Wuxia
             if (line == null)
                 return "";
             // 悟性 speeds study for everyone; 武力 adds a little to the protagonist's own martial study.
-            float experience = Mathf.Max(.1f, 1 + Story.trainBonusPct / 100f) * ProductionMultiplier("teaching") *
+            float experience = Mathf.Max(.1f, 1 + Story.trainBonusPct / 100f) * AssignmentSystem.Predict(this, "train", worker).Quality *
                 Mathf.Max(.5f, 1 + .05f * AttributeBonus("wit"));
             TrainLine(line, experience * Mathf.Max(.5f, 1 + .02f * AttributeBonus("str")) * StudyMultiplier(line.id));
             foreach (var disciple in Disciples.Where(member => member.id != Story.delegateId))
@@ -141,9 +141,11 @@ namespace Wuxia
             }
             return "";
         }
-        internal void RecoverInjuries()
+        internal void RecoverInjuries(string worker = null)
         {
-            int amount = Mathf.Max(1, Mathf.RoundToInt(ProductionMultiplier("medicine")));
+            float quality = worker == null ? ProductionMultiplier("medicine")
+                : AssignmentSystem.Predict(this, "medicine", worker).Quality;
+            int amount = Mathf.Max(1, Mathf.RoundToInt(quality * (worker == null ? 1 : 1.5f)));
             // 根骨 governs how fast the protagonist's own wounds close.
             Protagonist.injury = Mathf.Max(0, Protagonist.injury - Mathf.Max(1, amount + AttributeBonus("con") / 3));
             foreach (var member in Disciples)

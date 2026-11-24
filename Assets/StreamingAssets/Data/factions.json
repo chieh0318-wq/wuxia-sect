@@ -1,8 +1,8 @@
 {
   "factions": [
-    {"id": "tang", "name": "大唐朝廷", "type": "court", "seat": "changan", "territory": [], "desc": "留守中樞，以朝命約束方鎮與地方官署。", "leader": "天子遣使", "special": true, "known": true, "stance": "neutral", "color": "#75633C", "disciples": 8000, "reputation": 88, "money": 16000, "leaderRank": "B+", "leaderCap": "A"},
-    {"id": "shuofang_jds", "name": "朔方節度使府", "type": "military", "seat": "lingwu", "territory": ["lingzhou", "shouxiang"], "desc": "朔方軍守黃河邊防，隨軍驛使長年往返關內。", "leader": "朔方節度使", "special": true, "known": true, "stance": "neutral", "color": "#75633C", "disciples": 4600, "reputation": 65, "money": 9200, "leaderRank": "B+", "leaderCap": "A"},
-    {"id": "jiannan_jds", "name": "劍南節度使府", "type": "military", "seat": "chengdu", "territory": ["jianmen", "songzhou", "dashiguan"], "desc": "鎮守蜀道及西南山口，與南詔商路時通時阻。", "leader": "劍南節度使", "special": true, "known": true, "stance": "neutral", "color": "#75633C", "disciples": 3900, "reputation": 58, "money": 7800, "leaderRank": "B+", "leaderCap": "A"},
+    {"id": "tang", "name": "大唐朝廷", "martialArts": ["陌刀斬馬式", "府兵槍術"], "type": "court", "seat": "changan", "territory": [], "desc": "留守中樞，以朝命約束方鎮與地方官署。", "leader": "天子遣使", "special": true, "known": true, "stance": "neutral", "color": "#75633C", "disciples": 8000, "reputation": 88, "money": 16000, "leaderRank": "B+", "leaderCap": "A"},
+    {"id": "shuofang_jds", "name": "朔方節度使府", "martialArts": ["雁門寒槍", "陌刀斬馬式"], "type": "military", "seat": "lingwu", "territory": ["lingzhou", "shouxiang"], "desc": "朔方軍守黃河邊防，隨軍驛使長年往返關內。", "leader": "朔方節度使", "special": true, "known": true, "stance": "neutral", "color": "#75633C", "disciples": 4600, "reputation": 65, "money": 9200, "leaderRank": "B+", "leaderCap": "A"},
+    {"id": "jiannan_jds", "name": "劍南節度使府", "martialArts": ["府兵槍術", "六合大槍"], "type": "military", "seat": "chengdu", "territory": ["jianmen", "songzhou", "dashiguan"], "desc": "鎮守蜀道及西南山口，與南詔商路時通時阻。", "leader": "劍南節度使", "special": true, "known": true, "stance": "neutral", "color": "#75633C", "disciples": 3900, "reputation": 58, "money": 7800, "leaderRank": "B+", "leaderCap": "A"},
     {
       "id": "jinwuwei",
       "name": "金吾衛",

@@ -73,7 +73,7 @@ namespace Wuxia
                     && member.id != state.Story.delegateId).Take(3).Select(member => member.id)).ToArray();
             ui.CloseModal(force: true);
             OpenCampaign(new SectCampaign(state, guards, foe, raid.troops, raid),
-                $"門派戰役　{state.WarNode(raid.target)}守備", foe, () => state.RaidReady, won =>
+                $"門派戰役　{state.WarNode(raid.target)}守備", foe, 0, () => state.RaidReady, won =>
                 {
                     if (won) foreach (string id in guards) AssignmentSystem.Credit(state, id, 2);
                     ui.Message(state.FinishRaid(won));
@@ -88,7 +88,7 @@ namespace Wuxia
             {
                 int troops = Mathf.Clamp(foe.disciples / 2, 200, 3200);
                 OpenCampaign(new SectCampaign(state, party, foe, troops, support: state.CampaignSupport),
-                    $"門派戰役　{node.Label}攻防", foe,
+                    $"門派戰役　{node.Label}攻防", foe, 2,
                     () => state.ActionPoints >= 2 && state.PartyNode == node.id && !state.HoldsNode(node.id)
                         && AssignmentSystem.Commit(state, party) && state.TrySpendAp(2, "campaign:" + node.id), won =>
                     {
@@ -105,7 +105,7 @@ namespace Wuxia
             });
         }
 
-        private void OpenCampaign(SectCampaign battle, string title, MapFaction faction, Func<bool> begin,
+        private void OpenCampaign(SectCampaign battle, string title, MapFaction faction, int apCost, Func<bool> begin,
             Action<bool> finish, Action back)
         {
             campaignOpen = true;
@@ -115,10 +115,10 @@ namespace Wuxia
                 campaignOpen = false;
                 controls.enabled = map == null || !map.IsOpen;
             }
-            var layer = ui.CampaignCanvas;
+            var layer = ui.Canvas;
             int previousOrder = layer.sortingOrder;
             layer.sortingOrder = 60;
-            ui.ShowCampaign(battle, title, this, state, faction, begin, won =>
+            ui.ShowCampaign(battle, title, this, state, faction, apCost, begin, won =>
             {
                 layer.sortingOrder = previousOrder;
                 Close();

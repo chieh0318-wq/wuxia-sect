@@ -45,7 +45,7 @@ namespace Wuxia
         /// v1124 C15/C16: a named guardian fights as its own portrait standee; a beast names a Resources standee path
         /// (falls back to the generic boss art until P2 paints it). Escorts can carry their own names.
         /// </summary>
-        public bool leadAsStandee;
+        public bool leadAsStandee, commanderDuel;
         public string enemyLeadStandee;
         public string[] minionNames;
         /// <summary>
@@ -141,6 +141,7 @@ namespace Wuxia
             var leader = WorldMapData.Load().Factions.FirstOrDefault(faction => faction.PortraitId == req.enemyLeadPortrait);
             var known = (leader?.martialArts ?? Array.Empty<string>()).Select(MartialArts.Find).Where(art => art != null);
             enemies[0].knownMoves = MartialArts.KnownMoves(known, null, catalog.Skills.ContainsKey);
+            enemies[0].personalArts = req.commanderDuel && enemies[0].knownMoves.Length > 0;
             return (players, enemies);
         }
 

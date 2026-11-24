@@ -631,7 +631,7 @@ namespace Wuxia
             else if (host is GameState game && !held && faction != null && faction.Court && game.Patron?.id != faction.id && known && node.id != host.StartNode
                 && node.id == host.PartyNode && CampaignRequested != null)
             {
-                var campaign = MapUi.Button(panel, "門派戰役 ›\n行動力 2", 20, 610, 124, 48, () =>
+                var campaign = MapUi.Button(panel, "門派戰役 ›", 20, 610, 124, 48, () =>
                     CampaignRequested.Invoke(node, faction, result =>
                     {
                         UpdateAp();

@@ -7,10 +7,8 @@ namespace Wuxia
 {
     public sealed partial class SectUI
     {
-        internal Canvas CampaignCanvas => canvas.GetComponent<Canvas>();
-
         internal void ShowCampaign(SectCampaign battle, string title, MonoBehaviour runner, GameState state,
-            MapFaction faction, Func<bool> begin, Action<bool> finish, Action back)
+            MapFaction faction, int apCost, Func<bool> begin, Action<bool> finish, Action back)
         {
             var board = Panel("SectCampaign", canvas, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero);
             var layer = board.GetComponent<Image>();
@@ -42,7 +40,7 @@ namespace Wuxia
                 stage.anchorMin = stage.anchorMax = new Vector2(.5f, .5f);
                 stage.pivot = new Vector2(.5f, .5f);
                 stage.anchoredPosition = Vector2.zero;
-                stage.localScale = Vector3.one * Mathf.Min(1, Mathf.Min(board.rect.width / 1400, board.rect.height / 740));
+                stage.localScale = Vector3.one * Mathf.Min(board.rect.width * .95f / 1400, board.rect.height * .94f / 740);
                 var backdrop = Resources.Load<Texture2D>("Campaign/Pass");
                 if (backdrop != null)
                 {
@@ -92,7 +90,7 @@ namespace Wuxia
                                 battle.Formation == formation ? MapUi.Red : (Color?)null);
                         }
                     }
-                    MapUi.Button(orders, "開戰", 1178, 126, 158, 48, () =>
+                    MapUi.Button(orders, apCost > 0 ? $"開戰　行動力 {apCost}" : "開戰", 1108, 126, 228, 48, () =>
                     {
                         if (!begin()) { message = "出兵條件有變，請返回調整。"; Draw(); return; }
                         battle.Deploy();
@@ -130,7 +128,7 @@ namespace Wuxia
                         for (int i = 0; i < row.Length; i++)
                         {
                             var unit = row[i];
-                            float width = Math.Min(127, 650f / Math.Min(5, row.Length));
+                            float width = Math.Min(150, 650f / Math.Min(5, row.Length));
                             var tile = MapUi.Panel(stage, "將旗", x + i % 5 * width, y + 30 + i / 5 * 77, width - 4, 74,
                                 allies ? new Color(.15f, .27f, .22f, .97f) : new Color(.34f, .19f, .16f, .97f));
                             if (!string.IsNullOrEmpty(unit.Portrait))
@@ -138,24 +136,30 @@ namespace Wuxia
                                 var portrait = PortraitService.Resolve(unit.Portrait);
                                 if (portrait != null) MapUi.Portrait(tile, portrait, 3, 2, 23, 25);
                             }
-                            MapUi.Text(tile, (unit.Commander ? "帥 " : "") + unit.Name,
-                                26, 1, width - 33, 25, 18, Color.white, TextAnchor.MiddleCenter);
+                            string callSign = unit.Name.Split('　').Last();
+                            var unitLabel = MapUi.Text(tile, (unit.Commander ? "帥 " : "") + callSign,
+                                26, 0, width - 34, 30, 17, Color.white, TextAnchor.MiddleCenter);
+                            unitLabel.verticalOverflow = VerticalWrapMode.Truncate;
+                            unitLabel.resizeTextMinSize = 14;
                             MapUi.Text(tile, $"兵 {unit.Troops}　{SectCampaign.TroopNames[(int)unit.Kind]}",
-                                3, 48, width - 10, 23, 16, Color.white, TextAnchor.MiddleCenter);
+                                3, 50, width - 10, 23, 16, Color.white, TextAnchor.MiddleCenter);
                             int silhouettes = unit.Troops == 0 ? 0 : Mathf.Clamp(Mathf.CeilToInt(unit.Troops / 90f), 1, 12);
                             for (int j = 0; j < silhouettes; j++)
                             {
                                 int offset = 5 + j * 8;
-                                MapUi.Panel(tile, "矛", offset, 25, 2, 14, MapUi.Gold);
-                                MapUi.Panel(tile, "盔", offset + 2, 29, 4, 4, MapUi.Ink);
-                                MapUi.Panel(tile, "甲", offset + 1, 33, 6, 7, MapUi.Ink);
+                                MapUi.Panel(tile, "矛", offset, 30, 2, 13, MapUi.Gold);
+                                MapUi.Panel(tile, "盔", offset + 2, 32, 4, 4, MapUi.Ink);
+                                MapUi.Panel(tile, "甲", offset + 1, 36, 6, 7, MapUi.Ink);
                             }
                             if (fighting)
                             {
-                                float hpWidth = (width - 14) * unit.Health / (float)Math.Max(1, unit.MaxHealth);
-                                MapUi.Panel(tile, "氣血", 5, 43, hpWidth, 4, new Color(.65f, .26f, .21f));
+                                float scale = (width - 14) / (unit.BaseHealth * 1.55f);
+                                float maxWidth = Mathf.Min(width - 14, unit.MaxHealth * scale);
+                                float hpWidth = maxWidth * unit.Health / Mathf.Max(1f, unit.MaxHealth);
+                                MapUi.Panel(tile, "氣血底", 5, 46, maxWidth, 4, MapUi.Ink);
+                                MapUi.Panel(tile, "氣血", 5, 46, hpWidth, 4, new Color(.65f, .26f, .21f));
                                 if (unit.Shield > 0)
-                                    MapUi.Panel(tile, "護盾", 5, 40, (width - 14) * Mathf.Clamp01(unit.Shield / (float)Math.Max(1, unit.Capacity / 5)), 3, MapUi.Gold);
+                                    MapUi.Panel(tile, "護盾", 5, 43, (width - 14) * Mathf.Clamp01(unit.Shield / (float)Math.Max(1, unit.Capacity / 5)), 3, MapUi.Gold);
                             }
                             if (allies && !fighting)
                             {
@@ -175,7 +179,7 @@ namespace Wuxia
                 {
                     ground = BattleGround.Fortification, expeditionParty = new[] { battle.Allies[0].Id },
                     enemyCount = 1, enemyLeadName = battle.Enemies[0].Name,
-                    enemyLeadPortrait = battle.Enemies[0].Portrait, leadAsStandee = true,
+                    enemyLeadPortrait = battle.Enemies[0].Portrait, leadAsStandee = true, commanderDuel = true,
                     onComplete = won =>
                     {
                         battle.ResolveDuel(won);

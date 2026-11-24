@@ -8,51 +8,27 @@ using UnityEngine.UI;
 namespace Wuxia
 {
     /// <summary>
-    /// v1126 #4 (T-3 #4): what one more point of each attribute is worth, read from the live formulas so the
-    /// creation screen follows any future rebalance. Combat figures come from <see cref="AttributeSystem.Derive"/>
-    /// (one point above the base, everything else at base); the management effects mirror the GameState formulas
-    /// they name.
+    /// v1126 #4 / v1126b 決定 1: what one more point of each attribute is worth, read from the live formulas
+    /// (<see cref="AttributeSystem.PerPoint"/>) so the creation screen and the character page follow any rebalance.
     /// </summary>
     internal static class AttributePerPoint
     {
         internal static string Describe(int slot)
         {
-            var baseAttrs = Enumerable.Repeat(AttributeSystem.Base, AttributeSystem.Count).ToArray();
-            var raised = (int[])baseAttrs.Clone();
-            raised[slot]++;
-            var lines = RankSystem.Seed(null, RankSystem.PrimaryRank, RankSystem.PrimaryCap, RankSystem.BaseCap, RankSystem.BaseRank);
-            var before = AttributeSystem.Derive(baseAttrs, lines);
-            var after = AttributeSystem.Derive(raised, lines);
-            var parts = new List<string>();
-            Add("攻擊", after.Attack - before.Attack);
-            Add("先手", after.Speed - before.Speed);
-            Add("氣血", after.MaxHp - before.MaxHp);
-            Add("內力", after.MaxQi - before.MaxQi);
-            Add("內功威力", after.QiPower - before.QiPower);
-            Percent("閃避", after.Dodge - before.Dodge);
-            Percent("奇遇", after.Fortune - before.Fortune);
-            Percent("修習", after.Study - before.Study);
-            // Outside Derive: GameState.Effects (聲望 ×(1+3%/點)), GameState.Diplomacy (交涉分 = 魅力 + 悟性/2),
-            // GameState.Ranks (療傷 +1 每 3 點根骨).
-            switch (AttributeSystem.Keys[slot])
-            {
-                case "cha": parts.Add("聲望收穫 +3%"); parts.Add("交涉 +1"); break;
-                case "wit": parts.Add("交涉 +0.5"); break;
-                case "con": parts.Add("療傷 每3點 +1"); break;
-            }
+            var parts = AttributeSystem.PerPoint(slot);
             return parts.Count == 0 ? "" : "每點　" + string.Join("・", parts);
+        }
 
-            void Add(string name, int delta)
-            {
-                if (delta != 0) parts.Add($"{name} {delta:+0;-0}");
-            }
-            void Percent(string name, float delta)
-            {
-                if (Mathf.Abs(delta) >= .0005f) parts.Add($"{name} {delta * 100:+0.#;-0.#}%");
-            }
+        /// <summary>Multi-line hover text: the attribute, its uses, and every per-point effect on its own line.</summary>
+        internal static string Tip(int slot, int value)
+        {
+            var parts = AttributeSystem.PerPoint(slot);
+            int delta = value - AttributeSystem.Base;
+            string head = $"{AttributeSystem.Names[slot]} {value}" +
+                (delta == 0 ? "（基準）" : $"（較基準 {delta:+0;-0}）");
+            return head + "\n" + AttributeSystem.Benefits[slot] + "\n每多一點：\n・" + string.Join("\n・", parts);
         }
     }
-
     public sealed partial class SectUI
     {
         /// <summary>

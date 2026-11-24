@@ -34,6 +34,7 @@ namespace Wuxia
                 map.CampaignRequested += StartOffensiveCampaign;
                 map.BattleRequested += StartMapAssaultBattle;
                 map.TreasureRequested += EnterTreasure; // v1124 C16
+                map.MasterChallengeRequested += StartMasterChallenge; // v1126b 決定 3
             }
             state.ChoosePatronEnvoy = (title, send) => ui.ChoosePatronEnvoy(state, title, send);
             map.Open(state);
@@ -161,6 +162,25 @@ namespace Wuxia
                 ui.Refresh(state);
             };
             ui.StartTurnBattle(state, encounter, this);
+        }
+
+        /// <summary>v1126b 決定 3 天下第一: the protagonist alone against a master, who fights with their own arts.</summary>
+        private void StartMasterChallenge(MapFaction master, System.Action<string> done)
+        {
+            if (state == null || ui.BattleOpen || !state.BeginMasterChallenge(master)) return;
+            ui.StartTurnBattle(state, new BattleRequest
+            {
+                encounter = BattleEncounter.Boss, ground = BattleGround.MountainGate,
+                expeditionParty = new[] { GameState.HeroId }, enemyCount = 1,
+                enemyLeadName = master.leader, enemyLeadPortrait = master.PortraitId, leadAsStandee = true,
+                commanderDuel = true, difficulty = state.MasterDifficulty(master),
+                onComplete = won =>
+                {
+                    string result = state.ResolveMasterChallenge(master, won);
+                    done?.Invoke(result);
+                    ui.Refresh(state);
+                }
+            }, this);
         }
     }
 }

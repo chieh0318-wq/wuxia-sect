@@ -97,14 +97,23 @@ namespace Wuxia
             {
                 if (route == null) continue;
                 string progress = QuestBoard.RouteProgress(questState, route);
+                // v1126b 決定 3: the live counters wrap under the route name; a met route offers 「宣告結局」.
+                string routeId = QuestBoard.RouteId(route);
+                var live = routeId == null ? (RouteState?)null : questState.Route(routeId);
+                float nameTop = y;
                 Line(route.name, 19, UiKit.HeaderGold, 26);
-                var detail = Label(questPanel, progress, 17, TextAnchor.MiddleLeft);
-                detail.color = progress.StartsWith("達成條件：待定", StringComparison.Ordinal) ? CardMuted : MapUi.Paper;
-                Anchor(detail.rectTransform, Vector2.up, Vector2.one, new(pad + 96, -y), new(-pad, -y + 26));
-                detail.resizeTextMinSize = 15;
-                detail.resizeTextMaxSize = 17;
+                if (live is { Met: true, Declared: false })
+                {
+                    var declare = Button(questPanel, "宣告結局", () => DeclareRoute(routeId));
+                    declare.name = "宣告結局";
+                    declare.GetComponentInChildren<Text>().fontSize = 16;
+                    Anchor(declare, Vector2.one, Vector2.one, new(-pad - 104, -nameTop - 26), new(-pad, -nameTop - 1));
+                }
+                var met = new Color(.64f, .92f, .72f);
+                Line(progress, 16, live is { Met: true } ? met : progress.StartsWith("達成條件：待定", StringComparison.Ordinal) ? CardMuted : MapUi.Paper,
+                    Wrapped(progress, 16), pad + 14);
                 if (!string.IsNullOrEmpty(route.direction))
-                    Line(route.direction, 16, CardMuted, 22, pad + 14);
+                    Line(route.direction, 15, CardMuted, Wrapped(route.direction, 15), pad + 14);
             }
             Resize(y + 16);
 
@@ -144,6 +153,24 @@ namespace Wuxia
             {
                 Anchor(questPanel, Vector2.right, Vector2.right, new(-width - 18, 104), new(-18, 104 + height));
             }
+        }
+
+        /// <summary>v1126b 決定 3: proclaims a route's ending; play carries on afterwards.</summary>
+        private void DeclareRoute(string id)
+        {
+            if (questState == null || !questState.DeclareRoute(id)) return;
+            AudioManager.Jingle("victory");
+            string title = id switch { "diplomacy" => "江湖盟主", "conquest" => "一統江湖", "wealth" => "富甲天下", _ => "天下第一" };
+            string sect = questState.SectLabel;
+            string body = id switch
+            {
+                "diplomacy" => $"{sect}不動干戈，令群雄歸心、各派奉為上宗。眾人齊聚山門，共推掌門為江湖盟主。",
+                "conquest" => $"{sect}兵鋒所指，各處據點盡入門下。四方豪強俯首，江湖從此以{sect}號令為準。",
+                "wealth" => $"{sect}商路通達四海，庫中金銀如山。天下行商皆仰{sect}鼻息，連朝廷也要禮讓三分。",
+                _ => $"掌門遍訪天下名家，一一折服。自此江湖論劍，再無人敢與{sect}掌門爭這「天下第一」四字。"
+            };
+            ShowModal(title, new[] { body, "", questState.Route(id).Progress, "", "（遊戲可繼續進行，其餘破關之路仍可再走。）" },
+                new[] { ("受此重任", (Action)(() => { CloseModal(); RefreshQuestPanel(); })) });
         }
 
         internal void HideQuestPanel()

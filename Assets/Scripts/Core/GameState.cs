@@ -76,8 +76,8 @@ namespace Wuxia
         internal DerivedStats HeroStats => WithBonuses(AttributeSystem.Derive(HeroAttributes, Protagonist.lines,
             WeaponRankDelta(Protagonist.weapon)));
 
-        /// <summary>Extra qi-yu (adventure) chance from 幸運, with a touch of 身法 for finding hidden paths.</summary>
-        internal float AdventureBonus => .012f * AttributeBonus("luk") + .003f * AttributeBonus("agi");
+        /// <summary>v1126b 決定 1: qi-yu (adventure) odds multiplier from 幸運, ×1.04 per point.</summary>
+        internal float AdventureFactor => AttributeSystem.FortuneFactor(AttributeValue("luk"));
 
         internal int BuildingLevel(string id) => Buildings != null && Buildings.Any(building => building?.id == id)
             ? (Story.buildingLevels.FirstOrDefault(entry => entry.id == id)?.value ?? 1) : 0;
@@ -189,6 +189,7 @@ namespace Wuxia
             if (materials > 0) report.Lines.Add($"作坊材料　+{materials}");
             M6MonthIncome(ref silver, ref food, report);
             DiplomacyMonth(report);
+            RoutesMonth(report); // v1126b 決定 3: route counters (trade ages, trade ring, hold months)
             HallsMonth(report); // v1124 C18
             if (Story.monthlyFood != 0 || Story.monthlySilver != 0)
             {

@@ -126,11 +126,11 @@ namespace Wuxia
         /// <summary>Road patrol scene. AP / cost are already paid. Keeps the old 奇遇 breakthrough and realm discovery rolls.</summary>
         private void ExploreRoad(ActionData action)
         {
-            float fortune = .012f * (AssignmentSystem.Attribute(state, ExpeditionLeader, "luk") - AttributeSystem.Base)
-                + .003f * (AssignmentSystem.Attribute(state, ExpeditionLeader, "agi") - AttributeSystem.Base);
+            // v1126b 決定 1: 幸運 multiplies the odds (×1.04 per point) instead of adding a flat 1.2 points.
+            float fortune = AttributeSystem.FortuneFactor(AssignmentSystem.Attribute(state, ExpeditionLeader, "luk"));
             float rumor = state.ConsumeRumors();
-            string breakthrough = state.TryBreakthrough("qiyu_cliff_cave", state.Story.insightChance + fortune + rumor);
-            bool realm = UnityEngine.Random.value < Mathf.Clamp(.22f + 2 * fortune + rumor, .05f, .9f);
+            string breakthrough = state.TryBreakthrough("qiyu_cliff_cave", state.Story.insightChance + rumor, fortune);
+            bool realm = UnityEngine.Random.value < Mathf.Clamp((.22f + rumor) * fortune, .05f, .9f);
             state.Apply(action.effect);
             var road = RealmContent.PickRoadEvent();
             if (road == null)

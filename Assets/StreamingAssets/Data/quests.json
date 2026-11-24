@@ -19,10 +19,10 @@
     { "id": "taihang", "text": "太行寨眾專劫商旅，本門從前護送過被劫的客商，他們一直記恨在心。若要用兵，須先把寨中虛實摸清。" }
   ],
   "routes": [
-    { "id": "diplomacy", "name": "外交結盟", "direction": "與各派、官府修好結盟，使其歸附。", "condition": "", "progress": "diplomacy" },
-    { "id": "conquest", "name": "武力征服", "direction": "攻占據點，以兵威服人。", "condition": "", "progress": "conquest" },
-    { "id": "wealth", "name": "富甲天下", "direction": "經商致富，花錢請傭兵、收買人心。", "condition": "", "progress": "" },
-    { "id": "champion", "name": "天下第一", "direction": "主角武功登峰造極，於武林大會奪魁。", "condition": "", "progress": "" }
+    { "id": "diplomacy", "name": "外交結盟", "direction": "與各派、官府修好結盟，使其歸附。", "condition": "結盟或歸附 12 家（其中歸附 6 家）、聲望 400，盟約穩固 6 個月", "progress": "diplomacy" },
+    { "id": "conquest", "name": "武力征服", "direction": "攻占據點，以兵威服人。", "condition": "直轄據點 20 處、聲望 450，守穩 6 個月", "progress": "conquest" },
+    { "id": "wealth", "name": "富甲天下", "direction": "廣開商路，經營多年，積銀如山。", "condition": "庫銀 8,000、通商滿 12 個月的商路 16 條、近一年商路收入 1,800、聲望 350", "progress": "wealth" },
+    { "id": "champion", "name": "天下第一", "direction": "主修練至絕頂，在地圖上登門挑戰各派成名高手，一一勝之。", "condition": "主修 SSS、勝成名高手 12 位（其中 SS 級以上宗師 4 位）、聲望 600", "progress": "champion" }
   ],
   "stages": [
     {

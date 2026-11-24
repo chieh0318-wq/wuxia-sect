@@ -161,7 +161,7 @@ namespace Wuxia
                 actor.hp = Math.Max(0, actor.hp - damage);
                 Emit($"{actor.name} 受持續傷害 {damage}。", target: actor, floating: $"-{damage}");
             }
-            actor.qi = TurnQi(actor);
+            actor.qi = Math.Min(actor.maxQi, TurnQi(actor) + Math.Max(0, actor.qiRegen));
 
             bool skip = Effects(actor).Any(status => status.skip);
             if (actor.Alive)
@@ -328,7 +328,7 @@ namespace Wuxia
             foreach (var victim in targets)
             {
                 var evasion = Effects(victim).FirstOrDefault(status => status.evade);
-                if (evasion != null || (!move.telegraph && random.NextDouble() < Math.Clamp(victim.dodge - actor.talentHit, 0, .95f)))
+                if (evasion != null || (!move.telegraph && random.NextDouble() < Math.Clamp(victim.dodge - actor.hit - actor.talentHit, 0, .95f)))
                 {
                     if (evasion != null) victim.statuses.Remove(evasion.id);
                     Emit($"{victim.name} 閃過了{actor.name}的{move.label}！", actor, victim, "閃避！");
@@ -341,7 +341,7 @@ namespace Wuxia
                 double multiplier = counter > 0 ? 1.25 : counter < 0 ? .8 : 1;
                 float reduction = Effects(victim).Aggregate(1f, (value, effect) => value * effect.incoming);
                 double roll = random.NextDouble();
-                bool critical = roll >= .92 - actor.talentCrit;
+                bool critical = roll >= 1 - Math.Clamp(actor.crit + actor.talentCrit, 0, 1);
                 reduction *= 1 - victim.talentReduction;
                 int amount = Math.Max(1, (int)Math.Round(move.power * attack * attack / (attack + defense) *
                     multiplier * reduction * (.95 + roll * .1) * (critical ? 1.5 : 1)));

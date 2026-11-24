@@ -159,7 +159,8 @@ namespace Wuxia
                 raw.Speed + tech.speed + gear.Sum(item => item?.speed ?? 0),
                 raw.MaxHp + tech.hp + gear.Sum(item => item?.hp ?? 0),
                 raw.MaxQi + tech.qi + gear.Sum(item => item?.qi ?? 0), raw.QiPower,
-                Mathf.Clamp(raw.Dodge + tech.dodge + gear.Sum(item => item?.dodge ?? 0), 0, .75f), raw.Fortune, raw.Study);
+                Mathf.Clamp(raw.Dodge + tech.dodge + gear.Sum(item => item?.dodge ?? 0), 0, .75f), raw.Fortune, raw.Study,
+                raw.Hit, raw.Crit, raw.QiRegen);
         }
 
         /// <summary>Beds across all 弟子廂房 (4 each, 6 once 山門營造法式 is researched).</summary>
@@ -300,7 +301,7 @@ namespace Wuxia
         }
 
         /// <summary>Chance that 山道巡訪 stumbles on a secret realm (幸運 / 身法 and gathered rumours help).</summary>
-        internal float RealmChance => Mathf.Clamp(.22f + 2 * AdventureBonus + Story.rumorBonus, .05f, .9f);
+        internal float RealmChance => Mathf.Clamp((.22f + Story.rumorBonus) * AdventureFactor, .05f, .9f);
 
         internal float ConsumeRumors()
         {
@@ -316,7 +317,12 @@ namespace Wuxia
             ActionPoints += Mathf.Clamp(amount, 0, cap - ActionPoints);
         }
 
-        internal void Injure(int amount) => Protagonist.injury = Mathf.Clamp(Protagonist.injury + amount, 0, 9);
+        internal void Injure(int amount)
+        {
+            // v1126b 決定 1: 幸運 can soften a grave wound (2+ levels) into a light one.
+            if (amount >= 2 && UnityEngine.Random.value < AttributeSystem.GraveToLight(AttributeValue("luk"))) amount = 1;
+            Protagonist.injury = Mathf.Clamp(Protagonist.injury + amount, 0, 9);
+        }
 
         // ---- World map strongholds ------------------------------------------------------------
 

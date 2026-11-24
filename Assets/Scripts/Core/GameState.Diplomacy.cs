@@ -259,7 +259,8 @@ namespace Wuxia
             int eloquence = worker == null ? Eloquence(out _) : AssignmentSystem.Eloquence(this, worker);
             float gap = Mathf.Clamp((Prestige - Diplomacy.Strength(faction)) * .004f, -.2f, .2f);
             float talent = TalentValue(worker ?? EnvoyId ?? HeroId, "diplomacy", 20) / 100f;
-            float chance = talent + action.chance / 100f + (eloquence - 15) * .02f + Attitude(faction) * .003f + gap + Legitimacy / 100f;
+            float chance = talent + action.chance / 100f + (eloquence - 15) * AttributeSystem.DiplomacyPerPoint +
+                Attitude(faction) * .003f + gap + Legitimacy / 100f;
             return Mathf.Clamp(chance, .05f, .95f);
         }
 
@@ -373,7 +374,16 @@ namespace Wuxia
         {
             get
             {
-                var rules = Diplomacy.Data.victory ?? new DiploVictory();
+                // v1126b 決定 3: the thresholds come from the calibrated route rules (victory_routes.json).
+                var source = Diplomacy.Data.victory ?? new DiploVictory();
+                var routes = RouteRules.Data;
+                var rules = new DiploVictory
+                {
+                    jianghuTypes = source.jianghuTypes,
+                    loyalNeeded = routes.diplomacy.loyal, subjectNeeded = routes.diplomacy.subjects,
+                    reputationNeeded = routes.diplomacy.reputation,
+                    conquestNodes = routes.conquest.held, conquestReputation = routes.conquest.reputation
+                };
                 int loyal = 0, subjects = 0;
                 foreach (var faction in WorldMapData.Load().Factions.Where(Diplomacy.Jianghu))
                 {
@@ -390,7 +400,7 @@ namespace Wuxia
         /// <summary>True once, the first time the 江湖盟主 victory is reached (so the panel can proclaim it).</summary>
         internal bool ClaimDiplomaticVictory()
         {
-            if (!Victory.Diplomatic || (Story.flags ?? Array.Empty<StoryValue>()).Any(flag => flag.id == "diplo_victory" && flag.value > 0))
+            if (!Route("diplomacy").Met || (Story.flags ?? Array.Empty<StoryValue>()).Any(flag => flag.id == "diplo_victory" && flag.value > 0))
                 return false;
             SetValue(ref Story.flags, "diplo_victory", 1, false);
             return true;

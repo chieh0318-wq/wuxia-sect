@@ -49,9 +49,11 @@ namespace Wuxia
             if (line == null) return "";
 
             float experience = Mathf.Max(.1f, 1 + Story.trainBonusPct / 100f) *
-                AssignmentSystem.Predict(this, "train", worker).Quality * Mathf.Max(.5f, 1 + .05f * AttributeBonus("wit"));
+                AssignmentSystem.Predict(this, "train", worker).Quality *
+                AttributeSystem.StudyFactor(AssignmentSystem.Attribute(this, worker, "wit"));
+            // v1126b 決定 1: training speed comes from 悟性 only (武力 no longer adds its own share).
             if (hero)
-                experience *= Mathf.Max(.5f, 1 + .02f * AttributeBonus("str")) * StudyMultiplier(line.id);
+                    experience *= StudyMultiplier(line.id);
             if (TalentValue(worker, "growth", 1) > 0) experience *= Year <= 3 ? .9f : 1.3f;
             string major = hero ? Protagonist.major : RankSystem.BestCombat(lines)?.id;
             if (line.id == major) experience *= 1.2f;
@@ -101,11 +103,13 @@ namespace Wuxia
             line.progress -= steps * 2;
         }
 
-        internal string TryBreakthrough(string id, float bonus)
+        internal string TryBreakthrough(string id, float bonus, float fortune = 1)
         {
             var entry = RankSystem.Catalog.breakthroughs?.FirstOrDefault(value => value.id == id);
+            // v1126b 決定 1: 悟性 adds +0.3 points of 頓悟 per point; 幸運 scales the odds ×1.04 per point.
+            float insight = AttributeBonus("wit") * AttributeSystem.InsightPerPoint;
             if (entry == null || (entry.oneTime && Protagonist.breakthroughs.Contains(id)) ||
-                UnityEngine.Random.value >= Mathf.Clamp01(entry.chance + bonus))
+                UnityEngine.Random.value >= Mathf.Clamp01((entry.chance + bonus + insight) * fortune))
                 return "";
             var line = entry.target == "martial" ? RankSystem.BestCombat(Protagonist.lines) :
                 Array.Find(Protagonist.lines, value => value.id == entry.target);

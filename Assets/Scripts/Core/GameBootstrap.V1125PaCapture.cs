@@ -118,6 +118,7 @@ namespace Wuxia
         {
             ui.CloseTalk(false);
             ui.CloseModal(force: true);
+            ui.Canvas.enabled = true; // v1126 PA map shots switch it off
             Toast.ClearAll();
             if (tutorial != null)
             {

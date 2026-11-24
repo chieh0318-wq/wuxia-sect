@@ -69,8 +69,8 @@ namespace Wuxia
             RefreshTreasures(); // v1124 C16
             if (HomeNode != null && !traveling) CenterOnHome(); // v1125 #6: open on our own mountain gate
             else CenterOn(host.PartyNode);
-            if (!traveling) status.text = (HomeNode != null ? $"本門在{data.NodeLabel(HomeNode)}（金色光圈與「本」字旗）。" : "") +
-                $"隊伍駐於{data.NodeLabel(host.PartyNode)}。點選城寨查看守備與路線，點選旗幟查看勢力。";
+            // v1126 #15: one short line.
+            if (!traveling) status.text = $"隊伍駐於{data.NodeLabel(host.PartyNode)}。點選據點或旗幟查看詳情。";
             if (!traveling && host is GameState game && game.PendingDiploEvent != null)
                 status.text = $"外交急報待決：{game.PendingDiploEvent.title}（{game.PendingDiploTarget?.Label}）。點右上「外交」處理。";
             ApplyView();
@@ -180,12 +180,10 @@ namespace Wuxia
             MapUi.Text(party,"行",0,0,28,28,18,MapUi.Paper,TextAnchor.MiddleCenter);
             card = MapUi.Rect(frame,"Map card",1113,96,426,680);
             var footer = MapUi.Kit(frame,"Map status bar",12,808,1576,82,"Wood",false);
-            status = MapUi.Text(footer,"",22,6,1530,38,22,MapUi.Paper,TextAnchor.MiddleLeft,"Narration");
-            MapUi.Text(footer,"滾輪縮放　右鍵或中鍵拖曳　WASD 平移",
-                22,44,630,30,18,MapUi.Gold);
-            var legend = MapUi.Kit(footer,"Legend paper tag",750,13,805,55,"Paper",false);
-            MapUi.Text(legend,"大城 雄城重鎮　小城 縣鎮驛站　山門 門派名山　關隘 險要雄關　旗 勢力　行 隊伍",
-                16,0,773,55,18,MapUi.Ink,TextAnchor.MiddleCenter);
+            // v1126 #15: one short line; the controls show on hover; the legend is a box in the map corner.
+            status = MapUi.Text(footer,"",22,6,1360,70,22,MapUi.Paper,TextAnchor.MiddleLeft,"Narration");
+            BuildFooterHelp(footer);
+            BuildLegend();
             if (data.Nodes.Count == 0) status.text = "地圖資料尚未載入。";
             intel = new IntelPanel(frame,data,FocusFaction);
             diplomacy = new DiplomacyPanel(frame,data,UpdateAp);
@@ -263,14 +261,9 @@ namespace Wuxia
             var rect = (RectTransform)button.transform;
             rect.pivot = new Vector2(.5f,1);
             MapUi.Panel(rect,"Pole",2,0,2.5f,34,MapUi.Ink).GetComponent<Image>().raycastTarget = false;
-            var cloth = MapUi.Panel(rect,"Banner",4.5f,1,24,24,faction.Tint);
-            cloth.GetComponent<Image>().raycastTarget = false;
-            var edge = cloth.gameObject.AddComponent<Outline>();
-            edge.effectColor = new Color(.10f,.07f,.05f,.8f);
-            edge.effectDistance = new Vector2(1,-1);
-            var glyph = MapUi.Text(cloth,faction.Label.Substring(0,1),0,0,24,24,18,MapUi.Paper,TextAnchor.MiddleCenter,"Names");
-            glyph.resizeTextForBestFit = false;
-            MapUi.Panel(rect,"Fringe",4.5f,25,24,2,MapUi.Gold).GetComponent<Image>().raycastTarget = false;
+            // v1126 #13: the cloth tells the kind at a glance (綠林 / 朝廷・方鎮 / 武林 / 外族); hover names it.
+            DrawFlag(rect, KindOf(faction), faction.Label.Substring(0,1), 4.5f, 1, 25, Beige(faction));
+            Hover(button.gameObject, () => FlagTip(faction));
             return rect;
         }
 
@@ -330,6 +323,8 @@ namespace Wuxia
             labelRect.anchorMax = Vector2.one;
             labelRect.offsetMin = labelRect.offsetMax = Vector2.zero;
             if (major) label.fontStyle = FontStyle.Bold;
+            Hover(button.gameObject, () => NodeTip(node)); // v1126 #13: stronghold kind / holder on hover
+            Hover(plate.gameObject, () => NodeTip(node));
             var plateButton = plate.gameObject.AddComponent<Button>();
             plateButton.transition = Selectable.Transition.None;
             plateButton.onClick.AddListener(() => { UiSfx.Play("click"); ShowNode(node); });
@@ -588,91 +583,91 @@ namespace Wuxia
             MapUi.Text(panel, message, 20, y, 386, 28, 20, MapUi.Jade);
             if (route != null)
             {
-                MapUi.Text(panel, string.Join(" → ", route.Nodes.Select(data.NodeLabel)), 20, y + 28, 386, 40, 18,
-                    MapUi.Ink, TextAnchor.UpperLeft);
+                // v1126 #12: the path line only shows when it cannot reach the attack note above the buttons.
+                if (y + 28 + 24 <= 560)
+                    MapUi.Text(panel, string.Join(" → ", route.Nodes.Select(data.NodeLabel)), 20, y + 28, 386, Mathf.Min(40, 560 - (y + 28)), 18,
+                        MapUi.Ink, TextAnchor.UpperLeft);
                 for (int i = 1; i < route.Nodes.Count; i++)
                     Line(routeLayer, Position(data.Nodes[route.Nodes[i - 1]]), Position(data.Nodes[route.Nodes[i]]), MapUi.Red, 3, false);
             }
 
-            // Command row: scout (or 率眾攻討 on outlaw holds) / intel / march.
-            if (outlaw)
+            // v1126 #12: command row — attack (every stronghold; grey with the reason when not possible) /
+            // scout or visit / intel / march. The reason line sits right above the buttons.
+            Action assault = !outlaw ? null : () =>
             {
                 float guard = OutlawGuard(node) == "丙" ? .9f : .7f;
-                var assault = MapUi.Button(panel, $"率眾攻討\n勝算 {host.AssaultChance(garrison, guard):P0}", 20, 610, 124, 48, () =>
+                if (BattleRequested != null)
                 {
-                    if (BattleRequested != null)
+                    var encounter = OutlawEncounter(node, faction);
+                    BattleRequested.Invoke(encounter, won =>
                     {
-                        var encounter = OutlawEncounter(node, faction);
-                        BattleRequested.Invoke(encounter, won =>
+                        if (won)
                         {
-                            if (won)
-                            {
-                                string result = host.Assault(node.id, faction.id, garrison, 0.01f);
-                                status.text = result;
-                            }
-                            else
-                            {
-                                status.text = $"攻討{data.NodeLabel(node.id)}失利，暫退休整。";
-                            }
-                            UpdateAp();
-                            ShowNode(node);
-                        });
-                        return;
-                    }
-                    string resultFallback = host.Assault(node.id, faction.id, garrison, guard);
-                    AudioManager.Play(host.HoldsNode(node.id) ? "complete" : "page");
-                    UpdateAp();
-                    ShowNode(node);
-                    status.text = resultFallback;
-                }, MapUi.Red, 15);
-                assault.interactable = host.ActionPoints >= 2;
-                cardActions.Add(assault);
-            }
-            else if (host is GameState game && !held && faction != null && faction.Court && game.Patron?.id != faction.id && known && node.id != host.StartNode
-                && node.id == host.PartyNode && CampaignRequested != null)
-            {
-                var campaign = MapUi.Button(panel, "門派戰役 ›", 20, 610, 124, 48, () =>
-                    CampaignRequested.Invoke(node, faction, result =>
-                    {
+                            string result = host.Assault(node.id, faction.id, garrison, 0.01f);
+                            status.text = result;
+                        }
+                        else
+                        {
+                            status.text = $"攻討{data.NodeLabel(node.id)}失利，暫退休整。";
+                        }
                         UpdateAp();
                         ShowNode(node);
-                        status.text = result;
-                    }), MapUi.Red, 15);
-                campaign.interactable = host.ActionPoints >= 2;
-                cardActions.Add(campaign);
-            }
-            else if (held)
+                    });
+                    return;
+                }
+                string resultFallback = host.Assault(node.id, faction.id, garrison, guard);
+                AudioManager.Play(host.HoldsNode(node.id) ? "complete" : "page");
+                UpdateAp();
+                ShowNode(node);
+                status.text = resultFallback;
+            };
+            Action campaignRun = CampaignRequested == null || faction == null ? null : () =>
+                CampaignRequested.Invoke(node, faction, result =>
+                {
+                    UpdateAp();
+                    ShowNode(node);
+                    status.text = result;
+                });
+            var attack = AttackOption(node, faction, held, known, assault, campaignRun);
+            var note = MapUi.Text(panel, attack.note, 20, 560, 386, 48, 17, attack.blocked ? MapUi.Red : MapUi.Jade, TextAnchor.LowerLeft);
+            note.name = "攻打說明";
+            const int buttonY = 612, buttonW = 92, buttonH = 48;
+            var attackButton = MapUi.Button(panel, attack.label, 20, buttonY, buttonW, buttonH, attack.run ?? (() => { }), MapUi.Red, 15);
+            attackButton.name = "攻打";
+            attackButton.interactable = !attack.blocked && attack.run != null;
+            cardActions.Add(attackButton);
+            if (held)
             {
-                var own = MapUi.Button(panel, "本派據點", 20, 610, 124, 48, () => { }, null, 18);
+                var own = MapUi.Button(panel, "本派據點", 118, buttonY, buttonW, buttonH, () => { }, null, 16);
                 own.interactable = false;
                 cardActions.Add(own);
             }
             else if (faction != null && !known)
             {
-                var scout = MapUi.Button(panel, "派人打探　行動力 1", 20, 610, 124, 48, () =>
+                var scout = MapUi.Button(panel, "派人打探\n行動力 1", 118, buttonY, buttonW, buttonH, () =>
                 {
                     if (!host.TrySpendAp(1, "scout:" + faction.id)) return;
                     host.SetFactionKnown(faction.id);
                     UpdateAp();
                     AudioManager.Play("page");
                     ShowNode(node);
-                }, null, 16);
+                }, null, 15);
                 scout.interactable = host.ActionPoints >= 1;
                 cardActions.Add(scout);
             }
             else
             {
-                var leader = MapUi.Button(panel, "拜會首領", 20, 610, 124, 48, () => LeaderSelected?.Invoke(faction), null, 18);
+                var leader = MapUi.Button(panel, "拜會首領", 118, buttonY, buttonW, buttonH, () => LeaderSelected?.Invoke(faction), null, 16);
                 leader.interactable = faction != null;
                 cardActions.Add(leader);
             }
-            var intelButton = MapUi.Button(panel, "勢力情報", 151, 610, 124, 48, () =>
+            var intelButton = MapUi.Button(panel, "勢力情報", 216, buttonY, buttonW, buttonH, () =>
             {
                 if (faction != null) ShowFaction(faction);
                 else OpenIntel();
-            }, null, 18);
+            }, null, 16);
             cardActions.Add(intelButton);
-            var confirm = MapUi.Button(panel, "確認啟程", 282, 610, 124, 48, () => StartTravel(route, node.id), MapUi.Red, 18);
+            var confirm = MapUi.Button(panel, "確認啟程", 314, buttonY, buttonW, buttonH, () => StartTravel(route, node.id), MapUi.Red, 16);
             confirm.interactable = route != null && host.ActionPoints >= host.TravelCost(route.Ap);
             cardActions.Add(confirm);
 

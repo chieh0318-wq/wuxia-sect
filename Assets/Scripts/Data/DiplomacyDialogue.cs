@@ -183,8 +183,17 @@ namespace Wuxia
                 (_, "high") => "{call}，有事儘管算上我。",
                 _ => "{call}，且聽我說。"
             };
+            // v1126 #14: one address per line — when the line already names the hero (代掌門 / 師妹 / 老三 / the
+            // name), the opening drops its own 「{call}，」 instead of stacking a second, different address.
+            if (HasAddress(state, Format(state, text, id))) opening = opening.Replace("{call}，", "");
             return Format(state, opening + text, id);
         }
+
+        private static readonly string[] AddressWords = { "掌門", "師兄", "師姐", "師弟", "師妹", "老三", "孩子" };
+
+        internal static bool HasAddress(GameState state, string text) =>
+            !string.IsNullOrEmpty(text) && (AddressWords.Any(text.Contains) ||
+                (!string.IsNullOrEmpty(state.Protagonist.name) && text.Contains(state.Protagonist.name)));
 
         internal static string Format(GameState state, string text, string speaker = null)
         {

@@ -34,6 +34,10 @@ namespace Wuxia
         internal bool Active => !finished && introComplete;
         internal string Highlight => Active ? data.steps[step].highlight : null;
 
+        /// <summary>v1126 #8: the running guide step for the 任務 panel (read-only), or null once it is over.</summary>
+        internal (string title, string objective)? Current =>
+            Active && step < data.steps.Length ? (Format(data.steps[step].title), Format(data.steps[step].objective)) : null;
+
         internal TutorialGuide(SectUI ui, GameState state)
         {
             this.ui = ui;

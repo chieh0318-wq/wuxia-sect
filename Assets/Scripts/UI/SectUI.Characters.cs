@@ -9,7 +9,7 @@ namespace Wuxia
     internal sealed class CharacterDossier
     {
         public StoryCharacter person;
-        public string faction, stance, arts, biography, bond;
+        public string faction, stance, arts, biography, bond, talents;
         public int relation, kind = 2;
         public int[] attrs;
         public bool estimated;
@@ -120,7 +120,7 @@ namespace Wuxia
                 AddLine(modalList, "此類人物暫無紀錄。");
             else
             {
-                CreationGrid(2, (people.Length + 1) / 2, 132);
+                CreationGrid(2, (people.Length + 1) / 2, 150); // v1126 #18: two skill lines on own cards
                 for (int index = 0; index < people.Length; index++)
                     RosterCard(people[index], kinds != null && index < kinds.Length ? kinds[index] : 2, index == focus, index,
                         factionNames != null && index < factionNames.Length ? factionNames[index] : people[index].faction,
@@ -178,9 +178,10 @@ namespace Wuxia
                 Anchor(roleText.rectTransform, Vector2.zero, Vector2.one, new(10, 0), new(-6, 0));
                 // v1125 #18: the card's last line carries the best life skills next to the faction.
                 bool own = kind is 0 or 3 && !string.IsNullOrEmpty(life);
-                var faction = Label(card, own ? life : factionName ?? "", 18, TextAnchor.MiddleLeft);
+                var faction = Label(card, own ? life : factionName ?? "", own ? 17 : 18, own ? TextAnchor.UpperLeft : TextAnchor.MiddleLeft);
                 faction.color = own ? new Color(.78f, .88f, .74f) : CardMuted;
-                Anchor(faction.rectTransform, Vector2.zero, Vector2.right, new(114, 10), new(-12, 40));
+                faction.resizeTextMinSize = 15;
+                Anchor(faction.rectTransform, Vector2.zero, Vector2.right, new(114, 8), new(-12, own ? 56 : 40));
                 RankSeal(card, person.rank, person.cap, new(-76, -48), new(-10, -10), 22);
                 card.GetComponentInChildren<Text>().text = "";
             }
@@ -307,21 +308,15 @@ namespace Wuxia
                 Anchor(note.rectTransform, Vector2.up, Vector2.one, new(x, noteTop - 28), new(-pad, noteTop));
             }
 
-            // Lower half: signature arts, then a scrolling biography / relationship column.
+            // Lower half (v1126 #18): one scrolling column — arts and life skills (all of them), talents, biography
+            // and the tie to the sect — so a long skill list can never sit on top of the 生平列傳 heading.
             float lower = -pad - portraitH - 20;
-            var artsHeading = Label(sheet, "拿手武學與技藝", 22, TextAnchor.MiddleLeft);
-            artsHeading.color = CardGold;
-            Anchor(artsHeading.rectTransform, Vector2.up, Vector2.one, new(pad, lower - 32), new(-pad, lower));
-            Rule(lower - 34);
-            var arts = Label(sheet, string.IsNullOrEmpty(info.arts) ? "尚無記載" : info.arts, 18, TextAnchor.UpperLeft);
-            arts.color = CardText;
-            arts.horizontalOverflow = HorizontalWrapMode.Wrap;
-            arts.resizeTextForBestFit = false;
-            // v1125 #1/#18: the arts block (signature arts, 武學, 生活) takes the height its lines need.
-            float artsHeight = Mathf.Clamp(PreferredHeight(arts, sheet.rect.width - pad * 2) + 6, 52, 120);
-            Anchor(arts.rectTransform, Vector2.up, Vector2.one, new(pad, lower - 40 - artsHeight), new(-pad, lower - 40));
-
-            var bio = ScrollList(sheet, new Vector2(pad, 84), new Vector2(-pad - 14, lower - 46 - artsHeight));
+            Rule(lower - 2);
+            var bio = ScrollList(sheet, new Vector2(pad, 84), new Vector2(-pad - 14, lower - 8));
+            BioLine("拿手武學與技藝", 22, CardGold);
+            BioLine(string.IsNullOrEmpty(info.arts) ? "尚無記載" : info.arts, 18, CardText);
+            BioLine("天賦", 22, CardGold);
+            BioLine(string.IsNullOrEmpty(info.talents) ? "尚無天賦記載。" : info.talents, 18, CardText);
             BioLine("生平列傳", 22, CardGold);
             BioLine(string.IsNullOrWhiteSpace(info.biography) ? "生平未詳。" : info.biography, 18, CardText);
             BioLine("與本門淵源", 22, CardGold);

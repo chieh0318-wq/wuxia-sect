@@ -92,7 +92,7 @@ namespace Wuxia
         /// <summary>Scrollable 3-column talent pane docked below pinned SkillTiles (matches CreationArts height/UX).</summary>
         internal void CreationTalentScroll(CreationOption[] options, float scrollPos, Action<CreationOption> draw)
         {
-            var row = CreationRow("可選天賦捲軸", 412);
+            var row = CreationRow("可選天賦捲軸", 316); // v1126 #2: the 主修 row sits above the skill tiles
             var pane = Panel("天賦列表框", row, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero);
             var content = ScrollList(pane, new(12, 12), new(-28, -12));
             var scroll = content.parent.GetComponent<ScrollRect>();
@@ -281,51 +281,58 @@ namespace Wuxia
 
         internal void CreationSelectedTalents(string heading, (CreationOption option, Action remove)[] picks)
         {
-            // v1125 #1: two rows once more than four talents are picked, each cell wide enough for its name.
-            bool twoRows = picks.Length > 4;
-            float barHeight = twoRows ? 112 : 80;
+            // v1126 #5 (T-3 #5): the picked talents flow as chips sized to their names and wrap onto as many rows as
+            // they need; the bar grows upwards and the scrolling list above shrinks, so nothing ever reaches the
+            // 上一步 / 繼續 row (which tops out at y = 72; the bar starts at 84).
+            const float chipHeight = 40, gap = 8, pad = 8, titleWidth = 216;
+            float rowWidth = modalCard.rect.width - 72 - titleWidth - 12 - pad * 2;
+            var widths = picks.Select(pick => Mathf.Min(rowWidth, 54 + (pick.option.name.Length + (pick.remove == null ? 0 : 2)) * 21f)).ToArray();
+            var placed = new List<(float x, int line)>();
+            float x = 0;
+            int lines = 1;
+            foreach (float width in widths)
+            {
+                if (x > 0 && x + width > rowWidth) { x = 0; lines++; }
+                placed.Add((x, lines - 1));
+                x += width + gap;
+            }
+            float barHeight = Mathf.Max(64, lines * chipHeight + (lines - 1) * gap + pad * 2);
             var scroll = (RectTransform)modalList.parent;
-            scroll.offsetMin = new Vector2(scroll.offsetMin.x, 94 + barHeight);
+            scroll.offsetMin = new Vector2(scroll.offsetMin.x, 84 + barHeight + 12);
             characterDecoration = Panel("已選天賦", modalCard, Vector2.zero, Vector2.right,
                 new(36, 84), new(-36, 84 + barHeight), false);
             UiKit.Skin(characterDecoration.GetComponent<Image>(), "Lacquer");
             var title = Label(characterDecoration, heading, 22, TextAnchor.MiddleLeft);
             title.color = CardGold;
-            Anchor(title.rectTransform, Vector2.zero, Vector2.up, new(20, 0), new(214, 0));
+            title.resizeTextMinSize = 18;
+            Anchor(title.rectTransform, Vector2.up, Vector2.up, new(20, -pad - chipHeight), new(titleWidth, -pad));
             if (picks.Length == 0)
             {
                 var hint = Label(characterDecoration, "點選上方天賦加入", 18, TextAnchor.MiddleLeft);
                 hint.color = CardMuted;
-                Anchor(hint.rectTransform, Vector2.zero, Vector2.one, new(220, 0), new(-10, 0));
+                Anchor(hint.rectTransform, Vector2.zero, Vector2.one, new(titleWidth + 4, 0), new(-10, 0));
                 return;
             }
             var row = Rect("Selected talent icons", characterDecoration);
-            Anchor(row, Vector2.zero, Vector2.one, new(216, 8), new(-12, -8));
-            var layout = row.gameObject.AddComponent<GridLayoutGroup>();
-            int columns = twoRows ? (picks.Length + 1) / 2 : Mathf.Max(1, picks.Length);
-            float rowWidth = modalCard.rect.width - 72 - 228;
-            float cellWidth = Mathf.Min(300, (rowWidth - (columns - 1) * 8) / columns);
-            layout.cellSize = new Vector2(cellWidth, twoRows ? 44 : 64);
-            layout.spacing = new Vector2(8, 8);
-            layout.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
-            layout.constraintCount = columns;
-            layout.childAlignment = TextAnchor.MiddleLeft;
-            foreach (var (option, remove) in picks)
+            Anchor(row, Vector2.zero, Vector2.one, new(titleWidth, pad), new(-12, -pad));
+            for (int index = 0; index < picks.Length; index++)
             {
+                var (option, remove) = picks[index];
                 var button = Button(row, option.name, remove);
+                Anchor(button, Vector2.up, Vector2.up, new(placed[index].x, -(placed[index].line + 1) * chipHeight - placed[index].line * gap),
+                    new(placed[index].x + widths[index], -placed[index].line * (chipHeight + gap)));
                 var size = button.GetComponent<LayoutElement>();
-                size.minWidth = 0;
-                size.preferredWidth = cellWidth;
+                if (size != null) size.ignoreLayout = true;
                 button.GetComponent<Button>().interactable = remove != null;
                 UiKit.Skin(button.GetComponent<Image>(), "Wood");
-                AddCardIcon(button, UiKit.TalentIcon(option), 8, twoRows ? 28 : 30);
+                AddCardIcon(button, UiKit.TalentIcon(option), 8, 26);
                 var caption = button.GetComponentInChildren<Text>();
                 caption.text = remove == null ? option.name : option.name + "　×";
                 caption.resizeTextMinSize = 18;
                 caption.resizeTextMaxSize = 20;
                 caption.alignment = TextAnchor.MiddleLeft;
-                caption.horizontalOverflow = HorizontalWrapMode.Wrap;
-                Anchor(caption.rectTransform, Vector2.zero, Vector2.one, new(42, 2), new(-6, -2));
+                caption.horizontalOverflow = HorizontalWrapMode.Overflow;
+                Anchor(caption.rectTransform, Vector2.zero, Vector2.one, new(40, 2), new(-6, -2));
             }
         }
 
@@ -356,6 +363,7 @@ namespace Wuxia
                     UiKit.Skin(marker.GetComponent<Image>(), site == focused ? "Selected" : "Plaque");
                     marker.SetAsLastSibling();
                 }
+                SettlementPowers(map, data, state, sites, focused); // v1126 #10
 
                 var detail = Panel("選址詳情", row, new(.69f, 0), Vector2.one, Vector2.zero, Vector2.zero, false);
                 UiKit.Skin(detail.GetComponent<Image>(), "Wood");
@@ -368,19 +376,18 @@ namespace Wuxia
                 Write("物產　" + focused.resources, 20, 62, 102, CardText);
                 Write(focused.bonusText, 21, 110, 245, CardGold);
                 Write(focused.desc, 20, 246, 374, CardMuted);
-                Write("附近勢力・目前關係", 22, 378, 415, CardGold);
-                if (data.Nodes.TryGetValue(focused.node ?? "", out var selectedNode))
+                Write("附近勢力・關係・距離", 22, 378, 415, CardGold);
                 {
-                    var point = data.Bounds.Uv(selectedNode);
-                    var neighbors = data.Factions.Where(f => data.Nodes.ContainsKey(f.seat ?? ""))
-                        .OrderBy(f => (data.Bounds.Uv(data.Nodes[f.seat]) - point).sqrMagnitude).Take(4);
-                    int top = 428;
-                    foreach (var faction in neighbors)
+                    // v1126 #10: relation colour, kind, strength and road distance for the four nearest powers.
+                    int top = 424;
+                    foreach (var (faction, hops, days) in NearbyPowers(data, focused.node, 4))
                     {
-                        int score = state.Attitude(faction);
-                        string relation = score >= 25 ? "友好" : score <= -25 ? "敵對" : "中立";
-                        Write($"{faction.Label}　{relation} {score:+0;-0;0}", 20, top, top + 37, CardText);
-                        top += 39;
+                        string stance = faction.StanceWith(state.RelationShift(faction.id));
+                        string distance = hops == 0 ? "同地" : hops >= 99 ? "無路" : $"{hops} 格・{days} 日";
+                        Write($"{faction.Label}　{faction.RelationWith(state.RelationShift(faction.id))}　{distance}", 20, top, top + 28,
+                            RelationColor(stance));
+                        Write($"{WorldMapScreen.KindName(faction)}・人馬約 {faction.disciples:N0}・聲望 {faction.reputation}", 18, top + 27, top + 52, CardMuted);
+                        top += 56;
                     }
                 }
 

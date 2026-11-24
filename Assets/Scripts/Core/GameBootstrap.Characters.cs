@@ -112,8 +112,10 @@ namespace Wuxia
             int focus = Math.Max(0, Array.FindIndex(visible, person => person.id == focusId));
             directoryFocus = visible.Length > 0 ? visible[focus].id : null;
             int[] kinds = visible.Select(person => PersonKind(person, FactionOf(person, factions))).ToArray();
-            string[] factionNames = visible.Select(person => FactionOf(person, factions)?.Label ?? person.faction).ToArray();
-            string[] lifeSkills = visible.Select(person => LifeSkillSummary(person.lines, 2)).ToArray();
+            string[] factionNames = visible.Select(person => person.id == state.FriendId ? GuestLabel :
+                FactionOf(person, factions)?.Label ?? person.faction).ToArray();
+            // v1126 #18: every own person's card (hero and friend included) carries the best martial and life lines.
+            string[] lifeSkills = visible.Select(person => CombatSummary(person.lines, 3) + "\n" + LifeSkillSummary(person.lines, 3)).ToArray();
             ui.ShowDirectory(filters, filter, next => ShowCharacterDirectory(next, directoryFocus), visible, kinds, factionNames,
                 visible.Length == 0 ? -1 : focus, index => ShowCharacterDirectory(filter, visible[index].id),
                 visible.Length == 0 ? null : BuildDossier(visible[focus], factions, filter), sectOnly ? "本門" : "江湖人物",
@@ -142,18 +144,20 @@ namespace Wuxia
             var disciple = state.Disciples.FirstOrDefault(entry => entry.id == person.id);
             bool sect = IsSectPerson(person);
             bool hero = person.id == HeroCharacterId;
-            string stance = hero ? "代掌門" : sect ? "本門" : person.id == state.FriendId ? "本門・軍師" :
+            bool friendOfHero = person.id == state.FriendId;
+            string stance = hero ? "代掌門" : sect ? "本門" : friendOfHero ? $"{QuestBoardData.Data.guestRole}・{QuestBoardData.Data.advisorTitle}" :
                 faction != null ? faction.RelationWith(state.RelationShift(faction.id)) : kind == 1 ? "敵對" : "江湖散人";
+            // v1126 #18: every known line is listed (hero and friend the same way as any disciple).
             var lines = (person.lines ?? Array.Empty<SkillLine>()).Where(line => line != null && !string.IsNullOrEmpty(line.id)
-                    && RankSystem.IsCombat(line.id))
-                .OrderByDescending(line => RankSystem.Index(line.rank)).Take(4)
+                    && RankSystem.IsCombat(line.id) && RankSystem.Index(line.rank) >= 0)
+                .OrderByDescending(line => RankSystem.Index(line.rank))
                 .Select(line => (RankSystem.Categories.FirstOrDefault(category => category.id == line.id)?.name ?? line.id) +
                     " " + RankSystem.FormatKnown(line.rank, line.cap));
             string arts = string.Join("　", (person.signatureSkills ?? Array.Empty<string>()).Select(skill => "【" + skill + "】"));
             string tiers = string.Join("　", lines);
             if (!string.IsNullOrEmpty(tiers)) arts = string.IsNullOrEmpty(arts) ? "武學　" + tiers : arts + "\n武學　" + tiers;
             // v1125 #18: life skills (醫術、鍛造、經商…) sit beside the martial lines for comparing who to send.
-            string life = LifeSkillSummary(person.lines, 8);
+            string life = LifeSkillSummary(person.lines, 99);
             arts = string.IsNullOrEmpty(arts) ? "生活　" + life : arts + "\n生活　" + life;
             string biography = string.Join("\n", new[]
             {
@@ -163,6 +167,7 @@ namespace Wuxia
             int relation = state.CharacterRelation(person.id);
             string bond = string.Join("\n", new[]
             {
+                SectBond(person),
                 string.IsNullOrWhiteSpace(person.relation) ? null : FormatQuestText(person.relation),
                 faction == null ? null : faction.Label + "與本門：" + faction.RelationWith(state.RelationShift(faction.id)),
                 relation == 0 ? null : $"好感 {relation:+0;-0}"
@@ -198,7 +203,9 @@ namespace Wuxia
             actions.Add(("「列傳詳情」", () => ShowCharacterDetail(person, back)));
             return new CharacterDossier
             {
-                person = person, faction = faction?.Label ?? person.faction, stance = stance, kind = kind,
+                person = person, faction = friendOfHero ? GuestSect : sect || hero ? state.Data.Start.sectName : faction?.Label ?? person.faction, stance = stance, kind = kind,
+                talents = TalentSummary(person.id == HeroCharacterId ? state.Protagonist.talents : disciple?.talents ??
+                    state.Data.Disciples.FirstOrDefault(seed => seed.id == person.id)?.talents),
                 relation = relation, attrs = person.attrs ?? disciple?.attrs ?? EstimateAttributes(person),
                 estimated = person.attrs == null && disciple?.attrs == null, arts = arts, biography = biography,
                 bond = bond, actions = actions.ToArray()
@@ -227,7 +234,9 @@ namespace Wuxia
                 entry.id == person.faction || entry.PortraitId == person.id);
             var quests = state.Questlines.Where(line => line.id == person.questline ||
                 state.CharacterId(line.character) == person.id).ToArray();
-            ui.ShowCharacterProfile(person, faction?.Label ?? person.faction, state.CharacterRelation(person.id),
+            string factionName = person.id == state.FriendId ? GuestLabel : IsSectPerson(person) || person.id == HeroCharacterId
+                ? state.Data.Start.sectName : faction?.Label ?? person.faction; // v1126 #16
+            ui.ShowCharacterProfile(person, factionName, state.CharacterRelation(person.id),
                 quests, state.QuestStatus, back);
         }
 
@@ -293,7 +302,7 @@ namespace Wuxia
             var friend = StoryCharacters.FirstOrDefault(person => person.id == state.FriendId);
             return (text ?? "").Replace("{title}", UiKit.HeroTitle(hero)).Replace("{name}", hero.name)
                 .Replace("{sect}", state.Data.Start.sectName).Replace("{friend}", friend?.name ?? "故友")
-                .Replace("{he}", hero.gender == "女" ? "她" : "他");
+                .Replace("{he}", hero.gender == "女" ? "她" : "他").Replace("{guestSect}", GuestSect);
         }
     }
 }

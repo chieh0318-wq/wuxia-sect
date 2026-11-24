@@ -78,6 +78,7 @@ namespace Wuxia
                 Portrait = i == 0 ? foe.PortraitId : null,
                 Commander = i == 0, Rear = i >= 3, Kind = (TroopKind)(i % 4),
                 Troops = strength / divisions + (i < strength % divisions ? 1 : 0), BaseHealth = i == 0 ? 155 : 105,
+                Capacity = strength / divisions + (i < strength % divisions ? 1 : 0),
                 Attack = 21 + Math.Min(20, foe.reputation / 5), Defense = 6, Speed = 15 + i * 2
             }).ToArray();
         }

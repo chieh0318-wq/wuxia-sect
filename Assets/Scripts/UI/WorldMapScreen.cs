@@ -533,7 +533,12 @@ namespace Wuxia
             MapUi.Panel(banner, "旗緣", 0, 86, 58, 6, MapUi.Gold).GetComponent<Image>().raycastTarget = false;
             MapUi.Text(banner, held ? host.SectLabel.Substring(0, 1) : faction == null ? "無" : faction.Label.Substring(0, 1),
                 0, 8, 58, 70, 40, MapUi.Paper, TextAnchor.MiddleCenter, "Names");
-            if (faction != null)
+            if (held)
+            {
+                MapUi.Text(panel, "控制勢力", 20, 116, 386, 24, 18, MapUi.Red);
+                MapUi.Text(panel, host.SectLabel, 20, 145, 386, 40, 26, MapUi.Ink);
+            }
+            else if (faction != null)
             {
                 MapUi.Portrait(panel, known ? PortraitService.Resolve(faction.PortraitId) : null, 20, 116, 104, 138);
                 if (!known) MapUi.Text(panel, "？", 20, 116, 104, 138, 54, MapUi.Paper, TextAnchor.MiddleCenter);
@@ -557,13 +562,13 @@ namespace Wuxia
                     held ? MapUi.Jade : MapUi.Red, TextAnchor.MiddleLeft, "Names");
 
             // Garrison / strength ledger.
-            int y = faction == null ? 160 : 262;
+            int y = faction == null && !held ? 160 : 262;
             int garrison = outlaw ? Garrison(node) : 0;
             Stat(20, "守備", held ? "本派" : outlaw ? OutlawGuard(node) : Defence(node.type));
-            Stat(150, "兵力", outlaw ? garrison.ToString() : known ? $"{Mathf.RoundToInt(faction.disciples * (seats.Contains(node.id) ? .6f : .2f)):N0}" : faction == null ? "—" : "？");
-            Stat(280, "聲望", known ? faction.reputation.ToString() : faction == null ? "—" : "？");
+            Stat(150, "兵力", held ? "—" : outlaw ? garrison.ToString() : known ? $"{Mathf.RoundToInt(faction.disciples * (seats.Contains(node.id) ? .6f : .2f)):N0}" : faction == null ? "—" : "？");
+            Stat(280, "聲望", held && host is GameState owner ? owner.Reputation.ToString() : known ? faction.reputation.ToString() : faction == null ? "—" : "？");
             y += 58;
-            if (factions.Length > 1)
+            if (!held && factions.Length > 1)
             {
                 MapUi.Text(panel, "另有勢力　" + string.Join("、", factions.Skip(1).Select(f => f.Label)), 20, y, 386, 24, 18, MapUi.Ink);
                 y += 26;

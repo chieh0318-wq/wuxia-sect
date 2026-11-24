@@ -8,7 +8,7 @@ namespace Wuxia
     public sealed partial class SectUI
     {
         internal void ShowCampaign(SectCampaign battle, string title, MonoBehaviour runner, GameState state,
-            MapFaction faction, int apCost, Func<bool> begin, Action<bool> finish, Action back)
+            MapFaction faction, int apCost, Func<bool> begin, Action<bool> finish, Action back, bool capturing)
         {
             var board = Panel("SectCampaign", canvas, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero);
             var layer = board.GetComponent<Image>();
@@ -189,7 +189,7 @@ namespace Wuxia
                         RegisterBack();
                         Draw();
                     }
-                }, runner);
+                }, runner, captureRound: capturing ? _ => { } : null);
             }
 
             void RegisterBack() => UiBack.Push(() =>

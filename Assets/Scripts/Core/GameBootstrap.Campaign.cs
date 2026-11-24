@@ -139,6 +139,7 @@ namespace Wuxia
         private void OpenCampaign(SectCampaign battle, string title, MapFaction faction, int apCost, Func<bool> begin,
             Action<bool> finish, Action back)
         {
+            if (capturing) captureCampaign = battle;
             campaignOpen = true;
             controls.enabled = false;
             void Close()
@@ -156,7 +157,7 @@ namespace Wuxia
                 finish(won);
                 ui.Refresh(state);
                 ShowCommands();
-            }, () => { layer.sortingOrder = previousOrder; Close(); back?.Invoke(); });
+            }, () => { layer.sortingOrder = previousOrder; Close(); back?.Invoke(); }, capturing);
         }
     }
 }

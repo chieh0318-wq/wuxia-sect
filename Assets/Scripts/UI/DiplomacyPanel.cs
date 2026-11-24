@@ -371,22 +371,22 @@ namespace Wuxia
                 .Replace("{seat}", data.NodeLabel(selected.seat));
         }
 
-        /// <summary>勝利之路 tab: the conquest and diplomatic routes as two equal columns.</summary>
+        /// <summary>Detailed military and diplomatic progress alongside the quest panel’s four routes.</summary>
         private void DrawVictory()
         {
             MapUi.Clear(wide);
             var v = state.Victory;
             var rules = v.Rules;
-            Column(0, "武力征服", "以武立威", v.Conquest,
-                $"率眾攻討草莽據點、或併入其他門派，讓轄下據點達到 {rules.conquestNodes} 處，且聲望 ≥ {rules.conquestReputation}。",
+            Column(0, "武力征服", "以武立威", state.Route("conquest").Met,
+                $"率眾攻討草莽據點、或併入其他門派，讓轄下據點達到 {rules.conquestNodes} 處，且聲望 ≥ {rules.conquestReputation}，守穩 {RouteRules.Data.conquest.holdMonths} 個月。",
                 new[]
                 {
                     ($"轄下據點　{v.Held}／{rules.conquestNodes}", v.Held / (float)rules.conquestNodes, v.Held >= rules.conquestNodes),
                     ($"本派聲望　{v.Reputation}／{rules.conquestReputation}", v.Reputation / (float)rules.conquestReputation, v.Reputation >= rules.conquestReputation)
                 }, (state.Story.heldNodes ?? Array.Empty<string>()).Select(id => (data.NodeLabel(id), "本派旗號", true)).ToArray(),
                 "代價：每次攻討 2 行動力並有負傷風險；轄下據點 ≥ 6 時，冷淡的勢力會更忌憚本派。");
-            Column(778, "外交勝利", "江湖盟主", v.Diplomatic,
-                $"{state.JianghuCount} 個江湖勢力中，結義＋附庸＋併入 ≥ {rules.loyalNeeded}（其中附庸／併入 ≥ {rules.subjectNeeded}），且聲望 ≥ {rules.reputationNeeded}。",
+            Column(778, "外交勝利", "江湖盟主", state.Route("diplomacy").Met,
+                $"{state.JianghuCount} 個江湖勢力中，結義＋附庸＋併入 ≥ {rules.loyalNeeded}（其中附庸／併入 ≥ {rules.subjectNeeded}），且聲望 ≥ {rules.reputationNeeded}，維持 {RouteRules.Data.diplomacy.holdMonths} 個月。",
                 new[]
                 {
                     ($"歸心勢力　{v.Loyal}／{rules.loyalNeeded}", v.Loyal / (float)rules.loyalNeeded, v.Loyal >= rules.loyalNeeded),

@@ -129,11 +129,11 @@ namespace Wuxia
                         {
                             state.Story.heldNodes = (state.Story.heldNodes ?? Array.Empty<string>()).Append(node.id).ToArray();
                             state.ApplyEffects(new[] { new GameEffect { key = "relation", @ref = foe.id, value = -25 } });
-                            state.Apply(new Yield { reputation = 6, silver = 30, food = 20 });
+                            state.Apply(new Yield { reputation = GameState.CampaignWinReputation, silver = 30, food = 20 });
                             foreach (string id in party) AssignmentSystem.Credit(state, id, 3);
                         }
                         else state.Apply(new Yield { reputation = -2 });
-                        finished(won ? $"攻取{node.Label}。銀兩＋30、糧食＋20、聲望＋6。" : $"攻取{node.Label}失利，聲望 −2。");
+                        finished(won ? $"攻取{node.Label}。銀兩＋30、糧食＋20、聲望＋{GameState.CampaignWinReputation}。" : $"攻取{node.Label}失利，聲望 −2。");
                     }, null);
             });
         }

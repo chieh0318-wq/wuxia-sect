@@ -210,8 +210,10 @@ namespace Wuxia
             }
             else if (line != null)
             {
-                line.progress += 1.5f;
-                lines.Add($"{category}略有所得（修習進度 +1.5）");
+                // v1126c PA3: same 修習進度 scale as 督促操練 (martial.progressMax per tier).
+                float gain = GameState.ProgressFor(line, 1.5f);
+                line.progress = Mathf.Min(line.progress + gain, GameState.ProgressMax - 1);
+                lines.Add($"{category}略有所得（修習進度 +{gain:0}）");
             }
             state.Story.realmsCleared++;
             return lines;

@@ -44,9 +44,9 @@
     "defaultRank": "C",
     "defaultCap": "B",
     "martialFocusSteps": [
-      { "breakthrough": "seclusion_houshan", "condition": "主角創角時至少選一門戰鬥武學，且親自督促操練累計 6 個月後解鎖（武學上限 +1 階）" },
-      { "breakthrough": "manual_xiaoshan_full", "condition": "完成後山閉關，且主角最高戰鬥線達 S；或累計親自操練 18 個月（武學上限 +1 階）" },
-      { "breakthrough": "mentor_master_return", "condition": "保底：第三年元月，若主角仍以武學為重而上限未達 SSS，師父歸來補足一階" }
+      { "breakthrough": "seclusion_houshan", "condition": "主角創角時至少選一門戰鬥武學，且親自督促操練累計 12 個月後解鎖（武學上限 +1 階）" },
+      { "breakthrough": "manual_xiaoshan_full", "condition": "完成後山閉關，且主角最高戰鬥線達 S；或累計親自操練 36 個月（武學上限 +1 階）" },
+      { "breakthrough": "mentor_master_return", "condition": "保底：第五年元月，若主角仍以武學為重而上限未達 SSS，師父歸來補足一階" }
     ]
   }
 }

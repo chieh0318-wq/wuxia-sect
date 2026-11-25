@@ -9,7 +9,9 @@ namespace Wuxia
     internal sealed class TechNode
     {
         public string id, branch, name, effect, requires;
-        public int tier, silver, ap;
+        public int tier, silver, ap, minReputation, minScale;
+        /// <summary>Effect magnitudes from balance_v1126c.json (see <see cref="GameState.TechEffectText"/>).</summary>
+        public float value, value2, value3;
     }
 
     /// <summary>
@@ -26,31 +28,88 @@ namespace Wuxia
             ("craft", "【百工經世】", "醫藥鍛造營造經商")
         };
 
+        /// <summary>
+        /// v1126c PA3: names and branch/tier are fixed here; cost, gates and effect magnitudes come from
+        /// balance_v1126c.json (techTree) — the defaults below mirror that file. The effect text is generated from the
+        /// same numbers that <see cref="Research"/>, <see cref="TechStats"/> and <see cref="M6MonthIncome"/> apply.
+        /// Args: id, branch, tier, name, silver, ap, minReputation, minScale, value, value2, value3.
+        /// </summary>
         internal static readonly TechNode[] TechTree =
         {
-            Node("sword1", "sword", 1, "崤山入門劍訣", 6, 1, "主角與弟子劍法修習速度 +15%，攻擊 +8"),
-            Node("sword2", "sword", 2, "太白流雲劍譜", 12, 1, "劍法潛力上限 +1 階，先手 +4，攻擊 +15"),
-            Node("sword3", "sword", 3, "兩儀化形劍陣", 20, 1, "全門派攻討戰力 +20%，閃避 +5%"),
-            Node("sword4", "sword", 4, "崤山劍經全本", 32, 2, "劍法上限突破至 SSS，攻擊 +30，解鎖鎮派絕學"),
-            Node("outer1", "outer", 1, "開碑拳譜精要", 6, 1, "拳掌／刀法／槍棍修習 +15%，氣血 +20"),
-            Node("outer2", "outer", 2, "邊軍破陣刀槍", 12, 1, "刀法與槍棍潛力上限 +1 階，攻擊 +15"),
-            Node("outer3", "outer", 3, "八方風雨暗器錄", 18, 1, "暗器上限 +1 階，先手 +6，奇遇檢定加成"),
-            Node("outer4", "outer", 4, "萬兵總綱", 30, 2, "所有外功百兵階位立即 +1 階，全門派守備提升"),
-            Node("inner1", "inner", 1, "崤山吐納心法", 6, 1, "內力上限 +30，每月自動療傷 +1"),
-            Node("inner2", "inner", 2, "龜息周天功", 12, 1, "內力功法上限 +1 階，氣血 +40，內力 +50"),
-            Node("inner3", "inner", 3, "踏雪無痕輕功", 18, 1, "輕功上限 +1 階，大地圖行軍行動力消耗 -1（最低 1），閃避 +6%"),
-            Node("inner4", "inner", 4, "紫府玄元無上功", 32, 2, "內力與根骨各 +3，內力上限 +120，氣血 +100"),
-            Node("craft1", "craft", 1, "百草金創藥方", 6, 1, "藥廬收入 +4，義診聲望 +1，療傷效率翻倍"),
-            Node("craft2", "craft", 2, "百煉精鋼鍛法", 12, 1, "兵器坊收入 +6，鍛造出高階神兵機率翻倍"),
-            Node("craft3", "craft", 3, "山門營造法式", 16, 1, "興建與擴建屋舍銀兩消耗永久 -25%，廂房容量 +2"),
-            Node("craft4", "craft", 4, "奇門經商總策", 26, 1, "所有建築每月銀兩與糧食產出永久 +35%，每月行動力上限 +1")
+            Node("sword1", "sword", 1, "崤山入門劍訣", 30, 1, 0, 0, 5, 3),
+            Node("sword2", "sword", 2, "太白流雲劍譜", 90, 1, 40, 0, 6, 2),
+            Node("sword3", "sword", 3, "兩儀化形劍陣", 200, 2, 110, 1, 6, 2),
+            Node("sword4", "sword", 4, "崤山劍經全本", 420, 2, 260, 1, 10),
+            Node("outer1", "outer", 1, "開碑拳譜精要", 30, 1, 0, 0, 5, 10),
+            Node("outer2", "outer", 2, "邊軍破陣刀槍", 90, 1, 40, 0, 6),
+            Node("outer3", "outer", 3, "八方風雨暗器錄", 180, 2, 110, 1, 3, 1),
+            Node("outer4", "outer", 4, "萬兵總綱", 380, 2, 260, 1, 4),
+            Node("inner1", "inner", 1, "崤山吐納心法", 30, 1, 0, 0, 15),
+            Node("inner2", "inner", 2, "龜息周天功", 90, 1, 40, 0, 20, 25),
+            Node("inner3", "inner", 3, "踏雪無痕輕功", 180, 2, 110, 1, 3),
+            Node("inner4", "inner", 4, "紫府玄元無上功", 420, 2, 260, 1, 1, 60, 50),
+            Node("craft1", "craft", 1, "百草金創藥方", 30, 1, 0, 0, 2, 1),
+            Node("craft2", "craft", 2, "百煉精鋼鍛法", 90, 1, 40, 0, 3, 1.5f),
+            Node("craft3", "craft", 3, "山門營造法式", 180, 2, 110, 1, 8, 1),
+            Node("craft4", "craft", 4, "奇門經商總策", 360, 2, 260, 1, 8, 1)
         };
 
-        private static TechNode Node(string id, string branch, int tier, string name, int silver, int ap, string effect) => new()
+        private static TechNode Node(string id, string branch, int tier, string name, int silver, int ap, int minReputation,
+            int minScale, float value, float value2 = 0, float value3 = 0)
         {
-            id = id, branch = branch, tier = tier, name = name, silver = silver, ap = ap, effect = effect,
-            requires = tier > 1 ? branch + (tier - 1) : null
-        };
+            var node = new TechNode
+            {
+                id = id, branch = branch, tier = tier, name = name, silver = silver, ap = ap, minReputation = minReputation,
+                minScale = minScale, value = value, value2 = value2, value3 = value3,
+                requires = tier > 1 ? branch + (tier - 1) : null
+            };
+            if (BalanceV1126c.Tech(id) is { } tuned)
+            {
+                node.silver = tuned.silver; node.ap = tuned.ap; node.minReputation = tuned.minReputation;
+                node.minScale = tuned.minScale; node.value = tuned.value; node.value2 = tuned.value2; node.value3 = tuned.value3;
+                if (!string.IsNullOrEmpty(tuned.requires)) node.requires = tuned.requires;
+            }
+            node.effect = TechEffectText(node);
+            return node;
+        }
+
+        /// <summary>Player-facing effect line built from the node's own numbers.</summary>
+        internal static string TechEffectText(TechNode n)
+        {
+            static string V(float x) => x.ToString("0.#");
+            return n.id switch
+            {
+                "sword1" => $"全武學修習速度 +{V(n.value)}%，主角攻擊 +{V(n.value2)}",
+                "sword2" => $"主角劍法上限 +1 階，攻擊 +{V(n.value)}，先手 +{V(n.value2)}",
+                "sword3" => $"全門派攻討戰力 +{V(n.value)}%，主角閃避 +{V(n.value2)}%",
+                "sword4" => $"主角劍法上限 +1 階（至多 SSS），攻擊 +{V(n.value)}，解鎖鎮派絕學",
+                "outer1" => $"全武學修習速度 +{V(n.value)}%，主角氣血 +{V(n.value2)}",
+                "outer2" => $"主角刀法與槍棍上限 +1 階，攻擊 +{V(n.value)}",
+                "outer3" => $"主角暗器上限 +1 階，先手 +{V(n.value)}，奇遇感悟 +{V(n.value2)}%",
+                "outer4" => $"主角拳掌／刀／暗器／槍棍上限各 +1 階，全門派攻討戰力 +{V(n.value)}%",
+                "inner1" => $"主角內力 +{V(n.value)}，月結時多療傷一次",
+                "inner2" => $"主角內功上限 +1 階，氣血 +{V(n.value)}，內力 +{V(n.value2)}",
+                "inner3" => $"主角輕功上限 +1 階，大地圖行軍行動力 −1（最低 1），閃避 +{V(n.value)}%",
+                "inner4" => $"主角內力與根骨屬性各 +{V(n.value)}，內力 +{V(n.value2)}，氣血 +{V(n.value3)}",
+                "craft1" => $"有藥廬時每月銀 +{V(n.value)}，施藥義診另得聲望 +{V(n.value2)}，月結時多療傷一次",
+                "craft2" => $"每座兵器坊每月銀 +{V(n.value)}，鍛造精品／神兵機率 ×{V(n.value2)}",
+                "craft3" => $"興建與擴建屋舍耗銀 −{V(n.value)}%，每座弟子廂房床位 +{V(n.value2)}",
+                "craft4" => $"建築每月銀兩與糧食產出 +{V(n.value)}%，每月行動力上限 +{V(n.value2)}",
+                _ => ""
+            };
+        }
+
+        /// <summary>Why a node whose prerequisite is learned is still closed by 聲望 / 山門規模 (null when open).</summary>
+        internal string TechGate(TechNode node)
+        {
+            string scale = Scales[Mathf.Clamp(node.minScale, 0, Scales.Length - 1)].name;
+            if (Reputation < node.minReputation && SectScale < node.minScale) return $"需聲望 {node.minReputation}、山門{scale}";
+            if (Reputation < node.minReputation) return $"需聲望 {node.minReputation}";
+            if (SectScale < node.minScale) return $"需山門{scale}";
+            return null;
+        }
+
+        private float TechValue(string id, Func<TechNode, float> pick) => HasTech(id) && Tech(id) is { } node ? pick(node) : 0;
 
         internal static TechNode Tech(string id) => Array.Find(TechTree, node => node.id == id);
 
@@ -63,6 +122,7 @@ namespace Wuxia
         {
             if (HasTech(node.id)) return "[已研習]";
             if (node.requires != null && !HasTech(node.requires)) return $"[需前置：{Tech(node.requires)?.name}]";
+            if (TechGate(node) is string gate) return $"[{gate}]";
             return "[可研習]";
         }
 
@@ -82,7 +142,7 @@ namespace Wuxia
         }
 
         internal bool CanResearch(TechNode node) => !HasTech(node.id) && (node.requires == null || HasTech(node.requires)) &&
-            BuildingLevel("library") > 0 && Silver >= node.silver && ActionPoints >= node.ap;
+            TechGate(node) == null && BuildingLevel("library") > 0 && Silver >= node.silver && ActionPoints >= node.ap;
 
         /// <summary>Researches a node, applying its permanent effects; returns the result line.</summary>
         internal string Research(TechNode node, string worker = null)
@@ -90,6 +150,7 @@ namespace Wuxia
             if (node == null || HasTech(node.id)) return "此功法已經研習過了。";
             if (BuildingLevel("library") <= 0) return "須先有藏經閣，才能研習功法。";
             if (node.requires != null && !HasTech(node.requires)) return $"需先研習「{Tech(node.requires)?.name}」。";
+            if (TechGate(node) is string gate) return gate + "，方可研習此重。";
             if (worker != null && IsGuestOfficer(worker) && node.branch == "sword")
                 return "客將不可由本門傳授崤山武學。";
             if (worker != null && AssignmentSystem.Block(this, worker) is string unavailable) return unavailable;
@@ -107,25 +168,26 @@ namespace Wuxia
             SkillLine Line(string id) => Array.Find(Protagonist.lines ?? Array.Empty<SkillLine>(), entry => entry.id == id);
             switch (node.id)
             {
-                case "sword1": case "outer1": Story.trainBonusPct += 15; break;
+                case "sword1": case "outer1": Story.trainBonusPct += Mathf.RoundToInt(node.value); break;
                 case "sword2": RankSystem.Raise(Line("sword"), 0, 1); break;
                 case "sword4":
-                    var sword = Line("sword");
-                    if (sword != null) sword.cap = RankSystem.Top;
+                    // v1126c: one more cap tier (at most SSS) instead of jumping straight to SSS.
+                    RankSystem.Raise(Line("sword"), 0, 1);
                     SetValue(ref Story.flags, "sect_ultimate", 1, false);
                     break;
                 case "outer2": RankSystem.Raise(Line("blade"), 0, 1); RankSystem.Raise(Line("polearm"), 0, 1); break;
-                case "outer3": RankSystem.Raise(Line("hidden"), 0, 1); Story.insightChance += .03f; break;
+                case "outer3": RankSystem.Raise(Line("hidden"), 0, 1); Story.insightChance += node.value2 / 100f; break;
                 case "outer4":
-                    foreach (string id in new[] { "fist", "blade", "hidden", "polearm" }) RankSystem.Raise(Line(id), 1, 1);
+                    foreach (string id in new[] { "fist", "blade", "hidden", "polearm" }) RankSystem.Raise(Line(id), 0, 1);
                     break;
                 case "inner2": RankSystem.Raise(Line("neigong"), 0, 1); break;
                 case "inner3": RankSystem.Raise(Line("qinggong"), 0, 1); break;
                 case "inner4":
-                    ApplyEffects(new[] { new GameEffect { key = "qi", value = 3 }, new GameEffect { key = "con", value = 3 } });
+                    int points = Mathf.RoundToInt(node.value);
+                    ApplyEffects(new[] { new GameEffect { key = "qi", value = points }, new GameEffect { key = "con", value = points } });
                     break;
-                case "craft3": Story.buildCostPct -= 25; break;
-                case "craft4": Story.apBonus += 1; break;
+                case "craft3": Story.buildCostPct -= Mathf.RoundToInt(node.value); break;
+                case "craft4": Story.apBonus += Mathf.RoundToInt(node.value2); break;
             }
             return $"研習「{node.name}」功成：{node.effect}";
         }
@@ -136,17 +198,12 @@ namespace Wuxia
         {
             int attack = 0, speed = 0, hp = 0, qi = 0;
             float dodge = 0;
-            if (HasTech("sword1")) attack += 8;
-            if (HasTech("sword2")) { attack += 15; speed += 4; }
-            if (HasTech("sword3")) dodge += .05f;
-            if (HasTech("sword4")) attack += 30;
-            if (HasTech("outer1")) hp += 20;
-            if (HasTech("outer2")) attack += 15;
-            if (HasTech("outer3")) speed += 6;
-            if (HasTech("inner1")) qi += 30;
-            if (HasTech("inner2")) { hp += 40; qi += 50; }
-            if (HasTech("inner3")) dodge += .06f;
-            if (HasTech("inner4")) { hp += 100; qi += 120; }
+            int I(string id, Func<TechNode, float> pick) => Mathf.RoundToInt(TechValue(id, pick));
+            attack += I("sword1", n => n.value2) + I("sword2", n => n.value) + I("sword4", n => n.value) + I("outer2", n => n.value);
+            speed += I("sword2", n => n.value2) + I("outer3", n => n.value);
+            dodge += (TechValue("sword3", n => n.value2) + TechValue("inner3", n => n.value)) / 100f;
+            hp += I("outer1", n => n.value2) + I("inner2", n => n.value) + I("inner4", n => n.value3);
+            qi += I("inner1", n => n.value) + I("inner2", n => n.value2) + I("inner4", n => n.value2);
             return (attack, speed, hp, qi, dodge);
         }
 
@@ -163,19 +220,21 @@ namespace Wuxia
                 raw.Hit, raw.Crit, raw.QiRegen);
         }
 
-        /// <summary>Beds across all 弟子廂房 (4 each, 6 once 山門營造法式 is researched).</summary>
+        /// <summary>Beds across all 弟子廂房 (sect.bedsPerQuarters each, plus 山門營造法式's bonus).</summary>
         internal int Beds => Buildings.Count(building => building != null && building.actions.Contains("lodge")) *
-            (4 + (HasTech("craft3") ? 2 : 0));
+            (BalanceV1126c.Sect.bedsPerQuarters + Mathf.RoundToInt(TechValue("craft3", n => n.value2)));
 
-        /// <summary>Month-end extras: tech building income, the 35% commerce boost, held strongholds, faster healing.</summary>
+        /// <summary>Month-end extras: tech building income, the 奇門經商總策 boost, held strongholds, faster healing.</summary>
         private void M6MonthIncome(ref int silver, ref int food, MonthlyReport report)
         {
-            if (HasTech("craft1") && BuildingLevel("infirmary") > 0) silver += 4;
-            if (HasTech("craft2")) silver += 6 * Buildings.Count(building => building?.id == "smithy");
+            if (HasTech("craft1") && BuildingLevel("infirmary") > 0) silver += Mathf.RoundToInt(TechValue("craft1", n => n.value));
+            if (HasTech("craft2"))
+                silver += Mathf.RoundToInt(TechValue("craft2", n => n.value)) * Buildings.Count(building => building?.id == "smithy");
             if (HasTech("craft4"))
             {
-                silver = Mathf.RoundToInt(silver * 1.35f);
-                food = Mathf.RoundToInt(food * 1.35f);
+                float boost = 1 + TechValue("craft4", n => n.value) / 100f;
+                silver = Mathf.RoundToInt(silver * boost);
+                food = Mathf.RoundToInt(food * boost);
             }
             int held = Story.heldNodes?.Length ?? 0;
             if (held > 0)
@@ -338,7 +397,7 @@ namespace Wuxia
                 float power = hero.Attack + hero.MaxHp / 10f + hero.Speed;
                 foreach (var disciple in Disciples.Where(member => member.injury < 3))
                     power += 14 * RankSystem.Multiplier(RankSystem.Martial(disciple.lines ?? Array.Empty<SkillLine>()));
-                power *= 1 + (HasTech("sword3") ? .2f : 0) + (HasTech("outer4") ? .1f : 0) + DiplomacyPowerBonus;
+                power *= 1 + (TechValue("sword3", n => n.value) + TechValue("outer4", n => n.value)) / 100f + DiplomacyPowerBonus;
                 return Mathf.RoundToInt(power);
             }
         }

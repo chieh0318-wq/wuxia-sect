@@ -147,7 +147,7 @@ namespace Wuxia
         private string PracticeMartialLine(string id, SkillLine line, float amount)
         {
             string before = MartialLineProgress(line);
-            TrainLine(line, amount);
+            TrainLine(line, amount / Mathf.Max(1, BalanceV1126c.Martial.drillProgress));
             if (line != null && !CanAdvance(line))
             {
                 var order = Story.studyOrdersPb?.FirstOrDefault(entry => entry?.member == id);

@@ -361,8 +361,9 @@ namespace Wuxia
             }
             if (terms.repOnSuccess != 0)
             {
+                int before = Reputation;
                 ApplyEffects(new[] { new GameEffect { key = "reputation", value = terms.repOnSuccess } });
-                extra += $"議定條款：聲望 {terms.repOnSuccess:+0;-0}。";
+                extra += $"議定條款：聲望 {Reputation - before:+0;-0}。";
             }
             ShiftAttitude(faction, gain);
             return $"【{action.name}成功】{Diplomacy.Fill(action.success, faction)}\n（使者 {envoy}；態度 {gain:+0;-0}）{extra}";
@@ -512,7 +513,7 @@ namespace Wuxia
                 if ((ties & Diplomacy.Trade) != 0)
                 {
                     delta += 1;
-                    trade += Mathf.Max(1, (faction.type == "merchant" ? 12 : 6) + (terms?.tradeIncome ?? 0));
+                    trade += Mathf.Max(1, (faction.type == "merchant" ? BalanceV1126c.Trade.merchantSilverPerMonth : BalanceV1126c.Trade.tongshangSilverPerMonth) + (terms?.tradeIncome ?? 0));
                 }
                 if ((ties & Diplomacy.Pact) != 0) delta += 1;
                 if ((ties & Diplomacy.Alliance) != 0) delta += 1;

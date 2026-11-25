@@ -22,7 +22,9 @@ namespace Wuxia
                     case "food": Food = Mathf.Max(0, Food + value); break;
                     // 魅力 widens reputation gains (never losses).
                     case "reputation":
-                        Reputation += value > 0 ? Mathf.Max(1, Mathf.RoundToInt(value * (1 + AttributeSystem.ReputationPerPoint * AttributeBonus("cha")))) : value;
+                        // v1126c PA3: reputation.gainScalePct (balance_v1126c.json) scales every event / quest / diplomacy gain.
+                        Reputation += value > 0 ? Mathf.Max(1, Mathf.RoundToInt(value * BalanceV1126c.Reputation.gainScalePct / 100f *
+                            (1 + AttributeSystem.ReputationPerPoint * AttributeBonus("cha")))) : value;
                         break;
                     case "monthlyTerms": Story.monthlyTermsLeft = value; break;
                     case "monthlyFood": Story.monthlyFood += value; break;

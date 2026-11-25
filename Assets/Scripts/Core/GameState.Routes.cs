@@ -78,7 +78,8 @@ namespace Wuxia
 
         /// <summary>Monthly silver a 通商 tie brings (same formula as the month-end diplomacy income).</summary>
         internal int TradeIncomeOf(MapFaction faction) =>
-            Mathf.Max(1, (faction.type == "merchant" ? 12 : 6) + (Tie(faction.id)?.tradeIncome ?? 0));
+            Mathf.Max(1, (faction.type == "merchant" ? BalanceV1126c.Trade.merchantSilverPerMonth : BalanceV1126c.Trade.tongshangSilverPerMonth) +
+                (Tie(faction.id)?.tradeIncome ?? 0));
 
         /// <summary>Consecutive months each 通商 tie has run (reset when it lapses).</summary>
         internal int TradeMonths(string factionId) => RouteFlag("route_trade_" + factionId);
@@ -152,11 +153,13 @@ namespace Wuxia
                 bool first = !MasterDefeated(faction.id);
                 SetRouteFlag("master_" + faction.id, 1);
                 int fame = first ? Mathf.Max(2, faction.reputation / 10) : 0;
+                int before = Reputation;
                 ApplyEffects(new[]
                 {
                     new GameEffect { key = "reputation", value = fame },
                     new GameEffect { key = "relation", @ref = faction.id, value = -3 }
                 });
+                fame = Reputation - before; // the gain actually applied (reputation.gainScalePct, 魅力)
                 return $"勝過{faction.leader}。{(fame > 0 ? $"聲望 +{fame}。" : "")}成名高手 {MastersDefeated}／{RouteRules.Data.champion.masters}";
             }
             Injure(1);

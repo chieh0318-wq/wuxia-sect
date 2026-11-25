@@ -1,9 +1,9 @@
 {
-  "diplomacy": { "loyal": 12, "subjects": 6, "reputation": 380, "holdMonths": 6 },
-  "conquest": { "held": 20, "reputation": 450, "holdMonths": 6 },
-  "wealth": { "silver": 8000, "routes": 16, "routeMonths": 12, "tradeYear": 1800, "reputation": 350 },
+  "diplomacy": { "loyal": 12, "subjects": 6, "reputation": 330, "holdMonths": 12 },
+  "conquest": { "held": 20, "reputation": 380, "holdMonths": 12 },
+  "wealth": { "silver": 12000, "routes": 18, "routeMonths": 12, "tradeYear": 2000, "reputation": 320 },
   "champion": {
-    "rank": "SS", "masters": 9, "grandmasters": 3, "reputation": 600,
+    "rank": "SSS", "masters": 11, "grandmasters": 4, "reputation": 650,
     "reputationRatio": 1.0, "tierGap": 1, "apCost": 2, "silverCost": 20, "retryMonths": 3,
     "minimumLeaderRank": "A+"
   }

@@ -19,10 +19,10 @@
     { "id": "taihang", "text": "太行寨眾專劫商旅，本門從前護送過被劫的客商，他們一直記恨在心。若要用兵，須先把寨中虛實摸清。" }
   ],
   "routes": [
-    { "id": "diplomacy", "name": "外交結盟", "direction": "與各派、官府修好結盟，使其歸附。", "condition": "結盟或歸附 12 家（其中歸附 6 家）、聲望 380，盟約穩固 6 個月", "progress": "diplomacy" },
-    { "id": "conquest", "name": "武力征服", "direction": "攻占據點，以兵威服人。", "condition": "直轄據點 20 處、聲望 450，守穩 6 個月", "progress": "conquest" },
-    { "id": "wealth", "name": "富甲天下", "direction": "廣開商路，經營多年，積銀如山。", "condition": "庫銀 8,000、通商滿 12 個月的商路 16 條、近一年商路收入 1,800、聲望 350", "progress": "wealth" },
-    { "id": "champion", "name": "天下第一", "direction": "主修練至絕頂，在地圖上登門挑戰各派成名高手，一一勝之。", "condition": "主修 SS、勝成名高手 9 位（其中 SS 級以上宗師 3 位）、聲望 600", "progress": "champion" }
+    { "id": "diplomacy", "name": "外交結盟", "direction": "與各派、官府修好結盟，使其歸附。", "condition": "結盟或歸附 12 家（其中歸附 6 家）、聲望 330，盟約穩固 12 個月", "progress": "diplomacy" },
+    { "id": "conquest", "name": "武力征服", "direction": "攻占據點，以兵威服人。", "condition": "直轄據點 20 處、聲望 380，守穩 12 個月", "progress": "conquest" },
+    { "id": "wealth", "name": "富甲天下", "direction": "廣開商路，經營多年，積銀如山。", "condition": "庫銀 12,000、通商滿 12 個月的商路 18 條、近一年商路收入 2,000、聲望 320", "progress": "wealth" },
+    { "id": "champion", "name": "天下第一", "direction": "主修練至絕頂，在地圖上登門挑戰各派成名高手，一一勝之。", "condition": "主修 SSS、勝成名高手 11 位（其中 SS 級以上宗師 4 位）、聲望 650", "progress": "champion" }
   ],
   "stages": [
     {
@@ -30,7 +30,7 @@
       "title": "立穩山門",
       "brief": "人手、屋舍、名聲三樣齊了，山門才算立得住。",
       "steps": [
-        { "text": "門下弟子", "metric": "disciples", "target": 6 },
+        { "text": "門下弟子", "metric": "disciples", "target": 10 },
         { "text": "山門建築", "metric": "buildings", "target": 8 },
         { "text": "江湖聲望", "metric": "reputation", "target": 22 }
       ]
@@ -52,7 +52,7 @@
       "steps": [
         { "text": "友好或歸附勢力", "metric": "loyalFactions", "target": 2 },
         { "text": "轄下據點", "metric": "heldNodes", "target": 1 },
-        { "text": "門下弟子", "metric": "disciples", "target": 10 }
+        { "text": "門下弟子", "metric": "disciples", "target": 14 }
       ]
     }
   ],

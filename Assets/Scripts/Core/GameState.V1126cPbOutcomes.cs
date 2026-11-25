@@ -21,7 +21,7 @@ namespace Wuxia
         {
             int forging = AssignmentSystem.Skill(this, worker, "forging");
             float quality = AssignmentSystem.Predict(this, hall ? "forge" : "forge_gear", worker).Quality;
-            float boost = !hall && HasTech("craft2") ? 2 : 1;
+            float boost = !hall && HasTech("craft2") ? Mathf.Max(1, TechValue("craft2", n => n.value2)) : 1;
             int levels = hall ? Mathf.Max(0, HallLevel("forge_hall") - 1) : 0;
             float tier3 = hall ? .04f + .02f * forging + .04f * levels : .03f + .015f * forging;
             float tier2 = hall ? .25f + .04f * forging + .08f * levels : .12f + .03f * forging;

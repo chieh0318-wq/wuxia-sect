@@ -100,14 +100,35 @@ namespace Wuxia
         /// <summary>Study keys: "all" every combat line (ref ""), "martial" the 主修, otherwise a line id.</summary>
         private static string StudyKey(string id) => string.IsNullOrEmpty(id) ? "all" : id;
 
+        /// <summary>
+        /// v1126c PA3: 修習進度 points that <paramref name="experience"/> (one 督促操練 ≈ 1) adds to a line at its current
+        /// tier — martial.drillProgress per unit × martial.tierGainPct[tier] (higher tiers learn slower).
+        /// </summary>
+        internal static float ProgressFor(SkillLine line, float experience) =>
+            experience * BalanceV1126c.Martial.drillProgress * BalanceV1126c.TierGainPct(RankSystem.Index(line?.rank)) / 100f;
+
+        /// <summary>Progress points for one tier (martial.progressMax, e.g. 34/100).</summary>
+        internal static int ProgressMax => MartialProgressMax;
+
         private static void TrainLine(SkillLine line, float experience)
         {
             if (line == null || RankSystem.Index(line.rank) >= RankSystem.Index(line.cap))
                 return;
-            line.progress += experience;
-            int steps = (int)(line.progress / MartialProgressMax);
-            RankSystem.Shift(line, steps, false);
-            line.progress = CanAdvance(line) ? line.progress - steps * MartialProgressMax : 0;
+            // Each tier needs ProgressMax points; the gain is re-read per tier so a big chunk slows as the rank climbs.
+            float left = experience;
+            while (left > 0 && RankSystem.Index(line.rank) < RankSystem.Index(line.cap))
+            {
+                float perUnit = ProgressFor(line, 1);
+                if (perUnit <= 0) break;
+                float need = ProgressMax - line.progress;
+                float gain = left * perUnit;
+                if (gain < need) { line.progress += gain; break; }
+                left -= need / perUnit;
+                line.progress = 0;
+                RankSystem.Shift(line, 1, false);
+            }
+            if (RankSystem.Index(line.rank) >= RankSystem.Index(line.cap))
+                line.progress = Mathf.Min(line.progress, ProgressMax - 1);
         }
 
         internal string TryBreakthrough(string id, float bonus, float fortune = 1)
@@ -153,10 +174,11 @@ namespace Wuxia
                     continue;
                 bool eligible = step.breakthrough switch
                 {
-                    "seclusion_houshan" => !monthEnd && hero.trainingMonths >= 6,
+                    "seclusion_houshan" => !monthEnd && hero.trainingMonths >= BalanceV1126c.Martial.seclusionTrainingMonths,
                     "manual_xiaoshan_full" => !monthEnd && hero.breakthroughs.Contains("seclusion_houshan") &&
-                        (RankSystem.Index(strongest.rank) >= RankSystem.Index("S") || hero.trainingMonths >= 18),
-                    "mentor_master_return" => monthEnd && Year >= 3 && Month == 1 && hero.trainingMonths >= 6,
+                        (RankSystem.Index(strongest.rank) >= RankSystem.Index("S") || hero.trainingMonths >= BalanceV1126c.Martial.manualTrainingMonths),
+                    "mentor_master_return" => monthEnd && Year >= BalanceV1126c.Martial.masterReturnYear && Month == 1 &&
+                        hero.trainingMonths >= BalanceV1126c.Martial.seclusionTrainingMonths,
                     _ => false
                 };
                 if (!eligible)

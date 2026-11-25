@@ -6,13 +6,12 @@ using UnityEngine.UI;
 namespace Wuxia
 {
     /// <summary>
-    /// v1126 #8 (T-3 #8): the 任務 panel, docked bottom-right above the 本門 / 地圖 buttons. The header toggles it.
-    /// Top: one short-term goal at a time (the new-player guide while it runs, then the stages in quests.json);
-    /// bottom, always pinned: the four long-term routes. It steps aside while a building card or a page is open.
+    /// Pins the current objective under the resource bar. During the guide it sits above the bottom bar,
+    /// leaving room for the guide card. The bottom-bar quest button opens the full board.
     /// </summary>
     public sealed partial class SectUI
     {
-        private RectTransform questPanel, questBody;
+        private RectTransform questPanel;
         private bool questCollapsed;
         private GameState questState;
 
@@ -69,8 +68,13 @@ namespace Wuxia
             float y = WriteQuestBody(questPanel, width, 44, false, 0);
             Resize(y + 12);
 
-            void Resize(float height) =>
-                Anchor(questPanel, Vector2.right, Vector2.right, new(-width - 18, 104), new(-18, 104 + height));
+            void Resize(float height)
+            {
+                if (guide.HasValue)
+                    Anchor(questPanel, Vector2.right, Vector2.right, new(-width - 18, 104), new(-18, 104 + height));
+                else
+                    Anchor(questPanel, Vector2.one, Vector2.one, new(-width - 18, -72 - height), new(-18, -72));
+            }
         }
 
         // ── v1126c PC3 #10: the full 任務 board (bottom-bar 「任務　J」) ──

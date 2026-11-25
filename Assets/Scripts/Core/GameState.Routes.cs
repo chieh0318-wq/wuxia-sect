@@ -248,7 +248,7 @@ namespace Wuxia
                     int hold = RouteFlag("route_hold_diplomacy");
                     bool met = victory.Diplomatic && hold >= r.holdMonths;
                     return new RouteState(id, $"結盟或歸附 {victory.Loyal}／{r.loyal}・歸附 {victory.Subjects}／{r.subjects}" +
-                        $"・聲望 {Reputation}／{r.reputation}" + (victory.Diplomatic ? $"・盟約穩固 {Mathf.Min(hold, r.holdMonths)}／{r.holdMonths} 月" : ""),
+                        $"・聲望 {Reputation}／{r.reputation}" + $"・盟約穩固 {Mathf.Min(hold, r.holdMonths)}／{r.holdMonths} 月",
                         met, RouteDeclared(id));
                 }
                 case "conquest":
@@ -257,7 +257,7 @@ namespace Wuxia
                     int hold = RouteFlag("route_hold_conquest");
                     bool met = victory.Conquest && hold >= r.holdMonths;
                     return new RouteState(id, $"直轄據點 {victory.Held}／{r.held}・聲望 {Reputation}／{r.reputation}" +
-                        (victory.Conquest ? $"・守穩 {Mathf.Min(hold, r.holdMonths)}／{r.holdMonths} 月" : ""), met, RouteDeclared(id));
+                        $"・守穩 {Mathf.Min(hold, r.holdMonths)}／{r.holdMonths} 月", met, RouteDeclared(id));
                 }
                 case "wealth":
                 {

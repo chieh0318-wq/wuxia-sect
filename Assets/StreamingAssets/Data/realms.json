@@ -1,6 +1,7 @@
 {
   "note": "v1124 C15/C16. scenes: background placeholders (Resources/Realms/<id>, fallback used until P2 paints them). roadEvents: 山道巡訪 encounters. treasures: fixed one-time 寶物秘境 on the world map. Effect keys follow GameEffect plus item(ref item id, value qty), gear(ref slot, value grade 0-3), progress(ref line or martial, value), injury(value).",
   "scenes": [
+    { "id": "realm_wounded_swordsman", "fallback": "Realms/realm_mountain_road", "caption": "破廟門口", "paintedCast": true },
     { "id": "realm_mountain_road", "fallback": "Battle/battle_ground_road", "caption": "崤山山道" },
     { "id": "realm_ancient_stele", "fallback": "Story/cg_crossroads", "caption": "荒山古碑" },
     { "id": "realm_village_edge", "fallback": "Story/cg_ruins", "caption": "山村邊緣" },
@@ -52,7 +53,7 @@
     {
       "id": "road_herbalist",
       "title": "崖上採藥人",
-      "scene": "realm_village_edge",
+      "scene": "realm_cliff_carving",
       "weight": 10,
       "speaker": { "name": "藥農老秦", "subtitle": "崤山採藥人", "portrait": "npc_em03", "gender": "男" },
       "lines": [
@@ -73,7 +74,7 @@
     {
       "id": "road_wounded_swordsman",
       "title": "落難刀客",
-      "scene": "realm_mountain_road",
+      "scene": "realm_wounded_swordsman",
       "weight": 8,
       "speaker": { "name": "厲三刀", "subtitle": "落魄刀客", "portrait": "npc_am09", "gender": "男" },
       "lines": [

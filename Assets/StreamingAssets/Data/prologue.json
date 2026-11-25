@@ -202,7 +202,7 @@
           ],
           "beats": [
             { "speaker": "{friend}", "portrait": "friend", "image": "", "text": "少林當年助太宗擒王世充，太宗親賜田地，敕書至今供在寺中。御史臺的手，伸不進少林的山門。" },
-            { "speaker": "", "portrait": "", "image": "cg_elder_hall", "text": "少林方丈聽完前因後果，只合十說了一句：「佛門不問是非，只救眼前人。」" },
+            { "speaker": "", "portrait": "", "image": "DiplomacyVenues/buddhist", "text": "少林方丈聽完前因後果，只合十說了一句：「佛門不問是非，只救眼前人。」" },
             { "speaker": "", "portrait": "", "image": "", "text": "范希仁的公文送到少室山下，被知客僧原封退了回去。羅網，暫且鬆了口。" },
             { "speaker": "藥房執事　韓守拙", "portrait": "han", "image": "", "text": "……方丈說藥寮缺人手。我留下。這是咱們欠的。" },
             { "speaker": "{friend}", "portrait": "friend", "image": "", "text": "人情要還，但少林的人情，還得起。待風頭過了，咱們再出去另覓一處地方。" }
@@ -321,7 +321,7 @@
             { "speaker": "{name}", "portrait": "hero", "image": "", "text": "我不求誰，也不跪誰。今夜，咱們自己去把人接回來。" },
             { "speaker": "", "portrait": "", "image": "", "text": "帶路的是個十四歲的走索女孩，名叫喬小檀。她在伏牛山下的戲班賣藝，親眼見過秦家弟子把人押進後山。" },
             { "speaker": "喬小檀", "portrait": "qiao", "image": "", "text": "後山柴房的屋脊我走過，瓦片一片也不會響。你們踩著我的腳印走。" },
-            { "speaker": "", "portrait": "", "image": "cg_betrayal", "text": "三更，柴房鎖斷。同門一個個從窗口遞了出來。你最後一個走，在議事廳柱上刻下八字：「廿年之盟，一刀兩斷。」" },
+            { "speaker": "", "portrait": "", "image": "cg_betrayal_escape", "text": "三更，柴房鎖斷。同門一個個從窗口遞了出來。你最後一個走，在議事廳柱上刻下八字：「廿年之盟，一刀兩斷。」" },
             { "speaker": "大師兄　林照", "portrait": "lin", "image": "", "text": "痛快！只是從此伏牛山與咱們便是死仇了。" },
             { "speaker": "{friend}", "portrait": "friend", "image": "cg_crossroads", "text": "死仇便死仇。江湖上很快會傳開：{sect}的人，背叛不得，也扣不住。" }
           ]
@@ -344,10 +344,10 @@
         { "speaker": "", "portrait": "", "image": "", "text": "入夏，疫病從洛陽南市傳開。先是發熱，後是咳血，三日不起。坊門一關，屍首只能從牆頭往外遞。" },
         { "speaker": "藥房執事　韓守拙", "portrait": "han", "image": "", "text": "……是時疫。山下已有人上山求藥了。藥房的存貨，撐不過十日。" },
         { "speaker": "伙房管事　杜蘅", "portrait": "du", "image": "", "text": "米缸也見底了。山下米行說漕船都往長安去了，洛陽一粒也分不到。" },
-        { "speaker": "", "portrait": "", "image": "cg_ruins", "text": "你開了山門收留病人。七日後，頭一個同門倒下；半月後，祖師殿裡躺滿了人，香案成了藥案。" },
+        { "speaker": "", "portrait": "", "image": "cg_plague_relief", "text": "你開了山門收留病人。七日後，頭一個同門倒下；半月後，祖師殿裡躺滿了人，香案成了藥案。" },
         { "speaker": "{friend}", "portrait": "friend", "image": "", "text": "你救不了整個河南道。再這樣下去，{sect}會隨山下一起死。" },
         { "speaker": "{name}", "portrait": "hero", "image": "", "text": "那你說，該把誰關在門外？" },
-        { "speaker": "", "portrait": "", "image": "", "text": "秋風起時，疫病退了。崤山的田荒了，倉空了，連祖師殿的大梁都拆去一截，給病人燒了火。" },
+        { "speaker": "", "portrait": "", "image": "cg_ruins", "text": "秋風起時，疫病退了。崤山的田荒了，倉空了，連祖師殿的大梁都拆去一截，給病人燒了火。" },
         { "speaker": "{friend}", "portrait": "friend", "image": "", "text": "這座山養不活人了。咱們得走。往哪裡走、依靠誰，你來定。" }
       ],
       "responsePrompt": "大疫過後，崤山倉空田荒。你要帶著同門投向何處？",
@@ -367,7 +367,7 @@
             { "key": "flag", "value": 1, "ref": "henan_registered" }
           ],
           "beats": [
-            { "speaker": "", "portrait": "", "image": "cg_court_persecution", "text": "河南府貼出告示：凡有武藝者，可入團結兵，官給口糧。你帶著同門去應了名。" },
+            { "speaker": "", "portrait": "", "image": "cg_plague_recruitment", "text": "河南府貼出告示：凡有武藝者，可入團結兵，官給口糧。你帶著同門去應了名。" },
             { "speaker": "{name}", "portrait": "hero", "image": "", "text": "吃官糧，聽官令。至少，他們不必再挨餓。" },
             { "speaker": "大師兄　林照", "portrait": "lin", "image": "", "text": "我從府兵裡逃出來，到頭來又穿回這身皮。{call:lin}，這筆帳先記著。" },
             { "speaker": "{friend}", "portrait": "friend", "image": "", "text": "官府的糧最好吃，也最難還。三年之內，咱們得自己站起來。" }
@@ -391,7 +391,7 @@
             { "speaker": "外門弟子　康瑟", "portrait": "kang", "image": "", "text": "我舅舅的商隊要往涼州去，正缺護衛。管吃管住，還給工錢，只要咱們肯走。" },
             { "speaker": "", "portrait": "", "image": "", "text": "薩寶安延年捋著大鬍子，把你從頭看到腳，才伸出三根手指：「三年。替我押三年貨，我替你養三年人。」" },
             { "speaker": "{friend}", "portrait": "friend", "image": "", "text": "三年後，咱們手裡有錢、有路、有消息。這是最好的買賣——只要活得過這三年。" },
-            { "speaker": "", "portrait": "", "image": "cg_crossroads", "text": "駝鈴響起時，你最後回望了一眼崤山。山很靜，一如師父臨行那日。" }
+            { "speaker": "", "portrait": "", "image": "cg_plague_caravan", "text": "駝鈴響起時，你最後回望了一眼崤山。山很靜，一如師父臨行那日。" }
           ]
         },
         {
@@ -412,7 +412,7 @@
             { "speaker": "{name}", "portrait": "hero", "image": "", "text": "咱們不靠誰。山下活下來的人，都記得是誰給他們端過藥。" },
             { "speaker": "宋秋娘", "portrait": "song", "image": "", "text": "我爹娘都沒熬過去。{title}，我力氣大，甚麼都扛得動。讓我跟你們走罷。" },
             { "speaker": "藥房執事　韓守拙", "portrait": "han", "image": "", "text": "……藥方，我都寫下來了。往後哪裡有疫，咱們都能救。" },
-            { "speaker": "{friend}", "portrait": "friend", "image": "cg_crossroads", "text": "這名聲是拿命換的。到了新地方，它便是{sect}的第一塊磚。" }
+            { "speaker": "{friend}", "portrait": "friend", "image": "cg_plague_relief", "text": "這名聲是拿命換的。到了新地方，它便是{sect}的第一塊磚。" }
           ]
         }
       ]

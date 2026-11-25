@@ -7,7 +7,7 @@ namespace Wuxia
 {
     // ---- realms.json (v1124 C15 / C16) ---------------------------------------------------------------
 
-    [Serializable] internal sealed class RealmScene { public string id, fallback, caption; }
+    [Serializable] internal sealed class RealmScene { public string id, fallback, caption; public bool paintedCast; }
 
     [Serializable] internal sealed class RealmSpeaker { public string name, subtitle, portrait, gender, standee; }
 

@@ -369,7 +369,7 @@
             },
             {
               "speaker": "{friend}",
-              "portrait": "friend__smile",
+              "portrait": "friend",
               "image": "",
               "text": "我選哪條不要緊。你選定了，我便教它成為對的那一條。"
             }

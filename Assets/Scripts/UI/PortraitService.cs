@@ -45,7 +45,21 @@ namespace Wuxia
             return Story(id) != null ? id : fallback;
         }
 
-        public static Texture2D Story(string id) => string.IsNullOrWhiteSpace(id) ? null : FindTexture("story", id);
+        internal static string FriendVowArt(string friendId, string heroLook)
+        {
+            bool maleAdviser = friendId == "friend_m";
+            string original = maleAdviser ? "cg_friend_vow_m" : "cg_friend_vow";
+            string defaultHero = maleAdviser ? "hero_f1" : "hero_m1";
+            return heroLook == defaultHero ? original : original + "_custom_hero";
+        }
+
+        public static Texture2D Story(string id)
+        {
+            if (string.IsNullOrWhiteSpace(id)) return null;
+            int separator = id.IndexOf('/');
+            return separator < 0 ? FindTexture("story", id) :
+                FindTexture(id.Substring(0, separator).ToLowerInvariant(), id.Substring(separator + 1));
+        }
 
         private static Texture2D FindTexture(string folder, string id)
         {

@@ -97,7 +97,7 @@ namespace Wuxia
             var head = MapUi.Kit(page, "刊首", 0, 0, W, 86, "Wood");
             MapUi.Text(head, title ?? "", 36, 0, 1100, 86, 40, MapUi.Paper, TextAnchor.MiddleLeft, "Titles");
             MapUi.Text(head, subtitle ?? "", 1100, 0, 784, 86, 24, MapUi.Gold, TextAnchor.MiddleRight);
-            if (figures)
+            if (figures && !RealmContent.Scene(sceneId).paintedCast)
             {
                 Figure(left, false, speakingSide == null || speakingSide == "left");
                 Figure(right, true, speakingSide == null || speakingSide == "right");
@@ -170,16 +170,17 @@ namespace Wuxia
             int count = choices?.Count ?? 0;
             float cardH = count > 3 ? 118 : 138, gap = 14;
             float top = 110;
+            float choiceX = RealmContent.Scene(sceneId).paintedCast ? 40 : 600;
             if (notes != null && notes.Count > 0)
             {
-                var strip = MapUi.Kit(page, "狀態", 600, top, 720, 44, "Wood", false);
+                var strip = MapUi.Kit(page, "狀態", choiceX, top, 720, 44, "Wood", false);
                 MapUi.Text(strip, string.Join("　", notes), 16, 0, 688, 44, 21, MapUi.Gold, TextAnchor.MiddleCenter);
                 top += 56;
             }
             for (int i = 0; i < count; i++)
             {
                 var choice = choices[i];
-                var button = MapUi.Button(page, "", 600, top + i * (cardH + gap), 720, cardH, () => choice.run?.Invoke(),
+                var button = MapUi.Button(page, "", choiceX, top + i * (cardH + gap), 720, cardH, () => choice.run?.Invoke(),
                     i == 0 ? MapUi.Red : null);
                 button.name = "場景選項:" + choice.label;
                 button.interactable = string.IsNullOrEmpty(choice.block) && choice.run != null;

@@ -170,19 +170,14 @@ namespace Wuxia
         /// <summary>Month-end extras: tech building income, the 35% commerce boost, held strongholds, faster healing.</summary>
         private void M6MonthIncome(ref int silver, ref int food, MonthlyReport report)
         {
-            if (HasTech("craft1") && BuildingLevel("infirmary") > 0) silver += 4;
-            if (HasTech("craft2")) silver += 6 * Buildings.Count(building => building?.id == "smithy");
-            if (HasTech("craft4"))
-            {
-                silver = Mathf.RoundToInt(silver * 1.35f);
-                food = Mathf.RoundToInt(food * 1.35f);
-            }
+            ApplyMonthlyTechnology(ref silver, ref food);
             int held = Story.heldNodes?.Length ?? 0;
             if (held > 0)
             {
-                silver += held * 4;
-                food += held * 2;
-                report.Lines.Add($"轄下據點 {held} 處　上繳銀兩 {held * 4}、糧食 {held * 2}");
+                var (holdingSilver, holdingFood) = MonthlyHoldingIncome;
+                silver += holdingSilver;
+                food += holdingFood;
+                report.Lines.Add($"轄下據點 {held} 處　上繳銀兩 {holdingSilver}、糧食 {holdingFood}");
             }
             if (HasTech("inner1") || HasTech("craft1"))
                 RecoverInjuries();

@@ -132,7 +132,7 @@ namespace Wuxia
             if (controls != null)
                 controls.enabled = true;
             AudioManager.Music("courtyard");
-            ui.ShowMapButtons(ToggleWorldMap, () => ToggleWorldMap(true), ShowCharacterDirectory, OpenSystemMenu, ShowSectRoster);
+            ui.ShowMapButtons(ToggleWorldMap, () => ToggleWorldMap(true), ShowCharacterDirectory, OpenSystemMenu, ShowSectRoster, () => ShowSectInventory());
             if (startTutorial)
                 BootStep("tutorial", () => tutorial = new TutorialGuide(ui, state));
             // v1126 #8: the 任務 panel (short-term goal on top, the four routes pinned underneath).
@@ -156,13 +156,13 @@ namespace Wuxia
 
         private void BuildCourtyard()
         {
-            world = new Courtyard(transform, ui, state.Data.Start.slots.TakeWhile(slot => slot.scale <= state.SectScale).ToArray(),
+            world = new Courtyard(transform, ui, state.CourtyardCells(),
                 state.SectScale);
             controls?.SetCourtyardScale(state.SectScale);
-            for (int index = 0; index < state.Buildings.Length && state.PlotUnlocked(index); index++)
+            for (int index = 0; index < state.Buildings.Length; index++)
             {
-                if (state.Buildings[index] != null)
-                    world.PlaceBuilding(index, state.Buildings[index]);
+                if (state.PlotUnlocked(index) && state.Buildings[index] != null)
+                    world.PlaceBuilding(index, state.Buildings[index], state.FootprintCells(index, state.Buildings[index]));
             }
             var hero = state.Protagonist;
             world.SpawnDisciple(ProtagonistFigure(), CharacterFactory.HeroOriginStandee(hero.gender,
@@ -320,6 +320,7 @@ namespace Wuxia
                     world.TryGetDisciple(hoverHit.collider, out _))
                     hovered = hoverHit.collider.transform.parent;
             }
+            if (choosingBuilding && !capturing && !ui.ModalOpen) PreviewCourtyardCells();
             ui.PositionLabels(view, hovered, selectedCourtyardPerson);
             ui.PositionHighlight(tutorial?.Highlight, view, world);
             if (HandleBack()) // v1125 #16: right-click / Esc = back one page
@@ -638,9 +639,9 @@ namespace Wuxia
 
         private void PlaceBuilding(int index)
         {
-            if (!state.PlotUnlocked(index) || state.Buildings[index] != null)
+            if (!state.CanPlaceInCells(index, buildChoice))
             {
-                ui.Message("此處已有建築。請選擇綠色空地。");
+                ui.Message("此處空地不足。請選擇能容下整座建築的地格。");
                 return;
             }
             if (!state.IsAvailable(buildChoice))
@@ -655,7 +656,7 @@ namespace Wuxia
 
         private void CompleteConstruction(int index, string worker)
         {
-            if (buildChoice == null || state.Buildings[index] != null || !state.IsAvailable(buildChoice) ||
+            if (buildChoice == null || !state.CanPlaceInCells(index, buildChoice) || !state.IsAvailable(buildChoice) ||
                 AssignmentSystem.Block(state, worker) != null) return;
             string grant = TutorialBuildAid();
             var total = BuildTotal(buildChoice);
@@ -667,7 +668,7 @@ namespace Wuxia
             AssignmentSystem.Credit(state, worker, 2);
             state.Apply(buildAction.effect);
             state.Buildings[index] = buildChoice;
-            world.PlaceBuilding(index, buildChoice);
+            world.PlaceBuilding(index, buildChoice, state.FootprintCells(index, buildChoice));
             PlayBuildAudio(); // M2-B placement and immediate M1 completion
             string result = $"{buildChoice.name}已落成。{Changes(buildAction.effect)}";
             CancelBuild();

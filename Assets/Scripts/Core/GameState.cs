@@ -129,8 +129,8 @@ namespace Wuxia
             Protagonist.lines = RankSystem.ProtagonistSeed();
             Disciples = data.Disciples.Where(d => d.startInSect).Select(CloneDisciple).ToList();
             foreach (var disciple in Disciples) EnsurePortrait(disciple);
-            Buildings = new BuildingData[data.Start.slots.Length];
-            for (int index = 0; index < Buildings.Length; index++)
+            Buildings = new BuildingData[data.Start.slots.Length * CellsPerLot];
+            for (int index = 0; index < data.Start.slots.Length; index++)
             {
                 string id = data.Start.slots[index].buildingId;
                 var building = data.Buildings.FirstOrDefault(b => b.id == id);
@@ -140,7 +140,7 @@ namespace Wuxia
 
             foreach (var building in data.Buildings.Where(b => b.startBuilt && !Buildings.Contains(b)))
             {
-                int index = System.Array.IndexOf(Buildings, null);
+                int index = System.Array.FindIndex(Buildings, 0, data.Start.slots.Length, placed => placed == null);
                 if (index < 0)
                     break;
                 Buildings[index] = building;
@@ -171,20 +171,7 @@ namespace Wuxia
         {
             var report = new MonthlyReport();
             report.Lines.Add($"{Date}結算");
-            int silver = 0, food = 0, reputation = 0, upkeep = 0, materials = 0;
-            foreach (var building in Buildings)
-            {
-                if (building == null)
-                    continue;
-                silver += building.income.silver;
-                food += building.income.food;
-                reputation += building.income.reputation;
-                upkeep += building.upkeep;
-                materials += building.income.materials;
-            }
-
-            silver = UnityEngine.Mathf.RoundToInt(silver * ProductionMultiplier("commerce"));
-            food = UnityEngine.Mathf.RoundToInt(food * ProductionMultiplier("farming"));
+            var (silver, food, reputation, upkeep, materials) = BuildingMonthLedger();
             Story.materials += materials;
             if (materials > 0) report.Lines.Add($"作坊材料　+{materials}");
             M6MonthIncome(ref silver, ref food, report);
@@ -202,7 +189,7 @@ namespace Wuxia
                     report.Lines.Add("粟特商隊的三年押運之約已滿。");
                 }
             }
-            int consumed = Disciples.Count * Data.Start.foodPerDisciple;
+            int consumed = MonthlyRations;
             Silver += silver - upkeep;
             Food += food - consumed;
             Reputation += reputation;

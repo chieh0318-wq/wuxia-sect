@@ -364,6 +364,7 @@ namespace Wuxia
                 ApplyEffects(new[] { new GameEffect { key = "reputation", value = terms.repOnSuccess } });
                 extra += $"議定條款：聲望 {terms.repOnSuccess:+0;-0}。";
             }
+            if (action.id == "trade") extra += $"每月銀兩 +{TradeIncomeOf(faction)}，自{Date}月底入帳。";
             ShiftAttitude(faction, gain);
             return $"【{action.name}成功】{Diplomacy.Fill(action.success, faction)}\n（使者 {envoy}；態度 {gain:+0;-0}）{extra}";
         }
@@ -512,15 +513,14 @@ namespace Wuxia
                 if ((ties & Diplomacy.Trade) != 0)
                 {
                     delta += 1;
-                    trade += Mathf.Max(1, (faction.type == "merchant" ? 12 : 6) + (terms?.tradeIncome ?? 0));
+                    trade += MonthlyTradeIncome(faction);
                 }
                 if ((ties & Diplomacy.Pact) != 0) delta += 1;
                 if ((ties & Diplomacy.Alliance) != 0) delta += 1;
                 if ((ties & Diplomacy.Vassal) != 0)
                 {
                     delta -= 1;
-                    tribute += Mathf.Clamp(Mathf.RoundToInt(Mathf.Clamp(faction.money / 600, 5, 30) *
-                        (100 + (terms?.tributePct ?? 0)) / 100f), 5, 30);
+                    tribute += TributeIncomeOf(faction);
                     if (Attitude(faction) < 10 && UnityEngine.Random.value < .3f)
                     {
                         SetTie(faction, Diplomacy.Vassal, false);

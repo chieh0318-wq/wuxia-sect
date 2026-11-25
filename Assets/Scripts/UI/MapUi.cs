@@ -83,6 +83,7 @@ namespace Wuxia
             text.resizeTextForBestFit = alignment != TextAnchor.UpperLeft;
             text.resizeTextMinSize = UiKit.MinBody;
             text.resizeTextMaxSize = size;
+            CjkKinsoku.Attach(text);
             return text;
         }
 

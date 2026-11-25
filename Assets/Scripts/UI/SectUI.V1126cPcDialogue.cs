@@ -17,8 +17,13 @@ namespace Wuxia
         internal const float PlateLift = 28;
         internal const string BodyFont = "Dialogue";
 
-        internal static string Speaker(string speaker) =>
-            string.IsNullOrWhiteSpace(speaker) || speaker == "narrator" ? "旁白" : Clean(speaker);
+        internal static string Speaker(string speaker)
+        {
+            string cleaned = Clean(speaker).Trim();
+            return string.IsNullOrWhiteSpace(cleaned) ||
+                   string.Equals(cleaned, "narrator", System.StringComparison.OrdinalIgnoreCase)
+                ? "旁白" : cleaned;
+        }
 
         /// <summary>Plate width that fits the name (and an optional subtitle line), 168–400 px.</summary>
         internal static float PlateWidth(string name, string subtitle = null) =>

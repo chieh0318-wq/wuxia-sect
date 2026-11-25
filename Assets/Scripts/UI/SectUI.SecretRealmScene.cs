@@ -197,8 +197,14 @@ namespace Wuxia
                 string detail = string.Join("　", new[] { choice.desc, choice.tags, choice.block }.Where(part => !string.IsNullOrEmpty(part)));
                 MapUi.Text(button.transform, detail, x, 44, 700 - x, 34, 19, MapUi.Gold);
                 if (!string.IsNullOrEmpty(choice.impact))
-                    MapUi.Text(button.transform, "影響：" + choice.impact, x, 78, 700 - x, cardH - 84, 19,
+                {
+                    // Keep signed numbers glued to their labels and place 敗： on its own line when paired with 勝：.
+                    string impact = choice.impact
+                        .Replace(" +", "\u00A0+").Replace(" -", "\u00A0-").Replace(" −", "\u00A0−").Replace(" ×", "\u00A0×")
+                        .Replace("　敗：", "\n敗：");
+                    MapUi.Text(button.transform, "影響：" + impact, x, 78, 700 - x, cardH - 84, 19,
                         new Color(.80f, .93f, .82f), TextAnchor.UpperLeft);
+                }
             }
             if (prompt != null)
                 DialogueBox(prompt, 760, 216);

@@ -35,7 +35,12 @@ namespace Wuxia
                     case "monthlySilver": Story.monthlySilver += value; break;
                     case "siteFood": Story.siteFood += value; break; // v1126c PC3 #8: site yield, every month
                     case "siteSilver": Story.siteSilver += value; break;
-                    case "apMax": Story.apBonus += value; break;
+                    case "apMax":
+                        // v1126e #6: a higher cap (王佐之才、聞雞起舞、quest rewards) is usable this month too, not only after
+                        // the next refill; a lower cap just trims the month (the clamp below).
+                        Story.apBonus += value;
+                        if (value > 0) ActionPoints += value;
+                        break;
                     case "recruitPoolSize": Story.recruitPoolSize += value; break;
                     case "recruitCostPct": Story.recruitCostPct += value; break;
                     case "buildCostPct": Story.buildCostPct += value; break;

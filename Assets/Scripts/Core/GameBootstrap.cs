@@ -64,7 +64,7 @@ namespace Wuxia
             }
             BootStep("scene", ConfigureScene);
             AudioManager.Initialize(); // M2-B audio
-            BootStep("HUD", () => ui = new SectUI(EndMonth));
+            BootStep("HUD", () => ui = new SectUI(RequestEndMonth)); // v1126e #5: confirm while AP is left
             BootStep("data", () => data = GameData.Load());
             if (ui == null || data == null)
                 return;

@@ -424,8 +424,22 @@ namespace Wuxia
             {
                 string reason = CommandReason(move);
                 description.text = $"{ActionName(move)}　｜　{ActionCost(move)}\n" +
-                    $"五行 {ActionElement(move)}　・　冷卻 無\n{ActionEffect(move)}" +
+                    $"五行 {ActionElement(move)}　・　冷卻 無\n{ActionEffect(move)}" + StrikeLine(move) +
                     (reason.Length == 0 ? "" : $"\n{reason}");
+            }
+
+            // v1126e #1: which figure a strike uses and which defence it meets (外功 → 外防, 內功 → 內防).
+            string StrikeLine(string move)
+            {
+                if (move == "item" || model.Finished || model.Actor == null || model.Skill(move).power <= 0) return "";
+                var actor = model.Actor;
+                bool inner = model.IsInnerMove(move);
+                int power = inner && actor.internalAttack > 0 ? actor.internalAttack : actor.attack;
+                if (move == "attack") power += actor.talentBasicAttack;
+                var target = Target();
+                string against = target == null ? (inner ? "內防" : "外防")
+                    : $"{target.name}{(inner ? "內防" : "外防")} {(inner ? target.innerDefense : target.outerDefense)}";
+                return $"\n{(inner ? "內功" : "外功")} {power} 對 {against}";
             }
 
             string ActionCost(string id)

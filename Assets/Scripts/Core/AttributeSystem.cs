@@ -9,14 +9,20 @@ namespace Wuxia
     internal readonly struct DerivedStats
     {
         public readonly int Attack, Speed, MaxHp, MaxQi, QiPower, QiRegen;
+        /// <summary>v1126e #1: 外防 (against outer strikes) and 內防 (against inner-power strikes).</summary>
+        public readonly int OuterDefense, InnerDefense;
         public readonly float Dodge, Fortune, Study, Hit, Crit;
 
         public DerivedStats(int attack, int speed, int maxHp, int maxQi, int qiPower, float dodge, float fortune, float study,
-            float hit = 0, float crit = AttributeSystem.BaseCrit, int qiRegen = 0)
+            float hit = 0, float crit = AttributeSystem.BaseCrit, int qiRegen = 0, int outerDefense = 0, int innerDefense = 0)
         {
             Attack = attack; Speed = speed; MaxHp = maxHp; MaxQi = maxQi; QiPower = qiPower;
             Dodge = dodge; Fortune = fortune; Study = study; Hit = hit; Crit = crit; QiRegen = qiRegen;
+            OuterDefense = outerDefense; InnerDefense = innerDefense;
         }
+
+        /// <summary>v1126e #1: the stronger of 外功攻擊 / 內功威力 — what enemy scaling reads.</summary>
+        public int Offense => Math.Max(Attack, QiPower);
     }
 
     /// <summary>
@@ -46,18 +52,34 @@ namespace Wuxia
         public const int LoyaltyPerPoint = 2;
         /// <summary>幸運: qi-yu odds ×1.04 per point (relative), crit +0.8 points, grave → light wound +2 points.</summary>
         public const float FortuneGrowth = 1.04f, BaseFortune = .05f, BaseCrit = .08f, CritPerPoint = .008f, GraveToLightPerPoint = .02f;
-        /// <summary>Base-10 combat figures (attack 38, speed 20, hp 180, qi 130, qi power 25).</summary>
-        public const int BaseAttack = 38, BaseSpeed = 20, BaseHp = 180, BaseQi = 130, BaseQiPower = 25;
+        /// <summary>
+        /// Base-10 combat figures (attack 38, speed 20, hp 180, qi 130). v1126e #1: 內功威力 shares 外功攻擊's base (38) and
+        /// per-point rate (+5%), so the number on the sheet is the number the battle uses (no more ×38/25 conversion).
+        /// </summary>
+        public const int BaseAttack = 38, BaseSpeed = 20, BaseHp = 180, BaseQi = 130, BaseQiPower = BaseAttack;
+        /// <summary>v1126b–v1126d 內功威力 base, kept only for the before/after battle simulation.</summary>
+        internal const int LegacyBaseQiPower = 25;
+        /// <summary>
+        /// v1126e #1: 外防 = 根骨 (main, +5%/pt) + 武力 (secondary, +2%/pt); 內防 = 內力 (main) + 根骨 (secondary). Same base
+        /// (13 ≈ the old single 防禦 = 攻擊 ÷ 3) and the same 武學品階 multiplier; never below <see cref="MinDefense"/>.
+        /// </summary>
+        public const int BaseDefense = 13, MinDefense = 8;
+        public const float DefensePerPoint = .05f, DefenseSecondaryPerPoint = .02f;
+        /// <summary>
+        /// Editor-only switch for BattleSimV1126e: true rebuilds fighters with the v1126d formulas (內功威力 base 25 ×38/25,
+        /// one 防禦 = 攻擊 ÷ 3, enemies scaled from 攻擊 only). Never set in play.
+        /// </summary>
+        internal static bool LegacyV1126d;
         /// <summary>v1126c PC3 #3: skill-line terms of the derived figures (輕功 / 內功 tier index C=0 … SSS), named so tooltips read them.</summary>
         public const int QinggongSpeedPerTier = 3, NeigongQiPerTier = 10;
         public const float BaseDodge = .05f, QinggongDodgePerTier = .01f, FortuneCap = .6f;
 
         public static readonly string[] Benefits =
         {
-            "外功傷害為主；兼及鍛造品質與破門強闖。",
+            "外功傷害為主；兼及外防、鍛造品質與破門強闖。",
             "速度、閃避與命中；兼及攔截、探查。",
-            "氣血與療傷；兼及耕作品質與守山。",
-            "內力上限與內功威力；兼及閉關修練與每回合回氣。",
+            "氣血、外防與療傷；兼及內防、耕作品質與守山。",
+            "內力上限、內功威力與內防；兼及閉關修練與每回合回氣。",
             "所有修練的進度；兼及煉丹、醫術、建造、教導與頓悟。",
             "外交成功、新弟子忠誠；兼及聲望、經商、招募與請援收買。",
             "奇遇機率與暴擊；兼及秘境判定、寶物品質與化險為夷。"
@@ -142,13 +164,21 @@ namespace Wuxia
             float hit = (agi - Base) * HitPerPoint;
             int maxHp = Mathf.RoundToInt(BaseHp * Scale(con, HpPerPoint));
             int maxQi = Mathf.RoundToInt(BaseQi * Scale(qi, QiPerPoint)) + Tier("neigong") * NeigongQiPerTier;
-            int qiPower = Mathf.RoundToInt(BaseQiPower * Scale(qi, QiPowerPerPoint) * martial);
+            int qiPower = Mathf.RoundToInt((LegacyV1126d ? LegacyBaseQiPower : BaseQiPower) * Scale(qi, QiPowerPerPoint) * martial);
+            var (outerDefense, innerDefense) = LegacyV1126d
+                ? (Math.Max(MinDefense, attack / 3), Math.Max(MinDefense, attack / 3))
+                : (Defense(con, str, martial), Defense(qi, con, martial));
             int qiRegen = Mathf.Max(0, qi - Base);
             float fortune = Mathf.Clamp(BaseFortune * FortuneFactor(luk), 0, FortuneCap);
             float crit = Mathf.Clamp(BaseCrit + (luk - Base) * CritPerPoint, .02f, .5f);
             float study = StudyFactor(wit);
-            return new DerivedStats(attack, speed, maxHp, maxQi, qiPower, dodge, fortune, study, hit, crit, qiRegen);
+            return new DerivedStats(attack, speed, maxHp, maxQi, qiPower, dodge, fortune, study, hit, crit, qiRegen,
+                outerDefense, innerDefense);
         }
+
+        /// <summary>v1126e #1: 13 ×（1 + 5% ×（主屬性 − 10）+ 2% ×（副屬性 − 10））× 武學品階倍率, at least 8.</summary>
+        internal static int Defense(int main, int secondary, float martial) => Math.Max(MinDefense, Mathf.RoundToInt(
+            BaseDefense * Mathf.Max(.25f, 1 + DefensePerPoint * (main - Base) + DefenseSecondaryPerPoint * (secondary - Base)) * martial));
 
         /// <summary>
         /// Everything one more point of <paramref name="slot"/> buys, read from <see cref="Derive"/> (combat figures,
@@ -170,6 +200,14 @@ namespace Wuxia
             Rel("氣血", after.MaxHp, before.MaxHp, HpPerPoint);
             Rel("內力上限", after.MaxQi, before.MaxQi, QiPerPoint);
             Rel("內功威力", after.QiPower, before.QiPower, QiPowerPerPoint);
+            // v1126e #1: defence moves in whole points (13 → 14), so the rate is named from the formula.
+            string main = $"+{DefensePerPoint * 100:0.#}%", minor = $"+{DefenseSecondaryPerPoint * 100:0.#}%";
+            switch (Keys[slot])
+            {
+                case "str": parts.Add($"外防 {minor}"); break;
+                case "con": parts.Add($"外防 {main}"); parts.Add($"內防 {minor}"); break;
+                case "qi": parts.Add($"內防 {main}"); break;
+            }
             if (after.QiRegen != before.QiRegen) parts.Add($"每回合回內力 {after.QiRegen - before.QiRegen:+0}");
             if (Mathf.Abs(after.Study - before.Study) > .0005f) parts.Add($"所有修練 {(after.Study - before.Study) * 100:+0.#}%");
             if (Mathf.Abs(after.Fortune / before.Fortune - 1) > .0005f) parts.Add($"奇遇機率 ×{after.Fortune / before.Fortune:0.00}");
@@ -204,6 +242,7 @@ namespace Wuxia
             {
                 if (now != was) parts.Add($"{name} +{rate * 100:0.#}%");
             }
+
             void Pts(string name, float delta)
             {
                 if (Mathf.Abs(delta) >= .0005f) parts.Add($"{name} {delta * 100:+0.#;-0.#}%");

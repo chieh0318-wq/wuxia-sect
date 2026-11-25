@@ -60,7 +60,9 @@ namespace Wuxia
         internal float SparPower(string id)
         {
             var stats = SparStats(id);
-            return Mathf.Max(1, stats.Attack + stats.MaxHp * .2f + stats.MaxQi * .1f + stats.Speed * 1.5f + stats.Dodge * 150);
+            // v1126e #1: the stronger of 外功／內功 plus half of 外防＋內防 (each about 攻擊 ÷ 3 at base).
+            return Mathf.Max(1, stats.Offense + (stats.OuterDefense + stats.InnerDefense) * .25f + stats.MaxHp * .2f +
+                stats.MaxQi * .1f + stats.Speed * 1.5f + stats.Dodge * 150);
         }
 
         /// <summary>The best martial line of a fighter, as 「劍 B／A」.</summary>

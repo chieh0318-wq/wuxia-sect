@@ -68,7 +68,7 @@ namespace Wuxia
                 {
                     Id = id, Name = fighter.name, Portrait = fighter.portraitId, Commander = i == 0, Rear = i >= 5,
                     Capacity = cap, Troops = Math.Min(cap, Reserves / roster.Count),
-                    BaseHealth = fighter.maxHp, Attack = fighter.attack, Defense = fighter.defense, Speed = fighter.speed
+                    BaseHealth = fighter.maxHp, Attack = fighter.Offense, Defense = fighter.defense /* v1126e #1: 外防／內防 averaged */, Speed = fighter.speed
                 };
             }).ToArray();
             int divisions = Mathf.Clamp(1 + strength / 400, 1, 5);

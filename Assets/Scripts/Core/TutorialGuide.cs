@@ -40,6 +40,8 @@ namespace Wuxia
                 if (!Active || step >= data.steps.Length) return null;
                 // v1126c PC3 #11: inside the build menu the guide points at the recommended blueprint itself.
                 if (data.steps[step].trigger == "build_any" && ui.TargetActive("blueprint")) return "ui:blueprint";
+                // v1126e #5: while points are left the guide points at 行動力, not at 「結束本月」.
+                if (WaitingForAp) return "ui:ap";
                 return data.steps[step].highlight;
             }
         }
@@ -50,7 +52,24 @@ namespace Wuxia
 
         /// <summary>v1126 #8: the running guide step for the 任務 panel (read-only), or null once it is over.</summary>
         internal (string title, string objective)? Current =>
-            Active && step < data.steps.Length ? (Format(data.steps[step].title), Format(data.steps[step].objective)) : null;
+            Active && step < data.steps.Length ? (Format(Shown.title), Format(Shown.objective)) : null;
+
+        /// <summary>
+        /// v1126e #5: 「月底結算：本月事務已畢」 only once the month's points are spent (or nothing affordable is left);
+        /// until then the card asks the player to use them.
+        /// </summary>
+        private bool WaitingForAp => Active && step < data.steps.Length && data.steps[step].trigger == "end_month" &&
+            state.HasAffordableAction;
+
+        private static readonly TutorialStep SpendApStep = new()
+        {
+            id = "month_spend_ap", title = "用完行動力", objective = "本月尚餘行動力 {ap}／{apMax}，先把事情辦完。",
+            hint = "常用指令：{actionCosts}。行動力用完（或已沒有辦得起的事）時，再點右上角「結束本月」。" +
+                   "行動力有剩時按「結束本月」，會先問你是否確定。",
+            trigger = "end_month", target = "", highlight = "ui:ap"
+        };
+
+        private TutorialStep Shown => WaitingForAp ? SpendApStep : data.steps[step];
 
         internal TutorialGuide(SectUI ui, GameState state)
         {
@@ -139,7 +158,7 @@ namespace Wuxia
 
         private void ShowStep(bool force)
         {
-            var current = data.steps[step];
+            var current = Shown;
             string hint = Format(current.hint);
             if (current.reward != null && GameBootstrap.Changes(current.reward) is string gift && gift.Length > 0)
                 hint += $"\n完成可得：{gift}";

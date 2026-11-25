@@ -46,13 +46,15 @@ namespace Wuxia
                 CardBar(stat, 10, -60, -10, 5, values[i] / (float)AttributeSystem.Max,
                     Color.Lerp(AttributeSystem.Tints[i], Color.white, .25f));
             }
-            var derived = stats ?? AttributeSystem.Derive(values, lines, weaponDelta);
-            var summary = Label(profile, $"攻擊 {derived.Attack}　先手 {derived.Speed}　氣血 {derived.MaxHp}　內力 {derived.MaxQi}" +
-                $"　內功威力 {derived.QiPower}　閃避 {derived.Dodge:P0}　命中 {derived.Hit:+0%;-0%;0%}　暴擊 {derived.Crit:P0}　奇遇 {derived.Fortune:P0}", 20, TextAnchor.MiddleCenter);
-            summary.resizeTextForBestFit = true;
-            summary.resizeTextMinSize = 15;
-            summary.resizeTextMaxSize = 20;
-            Anchor(summary.rectTransform, Vector2.zero, Vector2.right, new(8, 4), new(-8, 35));
+            // v1126e #1: the same attributes and figures the battle builds from (rank bonus, gear, tech), one hoverable
+            // cell each with its formula; 外防／內防 split.
+            var member = progressState?.Disciples.Find(d => d?.id == memberId);
+            int[] effective = progressState == null ? values
+                : memberId == GameState.HeroId ? progressState.HeroAttributes
+                : member != null ? progressState.DiscipleAttributes(member) : values;
+            var derived = progressState != null && (memberId == GameState.HeroId || member != null)
+                ? progressState.SparStats(memberId) : stats ?? AttributeSystem.Derive(values, lines, weaponDelta);
+            DerivedStrip(profile, effective, lines, weaponDelta, derived, progressState?.BattleFigures(memberId ?? ""));
             if (progressState != null)
             {
                 var study = CreationRow("修習中", 36);

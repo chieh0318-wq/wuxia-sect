@@ -117,6 +117,9 @@ namespace Wuxia
 
         internal string[] KnownMoves => Actor?.knownMoves ?? Array.Empty<string>();
 
+        /// <summary>v1126e #1: true when <paramref name="id"/> is an inner-power strike (內功威力 against 內防).</summary>
+        internal bool IsInnerMove(string id) => id != "item" && catalog.IsInner(Skill(id));
+
         public string Reason(string id, BattleCombatant target)
         {
             if (!NeedsCommand) return "尚未輪到我方";
@@ -325,8 +328,9 @@ namespace Wuxia
 
             var targets = move.all ? (actor.isPlayer ? enemies : party).Where(u => u.Alive).ToArray()
                 : new[] { target };
-            int baseAttack = actor.internalAttack > 0 && catalog.InternalMoves.Contains(move.id)
-                ? actor.internalAttack : actor.attack;
+            // v1126e #1: an inner strike uses 內功威力 and meets 內防; any other strike uses 外功攻擊 and meets 外防.
+            bool inner = catalog.IsInner(move);
+            int baseAttack = inner && actor.internalAttack > 0 ? actor.internalAttack : actor.attack;
             if (move.id == "attack") baseAttack += actor.talentBasicAttack;
             float attack = Effects(actor).Aggregate((float)baseAttack, (value, effect) => value * effect.attack);
             foreach (var victim in targets)
@@ -339,7 +343,8 @@ namespace Wuxia
                     continue;
                 }
 
-                float defense = Effects(victim).Aggregate((float)victim.defense, (value, effect) => value * effect.defense);
+                float defense = Effects(victim).Aggregate((float)(inner ? victim.innerDefense : victim.outerDefense),
+                    (value, effect) => value * effect.defense);
                 int counter = Counter(move.element, victim.element);
                 double multiplier = counter > 0 ? 1.25 : counter < 0 ? .8 : 1;
                 float reduction = Effects(victim).Aggregate(1f, (value, effect) => value * effect.incoming);

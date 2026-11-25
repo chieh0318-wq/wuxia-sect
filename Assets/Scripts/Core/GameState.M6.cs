@@ -226,12 +226,18 @@ namespace Wuxia
         {
             var tech = TechStats();
             var gear = Protagonist.gear ?? Array.Empty<GearItem>();
-            return new DerivedStats(raw.Attack + tech.attack + gear.Sum(item => item?.attack ?? 0),
+            int attack = raw.Attack + tech.attack + gear.Sum(item => item?.attack ?? 0);
+            // v1126e #1: 外防／內防 come from 根骨・武力／內力・根骨 (AttributeSystem.Defense); the v1126d single 防禦 read
+            // the final 攻擊 (gear and tech included) and is only rebuilt for the before/after simulation.
+            int legacyDefense = Math.Max(AttributeSystem.MinDefense, attack / 3);
+            return new DerivedStats(attack,
                 raw.Speed + tech.speed + gear.Sum(item => item?.speed ?? 0),
                 raw.MaxHp + tech.hp + gear.Sum(item => item?.hp ?? 0),
                 raw.MaxQi + tech.qi + gear.Sum(item => item?.qi ?? 0), raw.QiPower,
                 Mathf.Clamp(raw.Dodge + tech.dodge + gear.Sum(item => item?.dodge ?? 0), 0, .75f), raw.Fortune, raw.Study,
-                raw.Hit, raw.Crit, raw.QiRegen);
+                raw.Hit, raw.Crit, raw.QiRegen,
+                AttributeSystem.LegacyV1126d ? legacyDefense : raw.OuterDefense,
+                AttributeSystem.LegacyV1126d ? legacyDefense : raw.InnerDefense);
         }
 
         /// <summary>Beds across all 弟子廂房 (sect.bedsPerQuarters each, plus 山門營造法式's bonus).</summary>
@@ -409,7 +415,7 @@ namespace Wuxia
             get
             {
                 var hero = HeroStats;
-                float power = hero.Attack + hero.MaxHp / 10f + hero.Speed;
+                float power = hero.Offense + hero.MaxHp / 10f + hero.Speed; // v1126e #1: 外功 or 內功, whichever leads
                 foreach (var disciple in Disciples.Where(member => member.injury < 3))
                     power += 14 * RankSystem.Multiplier(RankSystem.Martial(disciple.lines ?? Array.Empty<SkillLine>()));
                 power *= 1 + (TechValue("sword3", n => n.value) + TechValue("outer4", n => n.value)) / 100f + DiplomacyPowerBonus;

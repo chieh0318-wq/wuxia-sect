@@ -168,21 +168,17 @@ namespace Wuxia
             CardLabel("游標停留看公式", 16, CardMuted, 150, y, -18, y - 26, TextAnchor.MiddleRight); // v1126c PC3 #3
             y -= 32;
             var stats = AttributeSystem.Derive(attrs, sheet.lines);
-            var cells = new[]
-            {
-                ("攻擊", stats.Attack.ToString()), ("先手", stats.Speed.ToString()),
-                ("氣血", stats.MaxHp.ToString()), ("內力", stats.MaxQi.ToString()),
-                ("閃避", $"{stats.Dodge:P0}"), ("奇遇", $"{stats.Fortune:P0}")
-            };
+            // v1126e #1: 外功／內功 (same base) and 外防／內防 join the figures; three columns keep the card height.
+            var cells = DerivedStatsV1126e.Cells(stats);
             for (int index = 0; index < cells.Length; index++)
             {
-                int column = index % 2;
-                float rowY = y - index / 2 * 28;
+                int column = index % 3;
+                float rowY = y - index / 3 * 28;
                 var cell = Rect("衍生_" + cells[index].Item1, card);
-                Anchor(cell, new(column * .5f, 1), new((column + 1) * .5f, 1),
-                    new(column == 0 ? 18 : 8, rowY - 24), new(column == 0 ? -8 : -18, rowY));
+                Anchor(cell, new(column / 3f, 1), new((column + 1) / 3f, 1),
+                    new(column == 0 ? 18 : 6, rowY - 24), new(column == 2 ? -18 : -6, rowY));
                 string derivedKey = cells[index].Item1;
-                DerivedHover(cell, () => DerivedStatTips.Tip(derivedKey, attrs, sheet.lines)); // v1126c PC3 #3
+                DerivedHover(cell, () => DerivedStatsV1126e.Tip(derivedKey, attrs, sheet.lines)); // v1126c PC3 #3
                 var name = Label(cell, cells[index].Item1, 18, TextAnchor.MiddleLeft);
                 name.color = CardMuted;
                 Fill(name.rectTransform);

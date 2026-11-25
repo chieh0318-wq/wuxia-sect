@@ -14,7 +14,16 @@ namespace Wuxia
         public float dodge, hit, crit = AttributeSystem.BaseCrit;
         public float talentHit, talentCrit, talentReduction;
         public int talentBasicAttack, qiRegen, internalAttack;
-        public int defense, phase = 1, intentRound;
+        /// <summary>v1126e #1: 外防 takes outer strikes, 內防 takes inner-power strikes (BattleCatalog.IsInner).</summary>
+        public int outerDefense, innerDefense, phase = 1, intentRound;
+        /// <summary>Both defences at once (enemies and the sect-war roster read or set them together).</summary>
+        public int defense
+        {
+            get => (outerDefense + innerDefense) / 2;
+            set => outerDefense = innerDefense = value;
+        }
+        /// <summary>v1126e #1: the stronger of 外功攻擊 / 內功威力.</summary>
+        public int Offense => Math.Max(attack, internalAttack);
         public string element, enemyProfile;
         public BattleSkill intent;
         public BattleCombatant intentTarget;
@@ -73,9 +82,15 @@ namespace Wuxia
     // Encounter construction preserves the stats derived from each party member.
     internal static class BattleSetup
     {
-        // Translate displayed inner power to the same damage scale as outer attack.
-        private static int ScaleInnerAttack(int power) =>
-            Mathf.RoundToInt(power * (AttributeSystem.BaseAttack / (float)AttributeSystem.BaseQiPower));
+        // v1126e #1: 內功威力 now shares 外功攻擊's base, so the sheet figure is the battle figure. Only the v1126d
+        // before/after simulation still converts the old base-25 figure.
+        private static int InnerAttack(int power) => AttributeSystem.LegacyV1126d
+            ? Mathf.RoundToInt(power * (AttributeSystem.BaseAttack / (float)AttributeSystem.LegacyBaseQiPower))
+            : power;
+
+        /// <summary>v1126e #1: enemies scale from each fighter's stronger offence (v1126d read 外功攻擊 only).</summary>
+        private static int Offense(BattleCombatant unit) => AttributeSystem.LegacyV1126d ? unit.attack : unit.Offense;
+        private static int Offense(DerivedStats stats) => AttributeSystem.LegacyV1126d ? stats.Attack : stats.Offense;
 
         public static (List<BattleCombatant> party, List<BattleCombatant> enemies) Create(GameState state, BattleRequest req, BattleCatalog catalog)
         {
@@ -100,7 +115,7 @@ namespace Wuxia
             // Attacks stay moderate so the party can spend those rounds fighting.
             float partyHp = (float)players.Average(unit => unit.maxHp);
             int bossHp = req.IsBoss
-                ? Mathf.RoundToInt(players.Sum(unit => unit.attack) * 7.9f * diff)
+                ? Mathf.RoundToInt(players.Sum(Offense) * 7.9f * diff)
                 : Mathf.RoundToInt(stats.MaxHp * 1.15f * diff);
             var leadStandee = string.IsNullOrEmpty(req.enemyLeadStandee) ? null : Resources.Load<Texture2D>(req.enemyLeadStandee);
             enemies.Add(new BattleCombatant
@@ -113,9 +128,9 @@ namespace Wuxia
                 isPlayer = false,
                 level = 10 + Mathf.RoundToInt(diff * 5),
                 hp = bossHp, maxHp = bossHp, qi = 100, maxQi = 100,
-                attack = Mathf.RoundToInt((req.IsBoss ? partyHp * .135f : stats.Attack * .72f) * diff),
+                attack = Mathf.RoundToInt((req.IsBoss ? partyHp * .135f : Offense(stats) * .72f) * diff),
                 speed = Math.Max(10, stats.Speed - 3),
-                defense = Math.Max(8, (int)players.Average(unit => unit.attack) / 3),
+                defense = Math.Max(AttributeSystem.MinDefense, (int)players.Average(Offense) / 3),
                 enemyProfile = req.IsBoss ? "boss" : "leader",
                 dodge = 0.05f
             });
@@ -135,9 +150,9 @@ namespace Wuxia
                     isPlayer = false,
                     level = 8 + Mathf.RoundToInt(diff * 4),
                     hp = mHp, maxHp = mHp, qi = 60, maxQi = 60,
-                    attack = Mathf.RoundToInt((req.IsBoss ? partyHp * .055f : stats.Attack * .52f) * diff),
+                    attack = Mathf.RoundToInt((req.IsBoss ? partyHp * .055f : Offense(stats) * .52f) * diff),
                     speed = Math.Max(10, stats.Speed - 4 + i),
-                    defense = Math.Max(5, stats.Attack / 5),
+                    defense = Math.Max(5, Offense(stats) / 5),
                     enemyProfile = minionProfiles[i - 1],
                     dodge = 0.06f
                 });
@@ -196,11 +211,11 @@ namespace Wuxia
                 qi = stats.MaxQi, maxQi = stats.MaxQi,
                 attack = Math.Max(28, stats.Attack),
                 speed = Math.Max(15, stats.Speed),
-                defense = Math.Max(8, stats.Attack / 3),
+                outerDefense = stats.OuterDefense, innerDefense = stats.InnerDefense,
                 element = "木",
                 dodge = stats.Dodge,
                 hit = stats.Hit, crit = stats.Crit, qiRegen = stats.QiRegen,
-                internalAttack = ScaleInnerAttack(stats.QiPower),
+                internalAttack = InnerAttack(stats.QiPower),
                 personalArts = true,
                 knownMoves = MartialArts.KnownMoves(state.ProtagonistArts, state.Protagonist.major, catalog.Skills.ContainsKey),
                 moves = MartialArts.Moves(state.ProtagonistArts,
@@ -225,11 +240,11 @@ namespace Wuxia
                 hp = derived.MaxHp, maxHp = derived.MaxHp, qi = derived.MaxQi, maxQi = derived.MaxQi,
                 attack = derived.Attack,
                 speed = derived.Speed,
-                defense = Math.Max(8, derived.Attack / 3),
+                outerDefense = derived.OuterDefense, innerDefense = derived.InnerDefense,
                 element = "水",
                 dodge = derived.Dodge,
                 hit = derived.Hit, crit = derived.Crit, qiRegen = derived.QiRegen,
-                internalAttack = ScaleInnerAttack(derived.QiPower),
+                internalAttack = InnerAttack(derived.QiPower),
                 personalArts = true,
                 knownMoves = MartialArts.KnownMoves(state.ArtsOf(d), RankSystem.BestCombat(lines)?.id, catalog.Skills.ContainsKey),
                 moves = MartialArts.Moves(state.ArtsOf(d), RankSystem.BestCombat(lines)?.id, catalog.Skills.ContainsKey)

@@ -15,7 +15,7 @@
     {"id": "heavy_force", "name": "勢大力沉", "desc": "攻擊＋10%", "summary": "攻擊＋10%", "category": "martial", "rarity": "common", "cost": 3, "weight": 10, "exclusive": "", "modifiers": [{"key": "attackPct", "value": 10}]},
     {"id": "wind_speed", "name": "迅捷如風", "desc": "先手＋10%", "summary": "先手＋10%", "category": "martial", "rarity": "common", "cost": 2, "weight": 10, "exclusive": "", "modifiers": [{"key": "speedPct", "value": 10}]},
     {"id": "needle_gap", "name": "見縫插針", "desc": "暴擊＋5 個百分點", "summary": "暴擊＋5 個百分點", "category": "martial", "rarity": "common", "cost": 2, "weight": 10, "exclusive": "", "modifiers": [{"key": "crit", "value": 5}]},
-    {"id": "iron_shirt", "name": "鐵布衫底子", "desc": "防禦＋5", "summary": "防禦＋5", "category": "martial", "rarity": "common", "cost": 2, "weight": 10, "exclusive": "", "modifiers": [{"key": "defense", "value": 5}]},
+    {"id": "iron_shirt", "name": "鐵布衫底子", "desc": "外防、內防各＋5", "summary": "外防、內防各＋5", "category": "martial", "rarity": "common", "cost": 2, "weight": 10, "exclusive": "", "modifiers": [{"key": "defense", "value": 5}]},
     {"id": "brute_force", "name": "一身蠻力", "desc": "攻擊＋6", "summary": "攻擊＋6", "category": "martial", "rarity": "common", "cost": 2, "weight": 10, "exclusive": "", "modifiers": [{"key": "attack", "value": 6}]},
     {"id": "pure_forge", "name": "爐火純青", "desc": "鍛造品質＋15%", "summary": "鍛造品質＋15%", "category": "production", "rarity": "common", "cost": 2, "weight": 10, "exclusive": "forge_quality", "modifiers": [{"key": "forge", "value": 15}]},
     {"id": "trade_skill", "name": "長袖善舞", "desc": "經商收益＋15%", "summary": "經商收益＋15%", "category": "production", "rarity": "common", "cost": 2, "weight": 10, "exclusive": "", "modifiers": [{"key": "commerce", "value": 15}]},

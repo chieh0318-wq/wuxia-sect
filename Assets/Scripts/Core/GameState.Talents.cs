@@ -81,7 +81,10 @@ namespace Wuxia
                 (1 + TalentValue(id, "speedPct", 20) / 100f));
             unit.hp = unit.maxHp += Mathf.RoundToInt(TalentValue(id, "hp", 40));
             unit.qi = unit.maxQi = Mathf.RoundToInt(unit.maxQi * (1 + TalentValue(id, "qiPct", 20) / 100f));
-            unit.defense += Mathf.RoundToInt(TalentValue(id, "defense", 10));
+            // v1126e #1: 「防禦」 talents raise 外防 and 內防 alike; 外防／內防 keys raise one side.
+            int defense = Mathf.RoundToInt(TalentValue(id, "defense", 10));
+            unit.outerDefense += defense + Mathf.RoundToInt(TalentValue(id, "outerDefense", 10));
+            unit.innerDefense += defense + Mathf.RoundToInt(TalentValue(id, "innerDefense", 10));
             unit.dodge += TalentValue(id, "dodge", 12) / 100f;
             unit.talentHit = TalentValue(id, "hit", 12) / 100f;
             unit.talentCrit = TalentValue(id, "crit", 12) / 100f;

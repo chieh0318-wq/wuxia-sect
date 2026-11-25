@@ -27,7 +27,8 @@ namespace Wuxia
         public int Reputation { get; private set; }
         public int ActionPoints { get; private set; }
         public int ApMax => System.Math.Max(1, Data.Ap.baseMax + Story.apBonus + ApSources.Sum(entry => entry.amount));
-        public string ApDescription => $"基礎 {Data.Ap.baseMax}" + (Story.apBonus != 0 ? $"　際遇 {Story.apBonus:+0;-0}" : "") +
+        // v1126e #6: talent points are listed by name (「王佐之才 +1」); 際遇 is what is left of Story.apBonus.
+        public string ApDescription => $"基礎 {Data.Ap.baseMax}" + ApBonusDescription() +
             string.Concat(ApSources.Select(source => $"\n{source.name} {source.amount:+0;-0}"));
 
         private IEnumerable<(string name, int amount)> ApSources

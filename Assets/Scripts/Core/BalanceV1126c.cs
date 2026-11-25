@@ -48,12 +48,14 @@ namespace Wuxia
         /// <summary>
         /// One tech-tree node (id matches GameState.TechTree). silver/ap: research cost; requires: prerequisite node id
         /// (empty = previous tier of the same branch); minReputation / minScale: extra gates (聲望, 山門規模 index);
+        /// minHeroRank: v1126d gate on the protagonist's major martial grade (E…SSS; empty = none);
         /// value / value2 / value3: the node's effect magnitudes (meaning per node documented in GameState.M6).
         /// </summary>
         [Serializable] public sealed class TechNodeData
         {
             public string id; public int silver; public int ap; public int tier; public string requires;
             public int minReputation; public int minScale; public float value; public float value2; public float value3;
+            public string minHeroRank;
         }
 
         [Serializable] public sealed class VictoryData { }

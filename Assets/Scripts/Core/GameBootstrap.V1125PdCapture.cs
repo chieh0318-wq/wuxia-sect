@@ -41,6 +41,8 @@ namespace Wuxia
                     state.LearnArt(id);
                 ui.StartTurnBattle(state, new BattleRequest { expeditionParty = new[] { GameState.HeroId } },
                     this, captureRound: _ => { });
+                // v1126 item 26 vertical menu: the move pager only shows on the 招式 tab.
+                ClickCaptureCaption("招式");
                 ClickCaptureCaption("›");
             }),
             ("D08_raid_desk.png", () =>

@@ -1,5 +1,5 @@
 {
-  "_note": "v1126c PA3 shared balance numbers (only PA3 edits numbers). Loaded by Assets/Scripts/Core/BalanceV1126c.cs. martial.tierGainPct is indexed E,D,C,B,A,A+,S,SS,SSS. techTree value/value2/value3 meanings: see GameState.TechEffectText. actions[]: -1 keeps the actions.json number.",
+  "_note": "v1126c PA3 shared balance numbers (only PA3 edits numbers). Loaded by Assets/Scripts/Core/BalanceV1126c.cs. martial.tierGainPct is indexed E,D,C,B,A,A+,S,SS,SSS. techTree value/value2/value3 meanings: see GameState.TechEffectText. minHeroRank (v1126d): protagonist major grade gate for tier 4. actions[]: -1 keeps the actions.json number.",
   "lifeSkill": { "xpPerTask": 12, "xpPerLevel": 100, "capGainPerTasks": 10, "capMaxAboveStart": 2 },
   "martial":   { "progressMax": 100, "drillProgress": 6, "practiceProgress": 4, "teacherBonusPct": 25,
                  "tierGainPct": [200, 170, 140, 100, 70, 50, 35, 25, 20],
@@ -21,19 +21,19 @@
     {"id": "sword1", "tier": 1, "silver": 30, "ap": 1, "requires": "", "minReputation": 0, "minScale": 0, "value": 5, "value2": 3, "value3": 0},
     {"id": "sword2", "tier": 2, "silver": 90, "ap": 1, "requires": "", "minReputation": 40, "minScale": 0, "value": 6, "value2": 2, "value3": 0},
     {"id": "sword3", "tier": 3, "silver": 200, "ap": 2, "requires": "", "minReputation": 110, "minScale": 1, "value": 6, "value2": 2, "value3": 0},
-    {"id": "sword4", "tier": 4, "silver": 420, "ap": 2, "requires": "", "minReputation": 260, "minScale": 1, "value": 10, "value2": 0, "value3": 0},
+    {"id": "sword4", "tier": 4, "silver": 420, "ap": 2, "requires": "", "minReputation": 260, "minScale": 1, "value": 10, "value2": 0, "value3": 0, "minHeroRank": "A+"},
     {"id": "outer1", "tier": 1, "silver": 30, "ap": 1, "requires": "", "minReputation": 0, "minScale": 0, "value": 5, "value2": 10, "value3": 0},
     {"id": "outer2", "tier": 2, "silver": 90, "ap": 1, "requires": "", "minReputation": 40, "minScale": 0, "value": 6, "value2": 0, "value3": 0},
     {"id": "outer3", "tier": 3, "silver": 180, "ap": 2, "requires": "", "minReputation": 110, "minScale": 1, "value": 3, "value2": 1, "value3": 0},
-    {"id": "outer4", "tier": 4, "silver": 380, "ap": 2, "requires": "", "minReputation": 260, "minScale": 1, "value": 4, "value2": 0, "value3": 0},
+    {"id": "outer4", "tier": 4, "silver": 380, "ap": 2, "requires": "", "minReputation": 360, "minScale": 1, "value": 4, "value2": 0, "value3": 0, "minHeroRank": "S"},
     {"id": "inner1", "tier": 1, "silver": 30, "ap": 1, "requires": "", "minReputation": 0, "minScale": 0, "value": 15, "value2": 0, "value3": 0},
     {"id": "inner2", "tier": 2, "silver": 90, "ap": 1, "requires": "", "minReputation": 40, "minScale": 0, "value": 20, "value2": 25, "value3": 0},
     {"id": "inner3", "tier": 3, "silver": 180, "ap": 2, "requires": "", "minReputation": 110, "minScale": 1, "value": 3, "value2": 0, "value3": 0},
-    {"id": "inner4", "tier": 4, "silver": 420, "ap": 2, "requires": "", "minReputation": 260, "minScale": 1, "value": 1, "value2": 60, "value3": 50},
+    {"id": "inner4", "tier": 4, "silver": 420, "ap": 2, "requires": "", "minReputation": 360, "minScale": 1, "value": 1, "value2": 60, "value3": 50, "minHeroRank": "S"},
     {"id": "craft1", "tier": 1, "silver": 30, "ap": 1, "requires": "", "minReputation": 0, "minScale": 0, "value": 2, "value2": 1, "value3": 0},
     {"id": "craft2", "tier": 2, "silver": 90, "ap": 1, "requires": "", "minReputation": 40, "minScale": 0, "value": 3, "value2": 1.5, "value3": 0},
     {"id": "craft3", "tier": 3, "silver": 180, "ap": 2, "requires": "", "minReputation": 110, "minScale": 1, "value": 8, "value2": 1, "value3": 0},
-    {"id": "craft4", "tier": 4, "silver": 360, "ap": 2, "requires": "", "minReputation": 260, "minScale": 1, "value": 8, "value2": 1, "value3": 0}
+    {"id": "craft4", "tier": 4, "silver": 360, "ap": 2, "requires": "", "minReputation": 360, "minScale": 1, "value": 8, "value2": 1, "value3": 0, "minHeroRank": "S"}
   ],
   "victory": {}
 }

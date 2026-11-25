@@ -10,6 +10,8 @@ namespace Wuxia
     {
         public string id, branch, name, effect, requires;
         public int tier, silver, ap, minReputation, minScale;
+        /// <summary>v1126d: protagonist major martial grade required (RankSystem tier index; 0 = no gate).</summary>
+        public int minHeroTier;
         /// <summary>Effect magnitudes from balance_v1126c.json (see <see cref="GameState.TechEffectText"/>).</summary>
         public float value, value2, value3;
     }
@@ -43,15 +45,15 @@ namespace Wuxia
             Node("outer1", "outer", 1, "開碑拳譜精要", 30, 1, 0, 0, 5, 10),
             Node("outer2", "outer", 2, "邊軍破陣刀槍", 90, 1, 40, 0, 6),
             Node("outer3", "outer", 3, "八方風雨暗器錄", 180, 2, 110, 1, 3, 1),
-            Node("outer4", "outer", 4, "萬兵總綱", 380, 2, 260, 1, 4),
+            Node("outer4", "outer", 4, "萬兵總綱", 380, 2, 360, 1, 4),
             Node("inner1", "inner", 1, "崤山吐納心法", 30, 1, 0, 0, 15),
             Node("inner2", "inner", 2, "龜息周天功", 90, 1, 40, 0, 20, 25),
             Node("inner3", "inner", 3, "踏雪無痕輕功", 180, 2, 110, 1, 3),
-            Node("inner4", "inner", 4, "紫府玄元無上功", 420, 2, 260, 1, 1, 60, 50),
+            Node("inner4", "inner", 4, "紫府玄元無上功", 420, 2, 360, 1, 1, 60, 50),
             Node("craft1", "craft", 1, "百草金創藥方", 30, 1, 0, 0, 2, 1),
             Node("craft2", "craft", 2, "百煉精鋼鍛法", 90, 1, 40, 0, 3, 1.5f),
             Node("craft3", "craft", 3, "山門營造法式", 180, 2, 110, 1, 8, 1),
-            Node("craft4", "craft", 4, "奇門經商總策", 360, 2, 260, 1, 8, 1)
+            Node("craft4", "craft", 4, "奇門經商總策", 360, 2, 360, 1, 8, 1)
         };
 
         private static TechNode Node(string id, string branch, int tier, string name, int silver, int ap, int minReputation,
@@ -68,6 +70,7 @@ namespace Wuxia
                 node.silver = tuned.silver; node.ap = tuned.ap; node.minReputation = tuned.minReputation;
                 node.minScale = tuned.minScale; node.value = tuned.value; node.value2 = tuned.value2; node.value3 = tuned.value3;
                 if (!string.IsNullOrEmpty(tuned.requires)) node.requires = tuned.requires;
+                if (!string.IsNullOrEmpty(tuned.minHeroRank)) node.minHeroTier = RankSystem.Index(tuned.minHeroRank);
             }
             node.effect = TechEffectText(node);
             return node;
@@ -99,14 +102,15 @@ namespace Wuxia
             };
         }
 
-        /// <summary>Why a node whose prerequisite is learned is still closed by 聲望 / 山門規模 (null when open).</summary>
+        /// <summary>Why a node whose prerequisite is learned is still closed by 聲望 / 山門規模 / 主修武學 (null when open).</summary>
         internal string TechGate(TechNode node)
         {
             string scale = Scales[Mathf.Clamp(node.minScale, 0, Scales.Length - 1)].name;
-            if (Reputation < node.minReputation && SectScale < node.minScale) return $"需聲望 {node.minReputation}、山門{scale}";
-            if (Reputation < node.minReputation) return $"需聲望 {node.minReputation}";
-            if (SectScale < node.minScale) return $"需山門{scale}";
-            return null;
+            var needs = new List<string>(3);
+            if (Reputation < node.minReputation) needs.Add($"需聲望 {node.minReputation}");
+            if (SectScale < node.minScale) needs.Add($"需山門{scale}");
+            if (node.minHeroTier > 0 && HeroMajorTier < node.minHeroTier) needs.Add($"需主修達 {RankSystem.At(node.minHeroTier)}");
+            return needs.Count == 0 ? null : string.Join("、", needs).Replace("、需", "、");
         }
 
         private float TechValue(string id, Func<TechNode, float> pick) => HasTech(id) && Tech(id) is { } node ? pick(node) : 0;

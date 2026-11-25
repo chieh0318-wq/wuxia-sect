@@ -53,17 +53,20 @@ namespace Wuxia
             ("42_m6_tech_tree.png", () =>
             {
                 ui.CloseBuilding();
-                state.Apply(new Yield { silver = 120 });
+                state.Apply(new Yield { silver = 400 });
+                // v1126c raised tier gates (tier 2 needs 聲望 40, tier 3 聲望 110 + 山門規模); seed enough 聲望 for tier 2.
+                for (int guard = 0; state.Reputation < 120 && guard < 40; guard++) state.Apply(new Yield { reputation = 10 });
                 foreach (string id in new[] { "sword1", "sword2", "inner1", "craft1" })
                 {
                     state.RefillAp();
                     state.Research(GameState.Tech(id));
                 }
-                if (!state.HasTech("sword2") || state.TechStatus(GameState.Tech("sword3")) != "[可研習]" ||
+                if (!state.HasTech("sword2") || state.TechStatus(GameState.Tech("sword3")).StartsWith("[需前置", StringComparison.Ordinal) ||
+                    state.TechStatus(GameState.Tech("sword3")) == "[已研習]" ||
                     !state.TechStatus(GameState.Tech("outer2")).StartsWith("[需前置", StringComparison.Ordinal))
                     Debug.LogError("[Capture] M6 tech tree statuses are wrong.");
                 else
-                    Debug.Log($"[Capture] M6 tech tree: {state.TechCount} researched, statuses verified.");
+                    Debug.Log($"[Capture] M6 tech tree: {state.TechCount} researched, sword3 {state.TechStatus(GameState.Tech("sword3"))}, statuses verified.");
                 ShowTechTree();
             }),
             ("43_m6_secret_realm.png", () =>

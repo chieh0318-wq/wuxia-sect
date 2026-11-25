@@ -45,7 +45,13 @@ namespace Wuxia
             return Story(id) != null ? id : fallback;
         }
 
-        public static Texture2D Story(string id) => string.IsNullOrWhiteSpace(id) ? null : FindTexture("story", id);
+        public static Texture2D Story(string id)
+        {
+            if (string.IsNullOrWhiteSpace(id)) return null;
+            int separator = id.IndexOf('/');
+            return separator < 0 ? FindTexture("story", id) :
+                FindTexture(id.Substring(0, separator).ToLowerInvariant(), id.Substring(separator + 1));
+        }
 
         private static Texture2D FindTexture(string folder, string id)
         {

@@ -93,7 +93,7 @@ namespace Wuxia
                     rule.color = node.researched ? TechDone : new Color(.55f, .42f, .28f);
                     var head = Label(row, "▶", 22, TextAnchor.MiddleCenter);
                     head.color = rule.color;
-                    Anchor(head.rectTransform, new(0, .5f), new(0, .5f), new(x + width + arrow - 22, -14), new(x + width + arrow, 14));
+                    Anchor(head.rectTransform, new(right + gap, .5f), new(right + gap, .5f), new(-16, -12), new(0, 12));
                 }
             }
         }

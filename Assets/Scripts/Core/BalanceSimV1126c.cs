@@ -221,9 +221,16 @@ namespace Wuxia
                 if (style == "martial" && Track(s, "champion", () => ChampionStep(s, map))) continue;
                 if (style == "balanced" && (Track(s, "trade", () => TradeStep(s, map, false)) ||
                     Track(s, "diplomacy", () => DiplomacyStep(s, map)) || Track(s, "champion", () => ChampionStep(s, map)))) continue;
-                if (style == "martial" && Track(s, "train", () => Train(s))) continue;
+                // Martial rush drills the extra AP only once the next 劍宗 node is paid for; otherwise it earns silver for it.
+                if (style == "martial" && !SavingForSword(s) && Track(s, "train", () => Train(s))) continue;
                 Track(s, "action", () => Commerce(s));
             }
+        }
+
+        private static bool SavingForSword(GameState s)
+        {
+            var next = GameState.TechTree.FirstOrDefault(node => node.branch == "sword" && !s.HasTech(node.id));
+            return next != null && s.Silver < next.silver + 30;
         }
 
         private static ActionData Action(GameState s, string id) => s.Data.Actions.FirstOrDefault(a => a.id == id);

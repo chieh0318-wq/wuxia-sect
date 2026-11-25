@@ -21,19 +21,19 @@
     {"id": "sword1", "tier": 1, "silver": 30, "ap": 1, "requires": "", "minReputation": 0, "minScale": 0, "value": 5, "value2": 3, "value3": 0},
     {"id": "sword2", "tier": 2, "silver": 90, "ap": 1, "requires": "", "minReputation": 40, "minScale": 0, "value": 6, "value2": 2, "value3": 0},
     {"id": "sword3", "tier": 3, "silver": 200, "ap": 2, "requires": "", "minReputation": 110, "minScale": 1, "value": 6, "value2": 2, "value3": 0},
-    {"id": "sword4", "tier": 4, "silver": 420, "ap": 2, "requires": "", "minReputation": 220, "minScale": 2, "value": 10, "value2": 0, "value3": 0},
+    {"id": "sword4", "tier": 4, "silver": 420, "ap": 2, "requires": "", "minReputation": 260, "minScale": 1, "value": 10, "value2": 0, "value3": 0},
     {"id": "outer1", "tier": 1, "silver": 30, "ap": 1, "requires": "", "minReputation": 0, "minScale": 0, "value": 5, "value2": 10, "value3": 0},
     {"id": "outer2", "tier": 2, "silver": 90, "ap": 1, "requires": "", "minReputation": 40, "minScale": 0, "value": 6, "value2": 0, "value3": 0},
     {"id": "outer3", "tier": 3, "silver": 180, "ap": 2, "requires": "", "minReputation": 110, "minScale": 1, "value": 3, "value2": 1, "value3": 0},
-    {"id": "outer4", "tier": 4, "silver": 380, "ap": 2, "requires": "", "minReputation": 200, "minScale": 2, "value": 4, "value2": 0, "value3": 0},
+    {"id": "outer4", "tier": 4, "silver": 380, "ap": 2, "requires": "", "minReputation": 260, "minScale": 1, "value": 4, "value2": 0, "value3": 0},
     {"id": "inner1", "tier": 1, "silver": 30, "ap": 1, "requires": "", "minReputation": 0, "minScale": 0, "value": 15, "value2": 0, "value3": 0},
     {"id": "inner2", "tier": 2, "silver": 90, "ap": 1, "requires": "", "minReputation": 40, "minScale": 0, "value": 20, "value2": 25, "value3": 0},
     {"id": "inner3", "tier": 3, "silver": 180, "ap": 2, "requires": "", "minReputation": 110, "minScale": 1, "value": 3, "value2": 0, "value3": 0},
-    {"id": "inner4", "tier": 4, "silver": 420, "ap": 2, "requires": "", "minReputation": 220, "minScale": 2, "value": 1, "value2": 60, "value3": 50},
+    {"id": "inner4", "tier": 4, "silver": 420, "ap": 2, "requires": "", "minReputation": 260, "minScale": 1, "value": 1, "value2": 60, "value3": 50},
     {"id": "craft1", "tier": 1, "silver": 30, "ap": 1, "requires": "", "minReputation": 0, "minScale": 0, "value": 2, "value2": 1, "value3": 0},
     {"id": "craft2", "tier": 2, "silver": 90, "ap": 1, "requires": "", "minReputation": 40, "minScale": 0, "value": 3, "value2": 1.5, "value3": 0},
     {"id": "craft3", "tier": 3, "silver": 180, "ap": 2, "requires": "", "minReputation": 110, "minScale": 1, "value": 8, "value2": 1, "value3": 0},
-    {"id": "craft4", "tier": 4, "silver": 360, "ap": 2, "requires": "", "minReputation": 200, "minScale": 2, "value": 8, "value2": 1, "value3": 0}
+    {"id": "craft4", "tier": 4, "silver": 360, "ap": 2, "requires": "", "minReputation": 260, "minScale": 1, "value": 8, "value2": 1, "value3": 0}
   ],
   "victory": {}
 }

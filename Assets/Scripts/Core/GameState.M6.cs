@@ -39,19 +39,19 @@ namespace Wuxia
             Node("sword1", "sword", 1, "崤山入門劍訣", 30, 1, 0, 0, 5, 3),
             Node("sword2", "sword", 2, "太白流雲劍譜", 90, 1, 40, 0, 6, 2),
             Node("sword3", "sword", 3, "兩儀化形劍陣", 200, 2, 110, 1, 6, 2),
-            Node("sword4", "sword", 4, "崤山劍經全本", 420, 2, 220, 2, 10),
+            Node("sword4", "sword", 4, "崤山劍經全本", 420, 2, 260, 1, 10),
             Node("outer1", "outer", 1, "開碑拳譜精要", 30, 1, 0, 0, 5, 10),
             Node("outer2", "outer", 2, "邊軍破陣刀槍", 90, 1, 40, 0, 6),
             Node("outer3", "outer", 3, "八方風雨暗器錄", 180, 2, 110, 1, 3, 1),
-            Node("outer4", "outer", 4, "萬兵總綱", 380, 2, 200, 2, 4),
+            Node("outer4", "outer", 4, "萬兵總綱", 380, 2, 260, 1, 4),
             Node("inner1", "inner", 1, "崤山吐納心法", 30, 1, 0, 0, 15),
             Node("inner2", "inner", 2, "龜息周天功", 90, 1, 40, 0, 20, 25),
             Node("inner3", "inner", 3, "踏雪無痕輕功", 180, 2, 110, 1, 3),
-            Node("inner4", "inner", 4, "紫府玄元無上功", 420, 2, 220, 2, 1, 60, 50),
+            Node("inner4", "inner", 4, "紫府玄元無上功", 420, 2, 260, 1, 1, 60, 50),
             Node("craft1", "craft", 1, "百草金創藥方", 30, 1, 0, 0, 2, 1),
             Node("craft2", "craft", 2, "百煉精鋼鍛法", 90, 1, 40, 0, 3, 1.5f),
             Node("craft3", "craft", 3, "山門營造法式", 180, 2, 110, 1, 8, 1),
-            Node("craft4", "craft", 4, "奇門經商總策", 360, 2, 200, 2, 8, 1)
+            Node("craft4", "craft", 4, "奇門經商總策", 360, 2, 260, 1, 8, 1)
         };
 
         private static TechNode Node(string id, string branch, int tier, string name, int silver, int ap, int minReputation,

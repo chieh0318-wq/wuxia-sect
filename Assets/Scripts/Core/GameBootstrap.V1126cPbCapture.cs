@@ -76,7 +76,7 @@ namespace Wuxia
             {
                 sword.rank = RankSystem.At(cap - 1);
                 if (!game.AssignStudy(id, art.id)) throw new InvalidOperationException("PB3 study order rejected.");
-                game.PracticeMartial(id, GameState.MartialProgressMax);
+                game.PracticeMartial(id, GameState.MartialProgressMax * 100f / BalanceV1126c.TierGainPct(RankSystem.Index(sword.rank)) + 1);
                 if (RankSystem.Index(sword.cap) != cap || RankSystem.Index(sword.rank) != cap ||
                     game.CurrentStudy(id, out bool assigned) != null && assigned)
                     throw new InvalidOperationException("PB3 training failed to finish the order at the cap.");

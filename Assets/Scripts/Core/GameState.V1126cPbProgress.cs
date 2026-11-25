@@ -157,6 +157,9 @@ namespace Wuxia
             return before == after ? after : $"{before} → {after}";
         }
 
+        internal static float PracticeProgressFor(SkillLine line, float points) => CanAdvance(line)
+            ? ProgressFor(line, points / Mathf.Max(1, BalanceV1126c.Martial.drillProgress)) : 0;
+
         internal float DrillGain(string teacher) => BalanceV1126c.Martial.drillProgress *
             AssignmentSystem.Predict(this, "train", teacher).Quality *
             (AssignmentSystem.Skill(this, teacher, "teaching") >= RankSystem.Index("B")

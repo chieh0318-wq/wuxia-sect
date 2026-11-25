@@ -13,25 +13,25 @@ namespace Wuxia
     {
         [Serializable] internal sealed class Diplomacy
         {
-            public int loyal = 12, subjects = 6, reputation = 380, holdMonths = 6;
+            public int loyal = 12, subjects = 6, reputation = 330, holdMonths = 12;
         }
 
         [Serializable] internal sealed class Conquest
         {
-            public int held = 20, reputation = 450, holdMonths = 6;
+            public int held = 20, reputation = 380, holdMonths = 12;
         }
 
         [Serializable] internal sealed class Wealth
         {
             /// <summary>庫銀、商路條數（每條連續通商滿 routeMonths 月）、近 12 月商路收入、聲望。</summary>
-            public int silver = 8000, routes = 16, routeMonths = 12, tradeYear = 1800, reputation = 350;
+            public int silver = 12000, routes = 18, routeMonths = 12, tradeYear = 2000, reputation = 320;
         }
 
         [Serializable] internal sealed class Champion
         {
             /// <summary>主修階位、擊敗成名高手人數、其中 SS 級宗師人數、聲望。</summary>
-            public string rank = "SS";
-            public int masters = 9, grandmasters = 3, reputation = 600;
+            public string rank = "SSS";
+            public int masters = 11, grandmasters = 4, reputation = 650;
             /// <summary>A master accepts a challenge when our 聲望 ≥ their 聲望 × this, and the hero is at most one tier below.</summary>
             public float reputationRatio = 1f;
             public int tierGap = 1, apCost = 2, silverCost = 20, retryMonths = 3;

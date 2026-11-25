@@ -36,9 +36,17 @@ namespace Wuxia
         {
             var output = AssignedYield(action, AssignmentSystem.Predict(state, action.id, worker).Quality);
             var parts = new List<string> { Changes(output) };
-            if (action.id == "train") parts.Add($"全門各選 1 路修習　進度 +{state.DrillGain(worker):0.#}（主角另計武學加成）");
+            if (action.id == "train")
+            {
+                var line = state.CurrentStudyLine(GameState.HeroId);
+                float baseGain = state.DrillGain(worker);
+                float heroGain = GameState.PracticeProgressFor(line, baseGain * state.StudyMultiplier(line?.id ?? ""));
+                var gains = state.SparCandidates.Where(id => id != GameState.HeroId && !state.IsDispatched(id) && id != state.Story.delegateId)
+                    .Select(id => GameState.PracticeProgressFor(state.CurrentStudyLine(id), baseGain)).DefaultIfEmpty(0).ToArray();
+                parts.Add($"各自修習 1 路　主角進度 +{heroGain:0.#}／弟子 +{gains.Min():0.#}～{gains.Max():0.#}");
+            }
             if (action.id == "study")
-                parts.Add($"{state.StudyLabel(worker)}　進度 +{state.TrainingGain(worker, state.CurrentStudyLine(worker), state.CurrentStudy(worker, out _)):0.#}");
+                parts.Add($"{state.StudyLabel(worker)}　進度 +{GameState.PracticeProgressFor(state.CurrentStudyLine(worker), state.TrainingGain(worker, state.CurrentStudyLine(worker), state.CurrentStudy(worker, out _))):0.#}");
             if (action.id == "medicine")
             {
                 var heal = state.RecoveryAmount(worker);

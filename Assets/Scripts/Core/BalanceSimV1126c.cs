@@ -242,7 +242,11 @@ namespace Wuxia
             if (action == null || !s.CanPay(action.cost) || !s.TrySpendAp(action.apCost, "sim:train")) return false;
             s.Pay(action.cost);
             float quality = AssignmentSystem.Predict(s, "train", GameState.HeroId).Quality;
-            s.TrainMartial(GameState.HeroId);
+            var line = s.CurrentStudyLine(GameState.HeroId);
+            float gain = s.DrillGain(GameState.HeroId);
+            s.TrainMartial(GameState.HeroId, fixedGain: gain * s.StudyMultiplier(line?.id ?? ""));
+            foreach (var id in s.SparCandidates.Where(id => id != GameState.HeroId && !s.IsDispatched(id) && id != s.Story.delegateId))
+                s.PracticeMartial(id, gain);
             s.Apply(new Yield { reputation = Mathf.RoundToInt(action.effect.reputation * quality) });
             return true;
         }
@@ -306,7 +310,7 @@ namespace Wuxia
         {
             var building = s.Data.Buildings.FirstOrDefault(b => b.id == id);
             if (building == null || !s.IsAvailable(building)) return false;
-            int plot = Enumerable.Range(0, s.Buildings.Length).Where(i => s.Buildings[i] == null && s.PlotUnlocked(i)).DefaultIfEmpty(-1).First();
+            int plot = Enumerable.Range(0, s.Buildings.Length).Where(i => s.CanPlaceInCells(i, building) && s.PlotUnlocked(i)).DefaultIfEmpty(-1).First();
             if (plot < 0) return false;
             int silver = s.BuildSilver(building.cost.silver);
             var action = Action(s, "build");

@@ -371,7 +371,7 @@ namespace Wuxia
                     new GameEffect { key = "relation", @ref = factionId, value = -10 }
                 });
                 string loot = UnityEngine.Random.value < .35f
-                    ? "　繳獲：" + EquipOrStore(MakeGear(GearSlots[UnityEngine.Random.Range(0, GearSlots.Length)], 1)) : "";
+                    ? "　繳獲：" + StoreInventoryGear(MakeGear(GearSlots[UnityEngine.Random.Range(0, GearSlots.Length)], 1)) : "";
                 return $"大捷！{SectLabel}攻破{place}，插上本派旗號（每月上繳銀兩 4、糧食 2）。" +
                     $"繳獲銀兩 {silver}、糧食 {food}，聲望 +3。{loot}";
             }

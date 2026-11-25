@@ -208,6 +208,10 @@ namespace Wuxia
                     if (move != null) DescribeMove(move);
                 });
                 hover.triggers.Add(enter);
+                var exit = new UnityEngine.EventSystems.EventTrigger.Entry
+                    { eventID = UnityEngine.EventSystems.EventTriggerType.PointerExit };
+                exit.callback.AddListener(_ => DescribeMove(inspectedAction));
+                hover.triggers.Add(exit);
                 var border = btn.gameObject.AddComponent<Outline>();
                 border.effectColor = UiKit.HeaderGold;
                 border.effectDistance = new Vector2(2, 2);
@@ -376,12 +380,16 @@ namespace Wuxia
                 previousMoves.gameObject.SetActive(activeTab == 1 && pages > 1);
                 nextMoves.gameObject.SetActive(activeTab == 1 && pages > 1);
                 pageLabel.text = activeTab == 1 && pages > 1 ? $"{movePage + 1} / {pages}" : "";
+                int visibleRow = 0;
                 foreach (var (id, tab, _, _) in actionDefs)
                 {
                     var (root, border, seal, title, detail) = actButtons[id];
                     string move = ResolveMove(id);
-                    root.gameObject.SetActive(tab == activeTab && move != null);
-                    if (move == null) continue;
+                    bool shown = tab == activeTab && move != null;
+                    root.gameObject.SetActive(shown);
+                    if (!shown) continue;
+                    float rowY = 165 - visibleRow++ * 56;
+                    Anchor(root, Vector2.zero, Vector2.zero, new(190, rowY), new(760, rowY + 49));
                     title.text = ActionName(move);
                     if (id is "skill" or "ultimate") seal.text = "藝";
                     string reason = CommandReason(move);
@@ -422,7 +430,8 @@ namespace Wuxia
             {
                 if (id == "item") return "消耗庫房丹藥 1 份";
                 var skill = model.Skill(id);
-                return skill.qi > 0 ? $"消耗 {skill.qi} 內力" : $"回復 {skill.restoreQi} 內力";
+                if (skill.qi > 0) return $"消耗 {skill.qi} 內力";
+                return skill.restoreQi > 0 ? $"回復 {skill.restoreQi} 內力" : "內力消耗 0";
             }
 
             string ActionElement(string id)

@@ -32,6 +32,8 @@ namespace Wuxia
             if (LegacySystem.GetInventory(Story, key) <= 0 || MartialArts.Find(artId) == null) return "";
             var member = Disciples.Find(entry => entry.id == memberId);
             if (memberId != HeroId && member == null) return "";
+            if (memberId == HeroId ? KnowsArt(artId) : ArtsOf(member).Any(art => art.id == artId))
+                return "此人已習得此藝，秘笈仍存庫房。";
             // PD3: route this through PB3's GrantManual when the progression branches merge.
             string report = memberId == HeroId ? LearnArt(artId) : LearnDiscipleArt(member, artId, sectInstruction: false);
             if (string.IsNullOrEmpty(report)) return "此人已習得此藝，秘笈仍存庫房。";

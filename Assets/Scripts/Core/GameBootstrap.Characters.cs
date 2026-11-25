@@ -210,6 +210,7 @@ namespace Wuxia
                 talents = TalentSummary(state.TalentsOf(hero ? GameState.HeroId : person.id)),
                 relation = relation, attrs = person.attrs ?? disciple?.attrs ?? EstimateAttributes(person),
                 estimated = person.attrs == null && disciple?.attrs == null, arts = arts, biography = biography,
+                study = hero || disciple != null ? state.StudyLabel(person.id) : null,
                 bond = bond, actions = actions.ToArray()
             };
         }

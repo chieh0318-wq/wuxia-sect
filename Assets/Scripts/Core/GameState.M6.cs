@@ -100,7 +100,7 @@ namespace Wuxia
             Silver -= silver;
             if (worker != null)
             {
-                AssignmentSystem.Commit(this, new[] { worker });
+                AssignmentSystem.Commit(this, new[] { worker }, "study");
                 AssignmentSystem.Credit(this, worker, 1);
             }
             SetValue(ref Story.flags, "tech_" + node.id, 1, false);
@@ -297,7 +297,7 @@ namespace Wuxia
         internal bool GatherRumors(string worker = HeroId)
         {
             Story.rumorBonus = Mathf.Min(.75f, Story.rumorBonus + .25f);
-            return UnityEngine.Random.value < .35f + .025f * (AssignmentSystem.Eloquence(this, worker) - 15);
+            return UnityEngine.Random.value < RumorDiscoveryChance(worker);
         }
 
         /// <summary>Chance that 山道巡訪 stumbles on a secret realm (幸運 / 身法 and gathered rumours help).</summary>

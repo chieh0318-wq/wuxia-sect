@@ -127,10 +127,10 @@ namespace Wuxia
         private void ExploreRoad(ActionData action)
         {
             // v1126b 決定 1: 幸運 multiplies the odds (×1.04 per point) instead of adding a flat 1.2 points.
-            float fortune = AttributeSystem.FortuneFactor(AssignmentSystem.Attribute(state, ExpeditionLeader, "luk"));
+            float fortune = state.PatrolFortune(ExpeditionLeader);
             float rumor = state.ConsumeRumors();
-            string breakthrough = state.TryBreakthrough("qiyu_cliff_cave", state.Story.insightChance + rumor, fortune);
-            bool realm = UnityEngine.Random.value < Mathf.Clamp((.22f + rumor) * fortune, .05f, .9f);
+            string breakthrough = state.TryBreakthrough(GameState.PatrolBreakthrough, state.Story.insightChance + rumor, fortune);
+            bool realm = UnityEngine.Random.value < state.PatrolRealmChance(ExpeditionLeader, rumor);
             state.Apply(action.effect);
             var road = RealmContent.PickRoadEvent();
             if (road == null)

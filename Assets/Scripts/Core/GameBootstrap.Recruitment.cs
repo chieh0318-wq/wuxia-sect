@@ -96,7 +96,7 @@ namespace Wuxia
                 return;
             state.Pay(cost);
             recruiter = worker;
-            AssignmentSystem.Commit(state, new[] { worker });
+            AssignmentSystem.Commit(state, new[] { worker }, "recruit");
             AssignmentSystem.Credit(state, worker, 1);
             activeMethod = method;
             accepted = 0;

@@ -93,7 +93,7 @@ namespace Wuxia
                         break;
                     case "heal": for (int i = 0; i < Mathf.Max(1, value); i++) RecoverInjuries(); break;
                     case "discipleProgress":
-                        foreach (var pupil in Disciples) TrainLine(RankSystem.BestCombat(pupil.lines), effect.value);
+                        foreach (var pupil in Disciples) PracticeMartial(pupil.id, effect.value);
                         break;
                     default: Debug.LogWarning($"[Effects] Unknown key {effect.key}"); break;
                 }

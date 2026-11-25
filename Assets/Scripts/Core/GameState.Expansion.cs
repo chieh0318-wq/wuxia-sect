@@ -40,7 +40,7 @@ namespace Wuxia
             int silver = Mathf.CeilToInt(next.silver / Mathf.Max(1, AssignmentSystem.Predict(this, "build", worker).Quality));
             Pay(new Cost { silver = silver });
             Story.sectScale++;
-            AssignmentSystem.Commit(this, new[] { worker });
+            AssignmentSystem.Commit(this, new[] { worker }, "build");
             AssignmentSystem.Credit(this, worker, 3);
             return true;
         }

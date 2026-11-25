@@ -345,7 +345,7 @@ namespace Wuxia
                         PlaceBuilding(index);
                     else if (state.Buildings[index] != null)
                     {
-                        ShowBuilding(state.Buildings[index]);
+                        ShowBuilding(state.Buildings[index], index);
                         tutorial?.Record("click_building", state.Buildings[index].id);
                     }
                     else
@@ -415,10 +415,10 @@ namespace Wuxia
 
             (string label, string detail, System.Action run, bool selected)[] Matching(System.Func<ActionData, bool> filter) =>
                 state.Data.Actions.Where(filter).Select(action =>
-                    (ActionLabel(action), action.summary, CanUseAp(action) ? (System.Action)(() => RunAction(action)) : null, false)).ToArray();
+                    (ActionLabel(action), ActionPreview(action), CanUseAp(action) ? (System.Action)(() => RunAction(action)) : null, false)).ToArray();
         }
 
-        private void ShowBuilding(BuildingData building)
+        private void ShowBuilding(BuildingData building, int slot = -1)
         {
             openBuilding = building;
             var actions = new List<(string, string, System.Action)>();
@@ -426,7 +426,7 @@ namespace Wuxia
             {
                 var action = state.Data.Actions.FirstOrDefault(entry => entry.id == id);
                 if (action != null)
-                    actions.Add((ActionLabel(action), action.summary, CanUseAp(action) ? () => RunAction(action) : null));
+                    actions.Add((ActionLabel(action), ActionPreview(action), CanUseAp(action) ? () => RunAction(action) : null));
             }
             if (building.id == "library")
                 actions.Add(("開啟門派科技樹", $"已研習 {state.TechCount}／{GameState.TechTree.Length}：劍宗・外功・內功輕功・百工", ShowTechTree));
@@ -446,7 +446,7 @@ namespace Wuxia
                     });
                 } : null));
             }
-            ui.ShowBuilding(building, actions, level);
+            ui.ShowBuilding(building, actions, level, state.BuildingQualityTooltip(building, slot));
         }
 
         private void RunAction(ActionData action)
@@ -479,20 +479,19 @@ namespace Wuxia
             }
             bool expedition = action.id is "explore" or "secret_realm";
             ui.ChooseAssignment(state, action.name, action.id, expedition ? 3 : 1,
-                party => {
-                    if (action.id == "train") ChooseTraining(action, party);
-                    else ExecuteAssignedAction(action, party);
-                });
+                party => ExecuteAssignedAction(action, party));
         }
 
-        private void ExecuteAssignedAction(ActionData action, string[] party, string manual = null)
+        private void ExecuteAssignedAction(ActionData action, string[] party, string manual = null, bool personalPractice = false)
         {
+            var before = ActionSnapshot();
             if (!state.CanPay(action.cost) || party.Any(id => AssignmentSystem.Block(state, id) != null) ||
                 !SpendActionAp(action)) return;
-            AssignmentSystem.Commit(state, party);
-            state.Pay(action.cost);
             string worker = party[0];
             var prediction = AssignmentSystem.Predict(state, action.id, worker);
+            var output = AssignedYield(action, prediction.Quality);
+            AssignmentSystem.Commit(state, party);
+            state.Pay(action.cost);
             foreach (string id in party) AssignmentSystem.Credit(state, id, 1);
             if (action.id is "explore" or "secret_realm") expeditionParty = party;
             if (action.id == "secret_realm")
@@ -512,7 +511,9 @@ namespace Wuxia
             }
             string breakthrough = action.id switch
             {
-                "train" => state.TrainMartial(worker, manual),
+                "train" when personalPractice => state.TrainMartial(worker, manual),
+                "train" => string.Join("\n", DrillSect(worker)),
+                "study" => state.TrainMartial(worker),
                 "feast" => state.Feast(),
                 "forge_gear" => state.ForgeGear(worker),
                 "decree" => state.Decree(),
@@ -520,13 +521,7 @@ namespace Wuxia
                 _ => ""
             };
             bool realm = action.id == "gather_rumors" && state.GatherRumors(worker);
-            var output = new Yield
-            {
-                silver = Mathf.RoundToInt(action.effect.silver * prediction.Quality),
-                food = Mathf.RoundToInt(action.effect.food * prediction.Quality),
-                materials = Mathf.RoundToInt(action.effect.materials * prediction.Quality),
-                reputation = Mathf.RoundToInt(action.effect.reputation * prediction.Quality)
-            };
+            state.PracticeWork(worker, AssignmentSystem.Relevance(action.id).Skill);
             state.Apply(output);
             if (output.silver > 0)
                 AudioManager.Play("coin");
@@ -547,16 +542,10 @@ namespace Wuxia
             ShowCommands();
             if (openBuilding != null && ui.BuildingOpen)
                 ShowBuilding(openBuilding);
-            string message = $"{state.SparName(worker)}完成{action.name}。{Changes(output)}";
-            if (action.id == "lodge")
-                message = $"{breakthrough}{HousingInfo()}".TrimEnd();
-            else if (action.id == "gather_rumors")
-                message = $"茶寮裡打聽到不少消息，下次奇遇機率 +25%（目前 +{state.Story.rumorBonus:P0}）。{Changes(action.effect)}";
-            else if (!string.IsNullOrEmpty(breakthrough))
-                message = $"{breakthrough}　{Changes(action.effect)}".TrimEnd();
-            ui.Message(message);
+            string note = action.id == "lodge" ? HousingInfo() : breakthrough;
+            ShowActionResult(personalPractice ? "修習武學" : action.name, before, note);
             if (realm)
-                OfferSecretRealm("茶客壓低聲音說起一處無人敢去的秘境，連路徑都畫給了你。");
+                ui.AddModalAction("前往秘境", () => OfferSecretRealm("茶客壓低聲音說起一處無人敢去的秘境，連路徑都畫給了他。"), first: true);
         }
 
         private void BeginBuild(ActionData action)
@@ -657,22 +646,25 @@ namespace Wuxia
         {
             if (buildChoice == null || state.Buildings[index] != null || !state.IsAvailable(buildChoice) ||
                 AssignmentSystem.Block(state, worker) != null) return;
+            var before = ActionSnapshot();
             string grant = TutorialBuildAid();
             var total = BuildTotal(buildChoice);
-            float quality = AssignmentSystem.Predict(state, "build", worker).Quality;
+            float quality = GameState.ConstructionQuality(AssignmentSystem.Predict(state, "build", worker).Quality) / 100f;
             total.silver = Mathf.CeilToInt(total.silver / Mathf.Max(1, quality));
             if (!state.CanPay(total) || !SpendActionAp(buildAction)) return;
             state.Pay(total);
-            AssignmentSystem.Commit(state, new[] { worker });
+            AssignmentSystem.Commit(state, new[] { worker }, "build");
             AssignmentSystem.Credit(state, worker, 2);
             state.Apply(buildAction.effect);
             state.Buildings[index] = buildChoice;
+            state.RecordConstruction(index, buildChoice, GameState.ConstructionQuality(quality));
             world.PlaceBuilding(index, buildChoice);
             PlayBuildAudio(); // M2-B placement and immediate M1 completion
-            string result = $"{buildChoice.name}已落成。{Changes(buildAction.effect)}";
+            string result = $"{buildChoice.name}已落成。{GameState.QualityText(GameState.ConstructionQuality(quality))}";
             CancelBuild();
             ui.Refresh(state);
-            ui.Message(grant + result);
+            if (capturing) ui.Message(grant + result);
+            else ShowActionResult("興建屋舍", before, grant + result);
             tutorial?.Record("build_any");
         }
 
@@ -730,7 +722,7 @@ namespace Wuxia
                     state.ToggleDelegate(disciple);
                     ui.Refresh(state);
                     ShowDisciple(disciple);
-                }) : null);
+                }) : null, progressState: state, memberId: disciple.id);
             DiscipleActions(disciple);
         }
 
@@ -740,7 +732,7 @@ namespace Wuxia
             string storyWeapon = RankSystem.Catalog.breakthroughs?.FirstOrDefault(
                 entry => entry.id == hero.weapon && entry.type == "weapon")?.name ?? hero.weapon;
             ui.ShowCharacter(hero.name, UiKit.HeroTitle(hero) == hero.name ? "" : UiKit.HeroTitle(hero), hero.gender, PortraitService.IdOrDefault(hero.portrait, hero.lookId), hero.attrs, hero.lines,
-                hero.weapon, state.WeaponRankDelta(hero.weapon), gear: state.GearLabels(storyWeapon), stats: state.HeroStats, attributeBonuses: Enumerable.Range(0, AttributeSystem.Count).Select(state.HeroAttributeBonus).ToArray());
+                hero.weapon, state.WeaponRankDelta(hero.weapon), gear: state.GearLabels(storyWeapon), stats: state.HeroStats, attributeBonuses: Enumerable.Range(0, AttributeSystem.Count).Select(state.HeroAttributeBonus).ToArray(), progressState: state, memberId: GameState.HeroId);
             HeroActions(); // v1125 #10: equip, 主修, training and manuals right on the hero page
         }
 

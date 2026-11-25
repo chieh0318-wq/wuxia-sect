@@ -188,6 +188,7 @@ namespace Wuxia
                 ui.CloseModal(force: true);
                 ChooseTraining(train, new[] { disciple.id });
             } : null, first: true);
+            ui.AddModalAction("指派修習", away == null ? () => OpenStudyOrders(disciple.id, () => ShowDisciple(disciple)) : null, first: true);
             if (ledgerOpen)
                 ui.AddModalAction("‹ 返回政務", ShowSect, first: true);
             ui.FitModalButtons(1300);
@@ -219,16 +220,8 @@ namespace Wuxia
         private void ShowSectLedgerPage()
         {
             ledgerOpen = true;
-            int silver = 0, food = 0, reputation = 0, upkeep = 0;
-            foreach (var building in state.Buildings.Where(entry => entry != null))
-            {
-                silver += building.income.silver;
-                food += building.income.food;
-                reputation += building.income.reputation;
-                upkeep += building.upkeep;
-            }
-            silver = Mathf.RoundToInt(silver * state.ProductionMultiplier("commerce"));
-            food = Mathf.RoundToInt(food * state.ProductionMultiplier("farming"));
+            var (silver, food, reputation, _, upkeep, service) = state.BuildingMonth();
+            upkeep += service;
             int meals = state.Disciples.Count * state.Data.Start.foodPerDisciple;
             int netSilver = silver - upkeep, netFood = food - meals;
             string delegateName = state.Disciples.FirstOrDefault(member => member.id == state.Story.delegateId)?.name;
@@ -287,6 +280,7 @@ namespace Wuxia
                     ui.CloseModal(force: true);
                     ChooseTraining(train, new[] { GameState.HeroId });
                 } : null, first: true);
+            ui.AddModalAction("指派修習", () => OpenStudyOrders(GameState.HeroId, ShowProtagonist), first: true);
             int pills = LegacySystem.GetInventory(state.Story, "item_jinchuang") + LegacySystem.GetInventory(state.Story, "item_jiuzhuan");
             int arts = hero.arts?.Length ?? 0;
             ui.AddModalAction($"秘笈與丹藥　›\n秘笈 {arts}・丹藥 {pills}", ShowManuals, first: true);

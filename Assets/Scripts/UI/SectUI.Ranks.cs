@@ -9,7 +9,7 @@ namespace Wuxia
     {
         internal void ShowCharacter(string name, string title, string gender, string portrait, int[] attrs,
             SkillLine[] lines, string weapon, int weaponDelta, (string, Action)? extra = null,
-            string[] gear = null, DerivedStats? stats = null, int[] attributeBonuses = null)
+            string[] gear = null, DerivedStats? stats = null, int[] attributeBonuses = null, GameState progressState = null, string memberId = null)
         {
             var close = ("關閉", (Action)(() => CloseModal()));
             ShowModal(name, new[] { title }, extra.HasValue ? new[] { extra.Value, close } : new[] { close });
@@ -53,16 +53,22 @@ namespace Wuxia
             summary.resizeTextMinSize = 15;
             summary.resizeTextMaxSize = 20;
             Anchor(summary.rectTransform, Vector2.zero, Vector2.right, new(8, 4), new(-8, 35));
-            SkillColumns(lines);
+            if (progressState != null)
+            {
+                var study = CreationRow("修習中", 36);
+                var label = Label(study, progressState.StudyLabel(memberId), 22, TextAnchor.MiddleLeft);
+                Fill(label.rectTransform);
+            }
+            SkillColumns(lines, progressState: progressState, memberId: memberId);
         }
 
-        internal void SkillColumns(SkillLine[] lines, bool knownOnly = false)
+        internal void SkillColumns(SkillLine[] lines, bool knownOnly = false, GameState progressState = null, string memberId = null)
         {
             var families = new[] { (key: "combat", label: "戰鬥技能"), (key: "production", label: "生產技能") };
             var groups = families.Select(family => RankSystem.Categories.Where(category => category.family == family.key)
                 .Select(category => (category, line: Array.Find(lines, entry => entry?.id == category.id)))
                 .Where(pair => !knownOnly || pair.line != null).ToArray()).ToArray();
-            const int rowHeight = 39;
+            int rowHeight = progressState == null ? 39 : 53;
             var row = CreationRow("技能", 44 + rowHeight * groups.Max(group => group.Length));
             for (int column = 0; column < families.Length; column++)
             {
@@ -87,6 +93,15 @@ namespace Wuxia
                         image.raycastTarget = false;
                         image.color = tier <= RankSystem.Index(line?.rank) ? RankSystem.Color(RankSystem.At(tier))
                             : new Color(.35f, .32f, .25f, .45f);
+                    }
+                    if (progressState != null && line != null)
+                    {
+                        bool martial = RankSystem.IsCombat(line.id);
+                        float progress = martial ? line.progress : progressState.WorkPractice(memberId, line.id)?.xp ?? 0;
+                        int max = martial ? GameState.MartialProgressMax : GameState.LifeProgressMax;
+                        var number = Label(panel, $"{progress:0.#}／{max}", 18, TextAnchor.MiddleRight);
+                        Anchor(number.rectTransform, Vector2.up, Vector2.one, new(0, y - 31), new(-8, y));
+                        CardBar(panel, 0, y - 43, -8, 5, progress / max, CardGold);
                     }
                     y -= rowHeight;
                 }

@@ -36,19 +36,46 @@ namespace Wuxia
             (worker == HeroId ? ProtagonistArts : ArtsOf(Disciples.Find(member => member.id == worker)))
                 .Where(art => art.Combat).GroupBy(art => art.id).Select(group => group.First());
 
-        internal string TrainMartial(string worker = HeroId, string manual = null)
+        internal string TrainMartial(string worker = HeroId, string manual = null, float? fixedGain = null)
         {
             bool hero = worker == HeroId;
             var lines = hero ? Protagonist.lines : Disciples.Find(member => member.id == worker)?.lines;
             if (lines == null) return "";
-            var art = TrainingManuals(worker).FirstOrDefault(entry => entry.id == manual);
+            var art = manual == null ? CurrentStudy(worker, out _) : TrainingManuals(worker).FirstOrDefault(entry => entry.id == manual);
             if (manual != null && art == null) return "";
-            var line = art != null ? Array.Find(lines, entry => entry.id == art.category) :
-                lines.Where(entry => RankSystem.IsCombat(entry.id) && RankSystem.Index(entry.rank) < RankSystem.Index(entry.cap))
-                    .OrderByDescending(entry => RankSystem.Index(entry.rank)).FirstOrDefault() ?? RankSystem.BestCombat(lines);
+            var line = art != null ? Array.Find(lines, entry => entry.id == art.category) : CurrentStudyLine(worker);
             if (line == null) return "";
 
-            float experience = Mathf.Max(.1f, 1 + Story.trainBonusPct / 100f) *
+            float experience = fixedGain ?? TrainingGain(worker, line, art);
+            string practice = PracticeMartialLine(worker, line, experience);
+            if (art != null)
+            {
+                string id = worker + ":" + art.id;
+                var record = (Story.manualTraining ??= Array.Empty<ManualPractice>()).FirstOrDefault(entry => entry.id == id);
+                if (record == null)
+                {
+                    record = new ManualPractice { id = id };
+                    Story.manualTraining = Story.manualTraining.Append(record).ToArray();
+                }
+                record.experience += experience;
+            }
+            if (!hero) return practice;
+            Protagonist.martialTraining++;
+            int monthKey = Year * 12 + Month;
+            if (Protagonist.lastTrainingMonth != monthKey)
+            {
+                Protagonist.lastTrainingMonth = monthKey;
+                Protagonist.trainingMonths++;
+            }
+            return practice + "　" + CheckMartialPath(false);
+        }
+
+        internal float TrainingGain(string worker, SkillLine line, MartialArt art)
+        {
+            if (!CanAdvance(line)) return 0;
+            bool hero = worker == HeroId;
+            var lines = MemberLines(worker);
+            float experience = BalanceV1126c.Martial.practiceProgress * Mathf.Max(.1f, 1 + Story.trainBonusPct / 100f) *
                 AssignmentSystem.Predict(this, "train", worker).Quality *
                 AttributeSystem.StudyFactor(AssignmentSystem.Attribute(this, worker, "wit"));
             // v1126b 決定 1: training speed comes from 悟性 only (武力 no longer adds its own share).
@@ -58,27 +85,7 @@ namespace Wuxia
             string major = hero ? Protagonist.major : RankSystem.BestCombat(lines)?.id;
             if (line.id == major) experience *= 1.2f;
             if (art != null) experience *= 1 + TalentValue(worker, "read", 43) / 100f;
-            TrainLine(line, experience);
-            if (art != null)
-            {
-                string id = worker + ":" + art.id;
-                var record = Story.manualTraining.FirstOrDefault(entry => entry.id == id);
-                if (record == null)
-                {
-                    record = new ManualPractice { id = id };
-                    Story.manualTraining = Story.manualTraining.Append(record).ToArray();
-                }
-                record.experience += experience;
-            }
-            if (!hero) return "";
-            Protagonist.martialTraining++;
-            int monthKey = Year * 12 + Month;
-            if (Protagonist.lastTrainingMonth != monthKey)
-            {
-                Protagonist.lastTrainingMonth = monthKey;
-                Protagonist.trainingMonths++;
-            }
-            return CheckMartialPath(false);
+            return experience;
         }
 
         /// <summary>v1124 C13: talent study speed, e.g. 劍癡 +30% on 劍, 天縱奇才 on every combat line.</summary>
@@ -98,18 +105,16 @@ namespace Wuxia
             if (line == null || RankSystem.Index(line.rank) >= RankSystem.Index(line.cap))
                 return;
             line.progress += experience;
-            int steps = (int)(line.progress / 2);
+            int steps = (int)(line.progress / MartialProgressMax);
             RankSystem.Shift(line, steps, false);
-            line.progress -= steps * 2;
+            line.progress = CanAdvance(line) ? line.progress - steps * MartialProgressMax : 0;
         }
 
         internal string TryBreakthrough(string id, float bonus, float fortune = 1)
         {
             var entry = RankSystem.Catalog.breakthroughs?.FirstOrDefault(value => value.id == id);
-            // v1126b 決定 1: 悟性 adds +0.3 points of 頓悟 per point; 幸運 scales the odds ×1.04 per point.
-            float insight = AttributeBonus("wit") * AttributeSystem.InsightPerPoint;
-            if (entry == null || (entry.oneTime && Protagonist.breakthroughs.Contains(id)) ||
-                UnityEngine.Random.value >= Mathf.Clamp01((entry.chance + bonus + insight) * fortune))
+            float chance = BreakthroughChance(id, bonus, fortune);
+            if (chance <= 0 || UnityEngine.Random.value >= chance)
                 return "";
             var line = entry.target == "martial" ? RankSystem.BestCombat(Protagonist.lines) :
                 Array.Find(Protagonist.lines, value => value.id == entry.target);

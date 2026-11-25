@@ -83,7 +83,7 @@
         "food": 0,
         "reputation": 1
       },
-      "summary": "聲望 +1；議事堂二級後整理門派紀錄"
+      "summary": "議事堂二級後整理門派紀錄"
     },
     {
       "id": "train",
@@ -100,7 +100,7 @@
         "food": 0,
         "reputation": 2
       },
-      "summary": "主角與弟子最強武學修習進度提升，聲望 +2"
+      "summary": "以門人所選武學為序，於演武場操練"
     },
     {
       "id": "study",
@@ -117,7 +117,7 @@
         "food": 0,
         "reputation": 1
       },
-      "summary": "抄錄拳譜、參詳前輩手記，聲望 +1"
+      "summary": "抄錄拳譜、參詳前輩手記"
     },
     {
       "id": "lodge",
@@ -151,13 +151,13 @@
         "food": 0,
         "reputation": 2
       },
-      "summary": "全門療傷加速，聲望 +2"
+      "summary": "以所選行醫者的技藝為準，替全門療傷"
     },
     {
       "id": "feast",
       "name": "開伙犒賞",
       "description": "殺雞宰羊、大鍋燉肉，犒賞連月辛勞的同門。",
-      "summary": "全體弟子忠誠 +6、主角與弟子傷勢恢復、聲望 +1",
+      "summary": "犒勞同門，兼為有傷者調治",
       "type": "generic",
       "apCost": 1,
       "cost": {
@@ -191,7 +191,7 @@
       "id": "gather_rumors",
       "name": "江湖聽風",
       "description": "在茶寮裡請行旅喝碗茶，打聽各路消息。",
-      "summary": "聲望 +2、下次奇遇機率 +25%，或直接發現一處【江湖秘境】入口",
+      "summary": "記下江湖傳聞，另有機會直接發現秘境入口",
       "type": "generic",
       "apCost": 1,
       "cost": {
@@ -225,7 +225,7 @@
       "id": "decree",
       "name": "門派政令",
       "description": "頒布門規、分派職守，整肅門風。",
-      "summary": "全門忠誠 +3、聲望 +1",
+      "summary": "頒布門規，整肅門風",
       "type": "generic",
       "apCost": 1,
       "cost": {

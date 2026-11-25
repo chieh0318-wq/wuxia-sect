@@ -439,12 +439,13 @@ namespace Wuxia
         public void ShowBuilding(BuildingData building, IEnumerable<(string label, Action run)> actions, int level = 1) =>
             ShowBuilding(building, actions.Select(action => (action.label, (string)null, action.run)), level);
 
-        public void ShowBuilding(BuildingData building, IEnumerable<(string label, string detail, Action run)> actions, int level = 1)
+        public void ShowBuilding(BuildingData building, IEnumerable<(string label, string detail, Action run)> actions, int level = 1, string quality = null)
         {
             Clear(detailsList);
             AddLine(detailsList, building.name, 28);
             AddLine(detailsList, $"等級 {level}");
             AddLine(detailsList, building.description);
+            if (quality != null) AddLine(detailsList, quality);
             if (!string.IsNullOrEmpty(building.summary))
                 AddLine(detailsList, "【用途】" + building.summary, 20);
             foreach (var action in actions)

@@ -9,7 +9,7 @@ namespace Wuxia
     internal sealed class CharacterDossier
     {
         public StoryCharacter person;
-        public string faction, stance, arts, biography, bond, talents;
+        public string faction, stance, arts, biography, bond, talents, study;
         public int relation, kind = 2;
         public int[] attrs;
         public bool estimated;
@@ -318,6 +318,7 @@ namespace Wuxia
             float lower = -pad - portraitH - 20;
             Rule(lower - 2);
             var bio = ScrollList(sheet, new Vector2(pad, 84), new Vector2(-pad - 14, lower - 8));
+            if (!string.IsNullOrEmpty(info.study)) BioLine(info.study, 21, CardGold);
             BioLine("拿手武學與技藝", 22, CardGold);
             BioLine(string.IsNullOrEmpty(info.arts) ? "尚無記載" : info.arts, 18, CardText);
             BioLine("天賦", 22, CardGold);

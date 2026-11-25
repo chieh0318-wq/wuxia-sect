@@ -140,7 +140,7 @@ namespace Wuxia
         public int rank, month, used, contribution;
     }
 
-    [Serializable] public sealed class StoryProgress
+    [Serializable] public sealed partial class StoryProgress
     {
         public bool sameGenderChildhoodFriend;
         public int monthlyFood, monthlySilver, monthlyTermsLeft;

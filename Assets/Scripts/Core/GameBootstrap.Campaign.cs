@@ -16,16 +16,18 @@ namespace Wuxia
                 ui.Message(blocked);
                 return;
             }
-            ui.ShowCreation("選擇修練秘笈", new[] { "主修一路額外獲得兩成修練經驗；弟子的主修以最強武學為準。" },
-                new[] { ("自動修練", (Action)(() => Select(null))), ("返回", (Action)(() => ui.CloseModal(force: true))) }, null);
-            foreach (var art in state.TrainingManuals(party[0]))
-                ui.CreationChoice(art.name, EffectText.LineName(art.category), null, () => Select(art.id));
-
-            void Select(string manual)
-            {
-                ui.CloseModal(force: true);
-                ExecuteAssignedAction(action, party, manual);
-            }
+            string member = party[0];
+            var art = state.CurrentStudy(member, out _);
+            float gain = state.TrainingGain(member, state.CurrentStudyLine(member), art);
+            ui.ShowCreation("修習武學", new[] { state.StudyLabel(member), $"本次預估進度 +{gain:0.#}" },
+                new[] {
+                    ("開始修習", (Action)(() => {
+                        ui.CloseModal(force: true);
+                        ExecuteAssignedAction(action, party, personalPractice: true);
+                    })),
+                    ("指派修習", (Action)(() => OpenStudyOrders(member, () => ChooseTraining(action, party)))),
+                    ("返回", (Action)(() => ui.CloseModal(force: true)))
+                }, null);
         }
 
         private void ShowRaidDesk()

@@ -119,7 +119,7 @@ namespace Wuxia
             cost = new Cost { silver = Mathf.CeilToInt(cost.silver / Mathf.Max(1, quality)), food = cost.food };
             if (!TrySpendAp(hall.ap, "hall:" + hall.id)) return "行動力不足";
             Pay(cost);
-            AssignmentSystem.Commit(this, new[] { worker });
+            AssignmentSystem.Commit(this, new[] { worker }, "build");
             AssignmentSystem.Credit(this, worker, 2);
             int level = HallLevel(hall.id) + 1;
             SetValue(ref Story.flags, "hall_" + hall.id, level, false);
@@ -143,7 +143,7 @@ namespace Wuxia
             if (block != null) return block;
             if (!TrySpendAp(function.ap, "hall:" + function.id)) return "行動力不足";
             Pay(new Cost { silver = function.silver, food = function.food });
-            AssignmentSystem.Commit(this, new[] { worker });
+            AssignmentSystem.Commit(this, new[] { worker }, function.id);
             AssignmentSystem.Credit(this, worker, 1);
             int level = Mathf.Max(1, HallLevel(hall.id));
             switch (function.id)

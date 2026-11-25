@@ -158,6 +158,10 @@ namespace Wuxia
         }
 
         /// <summary>Applies growth and favour for the final order (first = champion) and builds the result.</summary>
+        internal static float SparPractice(int place, float multiplier = 1) => BalanceV1126c.Martial.practiceProgress *
+            (place == 0 ? 1.2f : Mathf.Max(.5f, .9f - .1f * (place - 1))) * multiplier;
+        internal const float SparInjuryChance = .15f;
+
         private SparResult Settle(IList<string> order, IDictionary<string, int> wins)
         {
             var result = new SparResult();
@@ -168,19 +172,18 @@ namespace Wuxia
             {
                 string id = order[place];
                 AssignmentSystem.Credit(this, id, place == 0 ? 2 : 1);
-                float gain = (place == 0 ? 1.2f : Mathf.Max(.5f, .9f - .1f * (place - 1))) * exp;
+                float gain = SparPractice(place, exp);
                 var gains = new List<string>();
                 if (id == HeroId)
                 {
-                    StudyLine("martial", gain);
-                    gains.Add($"主修進度 +{gain:0.0}");
+                    var line = CurrentStudyLine(id);
+                    gains.Add(PracticeMartial(id, gain * StudyMultiplier(line?.id ?? "")));
                 }
                 else
                 {
                     var member = Disciples.FirstOrDefault(d => d.id == id);
                     if (member == null) continue;
-                    TrainLine(RankSystem.BestCombat(member.lines), gain);
-                    gains.Add($"武學進度 +{gain:0.0}");
+                    gains.Add(PracticeMartial(id, gain));
                     if (heroIn)
                     {
                         // Favour: sparring with the head of the sect brings them closer; 林照 respects being beaten.
@@ -199,7 +202,7 @@ namespace Wuxia
                         member.loyalty = Mathf.Clamp(member.loyalty + 1, 0, 100);
                         gains.Add("忠誠 +1");
                     }
-                    if (place == order.Count - 1 && order.Count > 1 && UnityEngine.Random.value < .15f)
+                    if (place == order.Count - 1 && order.Count > 1 && UnityEngine.Random.value < SparInjuryChance)
                     {
                         member.injury = Mathf.Min(9, member.injury + 1);
                         gains.Add("輕傷 +1");

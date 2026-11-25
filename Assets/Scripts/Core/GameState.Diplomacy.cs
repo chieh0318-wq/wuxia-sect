@@ -281,7 +281,7 @@ namespace Wuxia
             chance = DiploChance(action, faction);
             block = DiploPay(action.ap, action.silver, action.reputation, $"diplomacy:{action.id}:{faction.id}");
             if (block == null && EnvoyId != null)
-                AssignmentSystem.Commit(this, new[] { EnvoyId });
+                AssignmentSystem.Commit(this, new[] { EnvoyId }, "diplomacy");
             return block;
         }
 

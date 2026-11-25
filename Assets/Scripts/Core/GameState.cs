@@ -95,7 +95,7 @@ namespace Wuxia
                 return;
             Pay(cost);
             SetValue(ref Story.buildingLevels, "council", level + 1, false);
-            AssignmentSystem.Commit(this, new[] { worker });
+            AssignmentSystem.Commit(this, new[] { worker }, "build");
             AssignmentSystem.Credit(this, worker, 2);
         }
 
@@ -171,20 +171,8 @@ namespace Wuxia
         {
             var report = new MonthlyReport();
             report.Lines.Add($"{Date}結算");
-            int silver = 0, food = 0, reputation = 0, upkeep = 0, materials = 0;
-            foreach (var building in Buildings)
-            {
-                if (building == null)
-                    continue;
-                silver += building.income.silver;
-                food += building.income.food;
-                reputation += building.income.reputation;
-                upkeep += building.upkeep;
-                materials += building.income.materials;
-            }
-
-            silver = UnityEngine.Mathf.RoundToInt(silver * ProductionMultiplier("commerce"));
-            food = UnityEngine.Mathf.RoundToInt(food * ProductionMultiplier("farming"));
+            var (silver, food, reputation, materials, upkeep, service) = BuildingMonth();
+            if (service > 0) report.Lines.Add($"建築整修　銀兩 −{service}");
             Story.materials += materials;
             if (materials > 0) report.Lines.Add($"作坊材料　+{materials}");
             M6MonthIncome(ref silver, ref food, report);
@@ -203,7 +191,7 @@ namespace Wuxia
                 }
             }
             int consumed = Disciples.Count * Data.Start.foodPerDisciple;
-            Silver += silver - upkeep;
+            Silver += silver - upkeep - service;
             Food += food - consumed;
             Reputation += reputation;
             report.Lines.Add($"建築收入　銀兩 {silver}、糧食 {food}、聲望 {reputation}");

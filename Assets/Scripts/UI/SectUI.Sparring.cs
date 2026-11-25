@@ -6,21 +6,14 @@ using UnityEngine.UI;
 
 namespace Wuxia
 {
-    /// <summary>One fighter card on the 山門演武 picker.</summary>
-    internal sealed class SparCard
-    {
-        public string id, name, title, line, note, badge;
-        public Texture2D portrait;
-        public bool selected;
-    }
-
     public sealed partial class SectUI
     {
         /// <summary>
         /// v1124 C17 山門演武 picker on the scene page: mode tabs (兩人對練 / 多人混戰), a grid of fighter cards to toggle,
         /// the cost and odds line, then 推演切磋 / 親自下場 (turn battle, only when the protagonist takes part) / 返回.
         /// </summary>
-        internal void ShowSparPicker(IList<SparCard> cards, bool melee, string status, string block,
+        internal void ShowSparPicker(GameState state, IList<string> picks, PickerSort sort, Action redraw,
+            bool melee, string status, string block,
             Action<string> toggle, Action<bool> setMode, Action simulate, Action fight, Action leave)
         {
             var page = Scene.NewPage(null, figures: false);
@@ -32,29 +25,23 @@ namespace Wuxia
             MapUi.Select(duel, !melee);
             MapUi.Select(group, melee);
 
-            // Up to ten fighters as large cards; larger sects switch to three compact rows of seven.
-            bool compact = cards.Count > 10;
-            int perRow = compact ? 7 : 5;
-            float cardW = compact ? 238 : 340, cardH = compact ? 214 : 316, gapX = compact ? 22 : 25, gapY = compact ? 12 : 18;
-            float left = 60, top = 178, face = compact ? 0.62f : 1f;
-            for (int i = 0; i < cards.Count && i < perRow * (compact ? 3 : 2); i++)
-            {
-                var card = cards[i];
-                float x = left + i % perRow * (cardW + gapX), y = top + i / perRow * (cardH + gapY);
-                var button = MapUi.Button(page, "", x, y, cardW, cardH, () => toggle(card.id), card.selected ? MapUi.Red : null);
-                button.name = "演武人選:" + card.id;
-                MapUi.Portrait(button.transform, card.portrait, 12, 12, 130 * face, 168 * face);
-                float tx = 12 + 130 * face + 10, tw = cardW - tx - 10;
-                MapUi.Text(button.transform, card.name, tx, 12, tw, 40, compact ? 24 : 30, MapUi.Paper, TextAnchor.MiddleLeft, "Names");
-                MapUi.Text(button.transform, card.title, tx, 52, tw, 28, compact ? 18 : 20, MapUi.Gold);
-                MapUi.Text(button.transform, card.line, tx, 82, tw, 28, compact ? 18 : 21, MapUi.Paper);
-                MapUi.Text(button.transform, card.note, 12, 24 + 168 * face, cardW - 24, cardH - 76 - 168 * face, compact ? 16 : 19,
-                    new Color(.86f, .90f, .82f), TextAnchor.UpperLeft);
-                if (!string.IsNullOrEmpty(card.badge))
+            const float width = 1760;
+            var table = MapUi.Kit(page, "門人名冊", 60, 174, 1800, 670, "Wood", false);
+            PickerHeader(MapUi.Rect(table, "欄目", 12, 12, width, 42), width, sort, redraw, true);
+            var list = ScrollList(table, new(12, 14), new(-28, -60));
+            var rows = new[] { GameState.HeroId }.Concat(state.Disciples.Where(member => member != null).Select(member => member.id))
+                .Select(id =>
                 {
-                    var badge = MapUi.Kit(button.transform, "出場", cardW - 120, cardH - 50, 110, 40, "Wood", false);
-                    MapUi.Text(badge, card.badge, 0, 0, 110, 40, 22, MapUi.Gold, TextAnchor.MiddleCenter, "Names");
-                }
+                    int order = picks.IndexOf(id);
+                    string badge = order < 0 ? "" : melee ? $"出場 {order + 1}" : order == 0 ? "甲方" : "乙方";
+                    float? chance = picks.Count == 1 && order < 0 ? state.SparOdds(id, picks[0]) : null;
+                    return PickerMember(state, id, "sparring", badge, AssignmentSystem.Block(state, id), chance, () => toggle(id));
+                });
+            foreach (var entry in SortRows(rows, sort))
+            {
+                var row = Rect("演武人選", list);
+                row.gameObject.AddComponent<LayoutElement>().preferredHeight = 70;
+                PickerBody(row, width, 70, entry);
             }
             var bar = MapUi.Kit(page, "演武底欄", 60, 860, 1800, 110, "Wood", false);
             MapUi.Text(bar, status, 24, 6, 1000, 50, 23, MapUi.Paper);

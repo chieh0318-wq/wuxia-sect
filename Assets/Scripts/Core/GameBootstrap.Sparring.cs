@@ -10,6 +10,7 @@ namespace Wuxia
     {
         private readonly List<string> sparPicks = new();
         private bool sparMelee;
+        private SectUI.PickerSort sparSort = new();
 
         private void StartSparring()
         {
@@ -17,6 +18,7 @@ namespace Wuxia
             LeaveCourtyardForScene();
             ui.CloseModal(force: true);
             sparPicks.Clear();
+            sparSort = new SectUI.PickerSort();
             ui.Scene.Begin("山門演武・同門切磋", $"消耗　行動力 {state.SparApCost}・糧食 {state.SparFoodCost}　{state.DateWithDay}",
                 "sect_sparring");
             ShowSparPicker();
@@ -24,34 +26,13 @@ namespace Wuxia
 
         private void ShowSparPicker()
         {
-            var cards = state.SparCandidates.Where(id => AssignmentSystem.Block(state, id) == null).Select(id =>
-            {
-                int order = sparPicks.IndexOf(id);
-                var member = state.Disciples.FirstOrDefault(d => d.id == id);
-                string note = id == GameState.HeroId
-                    ? $"戰力 {state.SparPower(id):0}　傷勢 {state.Protagonist.injury}"
-                    : $"戰力 {state.SparPower(id):0}　好感 {CastDialogue.Score(state, member)}　傷勢 {member?.injury ?? 0}";
-                note += $"　餘 {AssignmentSystem.Remaining(state, id)} 次";
-                if (sparPicks.Count == 1 && order < 0)
-                    note += $"\n對{state.SparName(sparPicks[0])}勝率 {state.SparOdds(id, sparPicks[0]):P0}";
-                return new SparCard
-                {
-                    id = id, name = state.SparName(id), selected = order >= 0,
-                    title = id == GameState.HeroId ? state.Protagonist.title : member?.title,
-                    line = state.SparLine(id), note = note,
-                    badge = order < 0 ? null : sparMelee ? $"出場 {order + 1}" : order == 0 ? "甲方" : "乙方",
-                    portrait = id == GameState.HeroId
-                        ? PortraitService.Resolve(PortraitService.IdOrDefault(state.Protagonist.portrait, state.Protagonist.lookId), state.Protagonist.gender)
-                        : PortraitService.Resolve(PortraitService.IdOrDefault(member?.portrait, id), member?.gender)
-                };
-            }).ToList();
             string block = state.SparBlock(sparPicks, sparMelee);
             string lineup = sparPicks.Count == 0 ? "點選出場的同門" : string.Join(sparMelee ? "、" : " 對 ", sparPicks.Select(state.SparName));
             if (!sparMelee && sparPicks.Count == 2)
                 lineup += $"　（{state.SparName(sparPicks[0])}勝率 {state.SparOdds(sparPicks[0], sparPicks[1]):P0}）";
             string status = $"{lineup}　｜　行動力 {state.ActionPoints}／{state.ApMax}　糧食 {state.Food}";
             bool heroIn = sparPicks.Contains(GameState.HeroId);
-            ui.ShowSparPicker(cards, sparMelee, status, block, ToggleSpar, melee =>
+            ui.ShowSparPicker(state, sparPicks, sparSort, ShowSparPicker, sparMelee, status, block, ToggleSpar, melee =>
             {
                 sparMelee = melee;
                 while (sparPicks.Count > (melee ? 4 : 2)) sparPicks.RemoveAt(0);

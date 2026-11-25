@@ -76,7 +76,7 @@ namespace Wuxia
             return Remaining(state, id) == 0 ? "本月次數已用完" : null;
         }
 
-        internal static bool Commit(GameState state, IEnumerable<string> ids)
+        internal static bool Commit(GameState state, IEnumerable<string> ids, string action = null)
         {
             var party = ids.Distinct().ToArray();
             if (party.Length == 0 || party.Any(id => Block(state, id) != null)) return false;
@@ -89,6 +89,7 @@ namespace Wuxia
                     record.used = 0;
                 }
                 record.used++;
+                if (action != null) state.PracticeWork(id, Relevance(action).Skill);
             }
             return true;
         }
@@ -123,9 +124,7 @@ namespace Wuxia
         internal static int Eloquence(GameState state, string id) =>
             Attribute(state, id, "cha") + Attribute(state, id, "wit") / 2;
 
-        internal static (float Success, float Quality, string Detail) Predict(GameState state, string actionId, string id)
-        {
-            var (skill, attribute) = actionId switch
+        internal static (string Skill, string Attribute) Relevance(string actionId) => actionId switch
             {
                 "forge" or "forge_gear" => ("forging", "str"),
                 "alchemy" => ("alchemy", "wit"),
@@ -137,16 +136,26 @@ namespace Wuxia
                 "seclusion" => ("neigong", "qi"),
                 "gather_rumors" => ("commerce", "cha"),
                 "explore" or "secret_realm" => ("qinggong", "luk"),
-                _ => ("commerce", "wit")
+                "council" or "decree" => ("commerce", "cha"),
+                "lodge" => ("construction", "wit"),
+                _ => (null, "wit")
             };
+
+        internal static (float Success, float Quality, string Detail) Predict(GameState state, string actionId, string id)
+        {
+            var (skill, attribute) = Relevance(actionId);
             int rank = Skill(state, id, skill);
             int value = attribute == "cha" ? Eloquence(state, id) : Attribute(state, id, attribute);
             int basis = attribute == "cha" ? 15 : 10;
             float quality = AttributeSystem.WorkQuality(rank, value, basis);
             string talentKey = actionId == "diplomacy" ? "diplomacy" : skill == "forging" ? "forge" : skill;
-            quality *= 1 + state.TalentValue(id, talentKey, 20) / 100f;
-            float success = actionId is "explore" or "secret_realm"
-                ? SecretRealms.Chance(state, new RealmChoice { attr = "luk" }, 0, id) : 1;
+            quality *= 1 + (talentKey == null ? 0 : state.TalentValue(id, talentKey, 20)) / 100f;
+            float success = actionId switch
+            {
+                "explore" => state.PatrolChance(id),
+                "gather_rumors" => state.RumorDiscoveryChance(id),
+                _ => 1
+            };
             string detail = $"{EffectText.LineName(skill)} {RankSystem.At(rank)}・{(attribute == "cha" ? "口才" : AttributeSystem.Names[AttributeSystem.Index(attribute)])} {value}";
             return (success, quality, detail);
         }

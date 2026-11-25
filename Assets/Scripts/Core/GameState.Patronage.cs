@@ -41,7 +41,7 @@ namespace Wuxia
             var terms = Patronage(faction);
             string block = PatronBlock(faction);
             if (block != null) return block;
-            if (!AssignmentSystem.Commit(this, new[] { id })) return "使者無法出勤。";
+            if (!AssignmentSystem.Commit(this, new[] { id }, "diplomacy")) return "使者無法出勤。";
             if (!TrySpendAp(1, "patronage:" + faction.id)) return "行動力不足。";
             if (UnityEngine.Random.value > PatronChance(id)) return $"{faction.Label}未允所請。";
             AssignmentSystem.Credit(this, id, 2);

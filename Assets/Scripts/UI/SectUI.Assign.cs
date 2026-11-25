@@ -11,6 +11,7 @@ namespace Wuxia
             Action<string[]> onConfirm, Action onBack = null, Func<string, float> chance = null)
         {
             var picked = new List<string>();
+            var sort = new PickerSort();
             void Back()
             {
                 AssignmentBack = null;
@@ -29,26 +30,26 @@ namespace Wuxia
                 ShowCreation(title, new[] { limit == 1 ? "挑選一位執行此事。"
                     : actionId == "campaign" ? $"可派 1～{limit} 位將領，首選者為主將。"
                     : $"可派 1～{limit} 人。首選者領隊，戰鬥與途中判定使用此次隊伍。" }, buttons, null);
-                foreach (string id in new[] { GameState.HeroId }.Concat(state.Disciples.Select(member => member.id)))
+                var ids = new[] { GameState.HeroId }.Concat(state.Disciples.Where(member => member != null).Select(member => member.id)).ToArray();
+                float width = creationListWidth - 12;
+                AssignmentOutcomeTable(state, actionId, picked.FirstOrDefault() ?? GameState.HeroId);
+                PickerHeader(CreationRow("門人欄目", 42), width, sort, Draw, false);
+                var rows = ids.Select(id =>
                 {
-                    var rank = AssignmentSystem.RankOf(state, id);
-                    var prediction = AssignmentSystem.Predict(state, actionId, id);
-                    string block = AssignmentSystem.Block(state, id);
                     int index = picked.IndexOf(id);
-                    string mark = index < 0 ? "" : index == 0 ? "【領隊】" : "【同行】";
-                    if (actionId == "campaign" && index >= 0) mark = index == 0 ? "【主將】" : "【將領】";
-                    string condition = limit > 1 && actionId == "explore" ? "（幸運判定參考）" : "";
-                    string preview = actionId == "campaign" && chance == null
-                        ? $"可帶兵 {SectCampaign.CommandCapacity(state, id)}・統率依悟性與魅力計算" : $"{prediction.Detail}\n預估成功率 {chance?.Invoke(id) ?? prediction.Success:P0}{condition}　預估品質 {prediction.Quality:P0}";
-                    CreationChoice($"{mark}{state.SparName(id)}　{rank.Name}　餘 {AssignmentSystem.Remaining(state, id)}／{rank.Monthly} 次",
-                        block ?? preview, null, block == null ? (Action)(() =>
-                        {
-                            if (index >= 0) picked.RemoveAt(index);
-                            else if (limit == 1) { picked.Clear(); picked.Add(id); }
-                            else if (picked.Count < limit) picked.Add(id);
-                            Draw();
-                        }) : null, picked: index >= 0);
-                }
+                    string mark = index < 0 ? "" : actionId == "campaign"
+                        ? (index == 0 ? "主將" : "將領") : (index == 0 ? "領隊" : "同行");
+                    return PickerMember(state, id, actionId, mark, AssignmentSystem.Block(state, id), chance?.Invoke(id), () =>
+                    {
+                        if (index >= 0) picked.RemoveAt(index);
+                        else if (limit == 1) { picked.Clear(); picked.Add(id); }
+                        else if (picked.Count < limit) picked.Add(id);
+                        Draw();
+                    });
+                });
+                float height = actionId == "build" ? 96 : 68;
+                foreach (var row in SortRows(rows, sort))
+                    PickerBody(CreationRow("門人", height), width, height, row);
             }
             Draw();
             AssignmentBack = Back;

@@ -112,8 +112,8 @@ namespace Wuxia
             float room = shell.rect.height - (showPicks ? PicksFooter : 12);
             float fit = room > 1 && room < CardContentHeight ? room / CardContentHeight : 1f;
             var card = Rect("人物卡內容", shell);
+            card.pivot = new Vector2(.5f, 1); // before the offsets, so the block hangs from the card's top edge
             Anchor(card, Vector2.up, Vector2.one, new(0, -CardContentHeight), Vector2.zero);
-            card.pivot = new Vector2(.5f, 1);
             card.localScale = new Vector3(fit, fit, 1);
 
             var frame = Rect("肖像", card);

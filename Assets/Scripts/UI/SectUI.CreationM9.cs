@@ -92,7 +92,14 @@ namespace Wuxia
         /// <summary>Scrollable 3-column talent pane docked below pinned SkillTiles (matches CreationArts height/UX).</summary>
         internal void CreationTalentScroll(CreationOption[] options, float scrollPos, Action<CreationOption> draw)
         {
-            var row = CreationRow("可選天賦捲軸", 316); // v1126 #2: the 主修 row sits above the skill tiles
+            // v1126 #2: the 主修 row sits above the skill tiles. v1126c PF: with the picks moved into the card's
+            // drop-down, the list takes whatever height the page has left below the rows above it (at least 316).
+            float used = 8;
+            foreach (Transform child in modalList)
+                if (child.gameObject.activeSelf && child.GetComponent<LayoutElement>() is { } above)
+                    used += above.preferredHeight + 9;
+            float room = ((RectTransform)modalList.parent).rect.height - used - 2;
+            var row = CreationRow("可選天賦捲軸", Mathf.Max(316, room));
             var pane = Panel("天賦列表框", row, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero);
             var content = ScrollList(pane, new(12, 12), new(-28, -12));
             var scroll = content.parent.GetComponent<ScrollRect>();
@@ -368,9 +375,9 @@ namespace Wuxia
                 bool hasDetail = !string.IsNullOrWhiteSpace(detail);
                 var title = Label(item, name, 20, TextAnchor.MiddleLeft);
                 title.color = CardGold;
-                title.fontStyle = FontStyle.Bold;
+                title.fontStyle = FontStyle.Normal;
                 Anchor(title.rectTransform, hasDetail ? Vector2.up : Vector2.zero, Vector2.one,
-                    new(left, hasDetail ? -30 : 0), new(-right, hasDetail ? -3 : 0));
+                    new(left, hasDetail ? -31 : 0), new(-right, hasDetail ? -2 : 0));
                 OneLine(title, name, rowWidth - left - right, 20);
                 if (hasDetail)
                 {
@@ -395,7 +402,7 @@ namespace Wuxia
             var caption = header.GetComponentInChildren<Text>();
             caption.alignment = TextAnchor.MiddleLeft;
             caption.color = CardGold;
-            caption.fontStyle = FontStyle.Bold;
+            caption.fontStyle = FontStyle.Normal;
             Anchor(caption.rectTransform, Vector2.zero, Vector2.one, new(14, 0), new(-40, 0));
             OneLine(caption, $"{heading}（{count}）", cardWidth - side * 2 - 14 - 40, 21);
             var arrow = Label(header, "▼▲", 20, TextAnchor.MiddleCenter);
@@ -485,6 +492,10 @@ namespace Wuxia
                         if (label.horizontalOverflow == HorizontalWrapMode.Overflow &&
                             label.preferredWidth > label.rectTransform.rect.width + 1)
                             problems.Add($"row text overflows: {label.text}");
+                    foreach (var label in panel.GetComponentsInChildren<Text>())
+                        if (label.text.Length > 0 && (label.cachedTextGenerator.characterCountVisible == 0 ||
+                            label.cachedTextGenerator.lineCount > 1))
+                            problems.Add($"row text hidden or wrapped: {label.text}");
                     detail += $" list={Fmt(p)}";
                 }
                 if (content != null) detail += $" content={Fmt(Box(content))} scale={content.localScale.x:0.00}";
@@ -505,7 +516,9 @@ namespace Wuxia
             label.font = UiKit.Font("Interface", font, value);
             label.resizeTextForBestFit = false;
             label.horizontalOverflow = HorizontalWrapMode.Overflow;
-            label.verticalOverflow = VerticalWrapMode.Truncate;
+            // No wrapping, so it is always one line; Truncate would hide that line whenever the font's line height
+            // is a hair taller than the box.
+            label.verticalOverflow = VerticalWrapMode.Overflow;
             label.fontSize = UiKit.Readable(size);
             if (Measure(value) > width && label.fontSize > UiKit.MinBody)
                 label.fontSize = UiKit.MinBody;

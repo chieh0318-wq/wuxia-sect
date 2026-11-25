@@ -102,10 +102,21 @@ namespace Wuxia
             selected.Clear();
             RollTalents();
             if (fillTalents)
-                foreach (var option in offered.Where(option => option.cost > 0).OrderBy(option => option.cost)
-                             .ThenByDescending(option => option.name.Length))
-                    if (CanPick(option, talents.budget, talents.maxPicks))
-                        selected.Add(option);
+            {
+                // Every pick the cap allows and the whole budget spent (天賦點 0／30, as in the report): each slot takes
+                // the dearest compatible talent that still leaves 1 point for every slot after it, so the list mixes
+                // the long legendary names (王佐之才, 天選之人…) with the 1-point ones.
+                var paid = offered.Where(option => option.cost > 0).OrderByDescending(option => option.cost)
+                    .ThenByDescending(option => option.name.Length).ToList();
+                while (selected.Count < talents.maxPicks)
+                {
+                    int later = talents.maxPicks - selected.Count - 1;
+                    var next = paid.FirstOrDefault(option => !selected.Contains(option) &&
+                        Spent + option.cost + later <= talents.budget && CanPick(option, talents.budget, talents.maxPicks));
+                    if (next == null) break;
+                    selected.Add(next);
+                }
+            }
             CompleteTalents();
             selected.Clear();
             var arts = (skills.skills ?? Array.Empty<CreationOption>()).Where(option => option != null && option.cost > 0);

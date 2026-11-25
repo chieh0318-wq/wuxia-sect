@@ -157,7 +157,7 @@ namespace Wuxia
         private void BuildCourtyard()
         {
             world = new Courtyard(transform, ui, state.CourtyardCells(),
-                state.SectScale);
+                state.Data.Start.slots.Where(slot => slot.scale <= state.SectScale).ToArray(), state.SectScale);
             controls?.SetCourtyardScale(state.SectScale);
             for (int index = 0; index < state.Buildings.Length; index++)
             {

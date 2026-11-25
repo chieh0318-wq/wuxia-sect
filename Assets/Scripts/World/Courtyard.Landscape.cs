@@ -17,7 +17,7 @@ namespace Wuxia
             Object.Destroy(courtyardEarth);
         }
 
-        private void BuildPackedEarth()
+        private void BuildPackedEarth(SlotData[] landscapeLots)
         {
             const int resolution = 1024;
             var earth = courtyardEarth = new Texture2D(resolution, resolution, TextureFormat.RGBA32, true);
@@ -44,7 +44,7 @@ namespace Wuxia
                 float pathWear = 1 - Mathf.Clamp01(wear / 1.5f + patch * .42f);
                 Color color = Color.Lerp(packed, pebbles, Mathf.Clamp01(patch * .76f - .13f + pathWear * .37f));
                 float edge = Mathf.Min(yardWidth / 2 - Mathf.Abs(x), 21 - Mathf.Abs(z));
-                foreach (SlotData slot in slots)
+                foreach (SlotData slot in landscapeLots)
                 {
                     // The stone outlines on the three southern plots stay clear of foundation staining.
                     if (string.IsNullOrEmpty(slot.buildingId))

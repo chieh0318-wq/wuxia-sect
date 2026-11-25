@@ -25,7 +25,7 @@ namespace Wuxia
 
         private readonly float yardWidth;
 
-        public Courtyard(Transform parent, SectUI ui, SlotData[] slots, int scale = 0)
+        public Courtyard(Transform parent, SectUI ui, SlotData[] slots, SlotData[] landscapeLots, int scale = 0)
         {
             root = new GameObject("Courtyard").transform;
             root.SetParent(parent, false);
@@ -39,7 +39,7 @@ namespace Wuxia
                 surfaces.Add(name, Resources.Load<Material>("Materials/" + name));
 
             BuildMeadow();
-            BuildPackedEarth();
+            BuildPackedEarth(landscapeLots);
             BuildMountainRidges();
             foreach (float lane in new[] { -14f, -4f, 6f, 14f })
                 Path(0, lane, yardWidth - 2, 1.4f);

@@ -127,6 +127,13 @@ namespace Wuxia
 
             float left = hasPortrait && !right ? portraitW + 70 : 60;
             float rightPad = hasPortrait && right ? portraitW + 70 : 60;
+            // v1126d CF2: the lacquer skin is partly see-through, so the bottom bar, the pinned objective and
+            // toasts showed through the spoken line. A solid ink backing keeps the text clean.
+            var backing = Rect("Talk backing", talkScreen);
+            Anchor(backing, Vector2.zero, Vector2.right, new(left + 6, 42), new(-rightPad - 6, 330));
+            var backingImage = backing.gameObject.AddComponent<Image>();
+            backingImage.color = new Color(.11f, .08f, .06f, 1f);
+            backingImage.raycastTarget = false;
             var box = Panel("Talk box", talkScreen, Vector2.zero, Vector2.right, new(left, 36), new(-rightPad, 336));
             UiKit.Skin(box.GetComponent<Image>(), "Lacquer");
             box.GetComponent<Image>().color = new Color(1, 1, 1, .96f);

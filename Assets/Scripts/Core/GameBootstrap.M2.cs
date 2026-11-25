@@ -62,7 +62,12 @@ namespace Wuxia
             if (!capturing && !state.Save())
                 lines.Add("自動存檔失敗。");
             // v1125 #20: travel month-ends use the same report scroll.
-            ui.ShowMonthScroll("旅途中的門派月報", lines, null, () =>
+            // v1126d CF2 #21: the foot shows the summed month-end net instead of a placeholder.
+            var net = reports.All(report => report.Net.HasValue)
+                ? (reports.Sum(report => report.Net.Value.silver), reports.Sum(report => report.Net.Value.food),
+                    reports.Sum(report => report.Net.Value.reputation))
+                : ((int, int, int)?)null;
+            ui.ShowMonthScroll("旅途中的門派月報", lines, net, () =>
             {
                 if (state.FactionWorld.envoy != null) ShowFactionEnvoy();
                 else ShowRequestedLeader();

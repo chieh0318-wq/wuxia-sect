@@ -65,9 +65,11 @@ namespace Wuxia
                 for (int month = 0; month < BalanceV1126c.Trade.startDelayMonths; month++)
                     if (clean.EndMonth().Lines.Contains(ledger))
                         throw new InvalidOperationException("Trade paid before its scheduled month.");
+                var before = (clean.Silver, clean.Food, clean.Reputation);
                 var report = clean.EndMonth();
                 if (!report.Lines.Contains(ledger)) throw new InvalidOperationException("Trade income did not reach the monthly report.");
-                ui.ShowMonthScroll("門派月報", report.Lines, null, null);
+                ui.ShowMonthScroll("門派月報", report.Lines,
+                    (clean.Silver - before.Silver, clean.Food - before.Food, clean.Reputation - before.Reputation), null);
             }),
             ("PH3_26_vertical_commands.png", () =>
             {

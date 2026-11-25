@@ -6,6 +6,8 @@ namespace Wuxia
     public sealed class MonthlyReport
     {
         public readonly List<string> Lines = new List<string>();
+        /// <summary>v1126d CF2 #21: silver / food / reputation change across this month end, when recorded.</summary>
+        public (int silver, int food, int reputation)? Net;
     }
 
     public sealed partial class GameState

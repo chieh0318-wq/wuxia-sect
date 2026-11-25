@@ -13,6 +13,8 @@ namespace Wuxia
     /// </summary>
     public sealed partial class GameBootstrap
     {
+        private (int silver, int food, int reputation) capturedMonthNet;
+
         private (string filename, Action show)[] V1125PaCaptureSteps() => new (string, Action)[]
         {
             ("A01_talent_cards.png", () =>
@@ -78,12 +80,14 @@ namespace Wuxia
                 var before = (state.Silver, state.Food, state.Reputation);
                 var report = state.EndMonth();
                 ui.Refresh(state);
+                capturedMonthNet = (state.Silver - before.Silver, state.Food - before.Food, state.Reputation - before.Reputation);
                 ShowMonthReport("門派月報", report.Lines, before, null);
             }),
             ("A13_advisor_summary.png", () =>
             {
                 ui.CloseModal(force: true);
-                PlayMonthTalks((-12, 8, 1), null);
+                // v1126d CF2: the 軍師 quotes the same net the A12 scroll shows (it was a fixed -12／+8／+1).
+                PlayMonthTalks(capturedMonthNet, null);
                 ui.RevealTalkForCapture();
             }),
             ("A14_new_month_opener.png", () =>

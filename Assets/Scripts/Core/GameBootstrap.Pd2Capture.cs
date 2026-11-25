@@ -121,11 +121,17 @@ namespace Wuxia
                     map.Close();
                     Toast.ClearAll();
                     ui.ShowQuestPanel(state);
+                    // v1126d CF2: route progress lives in the 任務 book since v1126c #10, not the pinned box.
+                    if (!ui.QuestBookOpen) ui.ToggleQuestBook();
                     var routes = state.Routes().ToArray();
-                    RequirePd2(routes.Length == 4 && routes.All(route => !string.IsNullOrEmpty(route.Progress)),
-                        "four routes have live progress");
+                    RequirePd2(routes.Length == 4 && routes.All(route => !string.IsNullOrEmpty(route.Progress)) && ui.QuestBookOpen,
+                        "four routes have live progress in the open quest book");
                 }),
-                ("PD2_09_xie_jin_arrival.png", () => CaptureFlow(female: true).CaptureFriendArrival(true)),
+                ("PD2_09_xie_jin_arrival.png", () =>
+                {
+                    ui.CloseQuestBook();
+                    CaptureFlow(female: true).CaptureFriendArrival(true);
+                }),
                 ("PD2_10_xie_yun_arrival.png", () =>
                 {
                     state = previous;

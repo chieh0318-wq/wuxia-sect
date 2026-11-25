@@ -8,7 +8,7 @@ namespace Wuxia
     /// <summary>
     /// v1125 #21: stacked notice slips. Each slip grows with its text (never overflows), shows an item / resource
     /// icon on the left with a quality-coloured rim, fades out after ~3.5 s, and closes at once on a left or right
-    /// click. New slips appear at the bottom and push older ones upward; at most four are shown.
+    /// click. The stack hangs under the resource bar; new slips are added below older ones; at most four are shown.
     /// </summary>
     internal static class Toast
     {
@@ -25,12 +25,14 @@ namespace Wuxia
             font = fallback;
             column = new GameObject("Toast stack", typeof(RectTransform)).GetComponent<RectTransform>();
             column.SetParent(canvas, false);
-            column.anchorMin = column.anchorMax = new Vector2(.5f, 0);
-            column.pivot = new Vector2(.5f, 0);
-            column.anchoredPosition = new Vector2(0, 250);
+            // v1126d CF2: hang the stack just under the resource bar. At the old spot (250 px above the bottom)
+            // slips covered the courtyard talk box and the lit build plots while the guide was running.
+            column.anchorMin = column.anchorMax = new Vector2(.5f, 1);
+            column.pivot = new Vector2(.5f, 1);
+            column.anchoredPosition = new Vector2(0, -112);
             column.sizeDelta = new Vector2(Width, 0);
             var stack = column.gameObject.AddComponent<VerticalLayoutGroup>();
-            stack.childAlignment = TextAnchor.LowerCenter;
+            stack.childAlignment = TextAnchor.UpperCenter;
             stack.spacing = 8;
             stack.childControlWidth = stack.childControlHeight = true;
             stack.childForceExpandWidth = true;

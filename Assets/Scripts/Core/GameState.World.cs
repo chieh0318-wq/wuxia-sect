@@ -61,7 +61,10 @@ namespace Wuxia
             {
                 day -= DaysPerMonth;
                 Story.day = 1;
-                PendingReports.Add(EndMonth());
+                var before = (Silver, Food, Reputation);
+                var report = EndMonth();
+                report.Net = (Silver - before.Silver, Food - before.Food, Reputation - before.Reputation);
+                PendingReports.Add(report);
             }
             Story.day = day;
         }

@@ -103,7 +103,7 @@ namespace Wuxia
                     }
                     if (raid.detected) report.Lines.Add($"敵軍以「{raid.counter}」干擾守備。");
                 }
-                report.Lines.Add($"{WarNode(raid.target)}告急！請從「征伐 → 山門軍情」迎戰。");
+                report.Lines.Add($"{WarNode(raid.target)}告急！請點選「軍情」迎戰。");
                 return;
             }
         }

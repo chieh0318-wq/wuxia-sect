@@ -210,6 +210,7 @@ namespace Wuxia
         {
             date.text = state.DateWithDay;
             apHud.Set(state.ActionPoints, state.ApMax, state.ApDescription);
+            RefreshRaidAlert(state);
             resourceLabels[0].text = $"銀兩 {state.Silver}";
             resourceLabels[1].text = $"糧食 {state.Food}";
             resourceLabels[2].text = $"聲望 {state.Reputation}";

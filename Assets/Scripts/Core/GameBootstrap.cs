@@ -121,6 +121,7 @@ namespace Wuxia
             }
             ui.CloseTitle();
             ShowCommands();
+            ui.BindRaidAlert(OpenRaidAlert);
             ui.Refresh(state);
             courtyardReady = BootStep("courtyard", BuildCourtyard);
             if (!courtyardReady)
@@ -400,7 +401,6 @@ namespace Wuxia
                 }),
                 ("征伐", "前往江湖地圖調兵行軍", new[]
                 {
-                    ("山門軍情 ›", "查閱敵軍動向、指派守將與佈防", (System.Action)ShowRaidDesk, state.RaidReady),
                     ("開啟江湖地圖　›", "點選據點查看路線與出兵條件", (System.Action)ToggleWorldMap, false)
                 }),
                 ("修練", "研習藏經閣功法，或在山門切磋", new[]

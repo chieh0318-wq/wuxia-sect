@@ -45,6 +45,14 @@ namespace Wuxia
             return Story(id) != null ? id : fallback;
         }
 
+        internal static string FriendVowArt(string friendId, string heroLook)
+        {
+            bool maleAdviser = friendId == "friend_m";
+            string original = maleAdviser ? "cg_friend_vow_m" : "cg_friend_vow";
+            string defaultHero = maleAdviser ? "hero_f1" : "hero_m1";
+            return heroLook == defaultHero ? original : original + "_custom_hero";
+        }
+
         public static Texture2D Story(string id)
         {
             if (string.IsNullOrWhiteSpace(id)) return null;

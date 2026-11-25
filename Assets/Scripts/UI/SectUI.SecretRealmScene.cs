@@ -97,7 +97,7 @@ namespace Wuxia
             var head = MapUi.Kit(page, "刊首", 0, 0, W, 86, "Wood");
             MapUi.Text(head, title ?? "", 36, 0, 1100, 86, 40, MapUi.Paper, TextAnchor.MiddleLeft, "Titles");
             MapUi.Text(head, subtitle ?? "", 1100, 0, 784, 86, 24, MapUi.Gold, TextAnchor.MiddleRight);
-            if (figures)
+            if (figures && !RealmContent.Scene(sceneId).paintedCast)
             {
                 Figure(left, false, speakingSide == null || speakingSide == "left");
                 Figure(right, true, speakingSide == null || speakingSide == "right");

@@ -18,7 +18,8 @@ namespace Wuxia
             }
             string member = party[0];
             var art = state.CurrentStudy(member, out _);
-            float gain = state.TrainingGain(member, state.CurrentStudyLine(member), art);
+            var line = state.CurrentStudyLine(member);
+            float gain = GameState.PracticeProgressFor(line, state.TrainingGain(member, line, art));
             ui.ShowCreation("修習武學", new[] { state.StudyLabel(member), $"本次預估進度 +{gain:0.#}" },
                 new[] {
                     ("開始修習", (Action)(() => {

@@ -70,12 +70,15 @@ namespace Wuxia
             return $"已解除與{patron.Label}的約書，態度 −10。";
         }
 
+        private bool CanPayPatron(MapFaction patron, PatronageTerms terms, int silver, int food) =>
+            Attitude(patron) > -25 && silver >= terms.silver && food >= terms.food;
+
         internal void PatronMonth(MonthlyReport report)
         {
             var patron = Patron;
             var terms = Patronage(patron);
             if (terms == null) return;
-            if (Attitude(patron) <= -25 || Silver < terms.silver || Food < terms.food)
+            if (!CanPayPatron(patron, terms, Silver, Food))
             {
                 report.Lines.Add("敵意過深或貢賦不足，" + ReleasePatron());
                 return;

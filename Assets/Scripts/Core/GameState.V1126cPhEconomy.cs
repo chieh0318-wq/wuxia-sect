@@ -25,7 +25,7 @@ namespace Wuxia
             Mathf.Clamp(Mathf.RoundToInt(Mathf.Clamp(faction.money / 600, 5, 30) *
                 (100 + (Tie(faction.id)?.tributePct ?? 0)) / 100f), 5, 30);
 
-        internal (string source, int value)[] MonthlyResourceBreakdown(int resource)
+        internal (string source, int value)[] MonthlyResourceBreakdown(int resource, bool includePatron = true)
         {
             var rows = new List<(string, int)>();
             var (silver, food, reputation, _, upkeep, service) = BuildingMonth();
@@ -48,6 +48,7 @@ namespace Wuxia
                         Add($"朝貢・{faction.Label}", TributeIncomeOf(faction));
                 }
                 AddHallEffects("silver");
+                Add("山門地利", SiteMonthly.silver);
                 Add("去留約定", Story.monthlySilver);
                 rows.Add(("建築維護", -upkeep));
                 Add("建築整修", -service);
@@ -58,20 +59,29 @@ namespace Wuxia
                 Add("藏經閣工藝", techFood - food - heldFood);
                 Add("據點上繳", heldFood);
                 AddHallEffects("food");
+                Add("山門地利", SiteMonthly.food);
                 Add("去留約定", Story.monthlyFood);
                 rows.Add(("弟子口糧", -MonthlyRations));
             }
             if (resource == 2)
             {
                 rows.Add(("建築產出", reputation));
-                Add("銀兩不足", Silver + MonthlyResourceBreakdown(0).Sum(row => row.value) < 0 ? -1 : 0);
-                Add("糧食不足", Food + MonthlyResourceBreakdown(1).Sum(row => row.value) < 0 ? -1 : 0);
+                Add("銀兩不足", Silver + MonthlyResourceBreakdown(0, false).Sum(row => row.value) < 0 ? -1 : 0);
+                Add("糧食不足", Food + MonthlyResourceBreakdown(1, false).Sum(row => row.value) < 0 ? -1 : 0);
             }
             if (resource == 3) rows.Add(("每月固定增減", 0));
             if (resource == 4)
             {
                 rows.Add(("月底重置當月餘額", -ActionPoints));
                 rows.Add(("次月行動力上限", ApMax));
+            }
+            if (includePatron && resource is 0 or 1 && Patron is { } patron && Patronage(patron) is { } terms)
+            {
+                int delta = rows.Sum(row => row.Item2);
+                int silverOnHand = Silver + (resource == 0 ? delta : MonthlyResourceBreakdown(0, false).Sum(row => row.value));
+                int foodOnHand = Food + (resource == 1 ? delta : MonthlyResourceBreakdown(1, false).Sum(row => row.value));
+                if (CanPayPatron(patron, terms, Mathf.Max(0, silverOnHand), Mathf.Max(0, foodOnHand)))
+                    Add($"上繳・{patron.Label}", resource == 0 ? -terms.silver : -terms.food);
             }
             return rows.ToArray();
 

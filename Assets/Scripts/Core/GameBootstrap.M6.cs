@@ -21,7 +21,7 @@ namespace Wuxia
             var header = new List<string>
             {
                 $"銀兩 {state.Silver}　行動力 {state.ActionPoints}／{state.ApMax}　已研習 {state.TechCount}／{GameState.TechTree.Length}" +
-                "　　點擊「可研習」即可研習；須依序研習，高重另需聲望與山門規模。"
+                "　　點擊「可研習」即可研習；須依序研習，高重另需聲望、山門規模與主修品階。"
             };
             if (!string.IsNullOrEmpty(techMessage))
                 header.Add(techMessage);
@@ -34,6 +34,9 @@ namespace Wuxia
                     string status = state.TechStatus(node);
                     if (unlocked && !affordable && state.TechGate(node) == null)
                         status += state.Silver < node.silver ? "　銀兩不足" : state.ActionPoints < node.ap ? "　行動力不足" : "";
+                    // v1126d CF2 #22: locked higher tiers also show their 聲望／山門／主修 gate up front.
+                    if (!researched && !unlocked && GameState.TechGateSummary(node) is string gates)
+                        status += $"\n另需{gates}";
                     return new TechCard
                     {
                         name = node.name, cost = $"銀 {node.silver}・行動力 {node.ap}", effect = node.effect,

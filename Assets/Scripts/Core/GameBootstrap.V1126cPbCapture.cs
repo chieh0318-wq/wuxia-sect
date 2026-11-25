@@ -14,7 +14,10 @@ namespace Wuxia
                 VerifyPb3Progression();
                 ui.CloseTitle();
                 EnsureCaptureCourtyard();
-                var sword = MartialArts.All.First(entry => entry.category == "sword" && entry.source == "creation");
+                // v1126d CF2: the full capture runs PD2 first, which leaves the hero on a field
+                // dispatch; that silently blocked the drill result and marked the hero 正在外派.
+                state.Story.fieldDispatches = Array.Empty<FieldDispatch>();
+                var sword =MartialArts.All.First(entry => entry.category == "sword" && entry.source == "creation");
                 var inner = MartialArts.All.First(entry => entry.category == "neigong" && entry.source == "creation");
                 state.Protagonist.skills = new[] { sword.id, inner.id };
                 var line = state.MemberLines(GameState.HeroId).First(entry => entry.id == "sword");
@@ -30,7 +33,11 @@ namespace Wuxia
             ("PB3_05_drill_result.png", () =>
             {
                 ui.CloseModal(force: true);
-                ExecuteAssignedAction(data.Actions.First(action => action.id == "train"), new[] { GameState.HeroId });
+                var train = data.Actions.First(action => action.id == "train");
+                string block = AssignmentSystem.Block(state, GameState.HeroId);
+                if (block != null || !state.CanPay(train.cost) || state.ActionPoints < train.apCost)
+                    throw new InvalidOperationException($"[PB3] drill cannot run: {block ?? "cost or AP"}");
+                ExecuteAssignedAction(train, new[] { GameState.HeroId });
             }),
             ("PB3_06_spar_picker.png", StartSparring),
             ("PB3_07_build_quality.png", () =>

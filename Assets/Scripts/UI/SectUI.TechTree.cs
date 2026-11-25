@@ -79,12 +79,15 @@ namespace Wuxia
                     effect.resizeTextMaxSize = 17;
                     effect.lineSpacing = .78f;
                     effect.verticalOverflow = VerticalWrapMode.Truncate;
-                    Anchor(effect.rectTransform, Vector2.zero, Vector2.one, new(12, 31), new(-8, -57));
+                    // v1126d CF2 #22: a locked card's status adds a second line with its 聲望／山門／主修 gate.
+                    bool twoLine = node.status?.Contains('\n') == true;
+                    Anchor(effect.rectTransform, Vector2.zero, Vector2.one, new(12, twoLine ? 50 : 31), new(-8, -57));
                     var status = Label(card, node.status, 18, TextAnchor.MiddleLeft);
                     status.color = node.researched ? TechDone : node.unlocked ? TechOpen : TechLocked;
                     status.resizeTextMinSize = 15;
                     status.resizeTextMaxSize = 18;
-                    Anchor(status.rectTransform, Vector2.zero, Vector2.right, new(12, 5), new(-8, 27));
+                    status.lineSpacing = twoLine ? .9f : 1f;
+                    Anchor(status.rectTransform, Vector2.zero, Vector2.right, new(12, 4), new(-8, twoLine ? 48 : 27));
                     if (index == branch.nodes.Length - 1)
                         continue;
                     // Connector: a short ink rule ending in an arrow head, lit once the left node is learned.

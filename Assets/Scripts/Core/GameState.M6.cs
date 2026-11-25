@@ -113,6 +113,16 @@ namespace Wuxia
             return needs.Count == 0 ? null : string.Join("、", needs).Replace("、需", "、");
         }
 
+        /// <summary>v1126d CF2: every 聲望 / 山門規模 / 主修 requirement of a node, met or not (null when none).</summary>
+        internal static string TechGateSummary(TechNode node)
+        {
+            var needs = new List<string>(3);
+            if (node.minReputation > 0) needs.Add($"聲望{node.minReputation}");
+            if (node.minScale > 0) needs.Add(Scales[Mathf.Clamp(node.minScale, 0, Scales.Length - 1)].name);
+            if (node.minHeroTier > 0) needs.Add($"主修{RankSystem.At(node.minHeroTier)}");
+            return needs.Count == 0 ? null : string.Join("・", needs);
+        }
+
         private float TechValue(string id, Func<TechNode, float> pick) => HasTech(id) && Tech(id) is { } node ? pick(node) : 0;
 
         internal static TechNode Tech(string id) => Array.Find(TechTree, node => node.id == id);

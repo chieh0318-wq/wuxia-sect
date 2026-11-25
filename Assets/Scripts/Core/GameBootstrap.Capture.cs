@@ -513,12 +513,22 @@ namespace Wuxia
                 tutorial.Record("click_building", "hall");
                 tutorial.Record("talk_disciple");
                 BeginBuild(build);
-                buildChoice = System.Array.Find(data.Buildings, building => building.id == "council");
+                // v1126c courtyard cells: a fresh sect uses 15 of its 17 land cells, so the 3-cell 議事堂 no
+                // longer fits. Build what the tutorial itself recommends, on a plot that holds it.
+                buildChoice = TutorialAdvice.Recommend(state)?.building;
                 if (buildChoice == null)
-                    throw new System.InvalidOperationException("Council configuration is unavailable.");
+                    throw new System.InvalidOperationException("The tutorial has no affordable building to recommend.");
+                string built = buildChoice.id;
+                for (int cell = 0; cell < state.Buildings.Length; cell++)
+                    if (state.Buildings[cell] == null && state.PlotUnlocked(cell) && state.CanPlaceInCells(cell, buildChoice)) { plot = cell; break; }
+                var buildCost = BuildTotal(buildChoice);
+                string placement = $"{built} at plot {plot}: fits={state.CanPlaceInCells(plot, buildChoice)} available={state.IsAvailable(buildChoice)} " +
+                    $"heroBlock={AssignmentSystem.Block(state, GameState.HeroId) ?? "none"} silver={state.Silver}/{buildCost.silver} " +
+                    $"food={state.Food}/{buildCost.food} ap={state.ActionPoints}";
                 PlaceBuilding(plot);
-                if (state.Buildings[plot]?.id != "council" || state.TrySpendAp(state.ApMax + 1, "capture-check"))
-                    throw new System.InvalidOperationException("AP spending or building placement failed.");
+                if (state.Buildings[plot]?.id != built || state.TrySpendAp(state.ApMax + 1, "capture-check"))
+                    throw new System.InvalidOperationException("AP spending or building placement failed (" + placement + ").");
+                Debug.Log($"[Capture] Tutorial build smoke placed {state.Buildings[plot].name} ({placement}).");
 
                 state.TrySpendAp(state.ActionPoints, "capture-check");
                 var method = activeMethod;

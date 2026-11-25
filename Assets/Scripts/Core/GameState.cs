@@ -191,6 +191,7 @@ namespace Wuxia
             DiplomacyMonth(report);
             RoutesMonth(report); // v1126b 決定 3: route counters (trade ages, trade ring, hold months)
             HallsMonth(report); // v1124 C18
+            SiteMonth(report); // v1126c PC3 #8: the site's monthly yield (GameState.V1126cPcSite.cs)
             if (Story.monthlyFood != 0 || Story.monthlySilver != 0)
             {
                 Food += Story.monthlyFood;

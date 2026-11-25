@@ -85,7 +85,8 @@ namespace Wuxia
                 if (Input.GetMouseButtonUp(1) && rightArmed)
                 {
                     rightArmed = false;
-                    clickResult = (Input.mousePosition - rightPress).sqrMagnitude <= 144;
+                    clickResult = !swallowRight && (Input.mousePosition - rightPress).sqrMagnitude <= 144;
+                    swallowRight = false;
                 }
                 return clickResult;
             }
@@ -93,6 +94,10 @@ namespace Wuxia
 
         private static int clickFrame = -1;
         private static bool clickResult;
+        private static bool swallowRight;
+
+        /// <summary>v1126c PC3 #4: a UI element took this right click (e.g. refund a picked item); its release is not 「上一步」.</summary>
+        internal static void SwallowRightClick() => swallowRight = true;
 
         /// <summary>Marks this frame's back input as handled so no second listener reacts to it.</summary>
         internal static void Consume() => consumedFrame = Time.frameCount;

@@ -134,29 +134,20 @@ namespace Wuxia
             press.transition = Selectable.Transition.None;
             press.onClick.AddListener(() => Press());
 
-            var plate = Panel("Talk nameplate", box, Vector2.up, Vector2.up, new(34, -30), new(470, 38), false);
-            UiKit.Skin(plate.GetComponent<Image>(), "Plaque");
-            string speaker = string.IsNullOrWhiteSpace(line.speaker) ? "旁白" : line.speaker;
-            var name = Label(plate, speaker, 30, TextAnchor.MiddleLeft);
-            name.font = UiKit.Font("Names", font, speaker);
-            name.color = CardGold;
-            name.fontStyle = FontStyle.Bold;
-            Anchor(name.rectTransform, Vector2.zero, Vector2.one, new(18, 0), new(-12, 0));
+            // v1126c PC3 #5: the shared compact plate and larger upright body text (旁白 included).
+            var plate = DialoguePlate(box, line.speaker, 34);
             if (!string.IsNullOrWhiteSpace(line.title))
             {
+                float titleLeft = 34 + plate.rect.width + 16;
                 var title = Label(box, line.title, 20, TextAnchor.MiddleLeft);
                 title.color = CardMuted;
-                Anchor(title.rectTransform, Vector2.up, Vector2.one, new(490, -30), new(-30, 4));
+                Anchor(title.rectTransform, Vector2.up, Vector2.one, new(titleLeft, -30), new(-30, 4));
             }
 
-            var body = Label(box, "", 28, TextAnchor.UpperLeft);
-            body.font = UiKit.Font("Dialogue", font, line.text);
+            var body = Label(box, "", DialogueStyle.BodySize, TextAnchor.UpperLeft);
             body.color = CardText;
-            body.horizontalOverflow = HorizontalWrapMode.Wrap;
-            body.verticalOverflow = VerticalWrapMode.Overflow;
-            body.resizeTextForBestFit = false;
-            body.lineSpacing = 1.12f;
-            Anchor(body.rectTransform, Vector2.zero, Vector2.one, new(44, 82), new(-36, -54));
+            DialogueBody(body, line.text);
+            Anchor(body.rectTransform, Vector2.zero, Vector2.one, new(44, 66), new(-36, -50));
 
             var hint = Label(box, pages > 1 ? $"{page}／{pages}　點擊繼續　右鍵關閉" : "點擊繼續　右鍵關閉", 18, TextAnchor.MiddleLeft);
             hint.color = CardMuted;
@@ -182,7 +173,7 @@ namespace Wuxia
             }
             // Legacy Text wraps only at spaces; no-break spaces keep the full line in one flowing paragraph.
             talkWriter = talkScreen.gameObject.AddComponent<TalkTypewriter>();
-            talkWriter.Begin(body, (line.text ?? "").Replace(' ', ' '), CharactersPerSecond);
+            talkWriter.Begin(body, DialogueStyle.Clean(line.text).Replace(' ', ' '), CharactersPerSecond);
 
             void Press()
             {

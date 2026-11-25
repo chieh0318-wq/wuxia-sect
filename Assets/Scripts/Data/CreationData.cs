@@ -174,6 +174,8 @@ namespace Wuxia
         /// <summary>Diplomacy: ties per faction and the pending 外交急報 (event id + target faction).</summary>
         public DiploTie[] ties = Array.Empty<DiploTie>();
         public string diploEvent, diploEventTarget;
+        /// <summary>v1126c PC3 #8: the chosen site's lasting monthly yield (prologue.json siteSilver / siteFood), paid every month.</summary>
+        public int siteSilver, siteFood;
     }
 
     [Serializable] public sealed class ManualPractice { public string id; public float experience; }

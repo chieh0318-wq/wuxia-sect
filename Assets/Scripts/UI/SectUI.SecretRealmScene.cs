@@ -146,18 +146,18 @@ namespace Wuxia
         private void DialogueBox(SceneLine line, float y = 708, float height = 268)
         {
             var paper = MapUi.Kit(page, "對白", 300, y, 1320, height, "Lacquer");
+            // v1126c PC3 #5 / #25: every speaker, 旁白 included, gets the shared compact plate and upright 32 px body.
             bool narrator = line.side == "narrator" || string.IsNullOrEmpty(line.name);
-            if (!narrator)
-            {
-                var plate = MapUi.Kit(page, "名牌", line.side == "right" ? 1240 : 330, y - 50, 360, 64, "Plaque");
-                MapUi.Text(plate, line.name, 14, 2, 332, 40, 30, MapUi.Paper, TextAnchor.MiddleCenter, "Names");
-                if (!string.IsNullOrEmpty(line.subtitle))
-                    MapUi.Text(plate, line.subtitle, 14, 38, 332, 24, 18, MapUi.Gold, TextAnchor.MiddleCenter);
-            }
-            var text = MapUi.Text(paper, line.text, 44, narrator ? 30 : 36, 1232, height - 60, 32,
-                MapUi.Paper, TextAnchor.UpperLeft, narrator ? "Narration" : "Dialogue");
+            string name = narrator ? "旁白" : line.name;
+            string subtitle = narrator ? null : line.subtitle;
+            float plateWidth = DialogueStyle.PlateWidth(name, subtitle);
+            DialogueStyle.MapPlate(page, name, line.side == "right" && !narrator ? 1590 - plateWidth : 330,
+                y - DialogueStyle.PlateLift, subtitle);
+            float top = string.IsNullOrEmpty(subtitle) ? 44 : 60;
+            var text = MapUi.Text(paper, DialogueStyle.Clean(line.text), 44, top, 1232, height - top - 16, DialogueStyle.BodySize,
+                MapUi.Paper, TextAnchor.UpperLeft, DialogueStyle.BodyFont);
             text.lineSpacing = 1.1f;
-            if (narrator) text.fontStyle = FontStyle.Italic;
+            text.fontStyle = FontStyle.Normal;
         }
 
         /// <summary>

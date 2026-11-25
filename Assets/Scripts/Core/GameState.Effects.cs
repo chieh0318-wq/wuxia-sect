@@ -27,6 +27,8 @@ namespace Wuxia
                     case "monthlyTerms": Story.monthlyTermsLeft = value; break;
                     case "monthlyFood": Story.monthlyFood += value; break;
                     case "monthlySilver": Story.monthlySilver += value; break;
+                    case "siteFood": Story.siteFood += value; break; // v1126c PC3 #8: site yield, every month
+                    case "siteSilver": Story.siteSilver += value; break;
                     case "apMax": Story.apBonus += value; break;
                     case "recruitPoolSize": Story.recruitPoolSize += value; break;
                     case "recruitCostPct": Story.recruitCostPct += value; break;

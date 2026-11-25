@@ -52,7 +52,10 @@ namespace Wuxia
             }
             attributeTipText.text = text;
             int lines = text.Split('\n').Length;
-            var size = new Vector2(440, lines * 25 + 26);
+            // v1126c PC3 #3: long formula lines wrap, so size the box from the wrapped text height.
+            float width = text.Length > 150 ? 600 : 440;
+            attributeTip.sizeDelta = new Vector2(width, 200);
+            var size = new Vector2(width, Mathf.Max(lines * 25, attributeTipText.preferredHeight) + 26);
             attributeTip.pivot = new Vector2(0, 1);
             attributeTip.anchorMin = attributeTip.anchorMax = new Vector2(.5f, .5f);
             attributeTip.sizeDelta = size;

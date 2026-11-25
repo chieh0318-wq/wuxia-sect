@@ -205,9 +205,10 @@ namespace Wuxia
                 var page = Page(stage, abroad, line.speaker);
                 bool onRight = line.speaker is "leader" or "messenger";
                 var paper = MapUi.Kit(page, "對白", onRight ? 48 : 376, 480, 1124, 310, "Lacquer");
-                var plaque = MapUi.Kit(paper, "名牌", 32, -22, 340, 62, "Plaque");
-                MapUi.Text(plaque, Speaker(line.speaker), 16, 4, 308, 54, 32, MapUi.Gold, role: "Names");
-                MapUi.Text(paper, Format(line), 36, 68, 1052, 218, 28, MapUi.Paper, TextAnchor.UpperLeft, "Narration");
+                // v1126c PC3 #5: the shared compact plate and upright 32 px body (旁白 included).
+                DialogueStyle.MapPlate(paper, Speaker(line.speaker), 32, -DialogueStyle.PlateLift);
+                MapUi.Text(paper, DialogueStyle.Clean(Format(line)), 36, 50, 1052, 240, DialogueStyle.BodySize, MapUi.Paper,
+                    TextAnchor.UpperLeft, DialogueStyle.BodyFont).lineSpacing = 1.1f;
                 string label = index + 1 < lines.Length ? "繼續" : stage == "結局" ? "收卷" :
                     council && incident == null ? "遣使" : "繼續";
                 var advance = MapUi.Button(page, label, 1266, 808, 204, 50, () => Draw(index + 1), MapUi.Red, 24);

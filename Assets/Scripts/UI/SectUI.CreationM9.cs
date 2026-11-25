@@ -169,7 +169,7 @@ namespace Wuxia
             ptsLbl.fontStyle = FontStyle.Bold;
             Anchor(ptsLbl.rectTransform, Vector2.zero, Vector2.one, new(64, 0), new(-12, 0));
 
-            var sub = Label(side, "來自先輩的遺澤，挑選對應裝備、丹藥或秘笈後即可開局帶入遊戲。通關秘境與攻討據點可累積更多永久積分。", 18, TextAnchor.UpperLeft);
+            var sub = Label(side, "左鍵點選加入；右鍵點已選物品退回一件、返還積分。通關秘境、攻討據點可累積更多永久積分。", 18, TextAnchor.UpperLeft);
             sub.color = CardMuted;
             sub.horizontalOverflow = HorizontalWrapMode.Wrap;
             sub.resizeTextForBestFit = false;
@@ -276,6 +276,12 @@ namespace Wuxia
 
                     if (qty > 0)
                     {
+                        // v1126c PC3 #4: right-click hands one back and refunds its points.
+                        tile.gameObject.AddComponent<RightClickRefund>().refund = () =>
+                        {
+                            focus(def);
+                            adjust(def, -1);
+                        };
                         var qtyBadge = Panel("數量", tile, Vector2.one, Vector2.one, new(-44, -34), new(-6, -6), false);
                         UiKit.Skin(qtyBadge.GetComponent<Image>(), "Seal");
                         var ql = Label(qtyBadge, $"×{qty}", 18, TextAnchor.MiddleCenter);
@@ -540,10 +546,10 @@ namespace Wuxia
         }
 
         internal void ShowSettlementMap(GameState state, StoryLocation[] sites, string prompt,
-            Action<StoryLocation> confirm, Action skip, bool previewFirst = false)
+            Action<StoryLocation> confirm, Action skip, bool previewFirst = false, StoryLocation focus = null)
         {
             var data = WorldMapData.Load();
-            StoryLocation focused = previewFirst ? sites.FirstOrDefault() : null;
+            StoryLocation focused = focus ?? (previewFirst ? sites.FirstOrDefault() : null);
             Draw();
 
             void Draw()
@@ -575,23 +581,45 @@ namespace Wuxia
                     Write("點選地圖上的地點，查看地勢、資源與附近勢力。", 24, 22, 150, CardText);
                     return;
                 }
-                Write($"{focused.name}　{focused.region}", 28, 16, 60, CardGold);
-                Write("物產　" + focused.resources, 20, 62, 102, CardText);
-                Write(focused.bonusText, 21, 110, 245, CardGold);
-                Write(focused.desc, 20, 246, 374, CardMuted);
-                Write("附近勢力・關係・距離", 22, 378, 415, CardGold);
+                Write($"{focused.name}　{focused.region}", 28, 10, 50, CardGold);
+                Write("物產　" + focused.resources, 19, 50, 76, CardText);
+                Write(focused.bonusText, 18, 78, 150, CardMuted);
+                // v1126c PC3 #8: every effect of this site as a number, read from the effect list SetLocation applies.
+                var effects = SiteEffects.Lines(focused.effects);
+                int effectTop = 152;
+                bool twoColumns = effects.Count > 4 && effects.All(line => line.Length <= 11);
+                for (int line = 0; line < effects.Count; line += twoColumns ? 2 : 1)
                 {
-                    // v1126 #10: relation colour, kind, strength and road distance for the four nearest powers.
-                    int top = 424;
-                    foreach (var (faction, hops, days) in NearbyPowers(data, focused.node, 4))
+                    WriteAt("・" + effects[line], 19, effectTop, effectTop + 25, new Color(.64f, .92f, .72f), 0, twoColumns ? .5f : 1);
+                    if (twoColumns && line + 1 < effects.Count)
+                        WriteAt("・" + effects[line + 1], 19, effectTop, effectTop + 25, new Color(.64f, .92f, .72f), .5f, 1);
+                    effectTop += 25;
+                }
+                Write(focused.desc, 18, effectTop + 6, 418, CardMuted);
+                Write("附近勢力・關係・路程（依圖上位置）", 21, 420, 450, CardGold);
+                {
+                    // v1126c PC3 #7: the four nearest seats by drawn map position (the same coordinates as the flags).
+                    int top = 454;
+                    foreach (var near in SiteGeography.Nearby(data, focused.node, 4))
                     {
+                        var faction = near.Faction;
                         string stance = faction.StanceWith(state.RelationShift(faction.id));
-                        string distance = hops == 0 ? "同地" : hops >= 99 ? "無路" : $"{hops} 格・{days} 日";
-                        Write($"{faction.Label}　{faction.RelationWith(state.RelationShift(faction.id))}　{distance}", 20, top, top + 28,
+                        string distance = near.Days == 0 ? "同地" : $"約 {near.Days} 日";
+                        Write($"{near.SeatNames}　{faction.RelationWith(state.RelationShift(faction.id))}　{distance}", 19, top, top + 26,
                             RelationColor(stance));
-                        Write($"{WorldMapScreen.KindName(faction)}・人馬約 {faction.disciples:N0}・聲望 {faction.reputation}", 18, top + 27, top + 52, CardMuted);
-                        top += 56;
+                        Write($"{WorldMapScreen.KindName(faction)}・人馬約 {faction.disciples:N0}・聲望 {faction.reputation}", 17, top + 25, top + 48, CardMuted);
+                        top += 50;
                     }
+                }
+
+                void WriteAt(string value, int size, int top, int bottom, Color color, float from, float to)
+                {
+                    var label = Label(detail, value ?? "", size, TextAnchor.UpperLeft);
+                    label.color = color;
+                    label.horizontalOverflow = HorizontalWrapMode.Wrap;
+                    label.verticalOverflow = VerticalWrapMode.Truncate;
+                    label.resizeTextMinSize = 15;
+                    Anchor(label.rectTransform, new(from, 1), new(to, 1), new(18, -bottom), new(-6, -top));
                 }
 
                 void Write(string value, int size, int top, int bottom, Color color)

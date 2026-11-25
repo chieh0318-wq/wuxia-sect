@@ -424,11 +424,12 @@
       "id": "taibai", "name": "太白山", "node": "taibai", "region": "關內道",
       "desc": "秦嶺主峰，六月積雪不化。山腰有座廢棄的道院，殿宇尚存。離長安不遠，官府的耳目也不遠。",
       "resources": "藥材、雪水、古松",
-      "bonusText": "藥材遍地，醫術與煉丹事半功倍；高寒清寂，弟子感悟機率 +4%。山高路險，糧食較缺。",
+      "bonusText": "藥材遍地，醫術與煉丹事半功倍；高寒清寂，弟子易生感悟。山高路險，糧食較缺。",
       "effects": [
         { "key": "insightChance", "value": 0.04, "ref": "" },
         { "key": "food", "value": -10, "ref": "" },
         { "key": "lineRank", "value": 1, "ref": "alchemy" },
+        { "key": "siteFood", "value": -1, "ref": "" },
         { "key": "flag", "value": 1, "ref": "site_taibai" }
       ],
       "image": "cg_new_mountain"
@@ -437,14 +438,46 @@
       "id": "cishan", "name": "磁山鐵冶", "node": "cishan", "region": "河北道",
       "desc": "太行東麓，滏水之濱。前朝留下的冶鐵莊院荒廢多年，爐基還在，山裡挖得出鐵礦與石炭。",
       "resources": "鐵礦、石炭",
-      "bonusText": "就地取鐵，興建費用 -10%，兵器坊收入更豐。太行山寨與范陽節度使府都在左近，樹大招風。",
+      "bonusText": "就地取鐵，興建省料；鐵器外銷，月入稍豐。太行山寨與范陽節度使府都在左近，樹大招風。",
       "effects": [
         { "key": "buildCostPct", "value": -10, "ref": "" },
         { "key": "silver", "value": 20, "ref": "" },
         { "key": "lineRank", "value": 1, "ref": "forging" },
         { "key": "relation", "value": -10, "ref": "taihang" },
         { "key": "insightChance", "value": 0.01, "ref": "" },
+        { "key": "siteSilver", "value": 2, "ref": "" },
         { "key": "flag", "value": 1, "ref": "site_cishan" }
+      ],
+      "image": "cg_new_mountain"
+    },
+    {
+      "id": "yanzhou", "name": "延州清涼山", "node": "yanzhou", "region": "關內道",
+      "desc": "黃土高原深處，延水繞山而過。崖上鑿有前朝石窟古寺，窯洞冬暖夏涼；塬上旱作，收成全看老天。",
+      "resources": "窯洞、石窟、旱田",
+      "bonusText": "依崖鑿窯為舍，興建省料；邊地子弟尚武，投師者眾，操練也勤。塬上旱作，糧食較缺；朔方、河東兩鎮兵馬往來，不得不防。",
+      "effects": [
+        { "key": "buildCostPct", "value": -8, "ref": "" },
+        { "key": "recruitPoolSize", "value": 1, "ref": "" },
+        { "key": "trainBonusPct", "value": 5, "ref": "" },
+        { "key": "food", "value": -10, "ref": "" },
+        { "key": "siteFood", "value": -1, "ref": "" },
+        { "key": "relation", "value": -5, "ref": "heishan" },
+        { "key": "flag", "value": 1, "ref": "site_yanzhou" }
+      ],
+      "image": "cg_new_mountain"
+    },
+    {
+      "id": "hetao", "name": "河套渠田", "node": "hetao", "region": "關內道",
+      "desc": "黃河至此折而東流，灌渠縱橫，水草豐美。昔為朔方軍屯田之地，如今牧馬人家散居河曲，商隊往來受降城。",
+      "resources": "渠田、牧馬、黃河",
+      "bonusText": "黃河百害，唯富一套：渠田豐饒，糧食月月有餘。塞外偏遠，中原江湖少有人知；隴右馬賊不時越河劫掠。",
+      "effects": [
+        { "key": "food", "value": 30, "ref": "" },
+        { "key": "siteFood", "value": 4, "ref": "" },
+        { "key": "silver", "value": 10, "ref": "" },
+        { "key": "reputation", "value": -3, "ref": "" },
+        { "key": "relation", "value": -10, "ref": "longyou_mazei" },
+        { "key": "flag", "value": 1, "ref": "site_hetao" }
       ],
       "image": "cg_new_mountain"
     },
@@ -452,11 +485,12 @@
       "id": "longzhong", "name": "隆中", "node": "longzhong", "region": "山南道",
       "desc": "襄州城西二十里，諸葛武侯躬耕之地。漢水灌田，阡陌縱橫，村塾裡的孩子都能背〈出師表〉。",
       "resources": "良田、漢水",
-      "bonusText": "良田千畝，糧食充裕；四方子弟慕名而來，候選弟子 +1，感悟機率 +2%。",
+      "bonusText": "良田千畝，糧食充裕；武侯故地，四方子弟慕名而來。",
       "effects": [
         { "key": "food", "value": 50, "ref": "" },
         { "key": "recruitPoolSize", "value": 1, "ref": "" },
         { "key": "insightChance", "value": 0.02, "ref": "" },
+        { "key": "siteFood", "value": 3, "ref": "" },
         { "key": "flag", "value": 1, "ref": "site_longzhong" }
       ],
       "image": "cg_new_mountain"
@@ -465,11 +499,12 @@
       "id": "mogan", "name": "莫干山", "node": "mogan", "region": "江南道",
       "desc": "吳越之間的竹海，相傳干將莫邪在此鑄劍。竹林深處有座舊莊，往杭州、蘇州的水路三日可達。",
       "resources": "竹林、商路、劍池",
-      "bonusText": "竹木取用不盡，興建費用 -15%；近江南商路，月入稍豐；竹聲如劍，感悟機率 +3%。",
+      "bonusText": "竹木取用不盡，興建省料；近江南商路，月入稍豐；竹聲如劍，令人感悟。",
       "effects": [
         { "key": "buildCostPct", "value": -15, "ref": "" },
         { "key": "silver", "value": 20, "ref": "" },
         { "key": "insightChance", "value": 0.03, "ref": "" },
+        { "key": "siteSilver", "value": 2, "ref": "" },
         { "key": "flag", "value": 1, "ref": "site_mogan" }
       ],
       "image": "cg_new_mountain"
@@ -478,12 +513,13 @@
       "id": "yishan", "name": "黟山湯泉", "node": "yishan", "region": "江南道",
       "desc": "歙州黟山，奇峰插雲，雲海常年不散。山腳湯泉四季溫熱，可療筋骨舊傷。只是山路難行，田少糧貴。",
       "resources": "溫泉、奇峰、雲海",
-      "bonusText": "湯泉養傷，操練收效 +10%；雲海奇峰，感悟機率 +7%。地僻田少，銀糧皆缺。",
+      "bonusText": "湯泉養傷，操練事半功倍；雲海奇峰，最易感悟。地僻田少，銀糧皆缺。",
       "effects": [
         { "key": "insightChance", "value": 0.07, "ref": "" },
         { "key": "trainBonusPct", "value": 10, "ref": "" },
         { "key": "food", "value": -15, "ref": "" },
         { "key": "silver", "value": -10, "ref": "" },
+        { "key": "siteFood", "value": -1, "ref": "" },
         { "key": "flag", "value": 1, "ref": "site_yishan" }
       ],
       "image": "cg_new_mountain"
@@ -492,12 +528,13 @@
       "id": "fuyi", "name": "富義鹽井", "node": "fuyi", "region": "劍南道",
       "desc": "瀘州富義監，鹵水自井中汲出，煮成井鹽，蜀中商旅雲集。鹽是白的，錢是白的，眼紅的人卻都是黑的。",
       "resources": "鹽井、商路",
-      "bonusText": "井鹽生財，開局銀兩大增、經商見長。豪強與鹽商覬覦，江湖名聲也沾了銅臭。",
+      "bonusText": "井鹽生財，銀兩源源不絕、經商見長。豪強與鹽商覬覦，江湖名聲也沾了銅臭。",
       "effects": [
         { "key": "silver", "value": 70, "ref": "" },
         { "key": "lineRank", "value": 1, "ref": "commerce" },
         { "key": "reputation", "value": -5, "ref": "" },
         { "key": "relation", "value": -10, "ref": "yanbang" },
+        { "key": "siteSilver", "value": 3, "ref": "" },
         { "key": "flag", "value": 1, "ref": "site_fuyi" }
       ],
       "image": "cg_new_mountain"

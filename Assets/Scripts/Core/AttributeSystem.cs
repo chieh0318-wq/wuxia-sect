@@ -48,6 +48,9 @@ namespace Wuxia
         public const float FortuneGrowth = 1.04f, BaseFortune = .05f, BaseCrit = .08f, CritPerPoint = .008f, GraveToLightPerPoint = .02f;
         /// <summary>Base-10 combat figures (attack 38, speed 20, hp 180, qi 130, qi power 25).</summary>
         public const int BaseAttack = 38, BaseSpeed = 20, BaseHp = 180, BaseQi = 130, BaseQiPower = 25;
+        /// <summary>v1126c PC3 #3: skill-line terms of the derived figures (輕功 / 內功 tier index C=0 … SSS), named so tooltips read them.</summary>
+        public const int QinggongSpeedPerTier = 3, NeigongQiPerTier = 10;
+        public const float BaseDodge = .05f, QinggongDodgePerTier = .01f, FortuneCap = .6f;
 
         public static readonly string[] Benefits =
         {
@@ -134,14 +137,14 @@ namespace Wuxia
             int Tier(string id) => RankSystem.Index(Array.Find(lines, line => line?.id == id)?.rank);
             int str = attrs[0], agi = attrs[1], con = attrs[2], qi = attrs[3], wit = attrs[4], luk = attrs[6];
             int attack = Mathf.RoundToInt(BaseAttack * Scale(str, OuterPerPoint) * martial);
-            int speed = Mathf.RoundToInt(BaseSpeed * Scale(agi, SpeedPerPoint)) + Tier("qinggong") * 3;
-            float dodge = Mathf.Clamp(.05f + (agi - Base) * DodgePerPoint + Tier("qinggong") * .01f, 0, DodgeCap);
+            int speed = Mathf.RoundToInt(BaseSpeed * Scale(agi, SpeedPerPoint)) + Tier("qinggong") * QinggongSpeedPerTier;
+            float dodge = Mathf.Clamp(BaseDodge + (agi - Base) * DodgePerPoint + Tier("qinggong") * QinggongDodgePerTier, 0, DodgeCap);
             float hit = (agi - Base) * HitPerPoint;
             int maxHp = Mathf.RoundToInt(BaseHp * Scale(con, HpPerPoint));
-            int maxQi = Mathf.RoundToInt(BaseQi * Scale(qi, QiPerPoint)) + Tier("neigong") * 10;
+            int maxQi = Mathf.RoundToInt(BaseQi * Scale(qi, QiPerPoint)) + Tier("neigong") * NeigongQiPerTier;
             int qiPower = Mathf.RoundToInt(BaseQiPower * Scale(qi, QiPowerPerPoint) * martial);
             int qiRegen = Mathf.Max(0, qi - Base);
-            float fortune = Mathf.Clamp(BaseFortune * FortuneFactor(luk), 0, .6f);
+            float fortune = Mathf.Clamp(BaseFortune * FortuneFactor(luk), 0, FortuneCap);
             float crit = Mathf.Clamp(BaseCrit + (luk - Base) * CritPerPoint, .02f, .5f);
             float study = StudyFactor(wit);
             return new DerivedStats(attack, speed, maxHp, maxQi, qiPower, dodge, fortune, study, hit, crit, qiRegen);

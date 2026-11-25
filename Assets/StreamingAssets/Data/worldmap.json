@@ -8,6 +8,8 @@
   "nodes": [
     {"id": "dashiguan", "name": "大石關", "lat": 29.6, "lon": 102.1, "type": "pass", "region": "劍南道", "desc": "越巂山路險峻，關津分守劍南與滇中商道。", "x": 0.435, "y": 0.75},
     {"id": "yingwu", "name": "永昌", "lat": 25.12, "lon": 99.16, "type": "city", "region": "南詔", "desc": "永昌連接滇西谷地與驛商古道。", "x": 0.37, "y": 0.84},
+    {"id": "yanzhou", "name": "延州", "lat": 36.6, "lon": 109.5, "type": "town", "region": "關內道", "desc": "黃土高原上的邊州，延水繞城，崖上多前朝石窟。", "x": 0.575, "y": 0.31},
+    {"id": "hetao", "name": "河套", "lat": 40.6, "lon": 108.0, "type": "town", "region": "關內道", "desc": "黃河几字大彎，渠田牧場相連，受降城外的屯墾之地。", "x": 0.548, "y": 0.242},
     {"id": "lingwu", "name": "靈武", "lat": 38.1, "lon": 106.34, "type": "city", "region": "關內道", "desc": "朔方軍扼黃河渡口，北通受降城。", "x": 0.51, "y": 0.29},
     {"id": "jizhou", "name": "薊州", "lat": 40.03, "lon": 117.4, "type": "city", "region": "河北道", "desc": "薊北關隘通漁陽與臨渝。", "x": 0.76, "y": 0.25},
     {
@@ -771,6 +773,10 @@
     }
   ],
   "edges": [
+    {"a": "yanzhou", "b": "huashan", "days": 5, "ap": 2},
+    {"a": "yanzhou", "b": "taiyuan", "days": 7, "ap": 2},
+    {"a": "hetao", "b": "shouxiang", "days": 3, "ap": 1},
+    {"a": "hetao", "b": "lingwu", "days": 4, "ap": 1},
     {"a": "dashiguan", "b": "jianmen", "days": 4, "ap": 1},
     {"a": "dashiguan", "b": "taihe", "days": 5, "ap": 1},
     {"a": "yingwu", "b": "taihe", "days": 4, "ap": 1},

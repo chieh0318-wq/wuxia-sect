@@ -73,7 +73,7 @@ namespace Wuxia
                         throw new InvalidOperationException($"Missing prologue CG: {beat.image}");
                     string portrait = PortraitService.StoryId(beat.portrait, "女");
                     string speaker = beat.speaker == "{friend}" ? "謝蘊" : beat.speaker;
-                    ui.ShowStoryBeat(speaker, beat.text, beat.image, portrait, true, () => { }, () => { });
+                    ui.ShowStoryBeat(speaker, FormatQuestText(beat.text), beat.image, portrait, true, () => { }, () => { });
                 });
             }
         }

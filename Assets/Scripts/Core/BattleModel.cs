@@ -118,7 +118,14 @@ namespace Wuxia
         internal string[] KnownMoves => Actor?.knownMoves ?? Array.Empty<string>();
 
         /// <summary>v1126e #1: true when <paramref name="id"/> is an inner-power strike (內功威力 against 內防).</summary>
-        internal bool IsInnerMove(string id) => id != "item" && catalog.IsInner(Skill(id));
+        internal bool IsInnerMove(string id) => id != "item" && Actor != null && IsInnerStrike(Actor, Skill(id));
+
+        /// <summary>
+        /// v1126e #1: inner-art moves (and enemy 截脈手／黑松崩山) are inner strikes; a plain 普攻 follows the fighter's
+        /// stronger figure, so a 內功 master's palm meets 內防 with 內功威力 instead of a weak 外功.
+        /// </summary>
+        private bool IsInnerStrike(BattleCombatant actor, BattleSkill move) => catalog.IsInner(move) ||
+            (!AttributeSystem.LegacyV1126d && move.id == "attack" && actor.internalAttack > actor.attack);
 
         public string Reason(string id, BattleCombatant target)
         {
@@ -329,7 +336,7 @@ namespace Wuxia
             var targets = move.all ? (actor.isPlayer ? enemies : party).Where(u => u.Alive).ToArray()
                 : new[] { target };
             // v1126e #1: an inner strike uses 內功威力 and meets 內防; any other strike uses 外功攻擊 and meets 外防.
-            bool inner = catalog.IsInner(move);
+            bool inner = IsInnerStrike(actor, move);
             int baseAttack = inner && actor.internalAttack > 0 ? actor.internalAttack : actor.attack;
             if (move.id == "attack") baseAttack += actor.talentBasicAttack;
             float attack = Effects(actor).Aggregate((float)baseAttack, (value, effect) => value * effect.attack);

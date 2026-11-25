@@ -45,12 +45,12 @@ namespace Wuxia
             {
                 case "外功":
                 case "攻擊":
-                    text = $"外功 {stats.Attack}\n普攻與內功一路以外所有招式的傷害底數，打在對手的外防上。\n" +
+                    text = $"外功 {stats.Attack}\n內功一路以外所有招式的傷害底數，打在對手的外防上；普攻取外功、內功較高者。\n" +
                            $"公式：{AttributeSystem.BaseAttack} ×（1 + {Pct(AttributeSystem.OuterPerPoint)} ×（武力 − {B}））× 武學品階倍率\n" +
                            $"目前：武力 {str}・{rank}\n來源：武力、最強兩門武學的品階（與內功同底 {AttributeSystem.BaseAttack}、每點同 +{Pct(AttributeSystem.OuterPerPoint)}）";
                     return text + Extra(total?.Attack, stats.Attack, battle?.attack, "外功");
                 case "內功":
-                    text = $"內功 {stats.QiPower}\n內功一路招式的傷害底數，打在對手的內防上。\n" +
+                    text = $"內功 {stats.QiPower}\n內功一路招式（及內功高於外功時的普攻）的傷害底數，打在對手的內防上。\n" +
                            $"公式：{AttributeSystem.BaseQiPower} ×（1 + {Pct(AttributeSystem.QiPowerPerPoint)} ×（內力 − {B}））× 武學品階倍率\n" +
                            $"目前：內力 {qi}・{rank}\n來源：內力屬性、最強兩門武學的品階（與外功同底、同每點加成）";
                     return text + Extra(total?.QiPower, stats.QiPower, battle?.internalAttack, "內功");

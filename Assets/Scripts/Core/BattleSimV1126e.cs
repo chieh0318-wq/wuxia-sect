@@ -20,8 +20,10 @@ namespace Wuxia
     {
         private static readonly string[] Builds = { "outer", "inner", "balanced" };
         private static readonly string[] BuildNames = { "外功型", "內功型", "均衡型" };
-        private static readonly string[] Scenarios = { "normal", "boss", "sparring", "assault" };
-        private static readonly string[] ScenarioNames = { "普通", "首領", "切磋", "攻城" };
+        private static readonly string[] Scenarios =
+            { "normal", "normal_hard", "boss", "boss_hard", "sparring", "sparring_duel", "assault", "assault_hard" };
+        private static readonly string[] ScenarioNames =
+            { "普通", "普通・吃緊", "首領", "首領・吃緊", "切磋", "切磋・單挑", "攻城", "攻城・吃緊" };
         private static readonly string[] Stages = { "early", "late" };
         private static readonly string[] StageNames = { "前期（第 6 月）", "後期（第 8 年）" };
 
@@ -87,7 +89,9 @@ namespace Wuxia
             md.AppendLine();
             md.AppendLine("配置（主角＋兩名同門，屬性傾向相同）：外功型 武力 16／內力 8、內功型 內力 16／武力 8、均衡型 各 12（根骨 12）；" +
                 "後期主屬性再 +4、根骨 14，武學升至 S／A。外功型只會劍法、內功型以內功招式為主、均衡型兩者各一。");
-            md.AppendLine("切磋 = 主角＋一名同門 對 兩名標準同門（全屬性 10、預設武學）；攻城 = BattleRequest.MapAssault（前期守備 .6、後期 .95）。");
+            md.AppendLine("普通 = 三人 對 三名山賊（難度 1.0／後期 1.1）；首領 = 三人 對 寨主＋兩名嘍囉（難度 1.0／1.2）；切磋 = 主角＋一名同門 對 兩名標準同門（全屬性 10）；" +
+                "切磋・單挑 = 主角一對一 均衡型同門（同階段屬性與武學，檢驗哪一型獨強）；攻城 = BattleRequest.MapAssault（前期守備 .6、後期 .95）。");
+            md.AppendLine("「吃緊」用來拉出勝負差距：普通 = 主角單人 對 三名山賊（難度 .8／1.0）；首領 = 主角＋一名同門、難度 1.6；攻城 = 主角＋一名同門、守備 .95、難度 1.4。");
             md.AppendLine();
             for (int st = 0; st < Stages.Length; st++)
             {
@@ -120,6 +124,44 @@ namespace Wuxia
                 var rates = Enumerable.Range(0, Builds.Length).Select(b => results[(st, sc, b, false)].WinRate).ToArray();
                 md.AppendLine($"| {StageNames[st]} | {ScenarioNames[sc]} | {rates[0]:P0} | {rates[1]:P0} | {rates[2]:P0} | {(rates.Max() - rates.Min()) * 100:0} 點 |");
             }
+            md.AppendLine();
+            // Sweep of the 內功-surplus weight in enemy scaling (BattleSetup.InnerSurplusScaling).
+            float shipped = BattleSetup.InnerSurplusScaling;
+            md.AppendLine($"## 敵方縮放權重掃描（外功 + w ×（內功 − 外功）⁺；本版 w = {shipped:0.##}）");
+            md.AppendLine();
+            md.AppendLine("| w | 階段 | 場景 | 外功型 勝率/回合 | 內功型 勝率/回合 | 均衡型 勝率/回合 | 內功型 改前 |");
+            md.AppendLine("|---|---|---|---|---|---|---|");
+            int sweepFights = Math.Max(50, fights / 2);
+            try
+            {
+                foreach (float w in new[] { 0f, .25f, .5f })
+                {
+                    BattleSetup.InnerSurplusScaling = w;
+                    for (int st = 0; st < Stages.Length; st++)
+                    foreach (int sc in new[] { 1, 2, 3, 7 })
+                    {
+                        var cells = new string[Builds.Length];
+                        for (int b = 0; b < Builds.Length; b++)
+                        {
+                            var cell = new Cell();
+                            for (int seed = 0; seed < sweepFights; seed++)
+                            {
+                                var state = MakeState(data, Builds[b], Stages[st]);
+                                UnityEngine.Random.InitState(9001 + seed);
+                                var (party, enemies) = BattleSetup.Create(state, Request(state, Scenarios[sc], Stages[st]), catalog);
+                                var (won, rounds, lost) = Fight(party, enemies, catalog, 1126 + seed * 7919 + sc * 104729 + b * 31337);
+                                cell.fights++;
+                                if (won) { cell.wins++; cell.rounds += rounds; }
+                                cell.lost += lost;
+                            }
+                            cells[b] = $"{cell.WinRate:P0} / {cell.Rounds:0.0}";
+                        }
+                        var old = results[(st, sc, 1, true)];
+                        md.AppendLine($"| {w:0.##} | {StageNames[st]} | {ScenarioNames[sc]} | {cells[0]} | {cells[1]} | {cells[2]} | {old.WinRate:P0} / {old.Rounds:0.0} |");
+                    }
+                }
+            }
+            finally { BattleSetup.InnerSurplusScaling = shipped; }
             md.AppendLine();
             File.WriteAllText(stem + ".csv", csv.ToString(), new UTF8Encoding(false));
             File.WriteAllText(stem + ".md", md.ToString(), new UTF8Encoding(false));
@@ -187,9 +229,22 @@ namespace Wuxia
                 foreach (var line in member.lines ?? Array.Empty<SkillLine>())
                     if (Top(line.id) is string rank) { line.rank = rank; line.cap = rank; }
             }
-            // Sparring opponents: two reference disciples (all attributes 10, their own arts and ranks).
+            // Sparring opponents: two reference disciples (all attributes 10, their own arts and ranks); the duel opponent
+            // (the fifth disciple) is a balanced fighter of the same stage.
             foreach (var member in state.Disciples.Skip(2).Take(2))
                 member.attrs = Enumerable.Repeat(AttributeSystem.Base, AttributeSystem.Count).ToArray();
+            if (state.Disciples.Count > 4)
+            {
+                var mirror = state.Disciples[4];
+                var even = BuildSpecs["balanced"];
+                mirror.attrs = new[] { even.str + (late ? lift : 0), 12, con, even.qi + (late ? lift : 0), 11, 10, 10 };
+                mirror.learnedArts = late ? even.early.Concat(even.late).ToArray() : even.early;
+                mirror.talents = Array.Empty<string>();
+                mirror.lines = RankSystem.Seed(mirror.lines, mirror.rank, mirror.cap, RankSystem.BaseCap, RankSystem.BaseRank);
+                foreach (var line in mirror.lines)
+                    if (line.id is "sword" or "neigong") { line.rank = late ? "A" : "C"; line.cap = line.rank; }
+                    else if (RankSystem.IsCombat(line.id)) { line.rank = "D"; line.cap = "D"; }
+            }
             return state;
         }
 
@@ -197,8 +252,21 @@ namespace Wuxia
         {
             bool late = stage == "late";
             var ids = new[] { GameState.HeroId }.Concat(state.Disciples.Take(2).Select(d => d.id)).ToArray();
+            var solo = new[] { GameState.HeroId };
             switch (scenario)
             {
+                case "normal_hard":
+                    return new BattleRequest { enemyCount = 3, difficulty = late ? 1.0f : .8f, expeditionParty = solo };
+                case "boss_hard":
+                    return new BattleRequest { encounter = BattleEncounter.Boss, enemyLeadName = "山寨寨主", enemyCount = 3,
+                        difficulty = 1.6f, expeditionParty = ids.Take(2).ToArray() };
+                case "sparring_duel":
+                    return new BattleRequest { sparParty = solo, sparOpponents = new[] { state.Disciples[Math.Min(4, state.Disciples.Count - 1)].id } };
+                case "assault_hard":
+                    var hard = BattleRequest.MapAssault("山寨", "寨主", "npc_am01", 60, .95f);
+                    hard.difficulty = 1.4f;
+                    hard.expeditionParty = ids.Take(2).ToArray();
+                    return hard;
                 case "boss":
                     return new BattleRequest { encounter = BattleEncounter.Boss, enemyLeadName = "山寨寨主", enemyCount = 3,
                         difficulty = late ? 1.2f : 1.0f, expeditionParty = ids };

@@ -197,6 +197,9 @@ namespace Wuxia
 
         internal void ChooseForCapture() => Choose(data.titles[0]);
 
+        /// <summary>v1126e capture: redraws the step card now (Tick does it twice a second in play).</summary>
+        internal void RefreshForCapture() => ShowStep(true);
+
         internal void Record(string trigger, string target = "")
         {
             // Camera events arrive every frame while moving; only re-evaluate on a new action.

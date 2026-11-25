@@ -88,9 +88,17 @@ namespace Wuxia
             ? Mathf.RoundToInt(power * (AttributeSystem.BaseAttack / (float)AttributeSystem.LegacyBaseQiPower))
             : power;
 
-        /// <summary>v1126e #1: enemies scale from each fighter's stronger offence (v1126d read 外功攻擊 only).</summary>
-        private static int Offense(BattleCombatant unit) => AttributeSystem.LegacyV1126d ? unit.attack : unit.Offense;
-        private static int Offense(DerivedStats stats) => AttributeSystem.LegacyV1126d ? stats.Attack : stats.Offense;
+        /// <summary>
+        /// v1126e #1: enemies scale from 外功 plus half of any 內功 surplus. v1126d read 外功 only, so a 內功 build met
+        /// bosses with ~30% less 氣血 (BattleSimV1126e: 6.0 rounds against 7.2 for 外功); scaling on the full 內功 swung
+        /// it the other way (8.6), because the inner arts carry no area or armour-breaking moves. A quarter (sweep 0 / .25 / .5)
+        /// keeps every build within about ±10% win rate and ±1 round of v1126d without either pure build pulling ahead.
+        /// </summary>
+        internal static float InnerSurplusScaling = .25f;
+        private static int Scaled(int attack, int inner) => AttributeSystem.LegacyV1126d ? attack
+            : attack + Mathf.RoundToInt(InnerSurplusScaling * Math.Max(0, inner - attack));
+        private static int Offense(BattleCombatant unit) => Scaled(unit.attack, unit.internalAttack);
+        private static int Offense(DerivedStats stats) => Scaled(stats.Attack, stats.QiPower);
 
         public static (List<BattleCombatant> party, List<BattleCombatant> enemies) Create(GameState state, BattleRequest req, BattleCatalog catalog)
         {

@@ -676,25 +676,25 @@ namespace Wuxia
             }
             var caption = Label(card, name, 26, TextAnchor.MiddleLeft);
             caption.color = CardText;
-            Anchor(caption.rectTransform, Vector2.up, Vector2.up, new(90, -38), new(196, -4));
+            Anchor(caption.rectTransform, Vector2.up, Vector2.up, new(90, -34), new(196, -2));
             var benefit = Label(card, description, 18, TextAnchor.MiddleLeft);
             benefit.color = CardMuted;
-            Anchor(benefit.rectTransform, Vector2.zero, Vector2.right, new(90, showPerPoint ? 27 : 6), new(-300, showPerPoint ? 48 : 36));
+            Anchor(benefit.rectTransform, Vector2.zero, Vector2.right, new(90, showPerPoint ? 33 : 6), new(-292, showPerPoint ? 54 : 36));
             if (showPerPoint)
             {
-                // v1126 #4: what one more point buys, computed from the live formulas (AttributePerPoint).
-                var each = Label(card, perPoint, 18, TextAnchor.MiddleLeft);
+                // v1126 #4 / v1126d-ag (C9): what one more point buys, sized to stay legible at 1280×720.
+                var each = Label(card, perPoint, 19, TextAnchor.MiddleLeft);
                 each.name = "每點效果";
                 each.color = new Color(.99f, .80f, .45f);
-                each.resizeTextMinSize = 14;
-                each.resizeTextMaxSize = 17;
+                each.resizeTextMinSize = 16;
+                each.resizeTextMaxSize = 19;
                 each.horizontalOverflow = HorizontalWrapMode.Wrap;
                 each.verticalOverflow = VerticalWrapMode.Truncate;
-                Anchor(each.rectTransform, Vector2.zero, Vector2.right, new(90, 3), new(-300, 27));
+                Anchor(each.rectTransform, Vector2.zero, Vector2.right, new(90, 4), new(-292, 33));
             }
 
             var track = Rect("Attribute pips", card);
-            Anchor(track, Vector2.up, Vector2.one, new(206, -30), new(-300, -12));
+            Anchor(track, Vector2.up, Vector2.one, new(206, -27), new(-300, -11));
             for (int pip = 1; pip <= maximum; pip++)
             {
                 var cell = Rect("Pip", track);
@@ -721,7 +721,7 @@ namespace Wuxia
             string note = (delta == 0 ? "基礎" : $"{delta:+0;-0}") + (bonus != 0 ? $"　加成{bonus:+0;-0}" : "");
             var deltaLabel = Label(card, note, 18, TextAnchor.MiddleCenter);
             deltaLabel.color = CardMuted;
-            Anchor(deltaLabel.rectTransform, Vector2.right, Vector2.right, new(-300, 4), new(-186, 28));
+            Anchor(deltaLabel.rectTransform, Vector2.right, Vector2.right, new(-290, 4), new(-184, 28));
             var minus = Button(card, "−", less);
             var plus = Button(card, "＋", more);
             Anchor(minus, Vector2.right, Vector2.one, new(-178, 16), new(-104, -16));

@@ -85,6 +85,45 @@ namespace Wuxia
                     selected.Add(option);
             ShowTalents();
         }
+        /// <summary>
+        /// v1126c PF: the 屬性 step as the player reported it — 柳行舟, 書香門第 (or <paramref name="backgroundId"/>), the
+        /// talent budget spent on the cheapest talents (most picks, longest names first), every skill point spent and no
+        /// attribute point allocated — to check the 已選天賦 drop-down and 繼續. <paramref name="fillTalents"/> false
+        /// leaves the talents empty (「已選天賦（0）」).
+        /// </summary>
+        internal void CaptureCreationTalents(string backgroundId, bool fillTalents)
+        {
+            state.Protagonist.gender = "男";
+            state.Protagonist.title = "三師兄";
+            state.Protagonist.name = "柳行舟";
+            CaptureAppearance();
+            var bgOptions = characters.backgrounds ?? Array.Empty<CreationOption>();
+            background = bgOptions.FirstOrDefault(option => option.id == backgroundId) ?? bgOptions.FirstOrDefault();
+            selected.Clear();
+            RollTalents();
+            if (fillTalents)
+                foreach (var option in offered.Where(option => option.cost > 0).OrderBy(option => option.cost)
+                             .ThenByDescending(option => option.name.Length))
+                    if (CanPick(option, talents.budget, talents.maxPicks))
+                        selected.Add(option);
+            CompleteTalents();
+            selected.Clear();
+            var arts = (skills.skills ?? Array.Empty<CreationOption>()).Where(option => option != null && option.cost > 0);
+            foreach (var art in arts.OrderByDescending(option => option.cost))
+                if (CanPick(art, skills.budget, int.MaxValue))
+                    selected.Add(art);
+            CompleteSkills();
+            Debug.Log($"[Capture] PF creation: background={background?.name} talents={state.Protagonist.talents.Length} " +
+                $"talentLeft={talents.budget - ChosenTalents.Sum(option => option.cost)} skillLeft={skills.budget - Spent} attrLeft={freeAttributes}");
+        }
+        /// <summary>v1126c PF: the 天賦 step itself with the cheapest talents filling the budget.</summary>
+        internal void CaptureTalentsStepFull()
+        {
+            state.Protagonist.name = "柳行舟";
+            CaptureAppearance();
+            background = (characters.backgrounds ?? Array.Empty<CreationOption>()).FirstOrDefault(option => option.id == "scholar_family") ?? background;
+            CaptureTalentsFull();
+        }
         internal void CapturePrologue()
         {
             var opening = story.openingBeats ?? Array.Empty<StoryBeat>();
@@ -247,14 +286,21 @@ namespace Wuxia
             };
             ui.ShowCreation("天賦", Array.Empty<string>(), actions, CompleteTalents, CompleteTalents);
             var sheet = Sheet(selected, ChosenSkills, "天賦");
-            sheet.picksHeading = $"已選天賦　{selected.Count}／{talents.maxPicks}";
-            ui.CreationSummary(sheet, showPicks: false);
-            ui.CreationSelectedTalents(sheet.picksHeading, selected.Select(option =>
-                (option, Spent - option.cost <= talents.budget ? (Action)(() =>
-                {
-                    selected.Remove(option);
-                    ShowTalents(ui.TalentScrollPosition);
-                }) : null)).ToArray());
+            // v1126c PF: the picks live in the card's 已選天賦 drop-down (one row each, with 「×」 to drop it) instead of
+            // a wrapping chip bar across the page.
+            sheet.pickRows.Clear();
+            foreach (var option in selected)
+            {
+                var pick = option;
+                sheet.pickRows.Add((pick.name, PickDetail(pick), UiKit.TalentIcon(pick), Spent - pick.cost <= talents.budget
+                    ? () =>
+                    {
+                        selected.Remove(pick);
+                        ShowTalents(ui.TalentScrollPosition);
+                    }
+                    : (Action)null));
+            }
+            ui.CreationSummary(sheet);
             // v1126 #2: 主修 is picked from the combat lines, with what it changes written beside it.
             ui.CreationMajor(MajorId, id =>
             {
@@ -386,8 +432,18 @@ namespace Wuxia
             sheet.budgets.Add(("天賦點", talents.budget - talentList.Sum(option => option.cost), talents.budget));
             sheet.budgets.Add(("技藝點", skills.budget - skillList.Sum(option => option.cost), skills.budget));
             sheet.budgets.Add(("屬性點", freeAttributes, characters.attrPoints));
-            sheet.picks.AddRange((step == "技藝" ? skillList : talentList).Select(option => option.name));
+            var pickList = step == "技藝" ? skillList : talentList;
+            sheet.picks.AddRange(pickList.Select(option => option.name));
+            foreach (var option in pickList)
+                sheet.pickRows.Add((option.name, PickDetail(option), UiKit.TalentIcon(option), null));
             return sheet;
+        }
+
+        /// <summary>v1126c PF: the short effect line under a pick in the 已選 drop-down (effects, else the description).</summary>
+        private string PickDetail(CreationOption option)
+        {
+            string detail = Details(option);
+            return string.IsNullOrWhiteSpace(detail) ? option.desc ?? "" : detail;
         }
 
         private static string RarityLabel(string rarity) => rarity switch

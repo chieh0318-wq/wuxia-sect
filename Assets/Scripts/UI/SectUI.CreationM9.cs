@@ -279,60 +279,250 @@ namespace Wuxia
             }
         }
 
-        internal void CreationSelectedTalents(string heading, (CreationOption option, Action remove)[] picks)
+        private const int CreationCardWidth = 372;
+        private const float CardContentHeight = 640, PicksHeaderHeight = 44, PicksFooter = 12 + PicksHeaderHeight + 12;
+        private Action<bool> creationPicksSet;
+
+        /// <summary>
+        /// v1126c PF: 繼續 leaves the shared action row and sits on a fixed anchor directly under the right-hand card
+        /// (same x-range as the 372-wide card, y 22–72 of the page), so its place and size never depend on any text;
+        /// the other actions share the row to its left.
+        /// </summary>
+        private void PinContinueButton()
         {
-            // v1126 #5 (T-3 #5): the picked talents flow as chips sized to their names and wrap onto as many rows as
-            // they need; the bar grows upwards and the scrolling list above shrinks, so nothing ever reaches the
-            // 上一步 / 繼續 row (which tops out at y = 72; the bar starts at 84).
-            const float chipHeight = 40, gap = 8, pad = 8, titleWidth = 216;
-            float rowWidth = modalCard.rect.width - 72 - titleWidth - 12 - pad * 2;
-            var widths = picks.Select(pick => Mathf.Min(rowWidth, 54 + (pick.option.name.Length + (pick.remove == null ? 0 : 2)) * 21f)).ToArray();
-            var placed = new List<(float x, int line)>();
-            float x = 0;
-            int lines = 1;
-            foreach (float width in widths)
+            var row = modalButtons.GetComponent<HorizontalLayoutGroup>();
+            foreach (Transform action in modalButtons)
             {
-                if (x > 0 && x + width > rowWidth) { x = 0; lines++; }
-                placed.Add((x, lines - 1));
-                x += width + gap;
+                if (!action.gameObject.activeSelf || action.name != "繼續") continue;
+                var size = action.GetComponent<LayoutElement>() ?? action.gameObject.AddComponent<LayoutElement>();
+                size.ignoreLayout = true;
+                // modalButtons spans x 30…W-30 of the page; the card spans W-408…W-36.
+                Anchor((RectTransform)action, Vector2.right, Vector2.one, new(-(CreationCardWidth + 6), 0), new(-6, 0));
+                if (row != null) row.padding = new RectOffset(0, CreationCardWidth + 6 + 16, 0, 0);
             }
-            float barHeight = Mathf.Max(64, lines * chipHeight + (lines - 1) * gap + pad * 2);
-            var scroll = (RectTransform)modalList.parent;
-            scroll.offsetMin = new Vector2(scroll.offsetMin.x, 84 + barHeight + 12);
-            characterDecoration = Panel("已選天賦", modalCard, Vector2.zero, Vector2.right,
-                new(36, 84), new(-36, 84 + barHeight), false);
-            UiKit.Skin(characterDecoration.GetComponent<Image>(), "Lacquer");
-            var title = Label(characterDecoration, heading, 22, TextAnchor.MiddleLeft);
-            title.color = CardGold;
-            title.resizeTextMinSize = 18;
-            Anchor(title.rectTransform, Vector2.up, Vector2.up, new(20, -pad - chipHeight), new(titleWidth, -pad));
-            if (picks.Length == 0)
+        }
+
+        /// <summary>Capture / test hook: opens or closes the creation card's 已選 drop-down. False when there is none.</summary>
+        internal bool SetCreationPicksOpen(bool open)
+        {
+            if (creationPicksSet == null || creationSummary == null) return false;
+            creationPicksSet(open);
+            return true;
+        }
+
+        /// <summary>
+        /// v1126c PF: the picks on the creation card are a drop-down instead of wrapping text. Collapsed it is one
+        /// fixed-height header pinned to the card's bottom (「已選天賦（N）▼」); clicking it opens a fixed-height,
+        /// scrolling list above the header, inside the card, one pick per row (name + short effect, ellipsized to the
+        /// row). Clicking the header again, clicking anywhere outside, right-click or Esc (UiBack) closes it. Nothing
+        /// in here can reach the 繼續 button, which sits below the card.
+        /// </summary>
+        private void CreationPicksDropdown(RectTransform card, CreationSheet sheet)
+        {
+            creationPicksSet = null;
+            string heading = string.IsNullOrEmpty(sheet.picksHeading) ? "已選" : sheet.picksHeading;
+            var rows = new List<(string name, string detail, string icon, Action remove)>(sheet.pickRows);
+            if (rows.Count == 0)
+                foreach (string pick in sheet.picks) rows.Add((pick, "", null, null));
+            int count = rows.Count;
+            float cardWidth = card.rect.width > 1 ? card.rect.width : CreationCardWidth;
+            const float side = 10, bottom = 12;
+
+            // Invisible catcher for clicks outside the open list (drawn under the list and the header).
+            var blocker = Rect("已選收合遮罩", card);
+            Anchor(blocker, Vector2.zero, Vector2.one, new(-8000, -8000), new(8000, 8000));
+            blocker.gameObject.AddComponent<Image>().color = Color.clear;
+
+            float panelBottom = bottom + PicksHeaderHeight + 4;
+            float panelHeight = Mathf.Min(340, Mathf.Max(120, card.rect.height - panelBottom - 16));
+            var panel = Panel("已選清單", card, Vector2.zero, Vector2.right,
+                new(side, panelBottom), new(-side, panelBottom + panelHeight));
+            UiKit.Skin(panel.GetComponent<Image>(), "Lacquer");
+            var list = ScrollList(panel, new(10, 10), new(-26, -10));
+            AttachScrollbar((RectTransform)list.parent, panel, Vector2.right, new(-20, 10), new(-10, -10));
+            float rowWidth = cardWidth - side * 2 - 10 - 26;
+            const float rowHeight = 58;
+            if (count == 0)
             {
-                var hint = Label(characterDecoration, "點選上方天賦加入", 18, TextAnchor.MiddleLeft);
-                hint.color = CardMuted;
-                Anchor(hint.rectTransform, Vector2.zero, Vector2.one, new(titleWidth + 4, 0), new(-10, 0));
-                return;
+                var none = Label(list, "尚未選擇", 18, TextAnchor.MiddleLeft);
+                none.color = CardMuted;
+                none.gameObject.AddComponent<LayoutElement>().preferredHeight = 40;
             }
-            var row = Rect("Selected talent icons", characterDecoration);
-            Anchor(row, Vector2.zero, Vector2.one, new(titleWidth, pad), new(-12, -pad));
-            for (int index = 0; index < picks.Length; index++)
+            foreach (var (name, detail, icon, remove) in rows)
             {
-                var (option, remove) = picks[index];
-                var button = Button(row, option.name, remove);
-                Anchor(button, Vector2.up, Vector2.up, new(placed[index].x, -(placed[index].line + 1) * chipHeight - placed[index].line * gap),
-                    new(placed[index].x + widths[index], -placed[index].line * (chipHeight + gap)));
-                var size = button.GetComponent<LayoutElement>();
-                if (size != null) size.ignoreLayout = true;
-                button.GetComponent<Button>().interactable = remove != null;
-                UiKit.Skin(button.GetComponent<Image>(), "Wood");
-                AddCardIcon(button, UiKit.TalentIcon(option), 8, 26);
-                var caption = button.GetComponentInChildren<Text>();
-                caption.text = remove == null ? option.name : option.name + "　×";
-                caption.resizeTextMinSize = 18;
-                caption.resizeTextMaxSize = 20;
-                caption.alignment = TextAnchor.MiddleLeft;
-                caption.horizontalOverflow = HorizontalWrapMode.Overflow;
-                Anchor(caption.rectTransform, Vector2.zero, Vector2.one, new(40, 2), new(-6, -2));
+                var item = Rect("已選_" + name, list);
+                item.gameObject.AddComponent<LayoutElement>().preferredHeight = rowHeight;
+                var shade = item.gameObject.AddComponent<Image>();
+                shade.color = new Color(0, 0, 0, .22f);
+                shade.raycastTarget = false;
+                float left = 8;
+                var iconTexture = string.IsNullOrEmpty(icon) ? null : UiKit.Icon(icon);
+                if (iconTexture != null)
+                {
+                    var art = Rect("Icon", item);
+                    Anchor(art, new(0, .5f), new(0, .5f), new(8, -17), new(42, 17));
+                    AddImage(art, iconTexture);
+                    left = 50;
+                }
+                float right = remove != null ? 46 : 8;
+                bool hasDetail = !string.IsNullOrWhiteSpace(detail);
+                var title = Label(item, name, 20, TextAnchor.MiddleLeft);
+                title.color = CardGold;
+                title.fontStyle = FontStyle.Bold;
+                Anchor(title.rectTransform, hasDetail ? Vector2.up : Vector2.zero, Vector2.one,
+                    new(left, hasDetail ? -30 : 0), new(-right, hasDetail ? -3 : 0));
+                OneLine(title, name, rowWidth - left - right, 20);
+                if (hasDetail)
+                {
+                    var effect = Label(item, detail, 18, TextAnchor.MiddleLeft);
+                    effect.color = CardMuted;
+                    Anchor(effect.rectTransform, Vector2.zero, Vector2.right, new(left, 3), new(-right, 29));
+                    OneLine(effect, detail, rowWidth - left - right, 18);
+                }
+                if (remove != null)
+                {
+                    var drop = Button(item, "×", remove);
+                    drop.name = "移除_" + name;
+                    Anchor(drop, new(1, .5f), new(1, .5f), new(-42, -18), new(-6, 18));
+                    UiKit.Skin(drop.GetComponent<Image>(), "Wood");
+                }
+            }
+
+            var header = Button(card, "", null);
+            header.name = "已選收合";
+            Anchor(header, Vector2.zero, Vector2.right, new(side, bottom), new(-side, bottom + PicksHeaderHeight));
+            UiKit.Skin(header.GetComponent<Image>(), "Lacquer");
+            var caption = header.GetComponentInChildren<Text>();
+            caption.alignment = TextAnchor.MiddleLeft;
+            caption.color = CardGold;
+            caption.fontStyle = FontStyle.Bold;
+            Anchor(caption.rectTransform, Vector2.zero, Vector2.one, new(14, 0), new(-40, 0));
+            OneLine(caption, $"{heading}（{count}）", cardWidth - side * 2 - 14 - 40, 21);
+            var arrow = Label(header, "▼▲", 20, TextAnchor.MiddleCenter);
+            arrow.color = CardGold;
+            arrow.resizeTextForBestFit = false;
+            Anchor(arrow.rectTransform, Vector2.right, Vector2.one, new(-38, 0), new(-8, 0));
+            var toggle = header.GetComponent<Button>();
+            toggle.interactable = count > 0;
+
+            bool open = false;
+            void Set(bool value)
+            {
+                if (panel == null) return;
+                open = value && count > 0;
+                panel.gameObject.SetActive(open);
+                blocker.gameObject.SetActive(open);
+                arrow.text = count == 0 ? "" : open ? "▲" : "▼";
+                if (open) UiBack.Push(() => Set(false), () => panel != null && panel.gameObject.activeInHierarchy, panel);
+                else UiBack.Pop(panel);
+            }
+            toggle.onClick.AddListener(() => Set(!open));
+            var outside = blocker.gameObject.AddComponent<Button>();
+            outside.transition = Selectable.Transition.None;
+            outside.onClick.AddListener(() => Set(false));
+            blocker.SetAsLastSibling();
+            panel.SetAsLastSibling();
+            header.SetAsLastSibling();
+            Set(false);
+            creationPicksSet = Set;
+        }
+
+        /// <summary>
+        /// v1126c PF capture check, in page units: the 已選 header is one line of fixed height, the open list, the
+        /// card and its content stay clear of 繼續, the other actions do not touch it, and its caption fits.
+        /// </summary>
+        internal bool LogCreationLayout(string tag)
+        {
+            Canvas.ForceUpdateCanvases();
+            var problems = new List<string>();
+            Transform go = null;
+            foreach (Transform action in modalButtons)
+                if (action.gameObject.activeSelf && action.name == "繼續") go = action;
+            UnityEngine.Rect Box(Transform t)
+            {
+                var corners = new Vector3[4];
+                ((RectTransform)t).GetWorldCorners(corners);
+                Vector2 a = modalCard.InverseTransformPoint(corners[0]), b = modalCard.InverseTransformPoint(corners[2]);
+                return UnityEngine.Rect.MinMaxRect(a.x, a.y, b.x, b.y);
+            }
+            string Fmt(UnityEngine.Rect r) => $"[{r.xMin:0},{r.yMin:0}–{r.xMax:0},{r.yMax:0}]";
+            if (go == null) problems.Add("no 繼續");
+            var goBox = go == null ? default : Box(go);
+            if (go != null)
+            {
+                var caption = go.GetComponentInChildren<Text>();
+                if (caption.preferredWidth > caption.rectTransform.rect.width + 1 || caption.cachedTextGenerator.lineCount > 1)
+                    problems.Add("繼續 caption does not fit");
+                foreach (Transform action in modalButtons)
+                    if (action != go && action.gameObject.activeSelf && Box(action).Overlaps(goBox))
+                        problems.Add($"{action.name} overlaps 繼續");
+            }
+            string detail = "";
+            if (creationSummary != null)
+            {
+                var card = Box(creationSummary);
+                if (go != null && card.Overlaps(goBox)) problems.Add("card overlaps 繼續");
+                var header = creationSummary.Find("已選收合");
+                var content = creationSummary.Find("人物卡內容");
+                var panel = creationSummary.Find("已選清單");
+                if (header != null)
+                {
+                    var h = Box(header);
+                    var text = header.GetComponentInChildren<Text>();
+                    if (h.height > PicksHeaderHeight + 1) problems.Add("header taller than one line");
+                    if (text.cachedTextGenerator.lineCount > 1 || text.preferredWidth > text.rectTransform.rect.width + 1)
+                        problems.Add("header caption overflows");
+                    if (content != null && Box(content).yMin < h.yMax - .5f) problems.Add("card content runs into the header");
+                    if (go != null && h.Overlaps(goBox)) problems.Add("header overlaps 繼續");
+                    detail += $" header={Fmt(h)} '{text.text}'";
+                }
+                if (panel != null && panel.gameObject.activeSelf)
+                {
+                    var p = Box(panel);
+                    if (go != null && p.Overlaps(goBox)) problems.Add("open list overlaps 繼續");
+                    if (p.xMin < card.xMin - .5f || p.xMax > card.xMax + .5f || p.yMax > card.yMax + .5f) problems.Add("open list leaves the card");
+                    foreach (var label in panel.GetComponentsInChildren<Text>())
+                        if (label.horizontalOverflow == HorizontalWrapMode.Overflow &&
+                            label.preferredWidth > label.rectTransform.rect.width + 1)
+                            problems.Add($"row text overflows: {label.text}");
+                    detail += $" list={Fmt(p)}";
+                }
+                if (content != null) detail += $" content={Fmt(Box(content))} scale={content.localScale.x:0.00}";
+                detail += $" card={Fmt(card)}";
+            }
+            bool ok = problems.Count == 0;
+            string line = $"[Capture] PF layout {tag}: ok={ok} 繼續={(go == null ? "-" : Fmt(goBox))}{detail}" +
+                (ok ? "" : " problems=" + string.Join("; ", problems));
+            if (ok) Debug.Log(line);
+            else Debug.LogError(line);
+            return ok;
+        }
+
+        /// <summary>Single-line text that never leaves its box: shrinks to the 18px floor, then ends in 「…」.</summary>
+        private void OneLine(Text label, string value, float width, int size)
+        {
+            value = (value ?? "").Replace("\n", " ").Replace("\r", "");
+            label.font = UiKit.Font("Interface", font, value);
+            label.resizeTextForBestFit = false;
+            label.horizontalOverflow = HorizontalWrapMode.Overflow;
+            label.verticalOverflow = VerticalWrapMode.Truncate;
+            label.fontSize = UiKit.Readable(size);
+            if (Measure(value) > width && label.fontSize > UiKit.MinBody)
+                label.fontSize = UiKit.MinBody;
+            if (Measure(value) > width)
+            {
+                int keep = value.Length;
+                while (keep > 0 && Measure(value.Substring(0, keep) + "…") > width) keep--;
+                value = value.Substring(0, keep).TrimEnd('・', '，', ' ') + "…";
+            }
+            label.text = value;
+
+            float Measure(string text)
+            {
+                var settings = label.GetGenerationSettings(new Vector2(width, label.fontSize * 2f));
+                settings.horizontalOverflow = HorizontalWrapMode.Overflow;
+                settings.resizeTextForBestFit = false;
+                return label.cachedTextGeneratorForLayout.GetPreferredWidth(text, settings) / label.pixelsPerUnit;
             }
         }
 

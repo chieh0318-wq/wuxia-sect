@@ -572,6 +572,7 @@ namespace Wuxia
             CloseTalk(false); // v1125 #4: a page never opens under a lingering portrait talk
             ResetCreationLayout();
             Anchor(modalButtons, Vector2.zero, Vector2.right, new Vector2(30, 22), new Vector2(-30, 72)); // v1125 #1
+            modalButtons.GetComponent<HorizontalLayoutGroup>().padding = new RectOffset(); // v1126c PF: undo the pinned 繼續 gap
             Clear(modalList);
             foreach (Transform child in modalButtons)
             {

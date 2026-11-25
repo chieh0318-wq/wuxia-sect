@@ -14,6 +14,8 @@ namespace Wuxia
         public SkillLine[] lines;
         public readonly List<(string label, int left, int total)> budgets = new();
         public readonly List<string> picks = new();
+        /// <summary>v1126c PF: one row per pick for the 已選 drop-down (name, short effect, icon, optional remove).</summary>
+        public readonly List<(string name, string detail, string icon, Action remove)> pickRows = new();
     }
 
     public sealed partial class SectUI
@@ -43,6 +45,7 @@ namespace Wuxia
             ShowModal("", lines.Where(line => !string.IsNullOrWhiteSpace(line)), buttons.ToArray(), dismissible: false);
             foreach (Transform action in modalButtons)
                 if (action.name != "繼續") UiKit.Skin(action.GetComponent<Image>(), "Wood");
+            PinContinueButton();
             Anchor(modalCard, new(.07f, .07f), new(.93f, .93f), Vector2.zero, Vector2.zero);
             creationListWidth = modalCard.rect.width - 72;
             Anchor((RectTransform)modalList.parent, Vector2.zero, Vector2.one,
@@ -95,14 +98,23 @@ namespace Wuxia
         /// <summary>Live character summary card docked on the right of every creation step.</summary>
         internal void CreationSummary(CreationSheet sheet, bool showPicks = true)
         {
-            const int width = 372;
+            const int width = CreationCardWidth;
             creationListWidth -= width + 20;
             Anchor((RectTransform)modalList.parent, Vector2.zero, Vector2.one,
                 new(36, 88), new(-36 - width - 20, -112));
             creationSummary = Panel("角色總覽", modalCard, Vector2.right, Vector2.one,
                 new(-36 - width, 88), new(-36, -112));
             UiKit.Skin(creationSummary.GetComponent<Image>(), "Wood");
-            var card = creationSummary;
+            // v1126c PF: the card's fixed-size content block hangs from the top; the 已選 header is pinned to the
+            // bottom. On a card too short for both (very wide screens) the block scales down instead of running
+            // into the header or past the card onto 繼續.
+            var shell = creationSummary;
+            float room = shell.rect.height - (showPicks ? PicksFooter : 12);
+            float fit = room > 1 && room < CardContentHeight ? room / CardContentHeight : 1f;
+            var card = Rect("人物卡內容", shell);
+            Anchor(card, Vector2.up, Vector2.one, new(0, -CardContentHeight), Vector2.zero);
+            card.pivot = new Vector2(.5f, 1);
+            card.localScale = new Vector3(fit, fit, 1);
 
             var frame = Rect("肖像", card);
             Anchor(frame, Vector2.up, Vector2.up, new(18, -152), new(126, -16));
@@ -178,14 +190,7 @@ namespace Wuxia
             }
             y -= 3 * 28 + 8;
 
-            if (!showPicks) return;
-            CardHeading(sheet.picksHeading ?? "已選", y);
-            y -= 32;
-            var picks = CardLabel(sheet.picks.Count == 0 ? "尚未選擇" : string.Join("　", sheet.picks), 18,
-                sheet.picks.Count == 0 ? CardMuted : CardText, 18, y, -18, 0, TextAnchor.UpperLeft);
-            Anchor(picks.rectTransform, Vector2.zero, Vector2.one, new(18, 14), new(-18, y));
-            picks.horizontalOverflow = HorizontalWrapMode.Wrap;
-            picks.resizeTextMinSize = 18;
+            if (showPicks) CreationPicksDropdown(shell, sheet);
 
             void CardHeading(string text, float top)
             {

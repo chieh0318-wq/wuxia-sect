@@ -1023,6 +1023,7 @@ namespace Wuxia
             // With the 18px floor a label may not shrink to fit; let it draw rather than silently truncate.
             text.verticalOverflow = VerticalWrapMode.Overflow;
             text.text = content;
+            CjkKinsoku.Attach(text);
             return text;
         }
 

@@ -50,8 +50,8 @@ namespace Wuxia
                     bool clickable = !node.researched && node.unlocked && node.research != null;
                     var card = Button(row, node.name, clickable ? node.research : null);
                     var selectable = card.GetComponent<Button>();
-                    selectable.interactable = clickable;
                     if (!clickable) selectable.transition = Selectable.Transition.None;
+                    selectable.interactable = clickable;
                     Anchor(card, new(x, 0), new(right, 1), new(0, 4), new(0, -4));
                     var image = card.GetComponent<Image>();
                     UiKit.Skin(image, node.researched ? "Selected" : node.unlocked ? "Vermilion" : "Wood");
@@ -75,14 +75,16 @@ namespace Wuxia
                     effect.color = new Color(1f, .93f, .80f);
                     effect.horizontalOverflow = HorizontalWrapMode.Wrap;
                     effect.resizeTextForBestFit = true;
-                    effect.resizeTextMinSize = 16;
-                    effect.resizeTextMaxSize = 18;
-                    Anchor(effect.rectTransform, Vector2.zero, Vector2.one, new(12, 34), new(-8, -60));
+                    effect.resizeTextMinSize = 15;
+                    effect.resizeTextMaxSize = 17;
+                    effect.lineSpacing = .78f;
+                    effect.verticalOverflow = VerticalWrapMode.Truncate;
+                    Anchor(effect.rectTransform, Vector2.zero, Vector2.one, new(12, 31), new(-8, -57));
                     var status = Label(card, node.status, 18, TextAnchor.MiddleLeft);
                     status.color = node.researched ? TechDone : node.unlocked ? TechOpen : TechLocked;
                     status.resizeTextMinSize = 15;
                     status.resizeTextMaxSize = 18;
-                    Anchor(status.rectTransform, Vector2.zero, Vector2.right, new(12, 6), new(-8, 32));
+                    Anchor(status.rectTransform, Vector2.zero, Vector2.right, new(12, 5), new(-8, 27));
                     if (index == branch.nodes.Length - 1)
                         continue;
                     // Connector: a short ink rule ending in an arrow head, lit once the left node is learned.

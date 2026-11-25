@@ -63,10 +63,12 @@ namespace Wuxia
                         .Where(id => AssignmentSystem.Block(state, id) == null).Take(4).ToArray();
                     foreach (string id in party)
                     {
-                        string name = state.SparName(id) + "　";
-                        var choice = ui.Canvas.GetComponentsInChildren<Button>().Last(button =>
-                            button.interactable && button.GetComponentInChildren<Text>()?.text.StartsWith(name,
-                                StringComparison.Ordinal) == true);
+                        // v1126c picker rows: the row button has an empty caption; the name is the first cell text.
+                        string name = state.SparName(id);
+                        var choice = ui.Canvas.GetComponentsInChildren<Button>().LastOrDefault(button =>
+                            button.interactable && button.GetComponentsInChildren<Text>()
+                                .Any(cell => cell.text.Split('\n').Contains(name)));
+                        RequirePd2(choice != null, $"deployment picker lists {name}");
                         choice.onClick.Invoke();
                     }
                     ClickCaptureCaption("確認派遣");

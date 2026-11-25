@@ -10,15 +10,16 @@
   "choosePrompt": "師父門下，你排行第三，卻是同輩中最出挑的一個。同門該如何稱呼你？",
   "titles": ["大師兄", "大師姐"],
   "steps": [
-    { "id": "camera", "title": "巡視山門", "objective": "{title}，先四下走走，看看新山門的光景。", "hint": "按 WASD 或方向鍵移動視角，也可按住右鍵拖曳（右鍵單擊則是返回上一頁）。", "trigger": "camera_move", "target": "", "highlight": "" },
-    { "id": "zoom", "title": "遠近端詳", "objective": "拉近視角，細看殿宇屋簷。", "hint": "游標移到庭院上，轉動滾輪拉近或拉遠。", "trigger": "camera_zoom", "target": "", "highlight": "" },
-    { "id": "hall", "title": "拜謁祖師", "objective": "點選北側祖師殿，查看殿中指令。", "hint": "左鍵點選紅色菱形標記下方的祖師殿。殿中議事也要花行動力。", "trigger": "click_building", "target": "hall", "highlight": "building:hall" },
-    { "id": "disciple", "title": "問候同門", "objective": "找一位同門說說話。", "hint": "左鍵點選院中走動的弟子，聽聽近況（說話不花行動力）。看完點一下或按右鍵關閉。", "trigger": "talk_disciple", "target": "", "highlight": "" },
-    { "id": "build", "title": "擴建院落", "objective": "在南側空地興建一座新屋舍。", "hint": "點左側「建造」，再點「興建屋舍」挑圖樣，最後點亮綠色空地。要花銀兩與行動力。", "trigger": "build_any", "target": "", "highlight": "ui:cmd_build" },
-    { "id": "recruit", "title": "開門收徒", "objective": "為{sect}招收一名新弟子。", "hint": "點左側「人事」，再點「招收弟子」挑選門路。收徒要備茶飯束脩，並花費行動力。", "trigger": "recruit", "target": "", "highlight": "ui:cmd_recruit" },
-    { "id": "roster", "title": "清點本門", "objective": "看看本門上下都有誰。", "hint": "點右下角「本門」，查看自己人的武學與生活技藝。看完按右鍵或「關閉」返回。", "trigger": "open_roster", "target": "", "highlight": "ui:sect_roster" },
-    { "id": "month", "title": "月底結算", "objective": "本月事務已畢，結束本月。", "hint": "點選右上角「結束本月」，結算本月收支，行動力也會補滿。", "trigger": "end_month", "target": "", "highlight": "ui:end_month" },
-    { "id": "report", "title": "查閱月報", "objective": "看看本月收支與門中結餘。", "hint": "讀完點「收卷」，或按右鍵／Esc 關閉月報，聽軍師總結。", "trigger": "read_report", "target": "", "highlight": "" }
+    { "id": "camera", "title": "巡視山門", "objective": "{title}，先四下走走，看看新山門的光景。", "hint": "按 WASD 或方向鍵移動視角，也可按住右鍵拖曳（右鍵單擊則是返回上一頁）。往後興建、點選屋舍，都在這片院落裡。", "trigger": "camera_move", "target": "", "highlight": "" },
+    { "id": "zoom", "title": "遠近端詳", "objective": "拉近視角，細看殿宇屋簷。", "hint": "游標移到庭院上，轉動滾輪拉近或拉遠。拉遠可看清南側空地，興建時用得著。", "trigger": "camera_zoom", "target": "", "highlight": "" },
+    { "id": "hall", "title": "拜謁祖師", "objective": "點選北側祖師殿，查看殿中指令。", "hint": "左鍵點選紅色菱形標記下方的祖師殿。祖師殿每月供銀與聲望；殿中【召集議事】要花{cost:council}。", "trigger": "click_building", "target": "hall", "highlight": "building:hall", "reward": { "silver": 2 } },
+    { "id": "disciple", "title": "問候同門", "objective": "找一位同門說說話。", "hint": "左鍵點選院中走動的弟子，聽聽近況（說話不花行動力）。看完點一下或按右鍵關閉。", "trigger": "talk_disciple", "target": "", "highlight": "", "reward": { "food": 3 } },
+    { "id": "build", "title": "擴建院落", "objective": "興建【{buildPick}】：{buildYield}。", "hint": "為何是它：{buildReason}\n花費：銀 {buildCost}・{cost:build}。點左側「建造」→「興建屋舍」，選標著「★推薦」的【{buildPick}】，再點亮綠色空地。", "trigger": "build_any", "target": "", "highlight": "ui:cmd_build", "reward": { "silver": 5 } },
+    { "id": "action_points", "title": "清點行動力", "objective": "看看本月還能辦幾件事。", "hint": "{apLine}\n常用指令：{actionCosts}。月底補滿，用剩的不留到下月。將游標移到上方行動力（箭頭所指）看明細。", "trigger": "inspect_ap", "target": "", "highlight": "ui:ap", "reward": { "silver": 2 } },
+    { "id": "recruit", "title": "開門收徒", "objective": "為{sect}招收一名新弟子。", "hint": "點左側「人事」→「招收弟子」挑選門路（{cost:recruit}，另備束脩茶飯）。人手多了，每月能派出去辦事的人才多；每多一人，每月多耗糧 {foodPer}。", "trigger": "recruit", "target": "", "highlight": "ui:cmd_recruit", "reward": { "food": 5 } },
+    { "id": "roster", "title": "清點本門", "objective": "看看本門上下都有誰。", "hint": "點右下角「本門」，查看自己人的武學與生活技藝，日後派事便知誰最合適。看完按右鍵或「關閉」返回。", "trigger": "open_roster", "target": "", "highlight": "ui:sect_roster", "reward": { "silver": 2 } },
+    { "id": "month", "title": "月底結算", "objective": "本月事務已畢，結束本月。", "hint": "點選右上角「結束本月」。結算時屋舍每月進銀 {silverIn}、維護 −{upkeep}，產糧 {foodIn}、口糧 −{eaten}；行動力補回 {apMax} 點。", "trigger": "end_month", "target": "", "highlight": "ui:end_month", "reward": { "silver": 3 } },
+    { "id": "report", "title": "查閱月報", "objective": "看看本月收支與門中結餘。", "hint": "讀完點「收卷」，或按右鍵／Esc 關閉月報，聽軍師總結。開山頭三個月，軍師還會多提點一句。", "trigger": "read_report", "target": "", "highlight": "" }
   ],
   "completeText": "{title}主持有方，同門上下無不心服。",
   "reward": { "silver": 30, "food": 0, "reputation": 2 }

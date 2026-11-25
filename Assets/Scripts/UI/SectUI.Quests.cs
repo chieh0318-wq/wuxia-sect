@@ -30,27 +30,27 @@ namespace Wuxia
             questPanel = Panel("任務", canvas, Vector2.right, Vector2.right, new(-442, 104), new(-18, 144));
             UiKit.Skin(questPanel.GetComponent<Image>(), "Lacquer");
             questPanel.gameObject.AddComponent<QuestPanelWatcher>().Hidden = () =>
-                ModalOpen || StoryOpen || (details != null && details.gameObject.activeSelf);
+                ModalOpen || StoryOpen || questBook != null || (details != null && details.gameObject.activeSelf);
             RefreshQuestPanel();
         }
 
         internal void RefreshQuestPanel()
         {
+            if (questBook != null) RefreshQuestBook();
             if (questPanel == null || questState == null) return;
             foreach (Transform child in questPanel)
             {
                 child.gameObject.SetActive(false);
                 UnityEngine.Object.Destroy(child.gameObject);
             }
-            var data = QuestBoardData.Data;
-            const float width = 424, pad = 16;
-            float y = 0;
+            const float width = 424;
 
             var header = Button(questPanel, "", () => { questCollapsed = !questCollapsed; RefreshQuestPanel(); });
             header.name = "任務標題";
             UiKit.Skin(header.GetComponent<Image>(), "Plaque");
             header.GetComponentInChildren<Text>().text = "";
-            var caption = Label(header, questCollapsed ? "任務　▸" : "任務　▾", 22, TextAnchor.MiddleLeft);
+            // v1126c PC3 #10: the pinned box is only 「眼下要務」; the whole board lives behind the 「任務　J」 button.
+            var caption = Label(header, questCollapsed ? "眼下要務　▸" : "眼下要務　▾", 22, TextAnchor.MiddleLeft);
             caption.color = UiKit.HeaderGold;
             caption.fontStyle = FontStyle.Bold;
             Anchor(caption.rectTransform, Vector2.zero, Vector2.one, new(14, 0), new(-10, 0));
@@ -59,38 +59,118 @@ namespace Wuxia
             var peek = Label(header, guide.HasValue ? "引導：" + guide.Value.title : stage != null ? stage.title : "諸事已備",
                 18, TextAnchor.MiddleRight);
             peek.color = MapUi.Paper;
-            Anchor(peek.rectTransform, Vector2.zero, Vector2.one, new(110, 0), new(-14, 0));
-            y = 44;
+            Anchor(peek.rectTransform, Vector2.zero, Vector2.one, new(150, 0), new(-14, 0));
+            Anchor(header, Vector2.up, Vector2.one, new(0, -44), Vector2.zero);
             if (questCollapsed)
             {
-                Anchor(header, Vector2.up, Vector2.one, new(0, -44), Vector2.zero);
                 Resize(44);
                 return;
             }
-            float top = 0;
-            Place(header, 44);
+            float y = WriteQuestBody(questPanel, width, 44, false, 0);
+            Resize(y + 12);
 
-            // ── short-term: one goal at a time ──
+            void Resize(float height) =>
+                Anchor(questPanel, Vector2.right, Vector2.right, new(-width - 18, 104), new(-18, 104 + height));
+        }
+
+        // ── v1126c PC3 #10: the full 任務 board (bottom-bar 「任務　J」) ──
+        private RectTransform questBook;
+        private object questBookBack;
+        internal bool QuestBookOpen => questBook != null;
+
+        internal void ToggleQuestBook()
+        {
+            if (questBook != null)
+            {
+                CloseQuestBook();
+                return;
+            }
+            if (questState == null) return;
+            questBook = Rect("任務總覽", canvas);
+            Anchor(questBook, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero);
+            var dim = questBook.gameObject.AddComponent<Image>();
+            dim.color = new Color(.08f, .055f, .034f, .45f); // blocks clicks on the courtyard behind
+            var watch = questBook.gameObject.AddComponent<QuestBookWatcher>();
+            watch.Close = () => ModalOpen || StoryOpen || SceneOpen;
+            watch.Run = CloseQuestBook;
+            questBookBack = UiBack.Push(CloseQuestBook, () => questBook != null, questBook);
+            RefreshQuestBook();
+        }
+
+        internal void CloseQuestBook()
+        {
+            if (questBook == null) return;
+            UiBack.Pop(questBookBack);
+            UnityEngine.Object.Destroy(questBook.gameObject);
+            questBook = null;
+        }
+
+        private void RefreshQuestBook()
+        {
+            if (questBook == null || questState == null) return;
+            foreach (Transform child in questBook)
+            {
+                child.gameObject.SetActive(false);
+                UnityEngine.Object.Destroy(child.gameObject);
+            }
+            const float width = 860;
+            var card = Rect("任務卷", questBook);
+            UiKit.Skin(card.gameObject.AddComponent<Image>(), "Lacquer");
+            var title = Label(card, "任務", 30, TextAnchor.MiddleLeft);
+            title.color = UiKit.HeaderGold;
+            title.fontStyle = FontStyle.Bold;
+            Anchor(title.rectTransform, Vector2.up, Vector2.one, new(24, -56), new(-24, -10));
+            var hint = Label(card, "按 J 或 Esc／右鍵收起", 17, TextAnchor.MiddleRight);
+            hint.color = CardMuted;
+            Anchor(hint.rectTransform, Vector2.up, Vector2.one, new(24, -56), new(-150, -10));
+            var close = Button(card, "收卷", CloseQuestBook);
+            close.name = "任務收卷";
+            Anchor(close, Vector2.one, Vector2.one, new(-128, -52), new(-20, -14));
+            float y = WriteQuestBody(card, width, 64, true, 2);
+            float height = Mathf.Min(y + 18, 1000);
+            Anchor(card, new(.5f, .5f), new(.5f, .5f), new(-width / 2, -height / 2 + 20), new(width / 2, height / 2 + 20));
+            var fit = card.gameObject.AddComponent<FitToScreenV1126cPc>();
+            fit.Height = height;
+        }
+
+        /// <summary>
+        /// Writes 眼下要務 (always) and, when <paramref name="full"/>, the four 破關之路 with their live counters and
+        /// 「宣告結局」 buttons into <paramref name="host"/> from <paramref name="y"/> down; returns the bottom edge.
+        /// </summary>
+        private float WriteQuestBody(RectTransform host, float width, float y, bool full, int bump)
+        {
+            var data = QuestBoardData.Data;
+            const float pad = 16;
+            var stage = QuestBoard.Current(questState);
+            var guide = TutorialQuest?.Invoke();
+            var met = new Color(.64f, .92f, .72f);
+
             Section("眼下要務");
             if (guide.HasValue)
             {
-                Line(guide.Value.title, 21, UiKit.HeaderGold, 30);
-                Line(guide.Value.objective, 18, MapUi.Paper, Wrapped(guide.Value.objective, 18));
-                Line("新手引導進行中，完成後接續門派要務。", 17, CardMuted, 26);
+                Line(guide.Value.title, 21 + bump, UiKit.HeaderGold, 30 + bump);
+                Line(guide.Value.objective, 18 + bump, MapUi.Paper, Wrapped(guide.Value.objective, 18 + bump));
+                Line("新手引導進行中，完成後接續門派要務。", 17 + bump, CardMuted, 26 + bump);
             }
             else if (stage != null)
             {
-                Line(stage.title, 21, UiKit.HeaderGold, 30);
-                if (!string.IsNullOrEmpty(stage.brief)) Line(stage.brief, 18, MapUi.Paper, Wrapped(stage.brief, 18));
+                Line(stage.title, 21 + bump, UiKit.HeaderGold, 30 + bump);
+                if (!string.IsNullOrEmpty(stage.brief)) Line(stage.brief, 18 + bump, MapUi.Paper, Wrapped(stage.brief, 18 + bump));
                 foreach (var (text, current, target) in QuestBoard.Steps(questState, stage))
                 {
                     bool done = current >= target;
-                    Line($"{(done ? "✔" : "・")} {text}　{current}／{target}", 18, done ? new Color(.64f, .92f, .72f) : MapUi.Paper, 26);
+                    string step = $"{(done ? "✔" : "・")} {text}　{current}／{target}";
+                    Line(step, 18 + bump, done ? met : MapUi.Paper, Wrapped(step, 18 + bump));
                 }
             }
-            else Line("短期要務都已辦妥，往長遠的路走吧。", 18, MapUi.Paper, 28);
+            else Line("短期要務都已辦妥，往長遠的路走吧。", 18 + bump, MapUi.Paper, 28 + bump);
 
-            // ── long-term: the four routes, pinned at the bottom ──
+            if (!full)
+            {
+                Line("破關之路與全部任務：按下方「任務　J」。", 16, CardMuted, 24);
+                return y;
+            }
+
             y += 6;
             Section("常駐任務・破關之路");
             foreach (var route in data.routes ?? Array.Empty<QuestRoute>())
@@ -101,42 +181,36 @@ namespace Wuxia
                 string routeId = QuestBoard.RouteId(route);
                 var live = routeId == null ? (RouteState?)null : questState.Route(routeId);
                 float nameTop = y;
-                Line(route.name, 19, UiKit.HeaderGold, 26);
+                Line(route.name, 19 + bump, UiKit.HeaderGold, 26 + bump);
                 if (live is { Met: true, Declared: false })
                 {
-                    var declare = Button(questPanel, "宣告結局", () => DeclareRoute(routeId));
+                    var declare = Button(host, "宣告結局", () => DeclareRoute(routeId));
                     declare.name = "宣告結局";
                     declare.GetComponentInChildren<Text>().fontSize = 16;
                     Anchor(declare, Vector2.one, Vector2.one, new(-pad - 104, -nameTop - 26), new(-pad, -nameTop - 1));
                 }
-                var met = new Color(.64f, .92f, .72f);
-                Line(progress, 16, live is { Met: true } ? met : progress.StartsWith("達成條件：待定", StringComparison.Ordinal) ? CardMuted : MapUi.Paper,
-                    Wrapped(progress, 16), pad + 14);
+                Line(progress, 16 + bump, live is { Met: true } ? met : progress.StartsWith("達成條件：待定", StringComparison.Ordinal) ? CardMuted : MapUi.Paper,
+                    Wrapped(progress, 16 + bump), pad + 14);
                 if (!string.IsNullOrEmpty(route.direction))
-                    Line(route.direction, 15, CardMuted, Wrapped(route.direction, 15), pad + 14);
+                    Line(route.direction, 15 + bump, CardMuted, Wrapped(route.direction, 15 + bump), pad + 14);
             }
-            Resize(y + 16);
+            return y;
 
-            void Place(RectTransform rect, float height)
-            {
-                Anchor(rect, Vector2.up, Vector2.one, new(0, -top - height), new(0, -top));
-                top += height;
-            }
             void Section(string text)
             {
-                var label = Label(questPanel, text, 18, TextAnchor.MiddleLeft);
+                var label = Label(host, text, 18 + bump, TextAnchor.MiddleLeft);
                 label.color = UiKit.GoldAccent;
-                Anchor(label.rectTransform, Vector2.up, Vector2.one, new(pad, -y - 26), new(-pad, -y));
-                var rule = Rect("Rule", questPanel);
-                Anchor(rule, Vector2.up, Vector2.one, new(pad, -y - 28), new(-pad, -y - 27));
+                Anchor(label.rectTransform, Vector2.up, Vector2.one, new(pad, -y - 26 - bump), new(-pad, -y));
+                var rule = Rect("Rule", host);
+                Anchor(rule, Vector2.up, Vector2.one, new(pad, -y - 28 - bump), new(-pad, -y - 27 - bump));
                 var ink = rule.gameObject.AddComponent<Image>();
                 ink.color = new Color(.93f, .74f, .42f, .35f);
                 ink.raycastTarget = false;
-                y += 32;
+                y += 32 + bump;
             }
             void Line(string text, int size, Color color, float height, float left = pad)
             {
-                var label = Label(questPanel, text ?? "", size, TextAnchor.UpperLeft);
+                var label = Label(host, text ?? "", size, TextAnchor.UpperLeft);
                 label.color = color;
                 label.horizontalOverflow = HorizontalWrapMode.Wrap;
                 label.verticalOverflow = VerticalWrapMode.Overflow;
@@ -146,15 +220,10 @@ namespace Wuxia
             }
             float Wrapped(string text, int size)
             {
-                int perLine = Mathf.Max(1, Mathf.FloorToInt((width - pad * 2) / size));
+                int perLine = Mathf.Max(1, Mathf.FloorToInt((width - pad * 2 - 14) / size));
                 return Mathf.Max(1, Mathf.CeilToInt((text ?? "").Length / (float)perLine)) * (size + 6) + 4;
             }
-            void Resize(float height)
-            {
-                Anchor(questPanel, Vector2.right, Vector2.right, new(-width - 18, 104), new(-18, 104 + height));
-            }
         }
-
         /// <summary>v1126b 決定 3: proclaims a route's ending; play carries on afterwards.</summary>
         private void DeclareRoute(string id)
         {
@@ -193,6 +262,31 @@ namespace Wuxia
             bool hide = Hidden?.Invoke() == true;
             group.alpha = hide ? 0 : 1;
             group.blocksRaycasts = !hide;
+        }
+    }
+
+    /// <summary>v1126c PC3 #10: closes the 任務 board when a page, story beat or scene takes over.</summary>
+    internal sealed class QuestBookWatcher : MonoBehaviour
+    {
+        internal Func<bool> Close;
+        internal Action Run;
+        private void LateUpdate()
+        {
+            if (Close?.Invoke() == true) Run?.Invoke();
+        }
+    }
+
+    /// <summary>v1126c PC3 #10: shrinks a fixed-height card so it never runs off a short screen.</summary>
+    internal sealed class FitToScreenV1126cPc : MonoBehaviour
+    {
+        internal float Height;
+        private void LateUpdate()
+        {
+            var parent = transform.parent as RectTransform;
+            if (parent == null || Height <= 0) return;
+            float room = parent.rect.height - 40;
+            float scale = Mathf.Min(1f, room / Height);
+            transform.localScale = new Vector3(scale, scale, 1);
         }
     }
 }

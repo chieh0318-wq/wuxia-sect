@@ -110,6 +110,7 @@ namespace Wuxia
         {
             objective.gameObject.SetActive(false);
             RefreshQuestPanel();
+            HideGuideArrow();
             pulse.gameObject.SetActive(false);
             landmarkMarker.gameObject.SetActive(false);
         }
@@ -118,6 +119,7 @@ namespace Wuxia
         {
             pulse.gameObject.SetActive(false);
             landmarkMarker.gameObject.SetActive(false);
+            HideGuideArrow(); // v1126c PC3 #15
             float top = details.gameObject.activeSelf ? -126 - details.rect.height : -110;
             Anchor(objective, Vector2.one, Vector2.one, new Vector2(-442, top - ObjectiveHeight), new Vector2(-18, top));
             if (ModalOpen)
@@ -146,6 +148,7 @@ namespace Wuxia
                 pulse.sizeDelta = max - min + Vector2.one * 9;
                 pulse.GetComponent<CanvasGroup>().alpha = phase;
                 pulse.gameObject.SetActive(true);
+                PointGuideArrow(min, max, phase); // v1126c PC3 #15: an arrow beside the lit control
             }
             if (!key.StartsWith("building:", StringComparison.Ordinal) ||
                 !world.TryGetLandmark(key.Substring(9), out var landmark))

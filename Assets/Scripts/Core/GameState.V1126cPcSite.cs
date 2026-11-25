@@ -12,6 +12,7 @@ namespace Wuxia
 
         private void SiteMonth(MonthlyReport report)
         {
+            CountPlayedMonth(); // v1126c PC3 #15
             if (Story.siteSilver == 0 && Story.siteFood == 0) return;
             Silver = Mathf.Max(0, Silver + Story.siteSilver);
             Food = Mathf.Max(0, Food + Story.siteFood);

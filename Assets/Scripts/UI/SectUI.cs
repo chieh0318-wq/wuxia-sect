@@ -415,7 +415,7 @@ namespace Wuxia
         {
             if (mapButtons != null)
                 return;
-            mapButtons = Panel("江湖", canvas, Vector2.right, Vector2.right, new(openSect != null ? -1010 : -826, 18), new(-18, 92));
+            mapButtons = Panel("江湖", canvas, Vector2.right, Vector2.right, new(openSect != null ? -1194 : -1010, 18), new(-18, 92));
             UiKit.Skin(mapButtons.GetComponent<Image>(), "Wood");
             var row = mapButtons.gameObject.AddComponent<HorizontalLayoutGroup>();
             row.padding = new RectOffset(12, 12, 10, 10);
@@ -429,6 +429,7 @@ namespace Wuxia
             var intelButton = Button(mapButtons, "情報", openIntel);
             Button(mapButtons, "江湖人物　C", openCharacters);
             UiKit.Skin(mapButton.GetComponent<Image>(), "Wood");
+            targets["quests"] = Button(mapButtons, "任務　J", ToggleQuestBook); // v1126c PC3 #10
             UiKit.Skin(Button(mapButtons, "系統　Esc", openSystem).GetComponent<Image>(), "Wood");
             targets["map"] = mapButton;
             targets["intel"] = intelButton;

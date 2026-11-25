@@ -76,6 +76,77 @@ namespace Wuxia
                 Pc3Courtyard();
                 if (state.Disciples.Count > 0) Speak(state.Disciples[0]);
             }),
+            ("PC3_17_hud_quest_button_pinned.png", () =>
+            {
+                ui.CloseTalk(false);
+                Pc3Courtyard();
+                ui.ShowQuestPanel(state);
+                Debug.Log("[Capture] PC3_17 bottom bar 任務 button + pinned 眼下要務 only");
+            }),
+            ("PC3_18_quest_book.png", () =>
+            {
+                ui.ToggleQuestBook();
+                Debug.Log("[Capture] PC3_18 quest book open: " + ui.QuestBookOpen);
+            }),
+            ("PC3_19_tutorial_build_step.png", () =>
+            {
+                ui.CloseQuestBook();
+                tutorial = new TutorialGuide(ui, state);
+                ui.TutorialQuest = () => tutorial?.Current;
+                tutorial.ChooseForCapture();
+                tutorial.Record("camera_move");
+                tutorial.Record("camera_zoom");
+                tutorial.Record("click_building", "hall");
+                tutorial.Record("talk_disciple");
+                ui.CloseTalk(false);
+                ui.CloseBuilding();
+                Debug.Log("[Capture] PC3_19 build step recommends: " + tutorial.RecommendedBuilding + " | " +
+                    TutorialAdvice.Recommend(state)?.reason);
+            }),
+            ("PC3_20_tutorial_build_menu_blueprint.png", () =>
+            {
+                BeginBuild(data.Actions.First(action => action.type == "build"));
+                Debug.Log("[Capture] PC3_20 blueprint lit: " + ui.TargetActive("blueprint") + " highlight=" + tutorial?.Highlight);
+            }),
+            ("PC3_21_tutorial_ap_step.png", () =>
+            {
+                CancelBuild();
+                tutorial.Record("build_any");
+                Debug.Log("[Capture] PC3_21 AP step: " + TutorialAdvice.ApLine(state) + " | " + TutorialAdvice.ActionCosts(state));
+            }),
+            ("PC3_22_first_month_advisor_tip.png", () =>
+            {
+                state.Story.pcMonthsPlayed = 1;
+                var tip = FirstMonthsTipLine();
+                Debug.Log("[Capture] PC3_22 first-month tip: " + TutorialAdvice.FirstMonthsTip(state));
+                if (tip.HasValue) ui.ShowTalk(new System.Collections.Generic.List<PortraitLine> { tip.Value }, null);
+            }),
+            ("PC3_23_xieyun_choice_cg.png", () =>
+            {
+                ui.CloseTalk(false);
+                tutorial = null;
+                ui.HideObjective();
+                state.Protagonist.gender = "女";
+                var line = state.Questlines.FirstOrDefault(entry => entry.id == "q_friend");
+                var beat = line?.beats?.FirstOrDefault(entry => entry.id == "q_friend_1");
+                int at = beat == null ? -1 : Array.FindIndex(beat.scene, part => part.text?.Contains("我選哪條不要緊") == true);
+                if (at < 0)
+                {
+                    Debug.LogWarning("[Capture] PC3_23 beat not found");
+                    return;
+                }
+                string art = null;
+                for (int prior = 0; prior <= at; prior++)
+                    if (!string.IsNullOrEmpty(beat.scene[prior].image)) art = beat.scene[prior].image;
+                var part0 = beat.scene[at];
+                var focus = new QuestBeat
+                {
+                    id = beat.id, title = beat.title, playable = true, choices = beat.choices,
+                    scene = new[] { new StoryBeat { speaker = part0.speaker, portrait = part0.portrait, image = art, text = part0.text } }
+                };
+                PlayQuest(line, focus);
+                Debug.Log($"[Capture] PC3_23 謝蘊 beat art={art} portrait={part0.portrait}");
+            }),
         };
 
         /// <summary>A fresh courtyard for the in-game PC3 shots (same defaults as skipping the prologue).</summary>

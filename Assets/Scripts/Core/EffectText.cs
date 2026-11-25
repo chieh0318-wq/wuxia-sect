@@ -22,9 +22,12 @@ namespace Wuxia
                 .Where(text => !string.IsNullOrEmpty(text)));
 
         internal static string DescribeExpedition(IEnumerable<GameEffect> effects, GameState state, string worker) =>
-            string.Join("、", (effects ?? Array.Empty<GameEffect>()).Select(effect => effect?.key == "injury"
-                ? $"{state.SparName(worker)}傷勢 {effect.value:+0;-0;0}"
-                : Describe(effect, state)).Where(text => !string.IsNullOrEmpty(text)));
+            string.Join("、", (effects ?? Array.Empty<GameEffect>()).Select(effect => effect?.key switch
+            {
+                "injury" => $"{state.SparName(worker)}傷勢 {effect.value:+0;-0;0}",
+                "art" => $"《{MartialArts.Find(effect.@ref)?.name ?? effect.@ref}》秘笈 ×1 入庫",
+                _ => Describe(effect, state),
+            }).Where(text => !string.IsNullOrEmpty(text)));
 
         /// <summary>One effect as 「名稱 ±數值」, or "" for hidden bookkeeping such as story flags.</summary>
         internal static string Describe(GameEffect effect, GameState state = null)

@@ -44,6 +44,10 @@ namespace Wuxia
 
             var rect = label.rectTransform.rect;
             if (rect.width <= 1f || rect.height <= 1f) return;
+            // v1126d: a one-line box has no room for a second line; a forced break would blank a best-fit label.
+            if (rect.height < label.fontSize * 1.8f) return;
+            // Best-fit labels wrap at the size actually drawn; wait until the canvas has generated it once.
+            if (label.resizeTextForBestFit && label.cachedTextGenerator.fontSizeUsedForBestFit <= 0) return;
 
             bool textChanged = !string.Equals(current, appliedText, StringComparison.Ordinal);
             bool layoutChanged = Mathf.Abs(rect.width - lastWidth) > 0.5f || label.fontSize != lastFontSize;
@@ -66,6 +70,14 @@ namespace Wuxia
             generator ??= new TextGenerator();
             string work = raw;
             var settings = label.GetGenerationSettings(extents);
+            settings.verticalOverflow = VerticalWrapMode.Overflow;
+            if (settings.resizeTextForBestFit)
+            {
+                // fontSizeUsedForBestFit is in canvas pixels; settings.fontSize is in layout units.
+                float scale = Mathf.Max(.0001f, settings.scaleFactor);
+                settings.fontSize = Mathf.Max(1, Mathf.FloorToInt(label.cachedTextGenerator.fontSizeUsedForBestFit / scale));
+                settings.resizeTextForBestFit = false;
+            }
             for (int pass = 0; pass < 16; pass++)
             {
                 generator.Populate(work, settings);

@@ -216,12 +216,10 @@ namespace Wuxia
                 border.effectColor = UiKit.HeaderGold;
                 border.effectDistance = new Vector2(2, 2);
                 var glyph = BattleLabel(btn, seal, 29, TextAnchor.MiddleCenter, new(8, 4), new(50, 45));
-                // v1126d: 49px row = 24px title over a 22px detail line kept inside the row (it used to spill below).
+                // v1126d: 49px row = title (25–48) over a 20px detail line (1–25) that stays inside the row.
                 var title = BattleLabel(btn, ActionName(id), 22, TextAnchor.MiddleLeft, new(60, 25), new(550, 48));
-                var detail = BattleLabel(btn, "", 18, TextAnchor.MiddleLeft, new(60, 2), new(550, 26));
-                detail.resizeTextForBestFit = true;
-                detail.resizeTextMinSize = 15;
-                detail.resizeTextMaxSize = 18;
+                var detail = BattleLabel(btn, "", 20, TextAnchor.MiddleLeft, new(60, 1), new(550, 25));
+                UnityEngine.Object.DestroyImmediate(detail.GetComponent<CjkKinsoku>()); // one-line cell: no line-break guard
                 actButtons[id] = (btn, border, glyph, title, detail);
             }
 

@@ -364,6 +364,9 @@ namespace Wuxia
                     shotsOk = SaveShot("72_battle_p4_facing.png");
                     if (!shotsOk) yield break;
                     inspect("interrupt");
+                    // v1126d: let a dynamic-font atlas rebuild (new glyph sizes at 1280x720) redraw the move rows first.
+                    yield return null;
+                    yield return null;
                     shotsOk = SaveShot("60_battle_p3_command_tooltip.png") && SaveShot("61_battle_p3_turn_order.png");
                     if (!shotsOk)
                         yield break;

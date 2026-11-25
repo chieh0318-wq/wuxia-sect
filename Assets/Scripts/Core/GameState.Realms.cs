@@ -272,9 +272,18 @@ namespace Wuxia
         /// <summary>Add progress to a protagonist martial line, respecting its cap.</summary>
         internal void StudyLine(string id, float amount)
         {
-            var line = id == "martial" || string.IsNullOrEmpty(id) ? RankSystem.Major(Protagonist.lines, Protagonist.major)
-                : Array.Find(Protagonist.lines ?? Array.Empty<SkillLine>(), entry => entry.id == id);
+            var line = StudyEffectLine(id);
             TrainLine(line, amount * (line == null ? 1 : StudyMultiplier(line.id)));
         }
+
+        internal float StudyEffectProgress(string id, float amount)
+        {
+            var line = StudyEffectLine(id);
+            return CanAdvance(line) ? ProgressFor(line, amount * StudyMultiplier(line.id)) : 0;
+        }
+
+        private SkillLine StudyEffectLine(string id) => id == "martial" || string.IsNullOrEmpty(id)
+            ? RankSystem.Major(Protagonist.lines, Protagonist.major)
+            : Array.Find(Protagonist.lines ?? Array.Empty<SkillLine>(), entry => entry.id == id);
     }
 }

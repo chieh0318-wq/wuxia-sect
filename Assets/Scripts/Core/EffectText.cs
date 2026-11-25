@@ -37,7 +37,7 @@ namespace Wuxia
             {
                 case "silver": return $"銀兩 {signed}";
                 case "food": return $"糧食 {signed}";
-                case "reputation": return $"聲望 {signed}";
+                case "reputation": return $"聲望 {state?.ReputationEffect(value) ?? value:+0;-0;0}";
                 case "knownFaction": return $"掌握{GameState.FindFaction(effect.@ref)?.Label ?? effect.@ref}的情報";
                 case "monthlyTerms": return $"給付期 {value} 個月";
                 case "monthlyFood": return $"每月糧食 {signed}";
@@ -64,10 +64,13 @@ namespace Wuxia
                 // v1124 C15–C18: realm / hall rewards.
                 case "item": return $"{ItemName(effect.@ref)} ×{value}";
                 case "gear": return $"{GameState.GearGrades[Mathf.Clamp(value, 0, GameState.GearGrades.Length - 1)]}{effect.@ref}一件";
-                case "progress": return $"{LineName(effect.@ref)}修習進度 +{raw:0.#}";
+                case "progress":
+                    return state == null
+                        ? $"{LineName(effect.@ref)}修習基礎 {raw:+0.#;-0.#;0}"
+                        : $"{LineName(effect.@ref)}修習進度 {state.StudyEffectProgress(effect.@ref, raw):+0.#;-0.#;0}";
                 case "injury": return value > 0 ? $"主角傷勢 +{value}" : $"主角傷勢 {value}";
                 case "heal": return "全門療傷";
-                case "discipleProgress": return $"弟子武學進度 +{raw:0.#}";
+                case "discipleProgress": return $"弟子武學基礎進度 {raw:+0.#;-0.#;0}";
             }
             int slot = AttributeSystem.Index(effect.key);
             return slot >= 0 ? $"{AttributeSystem.Names[slot]} {signed}" : "";

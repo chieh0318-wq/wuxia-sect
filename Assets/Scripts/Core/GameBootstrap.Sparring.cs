@@ -31,7 +31,7 @@ namespace Wuxia
             if (!sparMelee && sparPicks.Count == 2)
                 lineup += $"　（{state.SparName(sparPicks[0])}勝率 {state.SparOdds(sparPicks[0], sparPicks[1]):P0}）";
             float bonus = Mathf.Max(.5f, 1 + state.Story.trainBonusPct / 100f);
-            string status = $"{lineup}　｜　進度 冠軍 +{GameState.SparPractice(0, bonus):0.#}、其餘 +{GameState.SparPractice(1, bonus):0.#} 以下　末名弟子輕傷 {GameState.SparInjuryChance:P0}";
+            string status = $"{lineup}　｜　基礎進度 冠軍 +{GameState.SparPractice(0, bonus):0.#}、其餘 +{GameState.SparPractice(1, bonus):0.#} 以下　末名弟子輕傷 {GameState.SparInjuryChance:P0}";
             bool heroIn = sparPicks.Contains(GameState.HeroId);
             ui.ShowSparPicker(state, sparPicks, sparSort, ShowSparPicker, sparMelee, status, block, ToggleSpar, melee =>
             {

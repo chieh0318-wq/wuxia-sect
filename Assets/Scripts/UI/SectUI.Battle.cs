@@ -217,9 +217,8 @@ namespace Wuxia
                 border.effectDistance = new Vector2(2, 2);
                 var glyph = BattleLabel(btn, seal, 29, TextAnchor.MiddleCenter, new(8, 4), new(50, 45));
                 // v1126d: 49px row = 24px title over a 22px detail line kept inside the row (it used to spill below).
-                var title = BattleLabel(btn, ActionName(id), 22, TextAnchor.MiddleLeft, new(60, 24), new(550, 48));
-                var detail = BattleLabel(btn, "", 18, TextAnchor.MiddleLeft, new(60, 3), new(550, 25));
-                detail.verticalOverflow = VerticalWrapMode.Truncate;
+                var title = BattleLabel(btn, ActionName(id), 22, TextAnchor.MiddleLeft, new(60, 25), new(550, 48));
+                var detail = BattleLabel(btn, "", 18, TextAnchor.MiddleLeft, new(60, 2), new(550, 26));
                 detail.resizeTextForBestFit = true;
                 detail.resizeTextMinSize = 15;
                 detail.resizeTextMaxSize = 18;

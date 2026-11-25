@@ -679,7 +679,7 @@ namespace Wuxia
             Anchor(caption.rectTransform, Vector2.up, Vector2.up, new(90, -34), new(196, -2));
             var benefit = Label(card, description, 18, TextAnchor.MiddleLeft);
             benefit.color = CardMuted;
-            Anchor(benefit.rectTransform, Vector2.zero, Vector2.right, new(90, showPerPoint ? 33 : 6), new(-292, showPerPoint ? 54 : 36));
+            Anchor(benefit.rectTransform, Vector2.zero, Vector2.right, new(90, showPerPoint ? 33 : 6), new(-300, showPerPoint ? 54 : 36));
             if (showPerPoint)
             {
                 // v1126 #4 / v1126d-ag (C9): what one more point buys, sized to stay legible at 1280×720.
@@ -690,7 +690,7 @@ namespace Wuxia
                 each.resizeTextMaxSize = 19;
                 each.horizontalOverflow = HorizontalWrapMode.Wrap;
                 each.verticalOverflow = VerticalWrapMode.Truncate;
-                Anchor(each.rectTransform, Vector2.zero, Vector2.right, new(90, 4), new(-292, 33));
+                Anchor(each.rectTransform, Vector2.zero, Vector2.right, new(90, 4), new(-300, 33));
             }
 
             var track = Rect("Attribute pips", card);
@@ -721,7 +721,7 @@ namespace Wuxia
             string note = (delta == 0 ? "基礎" : $"{delta:+0;-0}") + (bonus != 0 ? $"　加成{bonus:+0;-0}" : "");
             var deltaLabel = Label(card, note, 18, TextAnchor.MiddleCenter);
             deltaLabel.color = CardMuted;
-            Anchor(deltaLabel.rectTransform, Vector2.right, Vector2.right, new(-290, 4), new(-184, 28));
+            Anchor(deltaLabel.rectTransform, Vector2.right, Vector2.right, new(-300, 4), new(-186, 28));
             var minus = Button(card, "−", less);
             var plus = Button(card, "＋", more);
             Anchor(minus, Vector2.right, Vector2.one, new(-178, 16), new(-104, -16));

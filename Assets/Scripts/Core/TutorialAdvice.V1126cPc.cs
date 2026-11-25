@@ -44,12 +44,18 @@ namespace Wuxia
         {
             var parts = new List<string>();
             var income = building.income ?? new Yield();
-            if (income.silver != 0) parts.Add($"每月銀兩 {Mathf.RoundToInt(income.silver * state.ProductionMultiplier("commerce")):+0;-0}");
-            if (income.food != 0) parts.Add($"每月糧食 {Mathf.RoundToInt(income.food * state.ProductionMultiplier("farming")):+0;-0}");
+            if (income.silver != 0) parts.Add(Scaled("每月銀兩", income.silver, state.ProductionMultiplier("commerce")));
+            if (income.food != 0) parts.Add(Scaled("每月糧食", income.food, state.ProductionMultiplier("farming")));
             if (income.reputation != 0) parts.Add($"每月聲望 {income.reputation:+0;-0}");
             if (income.materials != 0) parts.Add($"每月材料 {income.materials:+0;-0}");
             if (building.upkeep != 0) parts.Add($"維護銀 −{building.upkeep}");
             return parts.Count == 0 ? (building.summary ?? "") : string.Join("、", parts);
+
+            static string Scaled(string what, int value, float multiplier)
+            {
+                int real = Mathf.RoundToInt(value * multiplier);
+                return real == value ? $"{what} {real:+0;-0}" : $"{what} {real:+0;-0}（基礎 {value}，加成 ×{multiplier:0.##}）";
+            }
         }
 
         /// <summary>
@@ -83,7 +89,7 @@ namespace Wuxia
             var yield = pick.income ?? new Yield();
             string reason;
             if (hungry)
-                reason = $"門中 {state.Disciples.Count} 人每月耗糧 {eaten}，現有產糧 {foodIn}，每月" +
+                reason = $"門中 {state.Disciples.Count} 人每月耗糧 {eaten}，屋舍與地利每月產糧 {foodIn}，每月" +
                     (foodNet < 0 ? $"虧 {-foodNet}，存糧 {state.Food} 約撐 {monthsLeft} 個月" : $"僅餘 {foodNet}") +
                     $"。{pick.name}花銀 {total.silver} 即可每月添糧 {Mathf.RoundToInt(yield.food * state.ProductionMultiplier("farming"))}，是眼下最划算的一筆。";
             else
@@ -107,9 +113,10 @@ namespace Wuxia
         {
             if (action == null) return "";
             var parts = new List<string>();
-            if (action.apCost > 0) parts.Add($"行動力 {action.apCost}");
-            if (action.cost != null && action.cost.silver > 0) parts.Add($"銀 {action.cost.silver}");
-            if (action.cost != null && action.cost.food > 0) parts.Add($"糧 {action.cost.food}");
+            // U+00A0 keeps 「行動力 2」 on one line when the card wraps.
+            if (action.apCost > 0) parts.Add($"行動力\u00A0{action.apCost}");
+            if (action.cost != null && action.cost.silver > 0) parts.Add($"銀\u00A0{action.cost.silver}");
+            if (action.cost != null && action.cost.food > 0) parts.Add($"糧\u00A0{action.cost.food}");
             return parts.Count == 0 ? "不花費" : string.Join("・", parts);
         }
 
@@ -119,7 +126,7 @@ namespace Wuxia
             var list = new List<string>();
             foreach (string type in new[] { "build", "recruit", "train", "explore" })
             {
-                var action = Action(state, type);
+                var action = Action(state, type) ?? state.Data.Actions?.FirstOrDefault(entry => entry != null && entry.id == type);
                 if (action != null) list.Add($"{action.name}（{Cost(action)}）");
             }
             return string.Join("、", list);

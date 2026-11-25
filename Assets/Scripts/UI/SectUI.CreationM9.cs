@@ -571,8 +571,10 @@ namespace Wuxia
                     Anchor(marker, point, point, new(-60, -20), new(60, 20));
                     UiKit.Skin(marker.GetComponent<Image>(), site == focused ? "Selected" : "Plaque");
                     marker.SetAsLastSibling();
+                    marker.name = "選址_" + site.id;
                 }
                 SettlementPowers(map, data, state, sites, focused); // v1126 #10
+                map.gameObject.AddComponent<SiteLabelGuard>(); // v1126c PC3 #9: site names stay readable above the flags
 
                 var detail = Panel("選址詳情", row, new(.69f, 0), Vector2.one, Vector2.zero, Vector2.zero, false);
                 UiKit.Skin(detail.GetComponent<Image>(), "Wood");

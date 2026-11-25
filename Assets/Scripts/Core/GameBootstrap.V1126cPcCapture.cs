@@ -60,7 +60,7 @@ namespace Wuxia
             ("PC3_13_site_map_mogan_tip.png", () =>
             {
                 Pc3Flow().CapturePc3Site("mogan");
-                Debug.Log("[Capture] PC3_13 flag tip: " + ui.RevealSettlementTipForCapture("taishan"));
+                Debug.Log("[Capture] PC3_13 flag tip: " + ui.RevealSettlementTipForCapture(null));
             }),
             ("PC3_14_road_event_narration.png", () =>
             {
@@ -120,19 +120,26 @@ namespace Wuxia
                 var tip = FirstMonthsTipLine();
                 Debug.Log("[Capture] PC3_22 first-month tip: " + TutorialAdvice.FirstMonthsTip(state));
                 if (tip.HasValue) ui.ShowTalk(new System.Collections.Generic.List<PortraitLine> { tip.Value }, null);
+                ui.RevealTalkForCapture();
             }),
-            ("PC3_23_xieyun_choice_cg.png", () =>
-            {
+            ("PC3_23_xieyun_choice_cg.png", () => Pc3FriendChoice("男")), // male hero: the friend is 謝蘊
+            ("PC3_24_xiejin_choice_cg.png", () => Pc3FriendChoice("女")),
+        };
+
+        /// <summary>PC3 #23: the 「我選哪條不要緊…」 beat of q_friend_1 with its CG and the friend's portrait.</summary>
+        private void Pc3FriendChoice(string heroGender)
+        {
                 ui.CloseTalk(false);
+                ui.CloseStoryBeat();
                 tutorial = null;
                 ui.HideObjective();
-                state.Protagonist.gender = "女";
+                state.Protagonist.gender = heroGender;
                 var line = state.Questlines.FirstOrDefault(entry => entry.id == "q_friend");
                 var beat = line?.beats?.FirstOrDefault(entry => entry.id == "q_friend_1");
                 int at = beat == null ? -1 : Array.FindIndex(beat.scene, part => part.text?.Contains("我選哪條不要緊") == true);
                 if (at < 0)
                 {
-                    Debug.LogWarning("[Capture] PC3_23 beat not found");
+                    Debug.LogWarning("[Capture] PC3 friend beat not found");
                     return;
                 }
                 string art = null;
@@ -145,9 +152,8 @@ namespace Wuxia
                     scene = new[] { new StoryBeat { speaker = part0.speaker, portrait = part0.portrait, image = art, text = part0.text } }
                 };
                 PlayQuest(line, focus);
-                Debug.Log($"[Capture] PC3_23 謝蘊 beat art={art} portrait={part0.portrait}");
-            }),
-        };
+                Debug.Log($"[Capture] PC3 friend beat hero={heroGender} friend={state.FriendId} art={art} portrait={part0.portrait}");
+        }
 
         /// <summary>A fresh courtyard for the in-game PC3 shots (same defaults as skipping the prologue).</summary>
         private void Pc3Courtyard()

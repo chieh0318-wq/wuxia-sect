@@ -71,6 +71,20 @@ namespace Wuxia
             attributeTip.anchoredPosition = new Vector2(x, y) - bounds.center;
             attributeTip.SetAsLastSibling();
             attributeTip.gameObject.SetActive(true);
+            // v1126c PC3: the tip follows its row; it closes when the page that owns the row is rebuilt or left.
+            var watch = attributeTip.GetComponent<TipOwnerWatch>();
+            if (!watch) watch = attributeTip.gameObject.AddComponent<TipOwnerWatch>();
+            watch.Target = target;
+        }
+    }
+
+    /// <summary>v1126c PC3: hides a hover tip whose owning control was destroyed or hidden.</summary>
+    internal sealed class TipOwnerWatch : MonoBehaviour
+    {
+        internal RectTransform Target;
+        private void LateUpdate()
+        {
+            if (Target == null || !Target.gameObject.activeInHierarchy) gameObject.SetActive(false);
         }
     }
 }

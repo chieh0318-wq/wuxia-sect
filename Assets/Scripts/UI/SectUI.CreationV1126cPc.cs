@@ -155,7 +155,7 @@ namespace Wuxia
             var seat = data.Factions.FirstOrDefault(f => f.id == factionId)?.seat;
             var flag = modalList.GetComponentsInChildren<RectTransform>(true).FirstOrDefault(rect =>
                 rect.name.StartsWith("附近勢力_", StringComparison.Ordinal) &&
-                data.Factions.FirstOrDefault(f => f.id == rect.name.Substring(5))?.seat == seat);
+                (seat == null || data.Factions.FirstOrDefault(f => f.id == rect.name.Substring(5))?.seat == seat));
             var enter = flag?.GetComponent<EventTrigger>()?.triggers.FirstOrDefault(entry => entry.eventID == EventTriggerType.PointerEnter);
             enter?.callback.Invoke(new PointerEventData(EventSystem.current));
             return enter != null;
@@ -177,6 +177,65 @@ namespace Wuxia
                 return rc[0].y < bottom - .5f || rc[1].y > top + .5f;
             }).ToArray();
             return problems.Length == 0 ? "ok (7/7 rows visible)" : "hidden: " + string.Join("、", problems);
+        }
+    }
+
+    /// <summary>
+    /// v1126c PC3 #9: once the settlement map has a size, lifts every site label above the faction flags and moves any
+    /// flag that would sit on a label just clear of it (the smallest step up, down, left or right). Distances in the
+    /// side list still come from the true seat positions.
+    /// </summary>
+    internal sealed class SiteLabelGuard : MonoBehaviour
+    {
+        private bool done;
+
+        private void LateUpdate()
+        {
+            if (done) return;
+            var map = (RectTransform)transform;
+            if (map.rect.width <= 1) return;
+            done = true;
+            var labels = new System.Collections.Generic.List<Rect>();
+            var markers = new System.Collections.Generic.List<RectTransform>();
+            foreach (Transform child in map)
+                if (child.name.StartsWith("選址_", System.StringComparison.Ordinal))
+                {
+                    var rect = (RectTransform)child;
+                    markers.Add(rect);
+                    labels.Add(Box(map, rect, 4));
+                }
+            foreach (Transform child in map)
+            {
+                if (!child.name.StartsWith("附近勢力_", System.StringComparison.Ordinal)) continue;
+                var flag = (RectTransform)child;
+                for (int pass = 0; pass < 3; pass++)
+                {
+                    var box = Box(map, flag, 0);
+                    Vector2 best = Vector2.zero;
+                    foreach (var label in labels)
+                    {
+                        if (!label.Overlaps(box)) continue;
+                        var moves = new[]
+                        {
+                            new Vector2(0, label.yMax - box.yMin), new Vector2(0, label.yMin - box.yMax),
+                            new Vector2(label.xMax - box.xMin, 0), new Vector2(label.xMin - box.xMax, 0)
+                        };
+                        best = moves.OrderBy(move => move.sqrMagnitude).First();
+                        break;
+                    }
+                    if (best == Vector2.zero) break;
+                    flag.anchoredPosition += best;
+                }
+            }
+            foreach (var marker in markers) marker.SetAsLastSibling();
+        }
+
+        private static Rect Box(RectTransform map, RectTransform rect, float pad)
+        {
+            var corners = new Vector3[4];
+            rect.GetWorldCorners(corners);
+            Vector2 a = map.InverseTransformPoint(corners[0]), b = map.InverseTransformPoint(corners[2]);
+            return Rect.MinMaxRect(a.x - pad, a.y - pad, b.x + pad, b.y + pad);
         }
     }
 }

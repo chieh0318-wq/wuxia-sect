@@ -576,7 +576,8 @@ namespace Wuxia
             choosingBuilding = true;
             buildAction = action;
             // M6: pre-select the first available building and light the empty plots immediately.
-            buildChoice = state.Data.Buildings.FirstOrDefault(state.IsAvailable);
+            buildChoice = state.Data.Buildings.FirstOrDefault(building => building.name == tutorial?.RecommendedBuilding && state.IsAvailable(building)) // v1126c PC3 #11
+                ?? state.Data.Buildings.FirstOrDefault(state.IsAvailable);
             ui.CloseBuilding();
             ui.CloseDialogue();
             string aid = TutorialBuildAid();

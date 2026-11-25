@@ -145,7 +145,8 @@ namespace Wuxia
             var guide = TutorialQuest?.Invoke();
             var met = new Color(.64f, .92f, .72f);
 
-            Section("眼下要務");
+            if (full) Section("眼下要務");
+            else y += 6; // the pinned box's header already says 眼下要務
             if (guide.HasValue)
             {
                 Line(guide.Value.title, 21 + bump, UiKit.HeaderGold, 30 + bump);

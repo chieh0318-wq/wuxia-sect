@@ -46,13 +46,13 @@ namespace Wuxia
             guideArrowGlyph = Label(guideArrow, "▼", 44, TextAnchor.MiddleCenter);
             guideArrowGlyph.color = new Color(.95f, .42f, .16f);
             guideArrowGlyph.raycastTarget = false;
-            guideArrowWord = Label(guideArrow, "點這裡", 20, TextAnchor.MiddleCenter);
+            guideArrowWord = Label(guideArrow, "點這裡", 24, TextAnchor.MiddleCenter);
             guideArrowWord.color = UiKit.HeaderGold;
             guideArrowWord.fontStyle = FontStyle.Bold;
             guideArrowWord.raycastTarget = false;
             var shadow = guideArrowWord.gameObject.AddComponent<Outline>();
             shadow.effectColor = new Color(0, 0, 0, .85f);
-            shadow.effectDistance = new Vector2(1.5f, -1.5f);
+            shadow.effectDistance = new Vector2(2f, -2f);
         }
 
         /// <summary>Places the arrow beside the lit control (min/max in canvas space), pointing at it.</summary>

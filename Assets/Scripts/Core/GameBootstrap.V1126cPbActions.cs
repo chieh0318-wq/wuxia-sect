@@ -14,6 +14,13 @@ namespace Wuxia
                 "train" => $"全門各修習 1 路，基礎進度 +{BalanceV1126c.Martial.drillProgress}；授業 B 以上進度再 +{BalanceV1126c.Martial.teacherBonusPct}%",
                 "study" => $"所選門人研讀 1 路，基礎進度 +{BalanceV1126c.Martial.practiceProgress}",
                 "explore" => "武學奇遇與秘境入口分開判定。選人時可查成敗機率。",
+                "lodge" => $"每月 1 次，弟子忠誠 +{GameState.LodgeLoyalty}、傷勢 −{GameState.LodgeHealing}",
+                "medicine" => "主角與弟子傷勢下降，減幅依選派門人的醫術而定",
+                "feast" => $"弟子忠誠 +{GameState.FeastLoyalty}；主角傷勢 −{state.RecoveryAmount(null).Hero + GameState.FeastExtraHealing}、弟子傷勢 −{state.RecoveryAmount(null).Members}",
+                "decree" => $"弟子忠誠 +{GameState.DecreeLoyalty}",
+                "forge_gear" => "鍛成裝備 1 件，選人時可查看各品級的機率",
+                "gather_rumors" => $"下次奇遇的傳聞加成 {state.Story.rumorBonus:P0} → {state.NextRumorBonus:P0}，另有機會探得秘境",
+                "talk" => "門中問敘，銀兩、糧食、聲望皆 +0",
                 _ => action.summary
             };
             string numbers = Changes(action.effect);
@@ -23,6 +30,22 @@ namespace Wuxia
             if (skill != null && !RankSystem.IsCombat(skill))
                 detail += $"　{EffectText.LineName(skill)}經驗 +{BalanceV1126c.LifeSkill.xpPerTask}";
             return detail;
+        }
+
+        private string AssignedPreview(ActionData action, string worker)
+        {
+            var output = AssignedYield(action, AssignmentSystem.Predict(state, action.id, worker).Quality);
+            var parts = new List<string> { Changes(output) };
+            if (action.id == "train") parts.Add($"全門各選 1 路修習　進度 +{state.DrillGain(worker):0.#}（主角另計武學加成）");
+            if (action.id == "study")
+                parts.Add($"{state.StudyLabel(worker)}　進度 +{state.TrainingGain(worker, state.CurrentStudyLine(worker), state.CurrentStudy(worker, out _)):0.#}");
+            if (action.id == "medicine")
+            {
+                var heal = state.RecoveryAmount(worker);
+                int visits = state.HasTech("craft1") ? 2 : 1;
+                parts.Add($"主角傷勢 −{heal.Hero * visits}、弟子傷勢 −{heal.Members * visits}");
+            }
+            return string.Join("　", parts.Where(text => !string.IsNullOrEmpty(text)));
         }
 
         private Yield AssignedYield(ActionData action, float quality) => new()
@@ -42,7 +65,8 @@ namespace Wuxia
                 {
                     var line = state.CurrentStudyLine(id);
                     string result = state.TrainMartial(id, fixedGain: gain * state.StudyMultiplier(line?.id ?? ""));
-                    if (!string.IsNullOrWhiteSpace(result)) yield return result.Trim();
+                    int breakthrough = result.IndexOf("突破：", StringComparison.Ordinal);
+                    if (breakthrough >= 0) yield return result.Substring(breakthrough);
                 }
                 else state.PracticeMartial(id, gain);
             }
@@ -83,14 +107,16 @@ namespace Wuxia
                 .Select(entry => $"{entry.Key}　{before[entry.Key]} → {entry.Value}").ToList();
             if (!string.IsNullOrWhiteSpace(note)) lines.Add(note.Trim());
             if (lines.Count == 0) lines.Add("此番事畢，門中數值無變。");
-            ui.ShowModal(name + "・結果", lines, new[] { ("收卷", (Action)(() => ui.CloseModal(force: true))) });
+            ui.ShowCreation(name + "・結果", lines, new[] { ("收卷", (Action)(() => ui.CloseModal(force: true))) }, null);
         }
 
         private void OpenStudyOrders(string member, Action back)
         {
-            ui.ShowCreation("指派修習", new[] { state.StudyLabel(member), "修滿目前上限後，門人將自選下一門武學。" },
+            var arts = state.TrainingManuals(member).ToArray();
+            ui.ShowCreation("指派修習", new[] { state.StudyLabel(member),
+                arts.Length == 0 ? "尚無已習得的功法，可先修習基礎武學。" : "修滿目前上限後，門人將自選下一門武學。" },
                 new[] { ("恢復自選", (Action)(() => Select(null))), ("返回", back) }, null);
-            foreach (var art in state.TrainingManuals(member))
+            foreach (var art in arts)
             {
                 var line = state.MemberLines(member).FirstOrDefault(entry => entry.id == art.category);
                 Action run = GameState.CanAdvance(line) ? () => Select(art.id) : null;

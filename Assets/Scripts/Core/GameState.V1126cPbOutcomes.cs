@@ -6,6 +6,28 @@ namespace Wuxia
 {
     public sealed partial class GameState
     {
+        internal const int FeastLoyalty = 6, FeastExtraHealing = 1, DecreeLoyalty = 3, LodgeLoyalty = 2, LodgeHealing = 1;
+        internal float NextRumorBonus => Mathf.Min(.75f, Story.rumorBonus + .25f);
+
+        internal (int Hero, int Members) RecoveryAmount(string worker)
+        {
+            float quality = worker == null ? ProductionMultiplier("medicine") :
+                AssignmentSystem.Predict(this, "medicine", worker).Quality;
+            int amount = Mathf.Max(1, Mathf.RoundToInt(quality * (worker == null ? 1 : 1.5f)));
+            return (Mathf.Max(1, amount + AttributeBonus("con") / 3), amount);
+        }
+
+        internal float[] ForgeGearOdds(string worker)
+        {
+            int forging = AssignmentSystem.Skill(this, worker, "forging");
+            float quality = AssignmentSystem.Predict(this, "forge_gear", worker).Quality;
+            float boost = HasTech("craft2") ? 2 : 1;
+            float legendary = Mathf.Clamp01((.03f + .015f * forging) * boost * quality);
+            float fine = Mathf.Min(1 - legendary, (.12f + .03f * forging) * boost * quality);
+            float good = Mathf.Min(1 - legendary - fine, .40f);
+            return new[] { 1 - legendary - fine - good, good, fine, legendary };
+        }
+
         internal const string PatrolBreakthrough = "qiyu_cliff_cave";
 
         internal float BreakthroughChance(string id, float bonus, float fortune)
@@ -32,6 +54,17 @@ namespace Wuxia
         internal float RumorDiscoveryChance(string worker) =>
             Mathf.Clamp01(.35f + .025f * (AssignmentSystem.Eloquence(this, worker) - 15));
 
+        internal (string Label, float Chance, string Success, string Failure)[] DiplomaticAssignmentOutcomes(
+            DiploAction action, MapFaction faction, string worker)
+        {
+            int improvement = action.id == "mediate" ? Mathf.Max(0, Mathf.Min(action.gain, 10 - Attitude(faction))) : action.gain;
+            string success = $"態度 {improvement:+0;-0;0}";
+            if (action.id is "trade" or "pact" or "alliance" or "vassal" or "merge") success += "、締立 1 項約書";
+            string failure = $"態度 {Mathf.Min(0, action.fail):+0;-0;0}" +
+                (action.id == "intimidate" ? "、聲望 −2" : "");
+            return new[] { (action.name, DiploChance(action, faction, worker), success, failure) };
+        }
+
         internal (string Label, float Chance, string Success, string Failure)[] AssignmentOutcomes(string action, string worker)
         {
             if (action == "explore")
@@ -45,6 +78,9 @@ namespace Wuxia
             }
             if (action == "gather_rumors")
                 return new[] { ("探得秘境", RumorDiscoveryChance(worker), "發現 1 處，可選擇進入", "只記下傳聞") };
+            if (action == "forge_gear")
+                return ForgeGearOdds(worker).Select((chance, grade) =>
+                    ($"{GearGrades[grade]}品級", chance, $"{GearGrades[grade]}裝備 ×1", "取得其他品級裝備")).Reverse().ToArray();
             return Array.Empty<(string, float, string, string)>();
         }
     }

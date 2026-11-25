@@ -28,6 +28,7 @@ namespace Wuxia
         {
             try
             {
+                Story.martialProgressScalePb = MartialProgressMax;
                 var snapshot = new SaveData
                 {
                     version = SaveVersion, year = Year, month = Month, silver = Silver, food = Food,
@@ -153,6 +154,7 @@ namespace Wuxia
                 if (state.Protagonist.title == "代掌門") state.WelcomeAdviser(false);
                 if (ValueOf(state.Story.flags, "henan_registered") > 0 && state.Story.monthlyFood == 0)
                     state.Story.monthlyFood = 12;
+                state.MigrateMartialProgress();
                 state.ActionPoints = Mathf.Clamp(snapshot.actionPoints, 0, state.ApMax);
                 return state;
             }

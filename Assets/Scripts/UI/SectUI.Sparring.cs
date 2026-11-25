@@ -9,7 +9,7 @@ namespace Wuxia
     public sealed partial class SectUI
     {
         /// <summary>
-        /// v1124 C17 山門演武 picker on the scene page: mode tabs (兩人對練 / 多人混戰), a grid of fighter cards to toggle,
+        /// v1124 C17 山門演武 picker on the scene page: mode tabs (兩人對練 / 多人混戰), sortable rows to toggle,
         /// the cost and odds line, then 推演切磋 / 親自下場 (turn battle, only when the protagonist takes part) / 返回.
         /// </summary>
         internal void ShowSparPicker(GameState state, IList<string> picks, PickerSort sort, Action redraw,
@@ -34,14 +34,16 @@ namespace Wuxia
                 {
                     int order = picks.IndexOf(id);
                     string badge = order < 0 ? "" : melee ? $"出場 {order + 1}" : order == 0 ? "甲方" : "乙方";
-                    float? chance = picks.Count == 1 && order < 0 ? state.SparOdds(id, picks[0]) : null;
+                    string opponent = picks.FirstOrDefault(other => id != other);
+                    float? chance = opponent != null && (picks.Count == 1 || !melee && order >= 0)
+                        ? state.SparOdds(id, opponent) : null;
                     return PickerMember(state, id, "sparring", badge, AssignmentSystem.Block(state, id), chance, () => toggle(id));
                 });
             foreach (var entry in SortRows(rows, sort))
             {
                 var row = Rect("演武人選", list);
                 row.gameObject.AddComponent<LayoutElement>().preferredHeight = 70;
-                PickerBody(row, width, 70, entry);
+                PickerBody(row, width, 70, entry).name = "演武人選:" + entry.id;
             }
             var bar = MapUi.Kit(page, "演武底欄", 60, 860, 1800, 110, "Wood", false);
             MapUi.Text(bar, status, 24, 6, 1000, 50, 23, MapUi.Paper);

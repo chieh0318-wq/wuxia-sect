@@ -174,11 +174,8 @@ namespace Wuxia
         }
         internal void RecoverInjuries(string worker = null)
         {
-            float quality = worker == null ? ProductionMultiplier("medicine")
-                : AssignmentSystem.Predict(this, "medicine", worker).Quality;
-            int amount = Mathf.Max(1, Mathf.RoundToInt(quality * (worker == null ? 1 : 1.5f)));
-            // 根骨 governs how fast the protagonist's own wounds close.
-            Protagonist.injury = Mathf.Max(0, Protagonist.injury - Mathf.Max(1, amount + AttributeBonus("con") / 3));
+            var (hero, amount) = RecoveryAmount(worker);
+            Protagonist.injury = Mathf.Max(0, Protagonist.injury - hero);
             foreach (var member in Disciples)
                 member.injury = Mathf.Max(0, member.injury - amount);
         }

@@ -253,12 +253,9 @@ namespace Wuxia
         /// <summary>鍛造兵甲: forging rank and 百煉精鋼鍛法 decide the grade.</summary>
         internal string ForgeGear(string worker = HeroId)
         {
-            int forging = AssignmentSystem.Skill(this, worker, "forging");
-            float quality = AssignmentSystem.Predict(this, "forge_gear", worker).Quality;
-            float boost = HasTech("craft2") ? 2 : 1;
-            float legendary = (.03f + .015f * forging) * boost * quality, fine = (.12f + .03f * forging) * boost * quality, good = .40f;
+            var odds = ForgeGearOdds(worker);
             float roll = UnityEngine.Random.value;
-            int grade = roll < legendary ? 3 : roll < legendary + fine ? 2 : roll < legendary + fine + good ? 1 : 0;
+            int grade = roll < odds[3] ? 3 : roll < odds[3] + odds[2] ? 2 : roll < 1 - odds[0] ? 1 : 0;
             var item = MakeGear(GearSlots[UnityEngine.Random.Range(0, GearSlots.Length)], grade);
             return "爐火熊熊，鍛成一件" + EquipOrStore(item);
         }
@@ -267,16 +264,16 @@ namespace Wuxia
 
         internal string Feast()
         {
-            ApplyEffects(new[] { new GameEffect { key = "loyaltyAll", value = 6 } });
+            ApplyEffects(new[] { new GameEffect { key = "loyaltyAll", value = FeastLoyalty } });
             RecoverInjuries();
-            Protagonist.injury = Mathf.Max(0, Protagonist.injury - 1);
-            return "大鍋燉肉香飄滿院，全體弟子忠誠 +6，傷勢加速恢復。";
+            Protagonist.injury = Mathf.Max(0, Protagonist.injury - FeastExtraHealing);
+            return $"大鍋燉肉香飄滿院，全體弟子忠誠 +{FeastLoyalty}，傷勢加速恢復。";
         }
 
         internal string Decree()
         {
-            ApplyEffects(new[] { new GameEffect { key = "loyaltyAll", value = 3 } });
-            return "門規張貼於祖師殿前，全門忠誠 +3。";
+            ApplyEffects(new[] { new GameEffect { key = "loyaltyAll", value = DecreeLoyalty } });
+            return $"門規張貼於祖師殿前，全門忠誠 +{DecreeLoyalty}。";
         }
 
         internal string Lodge()
@@ -287,16 +284,16 @@ namespace Wuxia
             Story.lodgeMonth = month;
             foreach (var disciple in Disciples)
             {
-                disciple.loyalty = Mathf.Clamp(disciple.loyalty + 2, 0, 100);
-                disciple.injury = Mathf.Max(0, disciple.injury - 1);
+                disciple.loyalty = Mathf.Clamp(disciple.loyalty + LodgeLoyalty, 0, 100);
+                disciple.injury = Mathf.Max(0, disciple.injury - LodgeHealing);
             }
-            return "被褥曬過、床板修好，全門弟子忠誠 +2、傷勢 −1。";
+            return $"被褥曬過、床板修好，全門弟子忠誠 +{LodgeLoyalty}、傷勢 −{LodgeHealing}。";
         }
 
         /// <summary>江湖聽風: raises the next qi-yu chance; sometimes the rumour leads straight to a secret realm.</summary>
         internal bool GatherRumors(string worker = HeroId)
         {
-            Story.rumorBonus = Mathf.Min(.75f, Story.rumorBonus + .25f);
+            Story.rumorBonus = NextRumorBonus;
             return UnityEngine.Random.value < RumorDiscoveryChance(worker);
         }
 

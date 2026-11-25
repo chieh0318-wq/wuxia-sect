@@ -76,14 +76,7 @@ namespace Wuxia
             switch (function.target)
             {
                 case "person":
-                    ui.ShowHallTargets(function.name, function.desc, state.SparCandidates.Where(id => AssignmentSystem.Block(state, id) == null).Select(id =>
-                    {
-                        var member = state.Disciples.FirstOrDefault(d => d.id == id);
-                        var image = id == GameState.HeroId
-                            ? PortraitService.Resolve(PortraitService.IdOrDefault(state.Protagonist.portrait, state.Protagonist.lookId), state.Protagonist.gender)
-                            : PortraitService.Resolve(PortraitService.IdOrDefault(member?.portrait, id), member?.gender);
-                        return (id, state.SparName(id), state.SparLine(id), image);
-                    }).ToList(), id => RunHall(hall, function, id), ShowHalls);
+                    ui.ChooseAssignment(state, function.name, function.id, 1, party => RunHall(hall, function, party[0]), ShowHalls);
                     return;
                 case "slot":
                     ui.ShowHallTargets(function.name, function.desc, HallCatalog.Data.slots.Select(slot =>

@@ -119,7 +119,7 @@ namespace Wuxia
         }
 
         private string AttrTag(GameState state, string attr, float chance) =>
-            $"{SecretRealms.AttrName(attr)} {AssignmentSystem.Attribute(state, ExpeditionLeader, attr)}・成功率 {chance:P0}";
+            $"{SecretRealms.AttrName(attr)} {AssignmentSystem.Attribute(state, ExpeditionLeader, attr)}・成功 {chance:P0}／失手 {1 - chance:P0}";
 
         // ---- 山道巡訪 (C15) --------------------------------------------------------------------------
 
@@ -263,14 +263,14 @@ namespace Wuxia
             {
                 label = choice.label, desc = choice.text, icon = UiKit.AttrIcon(AttributeSystem.Index(choice.attr)),
                 tags = AttrTag(state, choice.attr, SecretRealms.Chance(state, choice, run.stage, ExpeditionLeader)),
-                impact = "成：闖關成績 +1　敗：主角傷勢 +1",
+                impact = $"成功　闖關成績 +1／失手　{state.SparName(ExpeditionLeader)}傷勢 +1",
                 run = () => ResolveRealm(choice)
             }).ToList();
             if (boss != null)
                 cards.Add(new SceneChoice
                 {
                     label = $"拔劍一戰：{boss.lead}", desc = "不取巧，正面擊敗守護者。", tags = "回合實戰", icon = "act_attack",
-                    impact = "勝：闖關成績 +2（秘寶品級更高）　敗：主角傷勢 +1",
+                    impact = $"得勝　闖關成績 +2／落敗　{state.SparName(ExpeditionLeader)}傷勢 +1",
                     run = () => SceneBattle(RealmContent.Battle(boss, BattleGround.MountainGate), won =>
                     {
                         var dummy = new RealmChoice { label = $"與{boss.lead}正面交鋒", attr = "str",
@@ -405,7 +405,7 @@ namespace Wuxia
             {
                 label = choice.label, desc = choice.text, icon = UiKit.AttrIcon(AttributeSystem.Index(choice.attr)),
                 tags = AttrTag(state, choice.attr, state.TreasureChance(choice, run.stage, ExpeditionLeader)),
-                impact = "成：順利前進　敗：主角傷勢 +1（仍可前進）",
+                impact = $"成功　闖關成績 +1／失手　{state.SparName(ExpeditionLeader)}傷勢 +1，仍可前進",
                 run = () =>
                 {
                     bool success = state.ResolveTreasureStage(run, choice, ExpeditionLeader);

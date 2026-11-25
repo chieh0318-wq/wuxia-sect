@@ -88,9 +88,10 @@ namespace Wuxia
             if (slot < 0) slot = Array.IndexOf(Buildings, building);
             var record = ConstructionRecord(slot, building);
             var flow = BuildingMonthAt(slot, building);
-            return QualityText(record?.quality ?? 100) +
-                $"\n月基礎產出　銀 {flow.Silver:0.##}／糧 {flow.Food:0.##}／聲望 {flow.Reputation:0.##}／材料 {flow.Materials:0.##}" +
-                $"\n月維護銀 {flow.Upkeep:0.##}；到期另繳整修銀 {Mathf.RoundToInt(flow.Upkeep)}。";
+            var terms = QualityTerms(record?.quality ?? 100);
+            return $"品質 {record?.quality ?? 100}%　月維護 {terms.Upkeep:+0;-0;0}%　月產出 {terms.Output:+0;-0;0}%" +
+                $"\n月產出　銀 {flow.Silver:0.##}／糧 {flow.Food:0.##}／望 {flow.Reputation:0.##}／材 {flow.Materials:0.##}" +
+                $"\n月維護銀 {flow.Upkeep:0.##}；每 {terms.ServiceMonths} 月另付整修銀 {Mathf.RoundToInt(flow.Upkeep)}。";
         }
     }
 }

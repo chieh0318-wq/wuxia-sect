@@ -8,6 +8,7 @@ namespace Wuxia
     {
         public WorkPracticePb[] workPracticePb = Array.Empty<WorkPracticePb>();
         public StudyOrderPb[] studyOrdersPb = Array.Empty<StudyOrderPb>();
+        public int martialProgressScalePb;
     }
 
     [Serializable] public sealed class WorkPracticePb
@@ -29,6 +30,18 @@ namespace Wuxia
             Disciples.Find(member => member.id == id)?.lines) ?? Array.Empty<SkillLine>();
         internal WorkPracticePb WorkPractice(string id, string skill) =>
             Story.workPracticePb?.FirstOrDefault(record => record?.member == id && record.skill == skill);
+
+        internal void MigrateMartialProgress()
+        {
+            int previousScale = Story.martialProgressScalePb;
+            if (previousScale == MartialProgressMax) return;
+            // Earlier saves stored the fraction of a two-point martial experience tier.
+            float ratio = MartialProgressMax / (float)(previousScale > 0 ? previousScale : 2);
+            foreach (var line in MemberLines(HeroId).Concat(Disciples.SelectMany(member => MemberLines(member.id))))
+                if (line != null && RankSystem.IsCombat(line.id))
+                    line.progress = Mathf.Clamp(line.progress * ratio, 0, MartialProgressMax - .01f);
+            Story.martialProgressScalePb = MartialProgressMax;
+        }
 
         internal static bool CanAdvance(SkillLine line) => line != null &&
             RankSystem.Index(line.rank) < RankSystem.Index(line.cap);
@@ -114,12 +127,15 @@ namespace Wuxia
             return LearnDiscipleArt(member, art.id, true).Length > 0;
         }
 
-        internal string StudyLabel(string id)
+        internal string StudyLabel(string id, bool compact = false)
         {
             var art = CurrentStudy(id, out bool assigned);
             var line = CurrentStudyLine(id);
-            if (line == null) return "修習中　已達上限";
-            return $"修習中　{art?.name ?? EffectText.LineName(line.id)}　{line.progress:0.#}／{MartialProgressMax}　{(assigned ? "掌門指定" : "自選")}";
+            string prefix = compact ? "" : "修習中　";
+            if (line == null) return prefix + "已達上限";
+            string title = art?.name ?? $"基礎{EffectText.LineName(line.id)}";
+            string mode = assigned ? "掌門指定" : "自選";
+            return $"{prefix}{title}　{line.progress:0.#}／{MartialProgressMax}{(compact ? "\n" : "　")}{mode}";
         }
 
         internal static string MartialLineProgress(SkillLine line) => line == null ? "已達上限" :

@@ -21,6 +21,7 @@ namespace Wuxia
 
         private sealed class PickerRow
         {
+            internal string id;
             internal string[] cells;
             internal IComparable[] keys;
             internal bool selected;
@@ -31,6 +32,18 @@ namespace Wuxia
             "姓名", "身分", "餘次", "相關技能", "相關屬性", "成功率", "品質", "相關專長"
         };
         private static readonly float[] PickerShares = { .17f, .09f, .07f, .155f, .105f, .09f, .215f, .105f };
+
+        private float PickerWidth()
+        {
+            Canvas.ForceUpdateCanvases();
+            return ((RectTransform)modalList.parent).rect.width - 12;
+        }
+
+        private static string PickerBuildQuality(int quality)
+        {
+            var (upkeep, output, months) = GameState.QualityTerms(quality);
+            return $"{quality}%・{months} 月整修\n維護 {upkeep:+0;-0;0}%・產出 {output:+0;-0;0}%";
+        }
 
         private static PickerRow PickerMember(GameState state, string id, string action, string prefix,
             string blocked, float? chance, Action toggle)
@@ -49,8 +62,8 @@ namespace Wuxia
             bool specialist = (talentKey != null && state.TalentValue(id, talentKey, 20) > 0) || grade >= RankSystem.Index("B");
             int buildQuality = GameState.ConstructionQuality(prediction.Quality);
             float success = chance ?? prediction.Success;
-            string quality = action == "build" ? GameState.QualityText(buildQuality).Replace("品質 ", "").Replace("　", "\n")
-                : spar ? state.StudyLabel(id).Replace("修習中　", "").Replace("　", "\n")
+            string quality = action == "build_plot" ? PickerBuildQuality(buildQuality)
+                : spar ? state.StudyLabel(id, compact: true)
                 : campaign ? $"統領 {SectCampaign.CommandCapacity(state, id)} 兵"
                 : $"{prediction.Quality:P0}";
             string skillText = line == null ? "—" : $"{EffectText.LineName(line.id)} {line.rank}";
@@ -59,6 +72,7 @@ namespace Wuxia
             bool variableOdds = chance.HasValue || action is "explore" or "gather_rumors";
             return new PickerRow
             {
+                id = id,
                 cells = new[] { (prefix.Length > 0 ? prefix + "\n" : "") + state.SparName(id) +
                     (blocked == null ? "" : "\n" + blocked), rank.Name, $"{remaining}／{rank.Monthly}",
                     skillText, spar ? $"戰力 {state.SparPower(id):0}" : $"{attrName} {attr}",
@@ -66,7 +80,7 @@ namespace Wuxia
                     quality, specialist ? "○" : "—" },
                 keys = new IComparable[] { state.SparName(id), AssignmentSystem.Grade(state, id), remaining,
                     grade, spar ? state.SparPower(id) : attr, success, spar ? line?.progress ?? -1 :
-                        campaign ? SectCampaign.CommandCapacity(state, id) : action == "build" ? buildQuality : prediction.Quality, specialist },
+                        campaign ? SectCampaign.CommandCapacity(state, id) : action == "build_plot" ? buildQuality : prediction.Quality, specialist },
                 selected = prefix.Length > 0,
                 toggle = blocked == null ? toggle : null
             };
@@ -79,14 +93,14 @@ namespace Wuxia
                 rows.OrderByDescending(row => row.keys[sort.column]);
         }
 
-        private static void PickerHeader(RectTransform parent, float width, PickerSort sort, Action redraw, bool spar)
+        private static void PickerHeader(RectTransform parent, float width, PickerSort sort, Action redraw, bool spar, string[] headings = null)
         {
             float x = 0;
             for (int column = 0; column < PickerColumns.Length; column++)
             {
                 int index = column;
                 float cellWidth = width * PickerShares[column];
-                string label = spar && column == 6 ? "修習中" : PickerColumns[column];
+                string label = headings?[column] ?? (spar && column == 6 ? "修習中" : PickerColumns[column]);
                 if (sort.column == column) label += sort.ascending ? " ↑" : " ↓";
                 MapUi.Button(parent, label, x + 2, 0, cellWidth - 4, 38, () => { sort.Select(index); redraw(); },
                     sort.column == column ? MapUi.Red : null, 21);
@@ -94,7 +108,7 @@ namespace Wuxia
             }
         }
 
-        private static void PickerBody(RectTransform parent, float width, float height, PickerRow row)
+        private static Button PickerBody(RectTransform parent, float width, float height, PickerRow row)
         {
             var button = MapUi.Button(parent, "", 2, 1, width - 4, height - 2,
                 row.toggle ?? (() => { }), row.selected ? MapUi.Red : null);
@@ -107,16 +121,49 @@ namespace Wuxia
                     19, column == 7 || row.selected ? MapUi.Gold : MapUi.Paper, TextAnchor.MiddleCenter);
                 x += cellWidth;
             }
+            return button;
         }
 
-        private void AssignmentOutcomeTable(GameState state, string action, string member)
+        internal void RecruitPicker(IEnumerable<Candidate> candidates, PickerSort sort, Func<Candidate, int> price,
+            Func<Candidate, string> restriction, Action redraw, Action<Candidate> review)
         {
-            var outcomes = state.AssignmentOutcomes(action, member);
+            float width = PickerWidth();
+            PickerHeader(CreationRow("候選門人欄目", 42), width, sort, redraw, false,
+                new[] { "姓名", "來歷", "年齡", "武學／上限", "根骨／悟性", "束脩", "入門忠誠", "天賦" });
+            var rows = candidates.Select(candidate =>
+            {
+                string martial = RankSystem.Martial(candidate.lines), cap = RankSystem.Martial(candidate.lines, true);
+                string status = restriction(candidate);
+                int fee = price(candidate);
+                int talentCount = candidate.talents?.Length ?? 0;
+                int bone = candidate.aptitude?.bone ?? 0, wit = candidate.aptitude?.insight ?? 0;
+                return new PickerRow
+                {
+                    cells = new[] { candidate.name + (status.Length == 0 ? "" : "\n" + status),
+                        candidate.origin ?? "—", $"{candidate.age} 歲", $"{martial}／{cap}",
+                        $"{bone}／{wit}", $"銀 {fee}", $"{candidate.loyalty}／100", talentCount.ToString() },
+                    keys = new IComparable[] { candidate.name, candidate.origin ?? "", candidate.age,
+                        RankSystem.Index(martial), bone + wit, fee, candidate.loyalty, talentCount },
+                    toggle = () => review(candidate)
+                };
+            });
+            foreach (var row in SortRows(rows, sort))
+                PickerBody(CreationRow("候選門人", 62), width, 62, row);
+        }
+
+        private void AssignmentOutcomeTable(GameState state, string action, string member,
+            (string Label, float Chance, string Success, string Failure)[] outcomes)
+        {
+            outcomes ??= state.AssignmentOutcomes(action, member);
             if (outcomes.Length == 0) return;
-            float w = creationListWidth - 12;
-            string note = action == "explore"
-                ? "兩項分開判定，落空仍會巡山遇事。行動力、出勤與已有傳聞照常耗用。"
-                : "無論有無探得秘境，均累積下次奇遇的傳聞。";
+            float w = PickerWidth();
+            string note = action switch
+            {
+                "explore" => "兩項分開判定，落空仍會巡山遇事。行動力、出勤與已有傳聞照常耗用。",
+                "gather_rumors" => "無論有無探得秘境，均記下江湖傳聞。",
+                "diplomacy" => "以下為交涉前估算，席間所選說辭可改變成敗與條款。",
+                _ => "以下為各品級的成品機率，每次必得 1 件。"
+            };
             var box = CreationRow($"判定結果・{state.SparName(member)}", 82 + outcomes.Length * 40);
             MapUi.Text(box, $"判定結果・{state.SparName(member)}　{note}", 10, 0, w - 20, 40, 20, Ink);
             string[] labels = { "判定", "成／敗", "成功所得", "失手後果" };

@@ -8,7 +8,8 @@ namespace Wuxia
     public sealed partial class SectUI
     {
         internal void ChooseAssignment(GameState state, string title, string actionId, int limit,
-            Action<string[]> onConfirm, Action onBack = null, Func<string, float> chance = null)
+            Action<string[]> onConfirm, Action onBack = null, Func<string, float> chance = null, Func<string, string> preview = null,
+            Func<string, (string Label, float Chance, string Success, string Failure)[]> outcomes = null)
         {
             var picked = new List<string>();
             var sort = new PickerSort();
@@ -27,12 +28,13 @@ namespace Wuxia
                     CloseModal(force: true);
                     onConfirm(picked.ToArray());
                 }));
+                string lead = picked.FirstOrDefault() ?? GameState.HeroId;
                 ShowCreation(title, new[] { limit == 1 ? "挑選一位執行此事。"
                     : actionId == "campaign" ? $"可派 1～{limit} 位將領，首選者為主將。"
-                    : $"可派 1～{limit} 人。首選者領隊，戰鬥與途中判定使用此次隊伍。" }, buttons, null);
+                    : $"可派 1～{limit} 人。首選者領隊，戰鬥與途中判定使用此次隊伍。", preview?.Invoke(lead) }, buttons, null);
                 var ids = new[] { GameState.HeroId }.Concat(state.Disciples.Where(member => member != null).Select(member => member.id)).ToArray();
-                float width = creationListWidth - 12;
-                AssignmentOutcomeTable(state, actionId, picked.FirstOrDefault() ?? GameState.HeroId);
+                float width = PickerWidth();
+                AssignmentOutcomeTable(state, actionId, lead, outcomes?.Invoke(lead));
                 PickerHeader(CreationRow("門人欄目", 42), width, sort, Draw, false);
                 var rows = ids.Select(id =>
                 {
@@ -47,7 +49,7 @@ namespace Wuxia
                         Draw();
                     });
                 });
-                float height = actionId == "build" ? 96 : 68;
+                float height = actionId == "build_plot" ? 68 : 62;
                 foreach (var row in SortRows(rows, sort))
                     PickerBody(CreationRow("門人", height), width, height, row);
             }
@@ -58,7 +60,8 @@ namespace Wuxia
         internal void ChooseDiplomaticAssignment(GameState state, DiploAction action, MapFaction faction, Action<string> selected)
         {
             ChooseAboveMap(state, action.name, "diplomacy", 1,
-                party => selected(party[0]), id => state.DiploChance(action, faction, id));
+                party => selected(party[0]), id => state.DiploChance(action, faction, id),
+                id => state.DiplomaticAssignmentOutcomes(action, faction, id));
         }
 
         internal void ChoosePatronEnvoy(GameState state, string title, Action<string> send) =>
@@ -68,17 +71,18 @@ namespace Wuxia
             ChooseAboveMap(state, title, "campaign", 10, selected);
 
         internal void ChooseMapAssignment(GameState state, string title, Action<string[]> selected) =>
-            ChooseAboveMap(state, title, "explore", 3, selected);
+            ChooseAboveMap(state, title, "secret_realm", 3, selected);
 
         private void ChooseAboveMap(GameState state, string title, string actionId, int limit,
-            Action<string[]> selected, Func<string, float> chance = null)
+            Action<string[]> selected, Func<string, float> chance = null,
+            Func<string, (string Label, float Chance, string Success, string Failure)[]> outcomes = null)
         {
             var layer = canvas.GetComponent<Canvas>();
             int order = layer.sortingOrder;
             layer.sortingOrder = 60;
             void Restore() => layer.sortingOrder = order;
             ChooseAssignment(state, title, actionId, limit,
-                party => { Restore(); selected(party); }, Restore, chance);
+                party => { Restore(); selected(party); }, Restore, chance, outcomes: outcomes);
         }
 
         private Action AssignmentBack

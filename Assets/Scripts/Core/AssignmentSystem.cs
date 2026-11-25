@@ -130,7 +130,7 @@ namespace Wuxia
                 "alchemy" => ("alchemy", "wit"),
                 "treat" or "medicine" => ("medicine", "wit"),
                 "farming" or "feast" => ("farming", "con"),
-                "build" or "gather_materials" => ("construction", "wit"),
+                "build" or "build_plot" or "gather_materials" => ("construction", "wit"),
                 "commerce" or "recruit" or "host" or "diplomacy" => ("commerce", "cha"),
                 "train" or "lecture" or "study" => ("teaching", "wit"),
                 "seclusion" => ("neigong", "qi"),
@@ -138,13 +138,14 @@ namespace Wuxia
                 "explore" or "secret_realm" => ("qinggong", "luk"),
                 "council" or "decree" => ("commerce", "cha"),
                 "lodge" => ("construction", "wit"),
+                "campaign" => (null, "cha"),
                 _ => (null, "wit")
             };
 
         internal static (float Success, float Quality, string Detail) Predict(GameState state, string actionId, string id)
         {
             var (skill, attribute) = Relevance(actionId);
-            int rank = Skill(state, id, skill);
+            int rank = skill == null ? RankSystem.Index("D") : Skill(state, id, skill);
             int value = attribute == "cha" ? Eloquence(state, id) : Attribute(state, id, attribute);
             int basis = attribute == "cha" ? 15 : 10;
             float quality = AttributeSystem.WorkQuality(rank, value, basis);

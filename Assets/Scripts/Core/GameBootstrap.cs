@@ -479,7 +479,7 @@ namespace Wuxia
             }
             bool expedition = action.id is "explore" or "secret_realm";
             ui.ChooseAssignment(state, action.name, action.id, expedition ? 3 : 1,
-                party => ExecuteAssignedAction(action, party));
+                party => ExecuteAssignedAction(action, party), preview: id => AssignedPreview(action, id));
         }
 
         private void ExecuteAssignedAction(ActionData action, string[] party, string manual = null, bool personalPractice = false)
@@ -521,7 +521,6 @@ namespace Wuxia
                 _ => ""
             };
             bool realm = action.id == "gather_rumors" && state.GatherRumors(worker);
-            state.PracticeWork(worker, AssignmentSystem.Relevance(action.id).Skill);
             state.Apply(output);
             if (output.silver > 0)
                 AudioManager.Play("coin");
@@ -538,6 +537,7 @@ namespace Wuxia
                 AudioManager.Play("complete");
             if (action.id == "council" && state.BuildingLevel("council") >= 2)
                 state.ApplyEffects(new[] { new GameEffect { key = "flag", @ref = "sect_records", value = 1 } });
+            state.PracticeWork(worker, AssignmentSystem.Relevance(action.id).Skill);
             ui.Refresh(state);
             ShowCommands();
             if (openBuilding != null && ui.BuildingOpen)
@@ -639,7 +639,7 @@ namespace Wuxia
             }
 
             if (capturing) { CompleteConstruction(index, GameState.HeroId); return; }
-            ui.ChooseAssignment(state, $"興建{buildChoice.name}", "build", 1, party => CompleteConstruction(index, party[0]));
+            ui.ChooseAssignment(state, $"興建{buildChoice.name}", "build_plot", 1, party => CompleteConstruction(index, party[0]));
         }
 
         private void CompleteConstruction(int index, string worker)

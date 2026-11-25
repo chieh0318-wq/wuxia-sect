@@ -44,7 +44,7 @@ namespace Wuxia
         private TalentCatalog recruitTalents;
         private TalentCatalog RecruitTalents => recruitTalents ??= M2Data.Load<TalentCatalog>("talents");
         private Candidate[] candidates;
-        private int recruitPage;
+        private SectUI.PickerSort recruitSort = new();
         private RecruitMethod activeMethod;
         private int accepted;
         private ActionData recruitmentAction;
@@ -105,7 +105,7 @@ namespace Wuxia
 
         private void FillCandidates()
         {
-            recruitPage = 0;
+            recruitSort = new SectUI.PickerSort();
             int count = Mathf.Clamp(activeMethod.poolSize + state.Story.recruitPoolSize, 3, 5);
             candidates = Enumerable.Range(0, count).Select(_ => RollCandidate(activeMethod)).ToArray();
             if (activeMethod.id != "public" && Recruitment.specials?.Length > 0 && Random.value < activeMethod.rareChance)
@@ -216,17 +216,11 @@ namespace Wuxia
 
         private void ShowCandidates()
         {
-            const int pageSize = 3;
-            int pages = Mathf.Max(1, (candidates.Length + pageSize - 1) / pageSize);
             var buttons = new System.Collections.Generic.List<(string, Action)>
             {
                 ("返回", () => ui.CloseModal(force: true)),
                 ("謝絕餘下人選", () => { candidates = null; ShowCommands(); ui.CloseModal(force: true); })
             };
-            if (recruitPage > 0)
-                buttons.Add(("前一頁", () => { recruitPage--; ShowCandidates(); }));
-            if (recruitPage + 1 < pages)
-                buttons.Add(("下一頁", () => { recruitPage++; ShowCandidates(); }));
             if (accepted < Recruitment.maxAcceptPerVisit && state.Silver >= Recruitment.refreshSilver)
                 buttons.Add(($"再尋訪　銀 {Recruitment.refreshSilver}", () =>
                 {
@@ -234,29 +228,18 @@ namespace Wuxia
                     FillCandidates();
                 }));
             ui.ShowCreation(activeMethod.name,
-                new[] { $"銀兩 {state.Silver}　已收徒 {accepted}／{Recruitment.maxAcceptPerVisit}　第 {recruitPage + 1}／{pages} 頁" }, buttons, null);
-            var catalog = RecruitTalents.talents ?? Array.Empty<CreationOption>();
-            foreach (var candidate in candidates.Skip(recruitPage * pageSize).Take(pageSize))
-            {
-                string reason = RecruitRestriction(candidate);
-                ui.RecruitCard(candidate, catalog, RecruitPrice(candidate), reason,
-                    reason.Length == 0 ? () => ReviewCandidate(candidate) : null);
-            }
+                new[] { $"銀兩 {state.Silver}　已收徒 {accepted}／{Recruitment.maxAcceptPerVisit}　點姓名可查候選人詳情。" }, buttons, null);
+            ui.RecruitPicker(candidates, recruitSort, RecruitPrice, RecruitRestriction, ShowCandidates, ReviewCandidate);
         }
 
         private void ReviewCandidate(Candidate candidate)
         {
-            if (candidate.story == null)
-            {
-                AcceptCandidate(candidate);
-                return;
-            }
-            ui.ShowCreation(candidate.name, new[] { candidate.story.prompt },
+            string reason = RecruitRestriction(candidate);
+            Action enlist = reason.Length == 0 ? () => AcceptCandidate(candidate) : null;
+            ui.ShowCreation(candidate.name, new[] { candidate.story?.prompt ?? candidate.blurb, candidate.story?.acceptText },
                 new[] { ("返回人選", (Action)ShowCandidates) }, null);
-            ui.ModalPortrait(candidate.portrait, candidate.gender, fullScreen: true);
-            ui.CreationGrid(2, 1, 190);
-            ui.CreationChoice("收為弟子", candidate.story.acceptText, null, () => AcceptCandidate(candidate));
-            ui.CreationChoice("婉拒", candidate.story.rejectText, null, ShowCandidates);
+            ui.RecruitCard(candidate, RecruitTalents.talents ?? Array.Empty<CreationOption>(),
+                RecruitPrice(candidate), reason, enlist);
         }
 
         private void AcceptCandidate(Candidate candidate)

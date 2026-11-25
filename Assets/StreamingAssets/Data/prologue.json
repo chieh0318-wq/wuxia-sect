@@ -344,10 +344,10 @@
         { "speaker": "", "portrait": "", "image": "", "text": "入夏，疫病從洛陽南市傳開。先是發熱，後是咳血，三日不起。坊門一關，屍首只能從牆頭往外遞。" },
         { "speaker": "藥房執事　韓守拙", "portrait": "han", "image": "", "text": "……是時疫。山下已有人上山求藥了。藥房的存貨，撐不過十日。" },
         { "speaker": "伙房管事　杜蘅", "portrait": "du", "image": "", "text": "米缸也見底了。山下米行說漕船都往長安去了，洛陽一粒也分不到。" },
-        { "speaker": "", "portrait": "", "image": "cg_ruins", "text": "你開了山門收留病人。七日後，頭一個同門倒下；半月後，祖師殿裡躺滿了人，香案成了藥案。" },
+        { "speaker": "", "portrait": "", "image": "cg_plague_relief", "text": "你開了山門收留病人。七日後，頭一個同門倒下；半月後，祖師殿裡躺滿了人，香案成了藥案。" },
         { "speaker": "{friend}", "portrait": "friend", "image": "", "text": "你救不了整個河南道。再這樣下去，{sect}會隨山下一起死。" },
         { "speaker": "{name}", "portrait": "hero", "image": "", "text": "那你說，該把誰關在門外？" },
-        { "speaker": "", "portrait": "", "image": "", "text": "秋風起時，疫病退了。崤山的田荒了，倉空了，連祖師殿的大梁都拆去一截，給病人燒了火。" },
+        { "speaker": "", "portrait": "", "image": "cg_ruins", "text": "秋風起時，疫病退了。崤山的田荒了，倉空了，連祖師殿的大梁都拆去一截，給病人燒了火。" },
         { "speaker": "{friend}", "portrait": "friend", "image": "", "text": "這座山養不活人了。咱們得走。往哪裡走、依靠誰，你來定。" }
       ],
       "responsePrompt": "大疫過後，崤山倉空田荒。你要帶著同門投向何處？",
@@ -412,7 +412,7 @@
             { "speaker": "{name}", "portrait": "hero", "image": "", "text": "咱們不靠誰。山下活下來的人，都記得是誰給他們端過藥。" },
             { "speaker": "宋秋娘", "portrait": "song", "image": "", "text": "我爹娘都沒熬過去。{title}，我力氣大，甚麼都扛得動。讓我跟你們走罷。" },
             { "speaker": "藥房執事　韓守拙", "portrait": "han", "image": "", "text": "……藥方，我都寫下來了。往後哪裡有疫，咱們都能救。" },
-            { "speaker": "{friend}", "portrait": "friend", "image": "v1124_plague_independent", "text": "這名聲是拿命換的。到了新地方，它便是{sect}的第一塊磚。" }
+            { "speaker": "{friend}", "portrait": "friend", "image": "cg_plague_relief", "text": "這名聲是拿命換的。到了新地方，它便是{sect}的第一塊磚。" }
           ]
         }
       ]

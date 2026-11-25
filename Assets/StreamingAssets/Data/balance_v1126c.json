@@ -1,0 +1,9 @@
+{
+  "lifeSkill": { "xpPerTask": 12, "xpPerLevel": 100, "capGainPerTasks": 10, "capMaxAboveStart": 2 },
+  "martial":   { "progressMax": 100, "drillProgress": 6, "practiceProgress": 4, "teacherBonusPct": 25 },
+  "buildQuality": { "upkeepPctPer10Above100": -3, "outputPctPer10Above100": 4, "durabilityMonthsPer10": 2, "maxQualityPct": 140, "minQualityPct": 70 },
+  "trade": { "tongshangSilverPerMonth": 6, "startDelayMonths": 1 },
+  "reputation": { "gainScalePct": 100 },
+  "techTree": [],
+  "victory": {}
+}

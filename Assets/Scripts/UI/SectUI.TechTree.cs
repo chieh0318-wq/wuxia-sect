@@ -28,11 +28,11 @@ namespace Wuxia
             IEnumerable<(string name, string motto, TechCard[] nodes)> branches, Action close)
         {
             ShowCreation("藏經閣・門派科技樹", header, new[] { ("關閉", close) }, null);
-            const float plaqueWidth = 196, arrow = 44, rowHeight = 170;
+            const float plaqueShare = .104f, gap = .02f, rowHeight = 162;
             foreach (var branch in branches)
             {
                 var row = CreationRow(branch.name, rowHeight);
-                var plaque = Panel(branch.name, row, Vector2.zero, Vector2.up, new(0, 6), new(plaqueWidth - 10, -6), false);
+                var plaque = Panel(branch.name, row, Vector2.zero, new(plaqueShare, 1), new(0, 4), new(-8, -4), false);
                 UiKit.Skin(plaque.GetComponent<Image>(), "Plaque");
                 var title = Label(plaque, branch.name, 26, TextAnchor.MiddleCenter);
                 title.color = new Color(.98f, .89f, .72f);
@@ -41,21 +41,22 @@ namespace Wuxia
                 motto.color = new Color(.92f, .80f, .62f);
                 Anchor(motto.rectTransform, Vector2.zero, new(1, .45f), new(8, 10), new(-8, -4));
 
-                float width = (creationListWidth - plaqueWidth - arrow * 3) / 4;
+                float width = (1 - plaqueShare - gap * 3) / 4;
                 for (int index = 0; index < branch.nodes.Length; index++)
                 {
                     var node = branch.nodes[index];
-                    float x = plaqueWidth + index * (width + arrow);
+                    float x = plaqueShare + index * (width + gap);
+                    float right = x + width;
                     bool clickable = !node.researched && node.unlocked && node.research != null;
                     var card = Button(row, node.name, clickable ? node.research : null);
                     var selectable = card.GetComponent<Button>();
                     selectable.interactable = clickable;
                     if (!clickable) selectable.transition = Selectable.Transition.None;
-                    Anchor(card, Vector2.zero, Vector2.up, new(x, 6), new(x + width, -6));
+                    Anchor(card, new(x, 0), new(right, 1), new(0, 4), new(0, -4));
                     var image = card.GetComponent<Image>();
                     UiKit.Skin(image, node.researched ? "Selected" : node.unlocked ? "Vermilion" : "Wood");
                     if (!node.researched && !node.unlocked)
-                        image.color = new Color(.50f, .46f, .42f);
+                        image.color = new Color(.30f, .28f, .25f);
                     if (node.researched)
                     {
                         var glow = card.gameObject.AddComponent<Outline>();
@@ -73,17 +74,20 @@ namespace Wuxia
                     var effect = Label(card, node.effect, 18);
                     effect.color = new Color(1f, .93f, .80f);
                     effect.horizontalOverflow = HorizontalWrapMode.Wrap;
-                    effect.resizeTextForBestFit = false;
+                    effect.resizeTextForBestFit = true;
+                    effect.resizeTextMinSize = 16;
+                    effect.resizeTextMaxSize = 18;
                     Anchor(effect.rectTransform, Vector2.zero, Vector2.one, new(12, 34), new(-8, -60));
                     var status = Label(card, node.status, 18, TextAnchor.MiddleLeft);
                     status.color = node.researched ? TechDone : node.unlocked ? TechOpen : TechLocked;
-                    status.resizeTextMinSize = 18;
+                    status.resizeTextMinSize = 15;
+                    status.resizeTextMaxSize = 18;
                     Anchor(status.rectTransform, Vector2.zero, Vector2.right, new(12, 6), new(-8, 32));
                     if (index == branch.nodes.Length - 1)
                         continue;
                     // Connector: a short ink rule ending in an arrow head, lit once the left node is learned.
                     var link = Rect("連線", row);
-                    Anchor(link, new(0, .5f), new(0, .5f), new(x + width + 4, -3), new(x + width + arrow - 14, 3));
+                    Anchor(link, new(right, .5f), new(right + gap, .5f), new(3, -2), new(-10, 2));
                     var rule = link.gameObject.AddComponent<Image>();
                     rule.raycastTarget = false;
                     rule.color = node.researched ? TechDone : new Color(.55f, .42f, .28f);

@@ -21,7 +21,7 @@ namespace Wuxia
             var header = new List<string>
             {
                 $"銀兩 {state.Silver}　行動力 {state.ActionPoints}／{state.ApMax}　已研習 {state.TechCount}／{GameState.TechTree.Length}" +
-                "　　點擊「可研習」的功法即可研習；每脈須由第一重依序研習。"
+                "　　點擊「可研習」即可研習；須依序研習，高重另需聲望與山門規模。"
             };
             if (!string.IsNullOrEmpty(techMessage))
                 header.Add(techMessage);
@@ -32,8 +32,8 @@ namespace Wuxia
                     bool unlocked = !researched && (node.requires == null || state.HasTech(node.requires));
                     bool affordable = state.CanResearch(node);
                     string status = state.TechStatus(node);
-                    if (unlocked && !affordable)
-                        status += state.Silver < node.silver ? "　銀兩不足" : "　行動力不足";
+                    if (unlocked && !affordable && state.TechGate(node) == null)
+                        status += state.Silver < node.silver ? "　銀兩不足" : state.ActionPoints < node.ap ? "　行動力不足" : "";
                     return new TechCard
                     {
                         name = node.name, cost = $"銀 {node.silver}・行動力 {node.ap}", effect = node.effect,

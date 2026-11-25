@@ -128,7 +128,7 @@ namespace Wuxia
             // Creation base: the sect's sword line starts C / B, every other line D / C; picks then stack on top.
             Protagonist.lines = RankSystem.ProtagonistSeed();
             Disciples = data.Disciples.Where(d => d.startInSect).Select(CloneDisciple).ToList();
-            foreach (var disciple in Disciples) EnsurePortrait(disciple);
+            foreach (var disciple in Disciples) { EnsurePortrait(disciple); PortraitPool.Track(Story, disciple.portrait); }
             Buildings = new BuildingData[data.Start.slots.Length];
             for (int index = 0; index < Buildings.Length; index++)
             {

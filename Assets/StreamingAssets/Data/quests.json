@@ -30,7 +30,7 @@
       "title": "立穩山門",
       "brief": "人手、屋舍、名聲三樣齊了，山門才算立得住。",
       "steps": [
-        { "text": "門下弟子", "metric": "disciples", "target": 6 },
+        { "text": "門下弟子", "metric": "disciples", "target": 10 },
         { "text": "山門建築", "metric": "buildings", "target": 8 },
         { "text": "江湖聲望", "metric": "reputation", "target": 22 }
       ]
@@ -52,7 +52,7 @@
       "steps": [
         { "text": "友好或歸附勢力", "metric": "loyalFactions", "target": 2 },
         { "text": "轄下據點", "metric": "heldNodes", "target": 1 },
-        { "text": "門下弟子", "metric": "disciples", "target": 10 }
+        { "text": "門下弟子", "metric": "disciples", "target": 14 }
       ]
     }
   ],

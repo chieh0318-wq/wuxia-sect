@@ -8,9 +8,10 @@ namespace Wuxia
         internal static readonly (string name, int reputation, int disciples, int buildings, int silver, int land)[] Scales =
         {
             ("草創", 0, 0, 0, 0, 17),
-            ("小有規模", 22, 6, 8, 24, 28),
-            ("一方大派", 50, 9, 11, 48, 40),
-            ("名門正宗", 85, 13, 15, 80, 54)
+            // v1126c PA3: disciples +4 (the sect now starts with 9 members incl. 石長庚／田秋禾／祝青芷).
+            ("小有規模", 22, 10, 8, 24, 28),
+            ("一方大派", 50, 13, 11, 48, 40),
+            ("名門正宗", 85, 17, 15, 80, 54)
         };
 
         internal int SectScale => Mathf.Clamp(Story.sectScale, 0, Scales.Length - 1);

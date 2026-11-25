@@ -18,7 +18,7 @@ namespace Wuxia
             var rules = victory.Rules;
             return new[]
             {
-                $"立穩山門｜弟子 {Disciples.Count}/6、建築 {Buildings.Count(building => building != null)}/8、聲望 {Reputation}/22。達標後可擴建。",
+                $"立穩山門｜弟子 {Disciples.Count}/{Scales[1].disciples}、建築 {Buildings.Count(building => building != null)}/{Scales[1].buildings}、聲望 {Reputation}/{Scales[1].reputation}。達標後可擴建。",
                 "立足江湖｜接掌宗門之後，可從軍師與情報頁了解各派立場；興建宗門、結交盟友或攻占據點皆可累積聲望。",
                 $"外交結盟｜友好勢力 {victory.Loyal}/{rules.loyalNeeded}、歸附勢力 {victory.Subjects}/{rules.subjectNeeded}、聲望 {victory.Reputation}/{rules.reputationNeeded}。達標後在外交頁宣告。",
                 $"武力征服｜轄下據點 {victory.Held}/{rules.conquestNodes}、聲望 {victory.Reputation}/{rules.conquestReputation}。",

@@ -536,7 +536,7 @@ namespace Wuxia
                 if (state.HasTech("craft1"))
                 {
                     state.RecoverInjuries(worker);
-                    state.Apply(new Yield { reputation = 1 });
+                    state.Apply(new Yield { reputation = Mathf.RoundToInt(GameState.Tech("craft1")?.value2 ?? 1) });
                 }
             }
             if (action.id == "forge_gear")

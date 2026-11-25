@@ -113,6 +113,7 @@ namespace Wuxia
                 new ActionData { id = "build", name = "建造", type = "build", apCost = 2, cost = new Cost(), effect = new Yield() },
                 new ActionData { id = "recruit", name = "招收弟子", type = "recruit", apCost = 1, cost = new Cost(), effect = new Yield() }
             };
+            BalanceV1126c.ApplyActionOverrides(Actions); // v1126c PA3: action numbers tuned in balance_v1126c.json
             var disciples = Read<DiscipleFile>("disciples.json", file => ValidIds(file.disciples, d => d.id) &&
                 file.disciples.All(d => HasText(d.name)));
             Disciples = disciples?.disciples ?? new[]

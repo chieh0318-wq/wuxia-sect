@@ -433,7 +433,7 @@ namespace Wuxia
             if (UnityEngine.Random.value < chance)
             {
                 Story.heldNodes = (Story.heldNodes ?? Array.Empty<string>()).Append(nodeId).ToArray();
-                int silver = 20 + garrison / 4, food = 10 + garrison / 10;
+                int silver = 20 + garrison / 4, food = 10 + garrison / 10, repBefore = Reputation;
                 ApplyEffects(new[]
                 {
                     new GameEffect { key = "silver", value = silver }, new GameEffect { key = "food", value = food },
@@ -443,7 +443,7 @@ namespace Wuxia
                 string loot = UnityEngine.Random.value < .35f
                     ? "　繳獲：" + StoreInventoryGear(MakeGear(GearSlots[UnityEngine.Random.Range(0, GearSlots.Length)], 1)) : "";
                 return $"大捷！{SectLabel}攻破{place}，插上本派旗號（每月上繳銀兩 4、糧食 2）。" +
-                    $"繳獲銀兩 {silver}、糧食 {food}，聲望 +3。{loot}";
+                    $"繳獲銀兩 {silver}、糧食 {food}，聲望 {Reputation - repBefore:+0;-0;0}。{loot}";
             }
             Injure(1);
             ApplyEffects(new[] { new GameEffect { key = "reputation", value = -1 } });

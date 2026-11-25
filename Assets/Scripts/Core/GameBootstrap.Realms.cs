@@ -132,7 +132,7 @@ namespace Wuxia
         }
 
         private string AttrTag(GameState state, string attr, float chance) =>
-            $"{SecretRealms.AttrName(attr)} {AssignmentSystem.Attribute(state, ExpeditionLeader, attr)}・成功 {chance:P0}／失手 {1 - chance:P0}";
+            $"{SecretRealms.AttrName(attr)} {AssignmentSystem.Attribute(state, ExpeditionLeader, attr)}・成功 {Mathf.RoundToInt(chance * 100)}%／失手 {100 - Mathf.RoundToInt(chance * 100)}%";
 
         // ---- 山道巡訪 (C15) --------------------------------------------------------------------------
 

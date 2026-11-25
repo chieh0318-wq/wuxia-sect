@@ -24,7 +24,7 @@ namespace Wuxia
     }
 
     [Serializable] internal sealed class RecruitOrigin { public string name; public string[] blurbs; }
-    [Serializable] internal sealed class RecruitPersonality { public string name; public int loyalty; }
+    [Serializable] internal sealed class RecruitPersonality { public string id, name; public int loyalty; }
     [Serializable] internal sealed class RecruitStory
     {
         public string prompt, acceptText, rejectText, risk;
@@ -40,7 +40,20 @@ namespace Wuxia
     public sealed partial class GameBootstrap
     {
         private RecruitCatalog recruitment;
-        private RecruitCatalog Recruitment => recruitment ??= M2Data.Load<RecruitCatalog>("recruit");
+        private RecruitCatalog Recruitment => recruitment ??= NormalizeSpecials(M2Data.Load<RecruitCatalog>("recruit"));
+
+        /// <summary>v1126d: specials name their personality by id ("devoted"); show and score it by its Chinese name.</summary>
+        private static RecruitCatalog NormalizeSpecials(RecruitCatalog catalog)
+        {
+            foreach (var special in catalog?.specials ?? System.Array.Empty<Candidate>())
+            {
+                var match = catalog.personalities?.FirstOrDefault(entry => entry.id == special.personality || entry.name == special.personality);
+                if (match == null) continue;
+                special.personality = match.name;
+                if (string.IsNullOrEmpty(special.trait) || special.trait == match.id) special.trait = match.name;
+            }
+            return catalog;
+        }
         private TalentCatalog recruitTalents;
         private TalentCatalog RecruitTalents => recruitTalents ??= M2Data.Load<TalentCatalog>("talents");
         private Candidate[] candidates;

@@ -47,7 +47,8 @@ namespace Wuxia
                     new(4, -250), new(-4, -220));
             }
             CardText($"戰鬥　{TopLines(true)}", 19, 20, 18, 255, 28);
-            CardText($"生產　{TopLines(false)}", 19, 20, 18, 286, 28);
+            string craft = TopLines(false);
+            CardText($"生產　{(string.IsNullOrWhiteSpace(craft) ? "尚無專長" : craft)}", 19, 20, 18, 286, 28);
             CardText($"{candidate.personality}　忠誠 {candidate.loyalty}", 19, 20, 18, 322, 29);
             var chips = Rect("天賦", card);
             Anchor(chips, Vector2.up, Vector2.one, new(190, -351), new(-18, -322));

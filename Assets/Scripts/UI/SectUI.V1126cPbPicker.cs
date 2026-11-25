@@ -151,6 +151,19 @@ namespace Wuxia
                 PickerBody(CreationRow("候選門人", 62), width, 62, row);
         }
 
+        /// <summary>v1126d: whole percents for the 成／敗 column; when the rows are one distribution (forge grades)
+        /// they are rounded by largest remainder so they add up to exactly 100.</summary>
+        private static int[] WholePercents(float[] chances)
+        {
+            var whole = chances.Select(chance => Mathf.RoundToInt(chance * 100)).ToArray();
+            if (chances.Length < 2 || Mathf.Abs(chances.Sum() - 1f) > .02f) return whole;
+            var floors = chances.Select(chance => Mathf.FloorToInt(chance * 100 + 1e-4f)).ToArray();
+            int missing = 100 - floors.Sum();
+            foreach (int index in Enumerable.Range(0, chances.Length).OrderByDescending(i => chances[i] * 100 - floors[i]).Take(Mathf.Max(0, missing)))
+                floors[index]++;
+            return floors;
+        }
+
         private void AssignmentOutcomeTable(GameState state, string action, string member,
             (string Label, float Chance, string Success, string Failure)[] outcomes)
         {
@@ -172,10 +185,11 @@ namespace Wuxia
             string[] labels = { "判定", "成／敗", "成功所得", "失手後果" };
             for (int col = 0; col < labels.Length; col++)
                 MapUi.Text(box, labels[col], col * w / 4 + 10, 40, w / 4 - 20, 34, 19, Ink);
+            int[] percents = WholePercents(outcomes.Select(outcome => outcome.Chance).ToArray());
             for (int i = 0; i < outcomes.Length; i++)
             {
                 var outcome = outcomes[i];
-                string[] items = { outcome.Label, $"{outcome.Chance:P0}／{1 - outcome.Chance:P0}", outcome.Success, outcome.Failure };
+                string[] items = { outcome.Label, $"{percents[i]}%／{100 - percents[i]}%", outcome.Success, outcome.Failure };
                 var strip = MapUi.Kit(box, "判定", 0, 76 + i * height, w, height - 2, "Wood", false);
                 for (int col = 0; col < items.Length; col++)
                     MapUi.Text(strip, items[col], col * w / 4 + 10, 0, w / 4 - 20, height - 2, 19, MapUi.Paper);

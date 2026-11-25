@@ -433,7 +433,12 @@ namespace Wuxia
 
             string ActionEffect(string id)
             {
-                if (id == "item") return "回復自身氣血。九轉回元丹另回內力。";
+                if (id == "item")
+                {
+                    var medicine = GameState.SectMedicines.FirstOrDefault(entry => MedicineCount(entry.id) > 0);
+                    return medicine.id == null ? "庫房已無可用丹藥。" :
+                        $"{EffectText.ItemName(medicine.id)}：氣血 +{medicine.hp}、內力 +{medicine.qi}。";
+                }
                 if (id == "interrupt") return "單體傷害 ×" + model.Skill(id).power.ToString("0.00") + "，打斷蓄勢。";
                 var move = model.Skill(id);
                 string damage = move.power > 0 ? $"{(move.all ? "全體" : "單體")}傷害 ×{move.power:0.00}" : "";

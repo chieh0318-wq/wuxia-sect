@@ -78,7 +78,7 @@ namespace Wuxia
 
         /// <summary>Monthly silver a 通商 tie brings (same formula as the month-end diplomacy income).</summary>
         internal int TradeIncomeOf(MapFaction faction) =>
-            Mathf.Max(1, (faction.type == "merchant" ? 12 : 6) + (Tie(faction.id)?.tradeIncome ?? 0));
+            Mathf.Max(1, (BalanceV1126c.Trade.tongshangSilverPerMonth * (faction.type == "merchant" ? 2 : 1)) + (Tie(faction.id)?.tradeIncome ?? 0));
 
         /// <summary>Consecutive months each 通商 tie has run (reset when it lapses).</summary>
         internal int TradeMonths(string factionId) => RouteFlag("route_trade_" + factionId);

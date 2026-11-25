@@ -12,10 +12,13 @@ namespace Wuxia
                 EnsureCaptureCourtyard();
                 var garden = System.Array.Find(state.Data.Buildings, building => building.id == "vegetable");
                 int plot = System.Array.FindIndex(state.Buildings, building => building == null);
+                if (!state.CanPlaceInCells(plot, garden)) throw new InvalidOperationException("Initial garden cell unavailable.");
                 state.Buildings[plot] = garden;
                 world.PlaceBuilding(plot, garden, state.FootprintCells(plot, garden));
                 world.HighlightPlots(true);
-                var next = System.Array.FindIndex(state.Buildings, plot + 1, building => building == null);
+                int next = plot + state.Data.Start.slots.Length;
+                if (state.CanPlaceInCells(plot, garden) || !state.CanPlaceInCells(next, garden))
+                    throw new InvalidOperationException("Single-cell construction did not preserve adjacent land.");
                 world.PreviewCells(state.FootprintCells(next, garden));
             }),
             ("PH3_20_raid_alert.png", () =>
@@ -38,6 +41,10 @@ namespace Wuxia
                 ui.Refresh(state);
                 ui.ShowResourceBreakdown(0);
             }),
+            ("PH3_21_food_ledger.png", () => ui.ShowResourceBreakdown(1)),
+            ("PH3_21_reputation_ledger.png", () => ui.ShowResourceBreakdown(2)),
+            ("PH3_21_members_ledger.png", () => ui.ShowResourceBreakdown(3)),
+            ("PH3_21_ap_ledger.png", () => ui.ShowResourceBreakdown(4)),
             ("PH3_26_vertical_commands.png", () =>
             {
                 ui.CloseModal(force: true);

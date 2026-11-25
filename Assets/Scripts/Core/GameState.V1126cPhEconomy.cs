@@ -29,19 +29,16 @@ namespace Wuxia
             return (silver, food, reputation, upkeep, materials);
         }
 
-        private void ApplyMonthlyTechnology(ref int silver, ref int food)
-        {
-            if (HasTech("craft1") && BuildingLevel("infirmary") > 0) silver += 4;
-            if (HasTech("craft2")) silver += 6 * Buildings.Count(building => building?.id == "smithy");
-            if (HasTech("craft4"))
-            {
-                silver = Mathf.RoundToInt(silver * 1.35f);
-                food = Mathf.RoundToInt(food * 1.35f);
-            }
-        }
-
         private int MonthlyTradeIncome(MapFaction faction) =>
-            HasTie(faction.id, Diplomacy.Trade) && !HasTie(faction.id, Diplomacy.Merged) ? TradeIncomeOf(faction) : 0;
+            HasTie(faction.id, Diplomacy.Trade) && !HasTie(faction.id, Diplomacy.Merged) &&
+            MonthStamp >= RouteFlag("trade_first_" + faction.id) ? TradeIncomeOf(faction) : 0;
+
+        private string TradeFirstDate(MapFaction faction)
+        {
+            int stamp = System.Math.Max(MonthStamp, RouteFlag("trade_first_" + faction.id));
+            int year = (stamp - 1) / 12;
+            return $"開元{(year == 1 ? "元" : ChineseNumber(year))}年 {Months[(stamp - 1) % 12]}";
+        }
 
         private int TributeIncomeOf(MapFaction faction) =>
             Mathf.Clamp(Mathf.RoundToInt(Mathf.Clamp(faction.money / 600, 5, 30) *
@@ -52,27 +49,33 @@ namespace Wuxia
             var rows = new List<(string, int)>();
             var (silver, food, reputation, upkeep, _) = BuildingMonthLedger();
             int techSilver = silver, techFood = food;
-            ApplyMonthlyTechnology(ref techSilver, ref techFood);
+            M6MonthIncome(ref techSilver, ref techFood, null);
             var (heldSilver, heldFood) = MonthlyHoldingIncome;
             if (resource == 0)
             {
                 rows.Add(("建築產出", silver));
-                Add("藏經閣工藝", techSilver - silver);
+                Add("藏經閣工藝", techSilver - silver - heldSilver);
                 Add("據點上繳", heldSilver);
                 foreach (var faction in WorldMapData.Load().Factions)
                 {
-                    Add($"通商・{faction.Label}", MonthlyTradeIncome(faction));
+                    if (HasTie(faction.id, Diplomacy.Trade) && !HasTie(faction.id, Diplomacy.Merged))
+                    {
+                        int trade = MonthlyTradeIncome(faction);
+                        rows.Add((trade == 0 ? $"通商・{faction.Label}（{TradeFirstDate(faction)}起）" : $"通商・{faction.Label}", trade));
+                    }
                     if (HasTie(faction.id, Diplomacy.Vassal) && !HasTie(faction.id, Diplomacy.Merged))
                         Add($"朝貢・{faction.Label}", TributeIncomeOf(faction));
                 }
+                AddHallEffects("silver");
                 Add("去留約定", Story.monthlySilver);
                 rows.Add(("建築維護", -upkeep));
             }
             if (resource == 1)
             {
                 rows.Add(("建築產出", food));
-                Add("藏經閣工藝", techFood - food);
+                Add("藏經閣工藝", techFood - food - heldFood);
                 Add("據點上繳", heldFood);
+                AddHallEffects("food");
                 Add("去留約定", Story.monthlyFood);
                 rows.Add(("弟子口糧", -MonthlyRations));
             }
@@ -89,6 +92,12 @@ namespace Wuxia
                 rows.Add(("次月行動力上限", ApMax));
             }
             return rows.ToArray();
+
+            void AddHallEffects(string key)
+            {
+                foreach (var (hall, _, effects) in MonthlyHallEffects())
+                    Add(hall.name, effects.Where(effect => effect.key == key).Sum(effect => Mathf.RoundToInt(effect.value)));
+            }
 
             void Add(string source, int value)
             {

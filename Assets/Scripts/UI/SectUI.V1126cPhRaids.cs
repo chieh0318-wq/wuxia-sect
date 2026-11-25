@@ -13,6 +13,7 @@ namespace Wuxia
         {
             if (raidAlert != null) return;
             raidAlert = Button(canvas, "", open);
+            raidAlert.SetSiblingIndex(canvas.Find("Top bar").GetSiblingIndex() + 1);
             Anchor(raidAlert, new Vector2(.5f, 1), new Vector2(.5f, 1),
                 new Vector2(-320, -160), new Vector2(320, -110));
             UiKit.Skin(raidAlert.GetComponent<Image>(), "Selected");

@@ -170,6 +170,8 @@ namespace Wuxia
             if (on)
             {
                 if (bit == Diplomacy.Vassal && (tie.status & Diplomacy.Vassal) == 0) tie.since = MonthStamp;
+                if (bit == Diplomacy.Trade && (tie.status & bit) == 0)
+                    SetRouteFlag("trade_first_" + faction.id, MonthStamp + Mathf.Max(0, BalanceV1126c.Trade.startDelayMonths));
                 tie.status |= bit;
                 if (bit == Diplomacy.Vassal) tie.status &= ~Diplomacy.Awed;
             }
@@ -364,7 +366,7 @@ namespace Wuxia
                 ApplyEffects(new[] { new GameEffect { key = "reputation", value = terms.repOnSuccess } });
                 extra += $"議定條款：聲望 {terms.repOnSuccess:+0;-0}。";
             }
-            if (action.id == "trade") extra += $"每月銀兩 +{TradeIncomeOf(faction)}，自{Date}月底入帳。";
+            if (action.id == "trade") extra += $"每月銀兩 +{TradeIncomeOf(faction)}，自{TradeFirstDate(faction)}月底入帳。";
             ShiftAttitude(faction, gain);
             return $"【{action.name}成功】{Diplomacy.Fill(action.success, faction)}\n（使者 {envoy}；態度 {gain:+0;-0}）{extra}";
         }
@@ -536,7 +538,8 @@ namespace Wuxia
             if (trade + tribute > 0)
             {
                 Silver += trade + tribute;
-                report.Lines.Add($"外交收入　通商 {trade}、附庸朝貢 {tribute}");
+                if (trade > 0) report.Lines.Add($"通商入帳　銀兩 +{trade}");
+                if (tribute > 0) report.Lines.Add($"附庸朝貢　銀兩 +{tribute}");
             }
             report.Lines.AddRange(notes);
             if (PendingDiploEvent == null && UnityEngine.Random.value < Diplomacy.Data.eventChance && RollDiploEvent())

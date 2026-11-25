@@ -140,7 +140,7 @@ namespace Wuxia
                 foreach (var bar in plotFrames[index] ?? System.Array.Empty<Renderer>())
                     bar.enabled = lit;
                 bool labelled = plotLabels.Contains(index);
-                if (lit && !labelled)
+                if (lit && !labelled && index < plots.Length / 4)
                 {
                     ui.AddWorldLabel(plot.transform, Vector3.up * 2.8f, "可建空地（點擊建造）");
                     plotLabels.Add(index);
@@ -159,11 +159,12 @@ namespace Wuxia
 
         internal void PreviewCells(int[] cells)
         {
+            if (previewCells != null && cells != null && previewCells.SequenceEqual(cells)) return;
             if (previewCells != null)
-                foreach (int cell in previewCells) plots[cell].material.color = Tint("#5CD669");
+                foreach (int cell in previewCells) Paint(plots[cell], "Solid", Tint("#5CD669"));
             previewCells = cells;
             if (cells != null)
-                foreach (int cell in cells) plots[cell].material.color = Tint("#F6C95F");
+                foreach (int cell in cells) Paint(plots[cell], "Solid", Tint("#F6C95F"));
         }
 
         public void PlaceBuilding(int index, BuildingData data, int[] cells)
@@ -177,10 +178,10 @@ namespace Wuxia
             var building = new GameObject(data.name).transform;
             building.SetParent(root, false);
             bool full = cells.Length == 4;
-            float x = full ? cells.Average(cell => slots[cell].x) :
+            float centerX = full ? cells.Average(cell => slots[cell].x) :
                 (slots[index].x + slots[cells.Length > 1 ? cells[1] : index].x) / 2;
-            float z = full ? cells.Average(cell => slots[cell].z) : slots[index].z;
-            building.localPosition = new Vector3(x, 0, z);
+            float centerZ = full ? cells.Average(cell => slots[cell].z) : slots[index].z;
+            building.localPosition = new Vector3(centerX, 0, centerZ);
             float w = Mathf.Min(data.size[0], cells.Length == 1 ? 2.85f : 6.0f);
             float h = data.size[1], d = Mathf.Min(data.size[2], full ? 5.4f : 2.65f);
             buildingFootprints.Add(new Rect(building.position.x - w / 2, building.position.z - d / 2, w, d));

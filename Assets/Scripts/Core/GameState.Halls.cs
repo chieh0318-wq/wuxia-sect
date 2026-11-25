@@ -187,12 +187,14 @@ namespace Wuxia
                 case "host":
                 {
                     Story.rumorBonus = Mathf.Min(.75f, Story.rumorBonus + .25f);
+                    int repBefore = Reputation;
                     ApplyEffects(new[] { new GameEffect { key = "reputation", value = 2 } });
+                    int repGain = Reputation - repBefore;
                     var known = WorldMapData.Load().Factions.Where(faction => IsFactionKnown(faction.id) && !faction.Court).ToArray();
-                    if (known.Length == 0) return "客堂裡茶香不斷，打聽到不少江湖消息。聲望 +2、下次奇遇機率 +25%。";
+                    if (known.Length == 0) return $"客堂裡茶香不斷，打聽到不少江湖消息。聲望 +{repGain}、下次奇遇機率 +25%。";
                     var guest = known[UnityEngine.Random.Range(0, known.Length)];
                     ApplyEffects(new[] { new GameEffect { key = "relation", @ref = guest.id, value = 4 } });
-                    return $"{guest.Label}的朋友在客堂作客數日，賓主盡歡。聲望 +2、{guest.Label}關係 +4、下次奇遇機率 +25%。";
+                    return $"{guest.Label}的朋友在客堂作客數日，賓主盡歡。聲望 +{repGain}、{guest.Label}關係 +4、下次奇遇機率 +25%。";
                 }
                 case "lecture":
                     foreach (var member in Disciples)

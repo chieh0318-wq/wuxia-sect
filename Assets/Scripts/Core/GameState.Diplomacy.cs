@@ -325,10 +325,13 @@ namespace Wuxia
                     break;
                 case "trade": SetTie(faction, Diplomacy.Trade, true); break;
                 case "mediate":
+                {
                     gain = Mathf.Max(0, Mathf.Min(gain, 10 - Attitude(faction)));
+                    int repBefore = Reputation;
                     ApplyEffects(new[] { new GameEffect { key = "reputation", value = 2 } });
-                    extra = "聲望 +2。";
+                    extra = $"聲望 +{Reputation - repBefore}。";
                     break;
+                }
                 case "pact": SetTie(faction, Diplomacy.Pact, true); break;
                 case "alliance":
                     SetTie(faction, Diplomacy.Alliance, true);
@@ -344,12 +347,15 @@ namespace Wuxia
                 case "intimidate": SetTie(faction, Diplomacy.Awed, true); break;
                 case "vassal": SetTie(faction, Diplomacy.Vassal, true); break;
                 case "merge":
+                {
                     SetTie(faction, Diplomacy.Merged, true);
                     var nodes = WorldMapData.Load().Holdings(faction).Select(node => node.id).Where(id => !HoldsNode(id)).ToArray();
                     Story.heldNodes = (Story.heldNodes ?? Array.Empty<string>()).Concat(nodes).ToArray();
+                    int repBefore = Reputation;
                     ApplyEffects(new[] { new GameEffect { key = "reputation", value = 5 } });
-                    extra = $"新增據點 {nodes.Length} 處，聲望 +5。";
+                    extra = $"新增據點 {nodes.Length} 處，聲望 +{Reputation - repBefore}。";
                     break;
+                }
             }
             if (terms.tradeIncome != 0 || terms.tributePct != 0 || terms.pactPower != 0 ||
                 terms.rivalShift != 0 || terms.monthlyAttitude != 0)

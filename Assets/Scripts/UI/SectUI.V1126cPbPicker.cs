@@ -58,7 +58,7 @@ namespace Wuxia
             int grade = RankSystem.Order(line?.rank);
             int attr = attribute == "cha" ? AssignmentSystem.Eloquence(state, id) : AssignmentSystem.Attribute(state, id, attribute);
             string attrName = attribute == "cha" ? "口才" : AttributeSystem.Names[AttributeSystem.Index(attribute)];
-            string talentKey = action == "diplomacy" ? "diplomacy" : skill == "forging" ? "forge" : skill;
+            string talentKey = action is "diplomacy" or "patronage" ? "diplomacy" : skill == "forging" ? "forge" : skill;
             bool specialist = (talentKey != null && state.TalentValue(id, talentKey, 20) > 0) || grade >= RankSystem.Index("B");
             int buildQuality = GameState.ConstructionQuality(prediction.Quality);
             float success = chance ?? prediction.Success;
@@ -118,7 +118,7 @@ namespace Wuxia
             {
                 float cellWidth = width * PickerShares[column];
                 MapUi.Text(button.transform, row.cells[column], x + 2, 2, cellWidth - 7, height - 4,
-                    19, column == 7 || row.selected ? MapUi.Gold : MapUi.Paper, TextAnchor.MiddleCenter);
+                    column == 7 ? 24 : 19, column == 7 || row.selected ? MapUi.Gold : MapUi.Paper, TextAnchor.MiddleCenter);
                 x += cellWidth;
             }
             return button;
@@ -162,9 +162,12 @@ namespace Wuxia
                 "explore" => "兩項分開判定，落空仍會巡山遇事。行動力、出勤與已有傳聞照常耗用。",
                 "gather_rumors" => "無論有無探得秘境，均記下江湖傳聞。",
                 "diplomacy" => "以下為交涉前估算，席間所選說辭可改變成敗與條款。",
+                "recruit" => "尋訪必得人選；生活天分逐名判定。",
+                "patronage" => "求取庇護耗用行動力 1，並記使者出勤 1 次。",
                 _ => "以下為各品級的成品機率，每次必得 1 件。"
             };
-            var box = CreationRow($"判定結果・{state.SparName(member)}", 82 + outcomes.Length * 40);
+            float height = action == "patronage" ? 70 : 40;
+            var box = CreationRow($"判定結果・{state.SparName(member)}", 82 + outcomes.Length * height);
             MapUi.Text(box, $"判定結果・{state.SparName(member)}　{note}", 10, 0, w - 20, 40, 20, Ink);
             string[] labels = { "判定", "成／敗", "成功所得", "失手後果" };
             for (int col = 0; col < labels.Length; col++)
@@ -173,9 +176,9 @@ namespace Wuxia
             {
                 var outcome = outcomes[i];
                 string[] items = { outcome.Label, $"{outcome.Chance:P0}／{1 - outcome.Chance:P0}", outcome.Success, outcome.Failure };
-                var strip = MapUi.Kit(box, "判定", 0, 76 + i * 40, w, 38, "Wood", false);
+                var strip = MapUi.Kit(box, "判定", 0, 76 + i * height, w, height - 2, "Wood", false);
                 for (int col = 0; col < items.Length; col++)
-                    MapUi.Text(strip, items[col], col * w / 4 + 10, 0, w / 4 - 20, 38, 19, MapUi.Paper);
+                    MapUi.Text(strip, items[col], col * w / 4 + 10, 0, w / 4 - 20, height - 2, 19, MapUi.Paper);
             }
         }
     }

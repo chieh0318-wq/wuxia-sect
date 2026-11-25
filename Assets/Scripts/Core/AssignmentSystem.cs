@@ -131,7 +131,7 @@ namespace Wuxia
                 "treat" or "medicine" => ("medicine", "wit"),
                 "farming" or "feast" => ("farming", "con"),
                 "build" or "build_plot" or "gather_materials" => ("construction", "wit"),
-                "commerce" or "recruit" or "host" or "diplomacy" => ("commerce", "cha"),
+                "commerce" or "recruit" or "host" or "diplomacy" or "patronage" => ("commerce", "cha"),
                 "train" or "lecture" or "study" => ("teaching", "wit"),
                 "seclusion" => ("neigong", "qi"),
                 "gather_rumors" => ("commerce", "cha"),
@@ -149,7 +149,7 @@ namespace Wuxia
             int value = attribute == "cha" ? Eloquence(state, id) : Attribute(state, id, attribute);
             int basis = attribute == "cha" ? 15 : 10;
             float quality = AttributeSystem.WorkQuality(rank, value, basis);
-            string talentKey = actionId == "diplomacy" ? "diplomacy" : skill == "forging" ? "forge" : skill;
+            string talentKey = actionId is "diplomacy" or "patronage" ? "diplomacy" : skill == "forging" ? "forge" : skill;
             quality *= 1 + (talentKey == null ? 0 : state.TalentValue(id, talentKey, 20)) / 100f;
             float success = actionId switch
             {

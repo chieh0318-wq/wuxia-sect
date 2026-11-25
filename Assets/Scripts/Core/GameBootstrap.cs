@@ -506,7 +506,7 @@ namespace Wuxia
             {
                 // v1124 C15: 山道巡訪 plays as a scene (encounter, optional battle, rewards).
                 ui.Refresh(state);
-                ExploreRoad(action);
+                ExploreRoad(action, before);
                 return;
             }
             string breakthrough = action.id switch

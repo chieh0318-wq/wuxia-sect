@@ -210,7 +210,7 @@ namespace Wuxia
             SecretRealms.Chance(this, new RealmChoice { attr = choice.attr }, 0, worker);
 
         /// <summary>The 「影響」 line for a road choice: costs, success effects and (for checks / fights) the failure.</summary>
-        internal string RoadImpact(RoadChoice choice)
+        internal string RoadImpact(RoadChoice choice, string worker = HeroId)
         {
             var parts = new List<string>();
             if (choice.cost != null && (choice.cost.silver > 0 || choice.cost.food > 0))
@@ -218,8 +218,8 @@ namespace Wuxia
                 {
                     choice.cost.silver > 0 ? $"銀兩 {choice.cost.silver}" : null, choice.cost.food > 0 ? $"糧食 {choice.cost.food}" : null
                 }.Where(text => text != null)));
-            string win = EffectText.Describe(choice.successEffects, this);
-            string lose = EffectText.Describe(choice.failureEffects, this);
+            string win = EffectText.DescribeExpedition(choice.successEffects, this, worker);
+            string lose = EffectText.DescribeExpedition(choice.failureEffects, this, worker);
             if (choice.type == "plain")
                 parts.Add(win.Length > 0 ? win : "劇情：無數值變化");
             else
@@ -247,7 +247,7 @@ namespace Wuxia
                         : LearnDiscipleArt(Disciples.Find(member => member.id == worker), effect.@ref, sectInstruction: false),
                     "gear" => EquipOrStore(MakeGear(effect.@ref, Mathf.RoundToInt(effect.value))),
                     "cap" or "rank" or "lineRank" => CapLine(effect),
-                    _ => EffectText.Describe(effect, this)
+                    _ => EffectText.DescribeExpedition(new[] { effect }, this, worker)
                 };
                 if (effect.key == "injury" && worker != HeroId &&
                     Disciples.Find(member => member.id == worker) is DiscipleData member)
@@ -276,7 +276,7 @@ namespace Wuxia
                 : $"突破機緣：{name}{(effect.key == "cap" ? "上限" : "階位")} +{Mathf.RoundToInt(effect.value)}（{line.rank}／{line.cap}）";
         }
 
-        /// <summary>Study progress (2 progress = one rank, never past the cap) on a protagonist line.</summary>
+        /// <summary>Add progress to a protagonist martial line, respecting its cap.</summary>
         internal void StudyLine(string id, float amount)
         {
             var line = id == "martial" || string.IsNullOrEmpty(id) ? RankSystem.Major(Protagonist.lines, Protagonist.major)

@@ -64,8 +64,12 @@ namespace Wuxia
                 id => state.DiplomaticAssignmentOutcomes(action, faction, id));
         }
 
-        internal void ChoosePatronEnvoy(GameState state, string title, Action<string> send) =>
-            ChooseAboveMap(state, title, "diplomacy", 1, party => send(party[0]), state.PatronChance);
+        internal void ChoosePatronEnvoy(GameState state, string title, MapFaction faction, Action<string> send) =>
+            ChooseAboveMap(state, title, "patronage", 1, party => send(party[0]), state.PatronChance, id =>
+            {
+                var terms = GameState.Patronage(faction);
+                return new[] { (title, state.PatronChance(id), terms.Benefit + terms.Cost, "未結約，已用行動力與出勤照扣") };
+            });
 
         internal void ChooseCampaignAssignment(GameState state, string title, Action<string[]> selected) =>
             ChooseAboveMap(state, title, "campaign", 10, selected);

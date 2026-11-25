@@ -123,8 +123,8 @@ namespace Wuxia
                 return true;
             }
             var member = Disciples.Find(entry => entry.id == memberId);
-            if (member == null || IsGuestOfficer(memberId) || ArtsOf(member).Contains(art)) return false;
-            return LearnDiscipleArt(member, art.id, true).Length > 0;
+            if (member == null || ArtsOf(member).Contains(art)) return false;
+            return LearnDiscipleArt(member, art.id, false).Length > 0;
         }
 
         internal string StudyLabel(string id, bool compact = false)

@@ -75,13 +75,26 @@ namespace Wuxia
             }
         }
 
+        private (string Label, float Chance, string Success, string Failure)[] RecruitOutcomes(RecruitMethod method)
+        {
+            bool hasSpecial = Recruitment.specials?.Any(special => !state.Disciples.Any(member => member.id == special.id)) == true;
+            float rare = method.id != "public" && hasSpecial ? method.rareChance : 0;
+            int count = Mathf.Clamp(method.poolSize + state.Story.recruitPoolSize, 3, 5);
+            return new[]
+            {
+                ("特殊人選", rare, $"候選 {count} 人，含特殊人物 1 名", $"候選 {count} 人"),
+                ("百工天分", method.productionBias, "隨機生活技能 +1 階", "沿用原階")
+            };
+        }
+
         private string recruiter = GameState.HeroId;
 
         private void Visit(RecruitMethod method)
         {
             if (capturing) { Visit(method, GameState.HeroId); return; }
             ui.ChooseAssignment(state, method.name, "recruit", 1,
-                party => Visit(method, party[0]), () => OpenRecruitment(recruitmentAction));
+                party => Visit(method, party[0]), () => OpenRecruitment(recruitmentAction),
+                outcomes: _ => RecruitOutcomes(method));
         }
 
         private void Visit(RecruitMethod method, string worker)
@@ -246,6 +259,7 @@ namespace Wuxia
         {
             if (RecruitRestriction(candidate).Length > 0 || !candidates.Contains(candidate))
                 return;
+            var before = ActionSnapshot();
             Cost cost = recruitmentAction.cost;
             int silver = RecruitPrice(candidate);
             tutorial?.Fund("recruit", cost, silver);
@@ -268,7 +282,7 @@ namespace Wuxia
             tutorial?.Record("recruit");
             ui.Refresh(state);
             ShowCommands();
-            ShowCandidates();
+            ShowActionResult("招收弟子", before, $"{candidate.name}拜入山門，入門忠誠 {candidate.loyalty}／100。", ShowCandidates);
         }
 
         private void CaptureRecruitment()

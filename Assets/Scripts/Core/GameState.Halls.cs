@@ -142,6 +142,7 @@ namespace Wuxia
             string block = HallFunctionBlock(function);
             if (block != null) return block;
             if (!TrySpendAp(function.ap, "hall:" + function.id)) return "行動力不足";
+            var forgeOdds = function.id == "forge" ? ForgeGearOdds(worker, hall: true) : null;
             Pay(new Cost { silver = function.silver, food = function.food });
             AssignmentSystem.Commit(this, new[] { worker }, function.id);
             AssignmentSystem.Credit(this, worker, 1);
@@ -166,10 +167,8 @@ namespace Wuxia
                 }
                 case "forge":
                 {
-                    int forging = AssignmentSystem.Skill(this, worker, "forging");
-                    float legendary = .04f + .02f * forging + .04f * (level - 1), fine = .25f + .04f * forging + .08f * (level - 1);
-                    float roll = UnityEngine.Random.value / quality;
-                    int grade = roll < legendary ? 3 : roll < legendary + fine ? 2 : 1;
+                    float roll = UnityEngine.Random.value;
+                    int grade = roll < forgeOdds[3] ? 3 : roll < forgeOdds[3] + forgeOdds[2] ? 2 : 1;
                     string slot = Array.IndexOf(GearSlots, target) >= 0 ? target : GearSlots[0];
                     return "鑄造堂爐火通紅，打成一件" + EquipOrStore(MakeGear(slot, grade));
                 }

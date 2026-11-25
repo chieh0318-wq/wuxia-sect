@@ -104,10 +104,11 @@ namespace Wuxia
 
         private void CompleteHallFunction(HallData hall, HallFunction function, string target, string worker)
         {
+            var before = ActionSnapshot();
             hallMessage = state.RunHallFunction(hall, function, target, worker);
             AudioManager.Play(function.id == "forge" ? "complete" : "page");
             ui.Refresh(state);
-            ShowHalls();
+            ShowActionResult(function.name, before, hallMessage, ShowHalls);
         }
     }
 }

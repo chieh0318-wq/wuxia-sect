@@ -306,7 +306,7 @@ namespace Wuxia
                 var patronButton = MapUi.Button(docket, active ? "解除約書" : "遣使議約 ›", 20, 401, 365, 51, () =>
                 {
                     if (active) ApplyResult(state.ReleasePatron());
-                    else state.ChoosePatronEnvoy?.Invoke(terms.label, id => ApplyResult(state.SeekPatron(faction, id)));
+                    else state.ChoosePatronEnvoy?.Invoke(terms.label, faction, id => ApplyResult(state.SeekPatron(faction, id)));
                 }, MapUi.Red);
                 patronButton.interactable = block == null;
             }

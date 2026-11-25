@@ -47,7 +47,13 @@ namespace Wuxia
                 var road = RealmContent.Data.roadEvents.First(entry => entry.choices.Any(choice => choice.type == "check"));
                 PlayRoadEvent(road, "", false);
                 CaptureClickThrough(Math.Max(1, road.lines.Length - 1));
-            })
+            }),
+            ("PB3_10_rumor_outcomes.png", () =>
+            {
+                if (ui.SceneOpen) CloseScene();
+                RunAction(data.Actions.First(action => action.id == "gather_rumors"));
+            }),
+            ("PB3_11_forge_outcomes.png", () => RunAction(data.Actions.First(action => action.id == "forge_gear")))
         };
 
         private void VerifyPb3Progression()
@@ -75,7 +81,25 @@ namespace Wuxia
                     game.CurrentStudy(id, out bool assigned) != null && assigned)
                     throw new InvalidOperationException("PB3 training failed to finish the order at the cap.");
             }
-            Debug.Log("[PB3] PASS life-skill cap, manual learning, martial cap and study order");
+            int slot = Array.FindIndex(game.Buildings, building => building != null);
+            var blueprint = game.Buildings[slot];
+            int quality = GameState.ConstructionQuality(1.25f);
+            game.RecordConstruction(slot, blueprint, quality);
+            var before = game.BuildingMonthAt(slot, blueprint);
+            string save = System.IO.Path.Combine(System.IO.Path.GetTempPath(), $"wuxia-pb3-{Guid.NewGuid():N}.json");
+            try
+            {
+                if (!game.Save(save)) throw new InvalidOperationException("PB3 save write failed.");
+                var loaded = GameState.LoadSave(data, save);
+                if (loaded == null || loaded.WorkPractice(id, "construction")?.tasks != life.capGainPerTasks ||
+                    !loaded.KnowsArt(art.id) || loaded.BuildingMonthAt(slot, loaded.Buildings[slot]) != before)
+                    throw new InvalidOperationException("PB3 progression and building quality failed to round trip.");
+            }
+            finally
+            {
+                if (System.IO.File.Exists(save)) System.IO.File.Delete(save);
+            }
+            Debug.Log("[PB3] PASS life-skill cap, manual learning, martial cap, study order, and save round trip");
         }
     }
 }

@@ -186,7 +186,7 @@ namespace Wuxia
         }
 
         /// <summary>Envoy eloquence: the best 魅力 + 悟性/2 among the head and the uninjured disciples.</summary>
-        internal Action<string, Action<string>> ChoosePatronEnvoy;
+        internal Action<string, MapFaction, Action<string>> ChoosePatronEnvoy;
         internal Action<DiploAction, MapFaction, Action<string>> ChooseEnvoy;
         internal string EnvoyId;
 

@@ -12,6 +12,7 @@ namespace Wuxia
     public sealed partial class GameBootstrap
     {
         private TreasureRun treasureRun;
+        private Dictionary<(string Owner, string Stat), string> roadReadings;
 
         // ---- Shared scene helpers ------------------------------------------------------------------
 
@@ -45,15 +46,26 @@ namespace Wuxia
 
         private SceneLine Speak(RealmLine line, SceneLine npc)
         {
+            string text = StripRealmCue(line?.text);
             switch (line?.speaker)
             {
-                case "hero": return ExpeditionFigure(line.text);
+                case "hero": return ExpeditionFigure(text);
                 case "npc":
                 case "guardian":
-                    if (npc == null) return Narration(Fill(line.text));
-                    return new SceneLine { name = npc.name, subtitle = npc.subtitle, side = "right", figure = npc.figure, text = Fill(line.text) };
-                default: return Narration(Fill(line?.text));
+                    if (npc == null) return Narration(Fill(text));
+                    return new SceneLine { name = npc.name, subtitle = npc.subtitle, side = "right", figure = npc.figure, text = Fill(text) };
+                default: return Narration(Fill(text));
             }
+        }
+
+        private static string StripRealmCue(string text)
+        {
+            if (string.IsNullOrWhiteSpace(text)) return text;
+            string line = text.TrimStart();
+            foreach (string cue in new[] { "[narrator]", "[npc]", "[hero]", "[guardian]" })
+                if (line.StartsWith(cue, StringComparison.OrdinalIgnoreCase))
+                    return line.Substring(cue.Length).TrimStart();
+            return text;
         }
 
         private void LeaveCourtyardForScene()
@@ -101,6 +113,7 @@ namespace Wuxia
         private void CloseScene(string message = null)
         {
             expeditionParty = null;
+            roadReadings = null;
             ui.Scene.Close();
             if (controls != null) controls.enabled = true;
             ui.Refresh(state);
@@ -124,8 +137,9 @@ namespace Wuxia
         // ---- 山道巡訪 (C15) --------------------------------------------------------------------------
 
         /// <summary>Road patrol scene. AP / cost are already paid. Keeps the old 奇遇 breakthrough and realm discovery rolls.</summary>
-        private void ExploreRoad(ActionData action)
+        private void ExploreRoad(ActionData action, Dictionary<(string Owner, string Stat), string> before)
         {
+            roadReadings = before;
             // v1126b 決定 1: 幸運 multiplies the odds (×1.04 per point) instead of adding a flat 1.2 points.
             float fortune = state.PatrolFortune(ExpeditionLeader);
             float rumor = state.ConsumeRumors();
@@ -137,7 +151,7 @@ namespace Wuxia
             {
                 ui.Refresh(state);
                 ShowCommands();
-                ui.Message($"{action.name}完成。{breakthrough}");
+                ShowActionResult(action.name, before, breakthrough);
                 if (realm) OfferSecretRealm("山道盡頭的藤蔓後，竟藏著一道幽深的石門——是一處江湖秘境的入口！");
                 return;
             }
@@ -170,7 +184,7 @@ namespace Wuxia
                 };
                 return new SceneChoice
                 {
-                    label = choice.label, desc = choice.text, tags = tags, impact = state.RoadImpact(choice),
+                    label = choice.label, desc = choice.text, tags = tags, impact = state.RoadImpact(choice, ExpeditionLeader),
                     icon = choice.type == "battle" ? "act_attack" : choice.type == "check" ? UiKit.AttrIcon(AttributeSystem.Index(choice.attr)) : "act_item",
                     block = state.RoadChoiceBlock(choice),
                     run = () => ResolveRoadChoice(road, npc, choice, breakthrough, realm)
@@ -199,6 +213,7 @@ namespace Wuxia
                     if (!string.IsNullOrEmpty(breakthrough)) log.Add("奇遇　" + breakthrough);
                     if (realm) log.Add("山道盡頭的藤蔓後，竟藏著一道幽深的石門——是一處江湖秘境的入口！");
                     var rows = Rows(effects, gains);
+                    if (roadReadings != null) log.AddRange(ActionChanges(roadReadings));
                     if (rows.Count == 0) rows.Add(("act_item", "沒有額外所得"));
                     string summary = string.Join("、", gains.Take(2));
                     if (realm)

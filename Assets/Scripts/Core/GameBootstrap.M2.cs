@@ -36,7 +36,7 @@ namespace Wuxia
                 map.TreasureRequested += EnterTreasure; // v1124 C16
                 map.MasterChallengeRequested += StartMasterChallenge; // v1126b 決定 3
             }
-            state.ChoosePatronEnvoy = (title, send) => ui.ChoosePatronEnvoy(state, title, send);
+            state.ChoosePatronEnvoy = (title, faction, send) => ui.ChoosePatronEnvoy(state, title, faction, send);
             map.Open(state);
             controls.enabled = false;
         }

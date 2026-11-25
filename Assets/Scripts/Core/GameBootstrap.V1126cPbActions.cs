@@ -72,42 +72,54 @@ namespace Wuxia
             }
         }
 
-        private Dictionary<string, string> ActionSnapshot()
+        private Dictionary<(string Owner, string Stat), string> ActionSnapshot()
         {
-            var readings = new Dictionary<string, string>
+            var readings = new Dictionary<(string Owner, string Stat), string>
             {
-                ["行動力"] = state.ActionPoints.ToString(), ["銀兩"] = state.Silver.ToString(), ["糧食"] = state.Food.ToString(),
-                ["聲望"] = state.Reputation.ToString(), ["材料"] = state.Story.materials.ToString(),
-                ["傳聞加成"] = $"{state.Story.rumorBonus:P0}", ["門人"] = state.Disciples.Count.ToString(),
-                [$"{state.Protagonist.name}・傷勢"] = state.Protagonist.injury.ToString()
+                [(null, "行動力")] = state.ActionPoints.ToString(), [(null, "銀兩")] = state.Silver.ToString(),
+                [(null, "糧食")] = state.Food.ToString(), [(null, "聲望")] = state.Reputation.ToString(),
+                [(null, "材料")] = state.Story.materials.ToString(), [(null, "傳聞加成")] = $"{state.Story.rumorBonus:P0}",
+                [(null, "門人")] = state.Disciples.Count.ToString(), [(GameState.HeroId, "傷勢")] = state.Protagonist.injury.ToString()
             };
             foreach (var member in state.Disciples)
             {
-                readings[$"{member.name}・忠誠"] = member.loyalty.ToString();
-                readings[$"{member.name}・傷勢"] = member.injury.ToString();
+                readings[(member.id, "忠誠")] = member.loyalty.ToString();
+                readings[(member.id, "傷勢")] = member.injury.ToString();
             }
             foreach (var id in new[] { GameState.HeroId }.Concat(state.Disciples.Select(member => member.id)))
             {
-                string name = state.SparName(id);
-                readings[$"{name}・本月餘次"] = AssignmentSystem.Remaining(state, id).ToString();
+                readings[(id, "本月餘次")] = AssignmentSystem.Remaining(state, id).ToString();
                 foreach (var line in state.MemberLines(id).Where(line => line != null))
                 {
                     bool martial = RankSystem.IsCombat(line.id);
                     float progress = martial ? line.progress : state.WorkPractice(id, line.id)?.xp ?? 0;
                     int max = martial ? GameState.MartialProgressMax : GameState.LifeProgressMax;
-                    readings[$"{name}・{EffectText.LineName(line.id)}"] = $"{line.rank}／{line.cap}　{progress:0.#}／{max}";
+                    readings[(id, EffectText.LineName(line.id))] = $"{line.rank}／{line.cap}　{progress:0.#}／{max}";
                 }
             }
             return readings;
         }
 
-        private void ShowActionResult(string name, Dictionary<string, string> before, string note)
+        private List<string> ActionChanges(Dictionary<(string Owner, string Stat), string> before) =>
+            ActionSnapshot().Where(entry => before.TryGetValue(entry.Key, out var old) && old != entry.Value)
+                .Select(entry =>
+                {
+                    var (owner, stat) = entry.Key;
+                    string label = owner == null ? stat : $"{state.SparName(owner)}・{stat}";
+                    return $"{label}　{before[entry.Key]} → {entry.Value}";
+                }).ToList();
+
+        private void ShowActionResult(string name, Dictionary<(string Owner, string Stat), string> before, string note,
+            Action after = null)
         {
-            var lines = ActionSnapshot().Where(entry => before.TryGetValue(entry.Key, out var old) && old != entry.Value)
-                .Select(entry => $"{entry.Key}　{before[entry.Key]} → {entry.Value}").ToList();
+            var lines = ActionChanges(before);
             if (!string.IsNullOrWhiteSpace(note)) lines.Add(note.Trim());
             if (lines.Count == 0) lines.Add("此番事畢，門中數值無變。");
-            ui.ShowCreation(name + "・結果", lines, new[] { ("收卷", (Action)(() => ui.CloseModal(force: true))) }, null);
+            ui.ShowCreation(name + "・結果", lines, new[] { ("收卷", (Action)(() =>
+            {
+                ui.CloseModal(force: true);
+                after?.Invoke();
+            })) }, null);
         }
 
         private void OpenStudyOrders(string member, Action back)

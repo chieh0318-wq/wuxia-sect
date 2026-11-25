@@ -198,7 +198,7 @@ namespace Wuxia
         internal void ChooseForCapture() => Choose(data.titles[0]);
 
         /// <summary>v1126e capture: redraws the step card now (Tick does it twice a second in play).</summary>
-        internal void RefreshForCapture() => ShowStep(true);
+        internal void RefreshForCapture() { if (Active && step < data.steps.Length) ShowStep(true); }
 
         internal void Record(string trigger, string target = "")
         {

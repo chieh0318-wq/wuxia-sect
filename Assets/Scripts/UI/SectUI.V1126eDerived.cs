@@ -122,13 +122,13 @@ namespace Wuxia
                 var (key, value) = cells[i];
                 var cell = Rect("衍生_" + key, strip);
                 Anchor(cell, new(i / (float)cells.Count, 0), new((i + 1) / (float)cells.Count, 1), new(2, 0), new(-2, 0));
-                var label = Label(cell, $"<color=#b9a98a>{key}</color> {value}", 19, TextAnchor.MiddleCenter);
+                var label = Label(cell, $"<color=#7a5c3e>{key}</color> {value}", 19, TextAnchor.MiddleCenter);
                 label.supportRichText = true;
                 label.resizeTextForBestFit = true;
                 label.resizeTextMinSize = 14;
                 label.resizeTextMaxSize = 19;
                 label.horizontalOverflow = HorizontalWrapMode.Wrap;
-                label.color = CardText;
+                label.color = Ink; // dark ink on the parchment page (CardText is for dark cards)
                 label.raycastTarget = false;
                 Fill(label.rectTransform);
                 string tipKey = key;

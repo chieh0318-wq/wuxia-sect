@@ -11,7 +11,7 @@ namespace Wuxia
         private void RequestEndMonth()
         {
             if (state == null) return;
-            if (state.ActionPoints <= 0 || capturing)
+            if (state.ActionPoints <= 0)
             {
                 EndMonth();
                 return;

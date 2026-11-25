@@ -9,7 +9,7 @@ namespace Wuxia
     /// v1126e CL1 capture shots (muted, part of -wuxiaCapture; run alone with "-wuxiaCaptureOnly V1126E_"):
     /// #1 the derived panel with 外功／內功／外防／內防 and their formula tips (creation card and hero page), a battle inner
     /// move against 內防 and an outer move against 外防; #5 the guide waiting on AP, the 「尚餘 X 點行動力」 confirmation and
-    /// the 月底結算 step at 0 AP; #6 王佐之才 at 6／6 with the AP breakdown. Each step logs what it checks.
+    /// the 月底結算 step at 0 AP; #6 王佐之才 named in the AP breakdown (基礎 4 + 1 = 5), then stacked with a 總管 to 6／6 after the month. Each step logs what it checks.
     /// </summary>
     public sealed partial class GameBootstrap
     {
@@ -95,8 +95,11 @@ namespace Wuxia
                 ui.RevealApSourcesForCapture();
                 Debug.Log($"[Capture] V1126E_10 王佐之才 AP {state.ActionPoints}/{state.ApMax} | {state.ApDescription.Replace("\n", "、")}");
             }),
-            ("V1126E_11_wangzuo_after_month.png", () =>
+            ("V1126E_11_wangzuo_plus_steward_after_month.png", () =>
             {
+                // 王佐之才 stacks with the other sources: name a 總管 (+1) and settle the month → 6／6.
+                var steward = state.Disciples.FirstOrDefault(d => d != null && d.age >= 20 && d.startInSect);
+                if (steward != null && state.Story.delegateId != steward.id) state.ToggleDelegate(steward);
                 var report = state.EndMonth();
                 ui.Refresh(state);
                 ui.RevealApSourcesForCapture();

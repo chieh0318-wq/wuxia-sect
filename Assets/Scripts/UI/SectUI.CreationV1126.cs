@@ -80,24 +80,11 @@ namespace Wuxia
         }
 
         /// <summary>
-        /// v1126 #10 (T-3 #10): the powers around the candidate sites, drawn on the settlement map with their flag and
-        /// a ring in the relation colour (敵對 red, 中立 gold, 友好 jade); hovering shows strength and distance.
+        /// v1126 #10 / v1126c PC3 #7: the powers around a candidate site, nearest first by drawn map position
+        /// (<see cref="SiteGeography.Nearby"/>); hops is 0 on the same node, otherwise 1, kept for old callers.
         /// </summary>
-        internal static (MapFaction faction, int hops, int days)[] NearbyPowers(WorldMapData data, string node, int count)
-        {
-            if (!data.Nodes.TryGetValue(node ?? "", out var origin)) return Array.Empty<(MapFaction, int, int)>();
-            var point = data.Bounds.Uv(origin);
-            return data.Factions.Where(f => data.Nodes.ContainsKey(f.seat ?? ""))
-                .Select(f =>
-                {
-                    var route = f.seat == node ? null : data.Route(node, f.seat);
-                    int hops = f.seat == node ? 0 : route == null ? 99 : route.Nodes.Count - 1;
-                    return (faction: f, hops, days: route?.Days ?? 0, far: (data.Bounds.Uv(data.Nodes[f.seat]) - point).sqrMagnitude);
-                })
-                .OrderBy(entry => entry.hops).ThenBy(entry => entry.far).Take(count)
-                .Select(entry => (entry.faction, entry.hops, entry.days)).ToArray();
-        }
-
+        internal static (MapFaction faction, int hops, int days)[] NearbyPowers(WorldMapData data, string node, int count) =>
+            SiteGeography.Nearby(data, node, count).Select(entry => (entry.Faction, entry.Days == 0 ? 0 : 1, entry.Days)).ToArray();
         internal static Color RelationColor(string stance) => stance switch
         {
             "hostile" => new Color(.86f, .22f, .16f),
@@ -109,12 +96,18 @@ namespace Wuxia
 
         internal void SettlementPowers(RectTransform map, WorldMapData data, GameState state, StoryLocation[] sites, StoryLocation focused)
         {
-            var shown = sites.SelectMany(site => NearbyPowers(data, site.node, 4).Select(entry => entry.faction))
-                .Distinct().ToArray();
-            foreach (var faction in shown)
+            // v1126c PC3 #7: one flag per seat among the four nearest seats of any site, drawn at the seat's own map
+            // position — the same coordinates the side list measures from, so a flag next to a site is on its list.
+            var shown = sites.SelectMany(site => SiteGeography.Nearby(data, site.node, 4)).GroupBy(entry => entry.Faction.seat)
+                .Select(group => group.First()).ToArray();
+            foreach (var entry in shown)
             {
+                var faction = entry.Faction;
+                var seat = entry.Seat;
                 var uv = data.Bounds.Uv(data.Nodes[faction.seat]);
-                string stance = faction.StanceWith(state.RelationShift(faction.id));
+                // A seat with a hostile power wears the hostile ring, so danger is never hidden behind a friendlier flag.
+                string stance = seat.Select(f => f.StanceWith(state.RelationShift(f.id)))
+                    .OrderBy(value => value == "hostile" ? 0 : value == "friendly" ? 2 : 1).First();
                 var holder = Rect("附近勢力_" + faction.id, map);
                 Anchor(holder, uv, uv, new(-17, 6), new(17, 48));
                 var ring = holder.gameObject.AddComponent<Image>();
@@ -125,9 +118,16 @@ namespace Wuxia
                 var flag = MapUi.Rect(holder, "旗", 0, 0, 34, 42);
                 WorldMapScreen.DrawFlag(flag, WorldMapScreen.KindOf(faction), faction.Label.Substring(0, 1), 4, 4, 26,
                     faction.type is "clan" or "merchant");
+                if (seat.Length > 1)
+                {
+                    var count = Label(holder, seat.Length.ToString(), 16, TextAnchor.MiddleCenter);
+                    count.color = UiKit.HeaderGold;
+                    count.fontStyle = FontStyle.Bold;
+                    Anchor(count.rectTransform, Vector2.one, Vector2.one, new(-6, -14), new(14, 6));
+                }
                 var trigger = holder.gameObject.AddComponent<EventTrigger>();
                 var enter = new EventTrigger.Entry { eventID = EventTriggerType.PointerEnter };
-                enter.callback.AddListener(_ => ShowSettlementTip(map, faction, uv));
+                enter.callback.AddListener(_ => ShowSettlementTip(map, seat, uv));
                 var exit = new EventTrigger.Entry { eventID = EventTriggerType.PointerExit };
                 exit.callback.AddListener(_ => { if (settlementTip != null) settlementTip.transform.parent.gameObject.SetActive(false); });
                 trigger.triggers.Add(enter);
@@ -150,11 +150,11 @@ namespace Wuxia
             }
             settlementTip = null;
 
-            void ShowSettlementTip(RectTransform parent, MapFaction faction, Vector2 uv)
+            void ShowSettlementTip(RectTransform parent, MapFaction[] seat, Vector2 uv)
             {
                 if (settlementTip == null)
                 {
-                    var box = Panel("勢力提示", parent, Vector2.zero, Vector2.zero, Vector2.zero, new(340, 112), false);
+                    var box = Panel("勢力提示", parent, Vector2.zero, Vector2.zero, Vector2.zero, new(360, 112), false);
                     UiKit.Skin(box.GetComponent<Image>(), "Lacquer");
                     box.GetComponent<Image>().raycastTarget = false;
                     settlementTip = Label(box, "", 18, TextAnchor.UpperLeft);
@@ -163,13 +163,17 @@ namespace Wuxia
                     Fill(settlementTip.rectTransform, 10);
                 }
                 var site = focused ?? sites.FirstOrDefault();
-                var near = site == null ? default : NearbyPowers(data, site.node, 99).FirstOrDefault(entry => entry.faction == faction);
-                string distance = site == null || near.faction == null ? "" :
-                    near.hops == 0 ? $"就在{site.name}" : near.hops >= 99 ? $"與{site.name}無路可通" : $"距{site.name} {near.hops} 格（約 {near.days} 日）";
-                string stance = faction.RelationWith(state.RelationShift(faction.id));
-                settlementTip.text = $"{faction.Label}　{WorldMapScreen.KindName(faction)}・{stance}\n" +
-                    $"實力　人馬約 {faction.disciples:N0}・聲望 {faction.reputation}\n{distance}";
+                var lines = seat.Take(4).Select(f =>
+                    $"{f.Label}　{WorldMapScreen.KindName(f)}・{f.RelationWith(state.RelationShift(f.id))}・人馬約 {f.disciples:N0}").ToList();
+                if (seat.Length > 4) lines.Add($"另有 {seat.Length - 4} 家同駐此地");
+                if (site != null && data.Nodes.TryGetValue(site.node ?? "", out var origin))
+                {
+                    float far = SiteGeography.Distance(data.Bounds.Uv(origin), uv);
+                    lines.Add(site.node == seat[0].seat ? $"就在{site.name}" : $"距{site.name} 約 {SiteGeography.Days(data, far)} 日（依圖上距離）");
+                }
+                settlementTip.text = string.Join("\n", lines);
                 var tipBox = (RectTransform)settlementTip.transform.parent;
+                tipBox.sizeDelta = new Vector2(380, lines.Count * 25 + 22);
                 tipBox.anchorMin = tipBox.anchorMax = uv;
                 tipBox.pivot = new Vector2(uv.x > .6f ? 1 : 0, uv.y > .5f ? 1 : 0);
                 tipBox.anchoredPosition = new Vector2(uv.x > .6f ? -24 : 24, uv.y > .5f ? -8 : 52);

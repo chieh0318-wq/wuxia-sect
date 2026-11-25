@@ -21,7 +21,7 @@ namespace Wuxia
         }
     }
 
-    internal sealed class NewGameFlow
+    internal sealed partial class NewGameFlow
     {
         private readonly SectUI ui;
         private readonly GameState state;

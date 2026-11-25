@@ -134,7 +134,7 @@ namespace Wuxia
                     })
                 }.Concat(M6CaptureSteps()).Concat(V1124CaptureSteps()).Concat(V1125PaCaptureSteps())
                     .Concat(V1125PdCaptureSteps()).Concat(V1126PaCaptureSteps()).Concat(Pb2CaptureSteps())
-                    .Concat(Pd2CaptureSteps()).Concat(PfCaptureSteps()).Concat(Pb3CaptureSteps()).Concat(Ph3CaptureSteps()).ToArray();
+                    .Concat(Pd2CaptureSteps()).Concat(PfCaptureSteps()).Concat(Pb3CaptureSteps()).Concat(Ph3CaptureSteps()).Concat(Pc3CaptureSteps()).ToArray();
                 // "-wuxiaCaptureOnly 8" runs just the shots whose file names start with that prefix (v1124 P1B-2: 80–89).
                 int only = System.Array.IndexOf(args, "-wuxiaCaptureOnly");
                 string prefix = only >= 0 && only + 1 < args.Length ? args[only + 1] : null;

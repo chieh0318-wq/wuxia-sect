@@ -399,6 +399,7 @@ namespace Wuxia
             var talks = new List<PortraitLine>();
             var advisor = AdvisorLine(net);
             if (advisor.HasValue) talks.Add(advisor.Value);
+            if (FirstMonthsTipLine() is PortraitLine tip) talks.Add(tip); // v1126c PC3 #15
             var opener = NewMonthOpener();
             if (opener.HasValue) talks.Add(opener.Value);
             ui.ShowTalk(talks, done);

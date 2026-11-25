@@ -10,6 +10,7 @@ namespace Wuxia
     [Serializable] internal sealed class TutorialStep
     {
         public string id, title, objective, hint, trigger, target, highlight;
+        public Yield reward; // v1126c PC3 #15: a small reward when the step is done
     }
     [Serializable] internal sealed class TutorialData
     {
@@ -32,7 +33,20 @@ namespace Wuxia
         private bool finished, introComplete;
 
         internal bool Active => !finished && introComplete;
-        internal string Highlight => Active ? data.steps[step].highlight : null;
+        internal string Highlight
+        {
+            get
+            {
+                if (!Active || step >= data.steps.Length) return null;
+                // v1126c PC3 #11: inside the build menu the guide points at the recommended blueprint itself.
+                if (data.steps[step].trigger == "build_any" && ui.TargetActive("blueprint")) return "ui:blueprint";
+                return data.steps[step].highlight;
+            }
+        }
+
+        /// <summary>v1126c PC3 #11: the building the 擴建院落 step recommends (null when the step is not pending).</summary>
+        internal string RecommendedBuilding =>
+            CanFund("build_any") ? TutorialAdvice.Recommend(state)?.building.name : null;
 
         /// <summary>v1126 #8: the running guide step for the 任務 panel (read-only), or null once it is over.</summary>
         internal (string title, string objective)? Current =>
@@ -64,14 +78,77 @@ namespace Wuxia
             {
                 id = "action_points", title = "清點行動力",
                 objective = "看看本月還能辦幾件事。",
-                hint = "將游標移到上方的行動力，看看上限從何而來。",
+                hint = "{apLine}\n常用指令：{actionCosts}。月底補滿，用剩的不留到下月。將游標移到上方行動力（箭頭所指）看明細。",
                 trigger = "inspect_ap", target = "", highlight = "ui:ap"
             });
             data.steps = steps.ToArray();
         }
 
-        private string Format(string text) => (text ?? "").Replace("{title}", title ?? "掌門")
-            .Replace("{sect}", state.Data.Start.sectName);
+        private string Format(string text)
+        {
+            text = (text ?? "").Replace("{title}", title ?? "掌門").Replace("{sect}", state.Data.Start.sectName);
+            return text.Contains("{") ? Live(text) : text;
+        }
+
+        /// <summary>v1126c PC3 #11 / #15: live numbers in step text, read from the running game state.</summary>
+        private string Live(string text)
+        {
+            if (text.Contains("{build"))
+            {
+                var pick = TutorialAdvice.Recommend(state);
+                if (pick.HasValue)
+                {
+                    var total = TutorialAdvice.BuildTotal(state, pick.Value.building);
+                    text = text.Replace("{buildPick}", pick.Value.building.name)
+                        .Replace("{buildYield}", TutorialAdvice.Yield(state, pick.Value.building))
+                        .Replace("{buildReason}", pick.Value.reason)
+                        .Replace("{buildCost}", total.silver + (total.food > 0 ? $"・糧 {total.food}" : ""));
+                }
+                else
+                    text = text.Replace("{buildPick}", "任一屋舍").Replace("{buildYield}", "可增產出").Replace("{buildReason}", "")
+                        .Replace("{buildCost}", "—");
+            }
+            var (foodIn, eaten) = TutorialAdvice.FoodPerMonth(state);
+            var (silverIn, upkeep) = TutorialAdvice.SilverPerMonth(state);
+            text = text.Replace("{apLine}", TutorialAdvice.ApLine(state)).Replace("{apMax}", state.ApMax.ToString())
+                .Replace("{ap}", state.ActionPoints.ToString()).Replace("{actionCosts}", TutorialAdvice.ActionCosts(state))
+                .Replace("{foodIn}", foodIn.ToString()).Replace("{eaten}", eaten.ToString())
+                .Replace("{silverIn}", silverIn.ToString()).Replace("{upkeep}", upkeep.ToString())
+                .Replace("{foodPer}", state.Data.Start.foodPerDisciple.ToString());
+            int at;
+            while ((at = text.IndexOf("{cost:", StringComparison.Ordinal)) >= 0)
+            {
+                int end = text.IndexOf('}', at);
+                if (end < 0) break;
+                string type = text.Substring(at + 6, end - at - 6);
+                text = text.Substring(0, at) + TutorialAdvice.Cost(TutorialAdvice.Action(state, type)) + text.Substring(end + 1);
+            }
+            return text;
+        }
+
+        private float nextTick;
+        private string shownText;
+
+        /// <summary>v1126c PC3 #15: keeps the step card's numbers current (AP spent, silver paid) twice a second.</summary>
+        internal void Tick()
+        {
+            if (!Active || step >= data.steps.Length || Time.unscaledTime < nextTick) return;
+            nextTick = Time.unscaledTime + .5f;
+            ShowStep(false);
+        }
+
+        private void ShowStep(bool force)
+        {
+            var current = data.steps[step];
+            string hint = Format(current.hint);
+            if (current.reward != null && GameBootstrap.Changes(current.reward) is string gift && gift.Length > 0)
+                hint += $"\n完成可得：{gift}";
+            string body = Format(current.objective);
+            string key = current.id + body + hint;
+            if (!force && key == shownText) return;
+            shownText = key;
+            ui.ShowObjective(Format(current.title), body, hint, ConfirmSkip);
+        }
 
         private void ShowIntro()
         {
@@ -114,13 +191,27 @@ namespace Wuxia
 
         private void Advance()
         {
+            var gifts = new List<string>();
             while (step < data.steps.Length &&
                 actions.Contains((data.steps[step].trigger, data.steps[step].target ?? "")))
+            {
+                // v1126c PC3 #15: each finished step pays its small reward once.
+                var done = data.steps[step];
+                if (done.reward != null && GameBootstrap.Changes(done.reward) is string gift && gift.Length > 0)
+                {
+                    state.Apply(done.reward);
+                    gifts.Add($"「{Format(done.title)}」{gift}");
+                }
                 step++;
+            }
+            if (gifts.Count > 0)
+            {
+                ui.Refresh(state);
+                ui.Message("引導獎勵　" + string.Join("　", gifts));
+            }
             if (step < data.steps.Length)
             {
-                var current = data.steps[step];
-                ui.ShowObjective(Format(current.title), Format(current.objective), Format(current.hint), ConfirmSkip);
+                ShowStep(true);
                 return;
             }
 

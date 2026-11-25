@@ -52,7 +52,10 @@ namespace Wuxia
             }
             attributeTipText.text = text;
             int lines = text.Split('\n').Length;
-            var size = new Vector2(440, lines * 25 + 26);
+            // v1126c PC3 #3: long formula lines wrap, so size the box from the wrapped text height.
+            float width = text.Length > 150 ? 600 : 440;
+            attributeTip.sizeDelta = new Vector2(width, 200);
+            var size = new Vector2(width, Mathf.Max(lines * 25, attributeTipText.preferredHeight) + 26);
             attributeTip.pivot = new Vector2(0, 1);
             attributeTip.anchorMin = attributeTip.anchorMax = new Vector2(.5f, .5f);
             attributeTip.sizeDelta = size;
@@ -68,6 +71,20 @@ namespace Wuxia
             attributeTip.anchoredPosition = new Vector2(x, y) - bounds.center;
             attributeTip.SetAsLastSibling();
             attributeTip.gameObject.SetActive(true);
+            // v1126c PC3: the tip follows its row; it closes when the page that owns the row is rebuilt or left.
+            var watch = attributeTip.GetComponent<TipOwnerWatch>();
+            if (!watch) watch = attributeTip.gameObject.AddComponent<TipOwnerWatch>();
+            watch.Target = target;
+        }
+    }
+
+    /// <summary>v1126c PC3: hides a hover tip whose owning control was destroyed or hidden.</summary>
+    internal sealed class TipOwnerWatch : MonoBehaviour
+    {
+        internal RectTransform Target;
+        private void LateUpdate()
+        {
+            if (Target == null || !Target.gameObject.activeInHierarchy) gameObject.SetActive(false);
         }
     }
 }

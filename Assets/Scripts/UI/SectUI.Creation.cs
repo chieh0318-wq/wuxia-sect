@@ -165,6 +165,7 @@ namespace Wuxia
 
             y -= 8;
             CardHeading("武學與體魄", y);
+            CardLabel("游標停留看公式", 16, CardMuted, 150, y, -18, y - 26, TextAnchor.MiddleRight); // v1126c PC3 #3
             y -= 32;
             var stats = AttributeSystem.Derive(attrs, sheet.lines);
             var cells = new[]
@@ -177,9 +178,11 @@ namespace Wuxia
             {
                 int column = index % 2;
                 float rowY = y - index / 2 * 28;
-                var cell = Rect(cells[index].Item1, card);
+                var cell = Rect("衍生_" + cells[index].Item1, card);
                 Anchor(cell, new(column * .5f, 1), new((column + 1) * .5f, 1),
                     new(column == 0 ? 18 : 8, rowY - 24), new(column == 0 ? -8 : -18, rowY));
+                string derivedKey = cells[index].Item1;
+                DerivedHover(cell, () => DerivedStatTips.Tip(derivedKey, attrs, sheet.lines)); // v1126c PC3 #3
                 var name = Label(cell, cells[index].Item1, 18, TextAnchor.MiddleLeft);
                 name.color = CardMuted;
                 Fill(name.rectTransform);
@@ -649,7 +652,7 @@ namespace Wuxia
             string name = AttributeSystem.Names[index];
             Color tint = AttributeSystem.Tints[index];
             bool showPerPoint = !string.IsNullOrEmpty(perPoint);
-            var row = CreationRow(name, showPerPoint ? 120 : 84);
+            var row = CreationRow(name, showPerPoint ? AttributeRowHeight() : 84); // v1126c PC3 #2: all 7 rows fit
             var card = Panel(name, row, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero, false);
             UiKit.Skin(card.GetComponent<Image>(), "Wood");
             AttributeHover(card, index, () => current); // v1126b 決定 1: every per-point effect on hover
@@ -671,25 +674,27 @@ namespace Wuxia
                 glyph.color = new Color(1, .93f, .80f);
                 Fill(glyph.rectTransform);
             }
-            var caption = Label(card, name, 27, TextAnchor.MiddleLeft);
+            var caption = Label(card, name, 26, TextAnchor.MiddleLeft);
             caption.color = CardText;
-            Anchor(caption.rectTransform, Vector2.up, Vector2.up, new(90, -42), new(196, -6));
+            Anchor(caption.rectTransform, Vector2.up, Vector2.up, new(90, -38), new(196, -4));
             var benefit = Label(card, description, 18, TextAnchor.MiddleLeft);
             benefit.color = CardMuted;
-            Anchor(benefit.rectTransform, Vector2.zero, Vector2.right, new(90, showPerPoint ? 46 : 6), new(-300, showPerPoint ? 69 : 36));
+            Anchor(benefit.rectTransform, Vector2.zero, Vector2.right, new(90, showPerPoint ? 27 : 6), new(-300, showPerPoint ? 48 : 36));
             if (showPerPoint)
             {
                 // v1126 #4: what one more point buys, computed from the live formulas (AttributePerPoint).
                 var each = Label(card, perPoint, 18, TextAnchor.MiddleLeft);
                 each.name = "每點效果";
                 each.color = new Color(.99f, .80f, .45f);
-                each.resizeTextMinSize = 15;
-                each.resizeTextMaxSize = 18;
-                Anchor(each.rectTransform, Vector2.zero, Vector2.right, new(90, 4), new(-300, 44));
+                each.resizeTextMinSize = 14;
+                each.resizeTextMaxSize = 17;
+                each.horizontalOverflow = HorizontalWrapMode.Wrap;
+                each.verticalOverflow = VerticalWrapMode.Truncate;
+                Anchor(each.rectTransform, Vector2.zero, Vector2.right, new(90, 3), new(-300, 27));
             }
 
             var track = Rect("Attribute pips", card);
-            Anchor(track, Vector2.up, Vector2.one, new(206, -33), new(-300, -15));
+            Anchor(track, Vector2.up, Vector2.one, new(206, -30), new(-300, -12));
             for (int pip = 1; pip <= maximum; pip++)
             {
                 var cell = Rect("Pip", track);
@@ -725,6 +730,23 @@ namespace Wuxia
             plus.GetComponent<Button>().interactable = more != null;
         }
 
+        /// <summary>
+        /// v1126c PC3 #2: the attribute step shows all seven rows (魅力 and 幸運 included) without scrolling: the row
+        /// height is what the list viewport leaves after the header lines, between 80 and 120.
+        /// </summary>
+        private float AttributeRowHeight()
+        {
+            var view = (RectTransform)modalList.parent;
+            var layout = modalList.GetComponent<VerticalLayoutGroup>();
+            float spacing = layout != null ? layout.spacing : 8, used = layout != null ? layout.padding.vertical : 0;
+            foreach (RectTransform child in modalList)
+            {
+                if (!child.gameObject.activeSelf || Array.IndexOf(AttributeSystem.Names, child.name) >= 0) continue;
+                var element = child.GetComponent<LayoutElement>();
+                used += Mathf.Max(element != null ? Mathf.Max(element.minHeight, element.preferredHeight) : 0, 30) + spacing;
+            }
+            return Mathf.Clamp((view.rect.height - used - 4) / AttributeSystem.Count - spacing, 80, 120);
+        }
         private RectTransform CreationRow(string name, float height)
         {
             var row = Rect(name, modalList);
@@ -781,25 +803,23 @@ namespace Wuxia
             press.onClick.AddListener(AdvanceStory);
 
             const int left = 42;
-            var nameplate = Panel("Speaker nameplate", dock, Vector2.up, Vector2.up, new(30, -54), new(402, 12), false);
-            UiKit.Skin(nameplate.GetComponent<Image>(), "Plaque");
-            var name = Label(nameplate, string.IsNullOrWhiteSpace(speaker) ? "旁白" : speaker, 30, TextAnchor.MiddleLeft);
-            name.color = CardGold;
-            Fill(name.rectTransform, 14);
+            // v1126c PC3 #5: the shared compact plate (旁白 included) and the larger upright body text.
+            text = DialogueStyle.Clean(text);
+            var nameplate = DialoguePlate(dock, speaker, 30);
+            float tagLeft = 30 + nameplate.rect.width + 12;
             if (!string.IsNullOrEmpty(tag))
             {
                 // v1126 #14: relation / status shown as a tag beside the nameplate, never inside the spoken line.
-                var badge = Panel("Speaker tag", dock, Vector2.up, Vector2.up, new(414, -46), new(414 + tag.Length * 22 + 36, 4), false);
+                var badge = Panel("Speaker tag", dock, Vector2.up, Vector2.up, new(tagLeft, -26), new(tagLeft + tag.Length * 22 + 36, 22), false);
                 UiKit.Skin(badge.GetComponent<Image>(), "Jade");
                 var tagText = Label(badge, tag, 22, TextAnchor.MiddleCenter);
                 tagText.color = new Color(.90f, .96f, .88f);
                 Fill(tagText.rectTransform, 4);
             }
-            storyText = Label(dock, "", 30, TextAnchor.UpperLeft);
+            storyText = Label(dock, "", DialogueStyle.BodySize, TextAnchor.UpperLeft);
             storyText.color = CardText;
-            storyText.font = UiKit.Font(string.IsNullOrEmpty(speaker) ? "Narration" : "Dialogue", font, text);
-            name.font = UiKit.Font("Names", font, speaker);
-            Anchor(storyText.rectTransform, Vector2.zero, Vector2.one, new(left, 52), new(-32, -74));
+            DialogueBody(storyText, text);
+            Anchor(storyText.rectTransform, Vector2.zero, Vector2.one, new(left, 48), new(-32, -46));
             var hint = Label(dock, "點擊或按空白鍵繼續", 20, TextAnchor.MiddleRight);
             hint.color = CardMuted;
             Anchor(hint.rectTransform, Vector2.zero, Vector2.right, new(left, 12), new(-32, 42));

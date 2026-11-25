@@ -298,6 +298,11 @@ namespace Wuxia
                     ShowCharacterDirectory();
                     return;
                 }
+                if (Input.GetKeyDown(KeyCode.J)) // v1126c PC3 #10: the full 任務 board
+                {
+                    ui.ToggleQuestBook();
+                    return;
+                }
                 if (Input.GetKeyDown(KeyCode.B))
                 {
                     ShowSectRoster();
@@ -322,6 +327,7 @@ namespace Wuxia
             }
             if (choosingBuilding && !capturing && !ui.ModalOpen) PreviewCourtyardCells();
             ui.PositionLabels(view, hovered, selectedCourtyardPerson);
+            tutorial?.Tick(); // v1126c PC3 #15: live numbers on the step card
             ui.PositionHighlight(tutorial?.Highlight, view, world);
             if (HandleBack()) // v1125 #16: right-click / Esc = back one page
                 return;
@@ -560,7 +566,8 @@ namespace Wuxia
             choosingBuilding = true;
             buildAction = action;
             // M6: pre-select the first available building and light the empty plots immediately.
-            buildChoice = state.Data.Buildings.FirstOrDefault(state.IsAvailable);
+            buildChoice = state.Data.Buildings.FirstOrDefault(building => building.name == tutorial?.RecommendedBuilding && state.IsAvailable(building)) // v1126c PC3 #11
+                ?? state.Data.Buildings.FirstOrDefault(state.IsAvailable);
             ui.CloseBuilding();
             ui.CloseDialogue();
             string aid = TutorialBuildAid();
@@ -605,6 +612,7 @@ namespace Wuxia
                 }) : null, picked));
             }
             ui.ShowCommands("建造", options);
+            ui.MarkBlueprint(tutorial?.RecommendedBuilding); // v1126c PC3 #11
         }
 
         /// <summary>

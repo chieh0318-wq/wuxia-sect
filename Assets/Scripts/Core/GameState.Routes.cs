@@ -187,7 +187,7 @@ namespace Wuxia
                 if (HasTie(faction.id, Diplomacy.Trade))
                 {
                     SetValue(ref Story.flags, key, 1, true);
-                    if ((Ties(faction.id) & Diplomacy.Merged) == 0) income += TradeIncomeOf(faction);
+                    income += MonthlyTradeIncome(faction);
                 }
                 else if (RouteFlag(key) != 0) SetRouteFlag(key, 0);
             }

@@ -165,31 +165,31 @@ namespace Wuxia
             UiKit.Skin(autoBtn.GetComponent<Image>(), "Wood");
 
             var commandPanel = Panel("Commands", battleScreen, Vector2.zero, Vector2.zero,
-                new(398, 18), new(1900, 211), false);
+                new(398, 18), new(1900, 294), false);
             UiKit.Skin(commandPanel.GetComponent<Image>(), "Lacquer");
             var actorLabel = BattleLabel(commandPanel, "", 21, TextAnchor.MiddleLeft,
-                new(18, 141), new(508, 186));
+                new(18, 230), new(508, 268));
             actorLabel.color = UiKit.HeaderGold;
 
             var description = BattleLabel(commandPanel, "", 22, TextAnchor.MiddleLeft,
-                new(924, 16), new(1349, 177));
+                new(785, 20), new(1349, 220));
             description.color = CardText;
 
-            var tabNames = new[] { "攻擊", "恢復", "支援" };
+            var tabNames = new[] { "攻擊", "招式", "防禦", "道具", "逃跑" };
             var tabs = new RectTransform[tabNames.Length];
             for (int i = 0; i < tabs.Length; i++)
             {
                 int tab = i;
                 tabs[i] = Button(commandPanel, tabNames[i], () => changeTab?.Invoke(tab));
-                float x = 514 + 132 * i;
-                Anchor(tabs[i], Vector2.zero, Vector2.zero, new(x, 147), new(x + 124, 181));
+                float y = 184 - 42 * i;
+                Anchor(tabs[i], Vector2.zero, Vector2.zero, new(18, y), new(166, y + 38));
             }
 
             var actionDefs = new (string id, int tab, int slot, string seal)[]
             {
-                ("attack", 0, 0, "普"), ("skill", 0, 1, "刺"),
-                ("ultimate", 0, 2, "陣"), ("interrupt", 0, 3, "拆"),
-                ("item", 1, 0, "藥"), ("focus", 1, 1, "氣"),
+                ("attack", 0, 0, "普"), ("skill", 1, 0, "藝"),
+                ("ultimate", 1, 1, "藝"), ("interrupt", 1, 2, "拆"),
+                ("item", 3, 0, "藥"), ("focus", 2, 2, "氣"),
                 ("defend", 2, 0, "護"), ("dodge", 2, 1, "避")
             };
             var actButtons = new Dictionary<string, (RectTransform root, Outline border, Text seal, Text title, Text detail)>();
@@ -197,23 +197,36 @@ namespace Wuxia
             {
                 var btn = Button(commandPanel, "", () => choose?.Invoke(id));
                 btn.GetComponent<Button>().transition = Selectable.Transition.None;
-                float x = 18 + slot * 224;
-                Anchor(btn, Vector2.zero, Vector2.zero, new(x, 16), new(x + 212, 138));
+                float y = 165 - slot * 56;
+                Anchor(btn, Vector2.zero, Vector2.zero, new(190, y), new(760, y + 49));
+                var hover = btn.gameObject.AddComponent<UnityEngine.EventSystems.EventTrigger>();
+                var enter = new UnityEngine.EventSystems.EventTrigger.Entry
+                    { eventID = UnityEngine.EventSystems.EventTriggerType.PointerEnter };
+                enter.callback.AddListener(_ =>
+                {
+                    string move = ResolveMove(id);
+                    if (move != null) DescribeMove(move);
+                });
+                hover.triggers.Add(enter);
+                var exit = new UnityEngine.EventSystems.EventTrigger.Entry
+                    { eventID = UnityEngine.EventSystems.EventTriggerType.PointerExit };
+                exit.callback.AddListener(_ => DescribeMove(inspectedAction));
+                hover.triggers.Add(exit);
                 var border = btn.gameObject.AddComponent<Outline>();
                 border.effectColor = UiKit.HeaderGold;
                 border.effectDistance = new Vector2(2, 2);
-                var glyph = BattleLabel(btn, seal, 29, TextAnchor.MiddleCenter, new(4, 78), new(208, 111));
-                var title = BattleLabel(btn, ActionName(id), 24, TextAnchor.MiddleCenter, new(4, 44), new(208, 79));
-                var detail = BattleLabel(btn, "", 20, TextAnchor.MiddleCenter, new(4, 7), new(208, 42));
+                var glyph = BattleLabel(btn, seal, 29, TextAnchor.MiddleCenter, new(8, 4), new(50, 45));
+                var title = BattleLabel(btn, ActionName(id), 24, TextAnchor.MiddleLeft, new(60, 20), new(550, 46));
+                var detail = BattleLabel(btn, "", 20, TextAnchor.MiddleLeft, new(60, 0), new(550, 22));
                 actButtons[id] = (btn, border, glyph, title, detail);
             }
 
             Action<int> pageMoves = null;
             var previousMoves = Button(commandPanel, "‹", () => pageMoves?.Invoke(-1));
-            Anchor(previousMoves, Vector2.zero, Vector2.zero, new(932, 147), new(980, 181));
+            Anchor(previousMoves, Vector2.zero, Vector2.zero, new(190, 14), new(238, 48));
             var nextMoves = Button(commandPanel, "›", () => pageMoves?.Invoke(1));
-            Anchor(nextMoves, Vector2.zero, Vector2.zero, new(1076, 147), new(1124, 181));
-            var pageLabel = BattleLabel(commandPanel, "", 19, TextAnchor.MiddleCenter, new(983, 147), new(1074, 181));
+            Anchor(nextMoves, Vector2.zero, Vector2.zero, new(336, 14), new(384, 48));
+            var pageLabel = BattleLabel(commandPanel, "", 19, TextAnchor.MiddleCenter, new(240, 14), new(334, 48));
 
             var timeline = Panel("TurnOrder", battleScreen, Vector2.up, Vector2.one,
                 new(20, -159), new(-148, -109), false);
@@ -255,15 +268,6 @@ namespace Wuxia
             goTxt.color = UiKit.HeaderGold;
             goTxt.fontStyle = FontStyle.Bold;
 
-
-            // Retreat button (top-right below enemy HUD)
-            var fleeBtn = Button(battleScreen, "撤退", () =>
-            {
-                if (busy) return;
-                FinishBattle(false);
-            });
-            Anchor(fleeBtn, Vector2.one, Vector2.one, new(-124, -148), new(-20, -104));
-            UiKit.Skin(fleeBtn.GetComponent<Image>(), "Wood");
 
             pageMoves = PageMoves;
             choose = SelectAction;
@@ -307,8 +311,15 @@ namespace Wuxia
 
             void ChangeTab(int tab)
             {
+                if (tab == 4)
+                {
+                    if (!busy) FinishBattle(false);
+                    return;
+                }
                 activeTab = tab;
-                SelectAction(actionDefs.First(entry => entry.tab == tab).id);
+                string id = actionDefs.First(entry => entry.tab == tab).id;
+                if (ResolveMove(id) == null) id = "interrupt";
+                SelectAction(id);
             }
 
             void SelectAction(string id)
@@ -334,14 +345,9 @@ namespace Wuxia
 
             (string name, int hp, int qi) UseMedicine()
             {
-                if (MedicineCount("item_jiuzhuan") > 0)
-                {
-                    LegacySystem.AddInventory(state.Story, "item_jiuzhuan", -1);
-                    return ("九轉回元丹", 120, 60);
-                }
-
-                LegacySystem.AddInventory(state.Story, "item_jinchuang", -1);
-                return ("金創靈藥", 90, 0);
+                var medicine = GameState.SectMedicines.First(entry => MedicineCount(entry.id) > 0);
+                LegacySystem.AddInventory(state.Story, medicine.id, -1);
+                return (EffectText.ItemName(medicine.id), medicine.hp, medicine.qi);
             }
 
 
@@ -371,15 +377,19 @@ namespace Wuxia
                     UiKit.Skin(tabs[i].GetComponent<Image>(), i == activeTab ? "Selected" : "Wood");
 
                 int pages = (model.KnownMoves.Length + 1) / 2;
-                previousMoves.gameObject.SetActive(activeTab == 0 && pages > 1);
-                nextMoves.gameObject.SetActive(activeTab == 0 && pages > 1);
-                pageLabel.text = activeTab == 0 && pages > 1 ? $"{movePage + 1} / {pages}" : "";
+                previousMoves.gameObject.SetActive(activeTab == 1 && pages > 1);
+                nextMoves.gameObject.SetActive(activeTab == 1 && pages > 1);
+                pageLabel.text = activeTab == 1 && pages > 1 ? $"{movePage + 1} / {pages}" : "";
+                int visibleRow = 0;
                 foreach (var (id, tab, _, _) in actionDefs)
                 {
                     var (root, border, seal, title, detail) = actButtons[id];
                     string move = ResolveMove(id);
-                    root.gameObject.SetActive(tab == activeTab && move != null);
-                    if (move == null) continue;
+                    bool shown = tab == activeTab && move != null;
+                    root.gameObject.SetActive(shown);
+                    if (!shown) continue;
+                    float rowY = 165 - visibleRow++ * 56;
+                    Anchor(root, Vector2.zero, Vector2.zero, new(190, rowY), new(760, rowY + 49));
                     title.text = ActionName(move);
                     if (id is "skill" or "ultimate") seal.text = "藝";
                     string reason = CommandReason(move);
@@ -398,23 +408,30 @@ namespace Wuxia
                     border.enabled = inspected;
                     border.effectColor = usable ? UiKit.HeaderGold : new Color(.62f, .62f, .62f);
                     seal.color = title.color = usable ? UiKit.HeaderGold : new Color(.65f, .65f, .65f);
-                    detail.text = usable ? ActionCost(move) : reason;
+                    string effect = ActionEffect(move).Split('。', '\n')[0];
+                    detail.text = usable ? $"{ActionCost(move)}　{effect}" : $"{ActionCost(move)}　{reason}";
                     detail.color = usable ? CardText : new Color(.86f, .86f, .86f);
                 }
 
-                string inspectedReason = CommandReason(inspectedAction);
-                description.text = $"{ActionName(inspectedAction)}　｜　{ActionCost(inspectedAction)}\n" +
-                    $"五行 {ActionElement(inspectedAction)}　・　冷卻 無\n{ActionEffect(inspectedAction)}" +
-                    (inspectedReason.Length == 0 ? "" : $"\n{inspectedReason}");
+                DescribeMove(inspectedAction);
                 goBtn.GetComponent<Button>().interactable =
                     selectedAction != null && CommandReason(selectedAction) == "";
             }
 
+            void DescribeMove(string move)
+            {
+                string reason = CommandReason(move);
+                description.text = $"{ActionName(move)}　｜　{ActionCost(move)}\n" +
+                    $"五行 {ActionElement(move)}　・　冷卻 無\n{ActionEffect(move)}" +
+                    (reason.Length == 0 ? "" : $"\n{reason}");
+            }
+
             string ActionCost(string id)
             {
-                if (id == "item") return "消耗 1 份靈藥";
+                if (id == "item") return "消耗庫房丹藥 1 份";
                 var skill = model.Skill(id);
-                return skill.qi > 0 ? $"消耗 {skill.qi} 內力" : $"回復 {skill.restoreQi} 內力";
+                if (skill.qi > 0) return $"消耗 {skill.qi} 內力";
+                return skill.restoreQi > 0 ? $"回復 {skill.restoreQi} 內力" : "內力消耗 0";
             }
 
             string ActionElement(string id)
@@ -425,7 +442,12 @@ namespace Wuxia
 
             string ActionEffect(string id)
             {
-                if (id == "item") return "回復自身氣血。九轉回元丹另回內力。";
+                if (id == "item")
+                {
+                    var medicine = GameState.SectMedicines.FirstOrDefault(entry => MedicineCount(entry.id) > 0);
+                    return medicine.id == null ? "庫房已無可用丹藥。" :
+                        $"{EffectText.ItemName(medicine.id)}：氣血 +{medicine.hp}、內力 +{medicine.qi}。";
+                }
                 if (id == "interrupt") return "單體傷害 ×" + model.Skill(id).power.ToString("0.00") + "，打斷蓄勢。";
                 var move = model.Skill(id);
                 string damage = move.power > 0 ? $"{(move.all ? "全體" : "單體")}傷害 ×{move.power:0.00}" : "";

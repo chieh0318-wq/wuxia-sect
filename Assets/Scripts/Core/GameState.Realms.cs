@@ -243,9 +243,8 @@ namespace Wuxia
                 if (effect == null) continue;
                 string text = effect.key switch
                 {
-                    "art" => worker == HeroId ? LearnArt(effect.@ref)
-                        : LearnDiscipleArt(Disciples.Find(member => member.id == worker), effect.@ref, sectInstruction: false),
-                    "gear" => EquipOrStore(MakeGear(effect.@ref, Mathf.RoundToInt(effect.value))),
+                    "art" => StoreRealmManual(effect.@ref),
+                    "gear" => StoreInventoryGear(MakeGear(effect.@ref, Mathf.RoundToInt(effect.value))),
                     "cap" or "rank" or "lineRank" => CapLine(effect),
                     _ => EffectText.DescribeExpedition(new[] { effect }, this, worker)
                 };
@@ -254,12 +253,6 @@ namespace Wuxia
                     member.injury = Mathf.Clamp(member.injury + Mathf.RoundToInt(effect.value), 0, 9);
                 else if (effect.key is not ("gear" or "art" or "cap" or "rank" or "lineRank"))
                     ApplyEffects(new[] { effect });
-                if (effect.key == "art" && worker == HeroId && string.IsNullOrEmpty(text))
-                {
-                    // Already known: the manual still deepens its line.
-                    StudyLine(MartialArts.Find(effect.@ref)?.category, 1.5f);
-                    text = $"《{MartialArts.Find(effect.@ref)?.name ?? effect.@ref}》早已習得，溫故知新：修習進度 +1.5";
-                }
                 if (!string.IsNullOrEmpty(text)) lines.Add(text);
             }
             return lines;

@@ -21,7 +21,7 @@ namespace Wuxia
         internal static int Footprint(BuildingData building) => Mathf.Max(1, building.footprint);
         internal int BuildingLimit(BuildingData building) => building.unique ? 1 : building.limit > 0 ? building.limit : int.MaxValue;
         internal int BuildingCount(BuildingData building) => Buildings.Count(placed => placed?.id == building.id);
-        internal bool PlotUnlocked(int index) => index >= 0 && index < Buildings.Length && Data.Start.slots[index].scale <= SectScale;
+        internal bool PlotUnlocked(int index) => index >= 0 && index < Buildings.Length && Data.Start.slots[index % Data.Start.slots.Length].scale <= SectScale;
 
         internal string ExpansionBlock()
         {

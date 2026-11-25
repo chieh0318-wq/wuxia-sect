@@ -206,7 +206,7 @@ namespace Wuxia
         }
 
         /// <summary>Month-end: each founded hall applies its monthly effects once per level.</summary>
-        internal void HallsMonth(MonthlyReport report)
+        private System.Collections.Generic.IEnumerable<(HallData hall, int level, GameEffect[] effects)> MonthlyHallEffects()
         {
             foreach (var hall in HallCatalog.Data.halls)
             {
@@ -216,6 +216,14 @@ namespace Wuxia
                     .ToArray();
                 // Healing repeats rather than scales.
                 foreach (var effect in effects.Where(effect => effect.key == "heal")) effect.value = level;
+                yield return (hall, level, effects);
+            }
+        }
+
+        internal void HallsMonth(MonthlyReport report)
+        {
+            foreach (var (hall, level, effects) in MonthlyHallEffects())
+            {
                 ApplyEffects(effects);
                 string text = EffectText.Describe(effects, this);
                 if (!string.IsNullOrEmpty(text)) report?.Lines.Add($"{hall.name}（{level} 級）：{text}");

@@ -79,6 +79,7 @@ namespace Wuxia
                 value.font = UiKit.Font("Numbers", font);
                 Anchor(value.rectTransform, Vector2.zero, Vector2.one, new(52, 0), new(-8, 0));
                 resourceLabels[index] = value;
+                BindResourceBreakdown(cell, index);
             }
             var ap = HudPlaque(top, "行動力", new(.665f, 0), new(.665f, 1), new(0, 8), new(290, -8));
             AddCardIcon(ap, "hud_ap", 12, 28);
@@ -99,6 +100,7 @@ namespace Wuxia
             pipRow.childForceExpandWidth = pipRow.childForceExpandHeight = true;
             apHud.Initialize(apDisplay, sourceList, apTrack);
             targets["ap"] = ap;
+            BindResourceBreakdown(ap, 4);
             var end = Button(top, "結束本月", endMonth);
             targets["end_month"] = end;
             UiKit.Skin(end.GetComponent<Image>(), "Selected");
@@ -210,6 +212,8 @@ namespace Wuxia
         {
             date.text = state.DateWithDay;
             apHud.Set(state.ActionPoints, state.ApMax, state.ApDescription);
+            RefreshRaidAlert(state);
+            resourceState = state;
             resourceLabels[0].text = $"銀兩 {state.Silver}";
             resourceLabels[1].text = $"糧食 {state.Food}";
             resourceLabels[2].text = $"聲望 {state.Reputation}";
@@ -411,11 +415,11 @@ namespace Wuxia
         }
 
         /// <summary>Bottom-right wood plaque with the world map (M) and intel overview shortcuts.</summary>
-        internal void ShowMapButtons(Action openMap, Action openIntel, Action openCharacters, Action openSystem, Action openSect = null)
+        internal void ShowMapButtons(Action openMap, Action openIntel, Action openCharacters, Action openSystem, Action openSect = null, Action openInventory = null)
         {
             if (mapButtons != null)
                 return;
-            mapButtons = Panel("江湖", canvas, Vector2.right, Vector2.right, new(openSect != null ? -1010 : -826, 18), new(-18, 92));
+            mapButtons = Panel("江湖", canvas, Vector2.right, Vector2.right, new((openSect != null ? -1010 : -826) - (openInventory != null ? 160 : 0), 18), new(-18, 92));
             UiKit.Skin(mapButtons.GetComponent<Image>(), "Wood");
             var row = mapButtons.gameObject.AddComponent<HorizontalLayoutGroup>();
             row.padding = new RectOffset(12, 12, 10, 10);
@@ -429,6 +433,7 @@ namespace Wuxia
             var intelButton = Button(mapButtons, "情報", openIntel);
             Button(mapButtons, "江湖人物　C", openCharacters);
             UiKit.Skin(mapButton.GetComponent<Image>(), "Wood");
+            if (openInventory != null) Button(mapButtons, "庫房", openInventory);
             UiKit.Skin(Button(mapButtons, "系統　Esc", openSystem).GetComponent<Image>(), "Wood");
             targets["map"] = mapButton;
             targets["intel"] = intelButton;

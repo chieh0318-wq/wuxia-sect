@@ -239,11 +239,12 @@ namespace Wuxia
             int held = Story.heldNodes?.Length ?? 0;
             if (held > 0)
             {
-                silver += held * 4;
-                food += held * 2;
-                report.Lines.Add($"轄下據點 {held} 處　上繳銀兩 {held * 4}、糧食 {held * 2}");
+                var (holdingSilver, holdingFood) = MonthlyHoldingIncome;
+                silver += holdingSilver;
+                food += holdingFood;
+                report?.Lines.Add($"轄下據點 {held} 處　上繳銀兩 {holdingSilver}、糧食 {holdingFood}");
             }
-            if (HasTech("inner1") || HasTech("craft1"))
+            if (report != null && (HasTech("inner1") || HasTech("craft1")))
                 RecoverInjuries();
         }
 
@@ -426,7 +427,7 @@ namespace Wuxia
                     new GameEffect { key = "relation", @ref = factionId, value = -10 }
                 });
                 string loot = UnityEngine.Random.value < .35f
-                    ? "　繳獲：" + EquipOrStore(MakeGear(GearSlots[UnityEngine.Random.Range(0, GearSlots.Length)], 1)) : "";
+                    ? "　繳獲：" + StoreInventoryGear(MakeGear(GearSlots[UnityEngine.Random.Range(0, GearSlots.Length)], 1)) : "";
                 return $"大捷！{SectLabel}攻破{place}，插上本派旗號（每月上繳銀兩 4、糧食 2）。" +
                     $"繳獲銀兩 {silver}、糧食 {food}，聲望 +3。{loot}";
             }

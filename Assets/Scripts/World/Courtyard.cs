@@ -25,7 +25,7 @@ namespace Wuxia
 
         private readonly float yardWidth;
 
-        public Courtyard(Transform parent, SectUI ui, SlotData[] slots, int scale = 0)
+        public Courtyard(Transform parent, SectUI ui, SlotData[] slots, SlotData[] landscapeLots, int scale = 0)
         {
             root = new GameObject("Courtyard").transform;
             root.SetParent(parent, false);
@@ -39,7 +39,7 @@ namespace Wuxia
                 surfaces.Add(name, Resources.Load<Material>("Materials/" + name));
 
             BuildMeadow();
-            BuildPackedEarth();
+            BuildPackedEarth(landscapeLots);
             BuildMountainRidges();
             foreach (float lane in new[] { -14f, -4f, 6f, 14f })
                 Path(0, lane, yardWidth - 2, 1.4f);
@@ -59,19 +59,20 @@ namespace Wuxia
 
             for (int index = 0; index < slots.Length; index++)
             {
+                if (slots[index] == null) continue;
                 float x = slots[index].x, z = slots[index].z;
                 var outline = new GameObject("Building plot").transform;
                 outline.SetParent(root, false);
                 for (int side = -1; side <= 1; side += 2)
                 {
-                    Part("Foundation edge", PrimitiveType.Cube, outline, new(x + side * 3.1f, -.021f, z),
-                        new(.14f, .055f, 5.8f), Tint("#77736D"));
-                    Part("Foundation edge", PrimitiveType.Cube, outline, new(x, -.021f, z + side * 2.9f),
-                        new(6.3f, .055f, .14f), Tint("#77736D"));
+                    Part("Foundation edge", PrimitiveType.Cube, outline, new(x + side * 1.54f, -.021f, z),
+                        new(.14f, .055f, 2.85f), Tint("#77736D"));
+                    Part("Foundation edge", PrimitiveType.Cube, outline, new(x, -.021f, z + side * 1.42f),
+                        new(3.13f, .055f, .14f), Tint("#77736D"));
                 }
                 // M6: a thick, bright jade pad with a glowing pale-green frame so empty plots cannot be missed.
                 var tile = Part("Plot selection", PrimitiveType.Cube, outline, new(x, .06f, z),
-                    new(6.1f, .06f, 5.65f), Tint("#5CD669"));
+                    new(3.00f, .06f, 2.72f), Tint("#5CD669"));
                 var collider = tile.GetComponent<Collider>();
                 collider.enabled = true;
                 slotTargets.Add(collider, index);
@@ -80,10 +81,10 @@ namespace Wuxia
                 var frame = new List<Renderer>();
                 for (int side = -1; side <= 1; side += 2)
                 {
-                    frame.Add(Part("Plot glow frame", PrimitiveType.Cube, outline, new(x + side * 3.0f, .12f, z),
-                        new(.22f, .1f, 5.85f), Tint("#C8FFB4")).GetComponent<Renderer>());
-                    frame.Add(Part("Plot glow frame", PrimitiveType.Cube, outline, new(x, .12f, z + side * 2.78f),
-                        new(6.22f, .1f, .22f), Tint("#C8FFB4")).GetComponent<Renderer>());
+                    frame.Add(Part("Plot glow frame", PrimitiveType.Cube, outline, new(x + side * 1.49f, .12f, z),
+                        new(.22f, .1f, 2.88f), Tint("#C8FFB4")).GetComponent<Renderer>());
+                    frame.Add(Part("Plot glow frame", PrimitiveType.Cube, outline, new(x, .12f, z + side * 1.38f),
+                        new(3.08f, .1f, .22f), Tint("#C8FFB4")).GetComponent<Renderer>());
                 }
                 foreach (var bar in frame) bar.enabled = false;
                 plotFrames[index] = frame.ToArray();
@@ -128,16 +129,18 @@ namespace Wuxia
         /// </summary>
         public void HighlightPlots(bool active)
         {
+            PreviewCells(null);
             for (int index = 0; index < plots.Length; index++)
             {
                 var plot = plots[index];
+                if (plot == null) continue;
                 bool empty = plot.transform.parent.gameObject.activeSelf;
                 bool lit = active && empty;
                 plot.enabled = lit;
                 foreach (var bar in plotFrames[index] ?? System.Array.Empty<Renderer>())
                     bar.enabled = lit;
                 bool labelled = plotLabels.Contains(index);
-                if (lit && !labelled)
+                if (lit && !labelled && index < plots.Length / 4)
                 {
                     ui.AddWorldLabel(plot.transform, Vector3.up * 2.8f, "可建空地（點擊建造）");
                     plotLabels.Add(index);
@@ -152,15 +155,35 @@ namespace Wuxia
 
         public bool PlotsHighlighted => plotLabels.Count > 0;
 
-        public void PlaceBuilding(int index, BuildingData data)
+        private int[] previewCells;
+
+        internal void PreviewCells(int[] cells)
         {
-            if (plotLabels.Remove(index))
-                ui.RemoveWorldLabel(plots[index].transform);
-            plots[index].transform.parent.gameObject.SetActive(false);
+            if (previewCells != null && cells != null && previewCells.SequenceEqual(cells)) return;
+            if (previewCells != null)
+                foreach (int cell in previewCells) Paint(plots[cell], "Solid", Tint("#5CD669"));
+            previewCells = cells;
+            if (cells != null)
+                foreach (int cell in cells) Paint(plots[cell], "Solid", Tint("#F6C95F"));
+        }
+
+        public void PlaceBuilding(int index, BuildingData data, int[] cells)
+        {
+            PreviewCells(null);
+            foreach (int cell in cells)
+            {
+                if (plotLabels.Remove(cell)) ui.RemoveWorldLabel(plots[cell].transform);
+                plots[cell].transform.parent.gameObject.SetActive(false);
+            }
             var building = new GameObject(data.name).transform;
             building.SetParent(root, false);
-            building.localPosition = new Vector3(slots[index].x, 0, slots[index].z);
-            float w = data.size[0], h = data.size[1], d = data.size[2];
+            bool full = cells.Length == 4;
+            float centerX = full ? cells.Average(cell => slots[cell].x) :
+                (slots[index].x + slots[cells.Length > 1 ? cells[1] : index].x) / 2;
+            float centerZ = full ? cells.Average(cell => slots[cell].z) : slots[index].z;
+            building.localPosition = new Vector3(centerX, 0, centerZ);
+            float w = Mathf.Min(data.size[0], cells.Length == 1 ? 2.85f : 6.0f);
+            float h = data.size[1], d = Mathf.Min(data.size[2], full ? 5.4f : 2.65f);
             buildingFootprints.Add(new Rect(building.position.x - w / 2, building.position.z - d / 2, w, d));
             float labelHeight;
             if (data.id == "yard")

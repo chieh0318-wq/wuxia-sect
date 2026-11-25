@@ -73,7 +73,7 @@ namespace Wuxia
                 if (guide.HasValue)
                     Anchor(questPanel, Vector2.right, Vector2.right, new(-width - 18, 104), new(-18, 104 + height));
                 else
-                    Anchor(questPanel, Vector2.one, Vector2.one, new(-width - 18, -72 - height), new(-18, -72));
+                    Anchor(questPanel, Vector2.one, Vector2.one, new(-width - 18, -112 - height), new(-18, -112));
             }
         }
 
@@ -170,11 +170,7 @@ namespace Wuxia
             }
             else Line("短期要務都已辦妥，往長遠的路走吧。", 18 + bump, MapUi.Paper, 28 + bump);
 
-            if (!full)
-            {
-                Line("破關之路與全部任務：按下方「任務　J」。", 16, CardMuted, 24);
-                return y;
-            }
+            if (!full) return y;
 
             y += 6;
             Section("常駐任務・破關之路");

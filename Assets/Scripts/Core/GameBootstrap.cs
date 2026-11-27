@@ -604,7 +604,7 @@ namespace Wuxia
                 string plot = $"{kind}・占地 {GameState.Footprint(building)}・{building.size[0]:0.#} × {building.size[2]:0.#} 丈";
                 var available = state.IsAvailable(building);
                 string reason = available ? "" : building.scale > state.SectScale ? $"　須{GameState.Scales[building.scale].name}"
-                    : state.BuildingCount(building) >= state.BuildingLimit(building) ? "　已達棟數上限" : "　用地不足";
+                    : state.BuildingCount(building) >= state.BuildingLimit(building) ? "　已達棟數上限" : state.LandHint(building);
                 options.Add(($"{(picked ? "【已選】" : "")}{building.name}\n{cost}", $"{plot}{reason}\n{building.summary ?? building.description}", available ? (System.Action)(() =>
                 {
                     buildChoice = building;

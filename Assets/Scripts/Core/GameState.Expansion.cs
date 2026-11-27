@@ -16,8 +16,8 @@ namespace Wuxia
 
         internal int SectScale => Mathf.Clamp(Story.sectScale, 0, Scales.Length - 1);
         internal int Materials => Story.materials;
-        internal int LandUsed => Buildings.Where(building => building != null).Sum(Footprint);
-        internal int LandCapacity => Scales[SectScale].land;
+        internal int LandUsed => OccupiedCells().Count; // v1127 N1: distinct occupied cells
+        internal int LandCapacity => LandAtScale(SectScale); // v1127 N1: 4 cells per unlocked lot (Scales[].land is legacy)
         internal static int Footprint(BuildingData building) => Mathf.Max(1, building.footprint);
         internal int BuildingLimit(BuildingData building) => building.unique ? 1 : building.limit > 0 ? building.limit : int.MaxValue;
         internal int BuildingCount(BuildingData building) => Buildings.Count(placed => placed?.id == building.id);

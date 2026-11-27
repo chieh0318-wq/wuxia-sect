@@ -152,7 +152,7 @@ namespace Wuxia
         }
 
         public bool IsAvailable(BuildingData building) => building != null && building.scale <= SectScale &&
-            LandUsed + Footprint(building) <= LandCapacity && BuildingCount(building) < BuildingLimit(building);
+            BuildingCount(building) < BuildingLimit(building) && HasRoomFor(building); // v1127 N1: real cell fit
         public bool CanPay(Cost cost, int extraSilver = 0) =>
             Silver >= cost.silver && Silver - cost.silver >= extraSilver && Food >= cost.food;
 

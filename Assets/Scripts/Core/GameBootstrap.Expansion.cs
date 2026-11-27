@@ -21,7 +21,7 @@ namespace Wuxia
             for (int i = 0; i < GameState.Scales.Length; i++)
             {
                 var tier = GameState.Scales[i];
-                ui.CreationChoice(tier.name, $"聲望 {tier.reputation}・弟子 {tier.disciples}・建築 {tier.buildings}・用地 {tier.land}" +
+                ui.CreationChoice(tier.name, $"聲望 {tier.reputation}・弟子 {tier.disciples}・建築 {tier.buildings}・用地 {state.LandAtScale(i)}" +
                     (i > 0 ? $"・銀 {tier.silver}・行動力 1" : ""), null,
                     i == scale + 1 && block == null ? (Action)(() => ui.ChooseAssignment(state, "擴建山門", "build", 1, party =>
                     {

@@ -367,7 +367,8 @@ namespace Wuxia
                 item.gameObject.AddComponent<LayoutElement>().preferredHeight = rowHeight;
                 var shade = item.gameObject.AddComponent<Image>();
                 shade.color = new Color(0, 0, 0, .22f);
-                shade.raycastTarget = false;
+                shade.raycastTarget = true;
+                AttachTalentTipByName(item, name, detail);
                 float left = 8;
                 var iconTexture = string.IsNullOrEmpty(icon) ? null : UiKit.Icon(icon);
                 if (iconTexture != null)

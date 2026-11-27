@@ -68,6 +68,8 @@ namespace Wuxia
                     _ => new Color(.97f, .91f, .78f)
                 };
                 Fill(text.rectTransform, 2);
+                string capturedId = id;
+                AttachTalentTip(chip, () => TalentTipText(talent, capturedId));
             }
             var biography = ScrollList(card, new Vector2(20, 59), new Vector2(-20, -361));
             AddLine(biography, candidate.blurb ?? "", 20);

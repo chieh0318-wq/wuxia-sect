@@ -10,6 +10,7 @@ namespace Wuxia
     {
         public StoryCharacter person;
         public string faction, stance, arts, biography, bond, talents, study;
+        public string[] talentIds;
         public int relation, kind = 2;
         public int[] attrs;
         public bool estimated;
@@ -322,6 +323,8 @@ namespace Wuxia
             BioLine("拿手武學與技藝", 22, CardGold);
             BioLine(string.IsNullOrEmpty(info.arts) ? "尚無記載" : info.arts, 18, CardText);
             BioLine("天賦", 22, CardGold);
+            if (info.talentIds != null && info.talentIds.Length > 0)
+                AddInteractiveTalentChips(bio, info.talentIds);
             BioLine(string.IsNullOrEmpty(info.talents) ? "尚無天賦記載。" : info.talents, 18, CardText);
             BioLine("生平列傳", 22, CardGold);
             BioLine(string.IsNullOrWhiteSpace(info.biography) ? "生平未詳。" : info.biography, 18, CardText);

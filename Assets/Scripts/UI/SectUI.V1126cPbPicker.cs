@@ -26,6 +26,7 @@ namespace Wuxia
             internal IComparable[] keys;
             internal bool selected;
             internal Action toggle;
+            internal string[] talentIds;
         }
 
         private static readonly string[] PickerColumns = {
@@ -144,11 +145,20 @@ namespace Wuxia
                         $"{bone}／{wit}", $"銀 {fee}", $"{candidate.loyalty}／100", talentCount.ToString() },
                     keys = new IComparable[] { candidate.name, candidate.origin ?? "", candidate.age,
                         RankSystem.Index(martial), bone + wit, fee, candidate.loyalty, talentCount },
-                    toggle = () => review(candidate)
+                    toggle = () => review(candidate),
+                    talentIds = candidate.talents
                 };
             });
             foreach (var row in SortRows(rows, sort))
-                PickerBody(CreationRow("候選門人", 62), width, 62, row);
+            {
+                var button = PickerBody(CreationRow("候選門人", 62), width, 62, row);
+                if (row.talentIds != null && row.talentIds.Length > 0 && button.transform.childCount > 7)
+                {
+                    var cell = button.transform.GetChild(button.transform.childCount - 1) as RectTransform;
+                    string[] ids = row.talentIds;
+                    AttachTalentTip(cell, () => TalentListTipText(ids));
+                }
+            }
         }
 
         /// <summary>v1126d: whole percents for the 成／敗 column; when the rows are one distribution (forge grades)

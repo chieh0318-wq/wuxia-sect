@@ -58,6 +58,8 @@ namespace Wuxia
                 var study = CreationRow("修習中", 36);
                 var label = Label(study, progressState.StudyLabel(memberId), 22, TextAnchor.MiddleLeft);
                 Fill(label.rectTransform);
+                if (!string.IsNullOrEmpty(memberId))
+                    AddCharacterTalentRow(progressState.TalentsOf(memberId));
             }
             SkillColumns(lines, progressState: progressState, memberId: memberId);
         }

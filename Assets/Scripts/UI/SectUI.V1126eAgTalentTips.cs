@@ -37,7 +37,7 @@ namespace Wuxia
             if (option == null)
                 return string.IsNullOrWhiteSpace(fallbackId) ? "" : $"【{fallbackId}】";
 
-            string tag = option.negative ? "（負面）" : option.rarity switch
+            string tag = option.cost < 0 ? "（負面）" : option.rarity switch
             {
                 "legendary" => "（傳奇）",
                 "rare" => "（稀有）",

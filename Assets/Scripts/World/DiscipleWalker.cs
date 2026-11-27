@@ -143,7 +143,7 @@ namespace Wuxia
                 float sqr = away.sqrMagnitude;
                 if (sqr >= rangeSqr) continue;
                 float dist = Mathf.Sqrt(Mathf.Max(sqr, 0.0001f));
-                Vector3 dir = sqr > 0.0001f ? away / dist : new Vector3(GetInstanceID() % 2 == 0 ? 1f : -1f, 0, 0.3f).normalized;
+                Vector3 dir = sqr > 0.0001f ? away / dist : new Vector3((GetHashCode() & 1) == 0 ? 1f : -1f, 0, 0.3f).normalized;
                 float weight = (range - dist) / range;
                 push += dir * (weight * 2.2f);
             }

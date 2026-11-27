@@ -561,20 +561,24 @@ namespace Wuxia
                 Anchor(map, Vector2.zero, new(.69f, 1), Vector2.zero, new(-12, 0));
                 var paint = AddImage(map, Resources.Load<Texture2D>("WorldMap/world_map_san10") ?? M2RuntimeAssets.Load()?.map);
                 paint.color = paint.texture == null ? MapUi.Paper : Color.white;
+                var layoutGuard = map.gameObject.AddComponent<SiteMapLayoutGuard>(); // v1126e-ag: pins & flags stay on true coords, labels offset with leader lines
                 foreach (var site in sites)
                 {
                     if (!data.Nodes.TryGetValue(site.node ?? "", out var node)) continue;
                     var point = data.Bounds.Uv(node);
+                    bool isFocused = site == focused;
+                    var pin = CreateSitePin(map, site.id, point, isFocused);
                     var marker = Button(map, site.name, () => { focused = site; Draw(); });
                     var label = marker.GetComponentInChildren<Text>();
-                    label.resizeTextMaxSize = 20;
-                    Anchor(marker, point, point, new(-60, -20), new(60, 20));
-                    UiKit.Skin(marker.GetComponent<Image>(), site == focused ? "Selected" : "Plaque");
-                    marker.SetAsLastSibling();
+                    label.resizeTextMinSize = 15;
+                    label.resizeTextMaxSize = 19;
+                    float halfW = Mathf.Clamp(site.name.Length * 11f + 22f, 52f, 66f);
+                    Anchor(marker, point, point, new(-halfW, -17), new(halfW, 17));
+                    UiKit.Skin(marker.GetComponent<Image>(), isFocused ? "Selected" : "Plaque");
                     marker.name = "選址_" + site.id;
+                    layoutGuard.Register(site.id, marker, pin, point, new Vector2(node.labelDx, node.labelDy), isFocused);
                 }
                 SettlementPowers(map, data, state, sites, focused); // v1126 #10
-                map.gameObject.AddComponent<SiteLabelGuard>(); // v1126c PC3 #9: site names stay readable above the flags
 
                 var detail = Panel("選址詳情", row, new(.69f, 0), Vector2.one, Vector2.zero, Vector2.zero, false);
                 UiKit.Skin(detail.GetComponent<Image>(), "Wood");
@@ -583,12 +587,12 @@ namespace Wuxia
                     Write("點選地圖上的地點，查看地勢、資源與附近勢力。", 24, 22, 150, CardText);
                     return;
                 }
-                Write($"{focused.name}　{focused.region}", 28, 10, 50, CardGold);
-                Write("物產　" + focused.resources, 19, 50, 76, CardText);
-                Write(focused.bonusText, 18, 78, 150, CardMuted);
+                Write($"{focused.name}　{focused.region}", 28, 8, 46, CardGold);
+                WriteLine("物產　" + focused.resources, 19, 46, 74, CardText, 15);
+                Write(focused.bonusText, 18, 76, 140, CardMuted);
                 // v1126c PC3 #8: every effect of this site as a number, read from the effect list SetLocation applies.
                 var effects = SiteEffects.Lines(focused.effects);
-                int effectTop = 152;
+                int effectTop = 142;
                 bool twoColumns = effects.Count > 4 && effects.All(line => line.Length <= 11);
                 for (int line = 0; line < effects.Count; line += twoColumns ? 2 : 1)
                 {
@@ -597,21 +601,31 @@ namespace Wuxia
                         WriteAt("・" + effects[line + 1], 19, effectTop, effectTop + 25, new Color(.64f, .92f, .72f), .5f, 1);
                     effectTop += 25;
                 }
-                Write(focused.desc, 18, effectTop + 6, 418, CardMuted);
-                Write("附近勢力・關係・路程（依圖上位置）", 21, 420, 450, CardGold);
+                Write(focused.desc, 18, effectTop + 4, 392, CardMuted);
+                WriteLine("附近勢力・關係・路程（依圖上位置）", 21, 396, 428, CardGold, 17);
                 {
-                    // v1126c PC3 #7: the four nearest seats by drawn map position (the same coordinates as the flags).
-                    int top = 454;
+                    // v1126c PC3 #7 / v1126e-ag: four nearest seats; use WriteLine so JhengHei line height never truncates rows to empty.
+                    int top = 430;
                     foreach (var near in SiteGeography.Nearby(data, focused.node, 4))
                     {
                         var faction = near.Faction;
                         string stance = faction.StanceWith(state.RelationShift(faction.id));
                         string distance = near.Days == 0 ? "同地" : $"約 {near.Days} 日";
-                        Write($"{near.SeatNames}　{faction.RelationWith(state.RelationShift(faction.id))}　{distance}", 19, top, top + 26,
-                            RelationColor(stance));
-                        Write($"{WorldMapScreen.KindName(faction)}・人馬約 {faction.disciples:N0}・聲望 {faction.reputation}", 17, top + 25, top + 48, CardMuted);
-                        top += 50;
+                        WriteLine($"{near.SeatNames}　{faction.RelationWith(state.RelationShift(faction.id))}　{distance}", 19, top, top + 28,
+                            RelationColor(stance), 15);
+                        WriteLine($"{WorldMapScreen.KindName(faction)}・人馬約 {faction.disciples:N0}・聲望 {faction.reputation}", 17, top + 27, top + 52, CardMuted, 14);
+                        top += 55;
                     }
+                }
+
+                void WriteLine(string value, int size, int top, int bottom, Color color, int minSize)
+                {
+                    var label = Label(detail, value ?? "", size, TextAnchor.MiddleLeft);
+                    label.color = color;
+                    label.horizontalOverflow = HorizontalWrapMode.Wrap;
+                    label.verticalOverflow = VerticalWrapMode.Overflow;
+                    label.resizeTextMinSize = minSize;
+                    Anchor(label.rectTransform, Vector2.up, Vector2.one, new(18, -bottom), new(-18, -top));
                 }
 
                 void WriteAt(string value, int size, int top, int bottom, Color color, float from, float to)

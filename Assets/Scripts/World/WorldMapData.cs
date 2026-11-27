@@ -43,6 +43,8 @@ namespace Wuxia
         public float lon, lat;
         /// <summary>M6 spread layout on the painting: normalized 0..1, y measured from the top (-1 = use lon/lat).</summary>
         public float x = -1, y = -1;
+        /// <summary>v1126e-ag: optional preferred nameplate offset in map pixels (0 = auto).</summary>
+        public float labelDx, labelDy;
         public string Label => string.IsNullOrWhiteSpace(name) ? id : name;
     }
     [Serializable] internal sealed class MapRoad

@@ -109,7 +109,8 @@ namespace Wuxia
                 string stance = seat.Select(f => f.StanceWith(state.RelationShift(f.id)))
                     .OrderBy(value => value == "hostile" ? 0 : value == "friendly" ? 2 : 1).First();
                 var holder = Rect("附近勢力_" + faction.id, map);
-                Anchor(holder, uv, uv, new(-17, 6), new(17, 48));
+                // v1126e-ag: keep faction icon centered on its true map coordinate (no upward offset).
+                Anchor(holder, uv, uv, new(-17, -21), new(17, 21));
                 var ring = holder.gameObject.AddComponent<Image>();
                 ring.color = new Color(0, 0, 0, .25f);
                 var rim = holder.gameObject.AddComponent<Outline>();

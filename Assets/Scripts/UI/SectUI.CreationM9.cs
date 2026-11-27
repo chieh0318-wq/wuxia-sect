@@ -633,7 +633,17 @@ namespace Wuxia
                     var label = Label(detail, value ?? "", size, TextAnchor.UpperLeft);
                     label.color = color;
                     Anchor(label.rectTransform, Vector2.up, Vector2.one, new(18, -bottom), new(-18, -top));
-                    if (oneLine) OneLine(label, value, Mathf.Max(80, detail.rect.width > 1 ? detail.rect.width - 36 : 520), size);
+                    if (oneLine)
+                    {
+                        // v1126e CL2: the panel has no width yet when this runs, so a measured "…" cut kept only three
+                        // characters; best fit shrinks the line (down to 14) inside its own box instead.
+                        label.text = (value ?? "").Replace("\n", " ");
+                        label.horizontalOverflow = HorizontalWrapMode.Wrap;
+                        label.verticalOverflow = VerticalWrapMode.Truncate;
+                        label.resizeTextForBestFit = true;
+                        label.resizeTextMinSize = 14;
+                        label.resizeTextMaxSize = size;
+                    }
                     else
                     {
                         label.horizontalOverflow = HorizontalWrapMode.Wrap;

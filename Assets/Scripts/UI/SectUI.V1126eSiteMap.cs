@@ -15,6 +15,7 @@ namespace Wuxia
     internal sealed class SiteLabelLeaders : MonoBehaviour
     {
         private bool done;
+        private int sizedFrames;
         internal int Moved { get; private set; }
         internal int Overlaps { get; private set; }
 
@@ -23,6 +24,8 @@ namespace Wuxia
             if (done) return;
             var map = (RectTransform)transform;
             if (map.rect.width <= 1) return;
+            // Wait one more frame once the map has a size, so the layout above it has settled.
+            if (++sizedFrames < 2) return;
             done = true;
             Place(map);
         }
@@ -154,7 +157,25 @@ namespace Wuxia
             child.anchoredPosition = Vector2.zero;
         }
 
+        /// <summary>
+        /// The child's box in the map's local space. Every child here is anchored to a single point, so the box comes
+        /// straight from the anchors (exact even before the canvas has moved the child — a redrawn map reuses the panel
+        /// and its children's world positions are stale on the first frame, which threw the CL2 first try off).
+        /// </summary>
         private static Rect Box(RectTransform map, RectTransform rect, float pad)
+        {
+            if (rect.anchorMin == rect.anchorMax)
+            {
+                var area = map.rect;
+                var anchor = new Vector2(area.xMin + rect.anchorMin.x * area.width, area.yMin + rect.anchorMin.y * area.height);
+                var size = rect.sizeDelta;
+                var min = anchor + rect.anchoredPosition - Vector2.Scale(rect.pivot, size);
+                return Rect.MinMaxRect(min.x - pad, min.y - pad, min.x + size.x + pad, min.y + size.y + pad);
+            }
+            return WorldBox(map, rect, pad);
+        }
+
+        private static Rect WorldBox(RectTransform map, RectTransform rect, float pad)
         {
             var corners = new Vector3[4];
             rect.GetWorldCorners(corners);

@@ -13,6 +13,9 @@ namespace Wuxia
     {
         private readonly List<(string id, Vector3 center, Rect footprint)> workSites = new();
 
+        /// <summary>False once <see cref="Destroy"/> has run (the root is deactivated at once, destroyed at frame end).</summary>
+        internal bool Alive => root != null && root.gameObject.activeSelf;
+
         private static readonly string[] OpenGround = { "field", "vegetable", "yard" };
 
         /// <summary>The walkable inside of the walls.</summary>

@@ -122,6 +122,7 @@ namespace Wuxia
         /// <summary>v1126e capture: hovers (or clicks) the first talent chip named <paramref name="name"/> on screen.</summary>
         internal string RevealTalentTipForCapture(string name = null, bool click = false)
         {
+            Canvas.ForceUpdateCanvases(); // the chips were built this frame; place the tip from their laid-out spots
             var chips = UnityEngine.Object.FindObjectsByType<TalentTipHover>(FindObjectsSortMode.None)
                 .Where(chip => chip.isActiveAndEnabled).ToArray();
             var chip = chips.FirstOrDefault(entry => name == null || (entry.Text?.Invoke() ?? "").Contains("【" + name + "】"))

@@ -157,7 +157,12 @@ namespace Wuxia
                 var cell = button.GetComponentsInChildren<Text>(true).LastOrDefault();
                 if (cell == null) continue;
                 cell.text = TalentTips.Names(candidate.talents);
-                cell.fontSize = 19;
+                // Same size as the other cells; two names shrink to fit the 62 px row instead of spilling out.
+                cell.resizeTextMaxSize = cell.fontSize;
+                cell.resizeTextMinSize = 12;
+                cell.resizeTextForBestFit = true;
+                cell.horizontalOverflow = HorizontalWrapMode.Wrap;
+                cell.verticalOverflow = VerticalWrapMode.Truncate;
                 cell.raycastTarget = true;
                 var ids = candidate.talents;
                 TalentChip(cell.rectTransform, () => TalentTips.Text(ids), false);

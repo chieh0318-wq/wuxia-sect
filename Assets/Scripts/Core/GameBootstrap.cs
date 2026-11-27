@@ -123,6 +123,9 @@ namespace Wuxia
             ShowCommands();
             ui.BindRaidAlert(OpenRaidAlert);
             ui.Refresh(state);
+            // v1126e CL2: a second entry (load, or a capture rebuilding the yard) clears the old courtyard first, so its
+            // people do not stay behind on top of the new ones.
+            if (world != null && world.Alive) world.Destroy();
             courtyardReady = BootStep("courtyard", BuildCourtyard);
             if (!courtyardReady)
             {

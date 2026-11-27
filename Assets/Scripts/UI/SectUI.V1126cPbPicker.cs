@@ -139,6 +139,7 @@ namespace Wuxia
                 int bone = candidate.aptitude?.bone ?? 0, wit = candidate.aptitude?.insight ?? 0;
                 return new PickerRow
                 {
+                    id = candidate.id ?? candidate.name ?? "",
                     cells = new[] { candidate.name + (status.Length == 0 ? "" : "\n" + status),
                         candidate.origin ?? "—", $"{candidate.age} 歲", $"{martial}／{cap}",
                         $"{bone}／{wit}", $"銀 {fee}", $"{candidate.loyalty}／100", talentCount.ToString() },
@@ -147,8 +148,20 @@ namespace Wuxia
                     toggle = () => review(candidate)
                 };
             });
+            var byName = candidates.GroupBy(candidate => candidate.id ?? candidate.name ?? "").ToDictionary(group => group.Key, group => group.First());
             foreach (var row in SortRows(rows, sort))
-                PickerBody(CreationRow("候選門人", 62), width, 62, row);
+            {
+                var button = PickerBody(CreationRow("候選門人", 62), width, 62, row);
+                // v1126e #3: the 天賦 cell names the talents and shows their exact effects on hover (a click still opens the card).
+                if (!byName.TryGetValue(row.id ?? "", out var candidate)) continue;
+                var cell = button.GetComponentsInChildren<Text>(true).LastOrDefault();
+                if (cell == null) continue;
+                cell.text = TalentTips.Names(candidate.talents);
+                cell.fontSize = 19;
+                cell.raycastTarget = true;
+                var ids = candidate.talents;
+                TalentChip(cell.rectTransform, () => TalentTips.Text(ids), false);
+            }
         }
 
         /// <summary>v1126d: whole percents for the 成／敗 column; when the rows are one distribution (forge grades)

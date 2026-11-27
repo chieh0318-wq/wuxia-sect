@@ -10,6 +10,7 @@ namespace Wuxia
     {
         public StoryCharacter person;
         public string faction, stance, arts, biography, bond, talents, study;
+        public string[] talentIds; // v1126e #3: hover / click the 天賦 lines for exact effects
         public int relation, kind = 2;
         public int[] attrs;
         public bool estimated;
@@ -322,7 +323,13 @@ namespace Wuxia
             BioLine("拿手武學與技藝", 22, CardGold);
             BioLine(string.IsNullOrEmpty(info.arts) ? "尚無記載" : info.arts, 18, CardText);
             BioLine("天賦", 22, CardGold);
-            BioLine(string.IsNullOrEmpty(info.talents) ? "尚無天賦記載。" : info.talents, 18, CardText);
+            var talentLine = BioLine(string.IsNullOrEmpty(info.talents) ? "尚無天賦記載。" : info.talents, 18, CardText);
+            if (info.talentIds?.Length > 0)
+            {
+                talentLine.name = "天賦_卷宗";
+                var ids = info.talentIds;
+                TalentChip(talentLine.rectTransform, () => TalentTips.Text(ids));
+            }
             BioLine("生平列傳", 22, CardGold);
             BioLine(string.IsNullOrWhiteSpace(info.biography) ? "生平未詳。" : info.biography, 18, CardText);
             BioLine("與本門淵源", 22, CardGold);
@@ -358,7 +365,7 @@ namespace Wuxia
                 ink.color = new Color(.78f, .63f, .35f, .55f);
                 ink.raycastTarget = false;
             }
-            void BioLine(string text, int size, Color color)
+            Text BioLine(string text, int size, Color color)
             {
                 var line = Label(bio, text, size);
                 line.color = color;
@@ -367,6 +374,7 @@ namespace Wuxia
                 line.verticalOverflow = VerticalWrapMode.Overflow;
                 line.resizeTextForBestFit = false;
                 line.lineSpacing = 1.15f;
+                return line;
             }
         }
 

@@ -68,6 +68,10 @@ namespace Wuxia
                     _ => new Color(.97f, .91f, .78f)
                 };
                 Fill(text.rectTransform, 2);
+                chip.name = "天賦_" + (talent?.name ?? id);
+                // v1126e #3: hover or click a chip for the talent's exact effect.
+                string tip = talent != null ? TalentTips.Text(talent) : TalentTips.Text(new[] { id });
+                TalentChip(chip, () => tip);
             }
             var biography = ScrollList(card, new Vector2(20, 59), new Vector2(-20, -361));
             AddLine(biography, candidate.blurb ?? "", 20);

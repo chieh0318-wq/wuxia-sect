@@ -208,6 +208,7 @@ namespace Wuxia
             {
                 person = person, faction = friendOfHero ? GuestLabel : sect || hero ? state.Data.Start.sectName : faction?.Label ?? person.faction, stance = stance, kind = kind,
                 talents = TalentSummary(state.TalentsOf(hero ? GameState.HeroId : person.id)),
+                talentIds = state.TalentsOf(hero ? GameState.HeroId : person.id),
                 relation = relation, attrs = person.attrs ?? disciple?.attrs ?? EstimateAttributes(person),
                 estimated = person.attrs == null && disciple?.attrs == null, arts = arts, biography = biography,
                 study = hero || disciple != null ? state.StudyLabel(person.id) : null,

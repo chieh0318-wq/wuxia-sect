@@ -368,6 +368,9 @@ namespace Wuxia
                 var shade = item.gameObject.AddComponent<Image>();
                 shade.color = new Color(0, 0, 0, .22f);
                 shade.raycastTarget = false;
+                // v1126e #3: a picked talent row shows the talent's exact effect on hover.
+                var pickedTalent = TalentTips.Catalog.FirstOrDefault(option => option?.name == name);
+                if (pickedTalent != null) TalentChip(item, () => TalentTips.Text(pickedTalent), false);
                 float left = 8;
                 var iconTexture = string.IsNullOrEmpty(icon) ? null : UiKit.Icon(icon);
                 if (iconTexture != null)
@@ -574,7 +577,7 @@ namespace Wuxia
                     marker.name = "選址_" + site.id;
                 }
                 SettlementPowers(map, data, state, sites, focused); // v1126 #10
-                map.gameObject.AddComponent<SiteLabelGuard>(); // v1126c PC3 #9: site names stay readable above the flags
+                map.gameObject.AddComponent<SiteLabelLeaders>(); // v1126e #2: flags stay on their seats; plates move clear with a leader line
 
                 var detail = Panel("選址詳情", row, new(.69f, 0), Vector2.one, Vector2.zero, Vector2.zero, false);
                 UiKit.Skin(detail.GetComponent<Image>(), "Wood");
@@ -584,7 +587,7 @@ namespace Wuxia
                     return;
                 }
                 Write($"{focused.name}　{focused.region}", 28, 10, 50, CardGold);
-                Write("物產　" + focused.resources, 19, 50, 76, CardText);
+                Write("物產　" + focused.resources, 19, 50, 78, CardText, true);
                 Write(focused.bonusText, 18, 78, 150, CardMuted);
                 // v1126c PC3 #8: every effect of this site as a number, read from the effect list SetLocation applies.
                 var effects = SiteEffects.Lines(focused.effects);
@@ -597,20 +600,21 @@ namespace Wuxia
                         WriteAt("・" + effects[line + 1], 19, effectTop, effectTop + 25, new Color(.64f, .92f, .72f), .5f, 1);
                     effectTop += 25;
                 }
-                Write(focused.desc, 18, effectTop + 6, 418, CardMuted);
-                Write("附近勢力・關係・路程（依圖上位置）", 21, 420, 450, CardGold);
+                Write(focused.desc, 18, effectTop + 6, 392, CardMuted);
+                Write("附近勢力・關係・路程（依圖上位置）", 21, 396, 426, CardGold);
                 {
                     // v1126c PC3 #7: the four nearest seats by drawn map position (the same coordinates as the flags).
-                    int top = 454;
+                    // v1126e #2: the rows are one line each and never clipped (a 26 px box truncated an 18 px line away).
+                    int top = 430;
                     foreach (var near in SiteGeography.Nearby(data, focused.node, 4))
                     {
                         var faction = near.Faction;
                         string stance = faction.StanceWith(state.RelationShift(faction.id));
                         string distance = near.Days == 0 ? "同地" : $"約 {near.Days} 日";
-                        Write($"{near.SeatNames}　{faction.RelationWith(state.RelationShift(faction.id))}　{distance}", 19, top, top + 26,
-                            RelationColor(stance));
-                        Write($"{WorldMapScreen.KindName(faction)}・人馬約 {faction.disciples:N0}・聲望 {faction.reputation}", 17, top + 25, top + 48, CardMuted);
-                        top += 50;
+                        Write($"{near.SeatNames}　{faction.RelationWith(state.RelationShift(faction.id))}　{distance}", 19, top, top + 30,
+                            RelationColor(stance), true).name = "附近_" + faction.id;
+                        Write($"{WorldMapScreen.KindName(faction)}・人馬約 {faction.disciples:N0}・聲望 {faction.reputation}", 18, top + 28, top + 54, CardMuted, true);
+                        top += 56;
                     }
                 }
 
@@ -624,13 +628,18 @@ namespace Wuxia
                     Anchor(label.rectTransform, new(from, 1), new(to, 1), new(18, -bottom), new(-6, -top));
                 }
 
-                void Write(string value, int size, int top, int bottom, Color color)
+                RectTransform Write(string value, int size, int top, int bottom, Color color, bool oneLine = false)
                 {
                     var label = Label(detail, value ?? "", size, TextAnchor.UpperLeft);
                     label.color = color;
-                    label.horizontalOverflow = HorizontalWrapMode.Wrap;
-                    label.verticalOverflow = VerticalWrapMode.Truncate;
                     Anchor(label.rectTransform, Vector2.up, Vector2.one, new(18, -bottom), new(-18, -top));
+                    if (oneLine) OneLine(label, value, Mathf.Max(80, detail.rect.width > 1 ? detail.rect.width - 36 : 520), size);
+                    else
+                    {
+                        label.horizontalOverflow = HorizontalWrapMode.Wrap;
+                        label.verticalOverflow = VerticalWrapMode.Truncate;
+                    }
+                    return label.rectTransform;
                 }
             }
         }

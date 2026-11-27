@@ -67,6 +67,14 @@ namespace Wuxia
             }),
             ("V1126E2_07_recruit_card_talent_hover.png", () =>
                 Debug.Log("[Capture] V1126E2_07 card hover tip: " + ui.RevealTalentTipForCapture("擰腕沉肩"))),
+            ("V1126E2_07b_dossier_talent_tip.png", () =>
+            {
+                ui.CloseCreation();
+                ui.CloseModal(force: true);
+                state.Protagonist.talents = new[] { "broad_qi", "pure_forge", "weighted_strike" };
+                ShowCharacterDirectory(1, HeroCharacterId);
+                Debug.Log("[Capture] V1126E2_07b dossier tip: " + ui.RevealTalentTipForCapture("氣海如淵", click: true));
+            }),
             ("V1126E2_08_courtyard_twelve_spread.png", () =>
             {
                 ui.CloseCreation();

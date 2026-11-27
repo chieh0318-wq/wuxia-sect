@@ -70,6 +70,52 @@ namespace Wuxia
             hover.Text = text;
         }
 
+        /// <summary>
+        /// v1126e #3 (row idea from the Antigravity branch): a member's character card lists their talents as chips,
+        /// four per row, each answering hover and click with the exact effect.
+        /// </summary>
+        internal void CharacterTalentRow(string[] talentIds)
+        {
+            var ids = (talentIds ?? Array.Empty<string>()).Where(id => !string.IsNullOrWhiteSpace(id)).Distinct().ToArray();
+            if (ids.Length == 0) return;
+            var heading = CreationRow("天賦標題", 30);
+            var title = Label(heading, "天賦（滑過或點擊看數值）", 19, TextAnchor.MiddleLeft);
+            title.color = CardGold;
+            Fill(title.rectTransform);
+            for (int start = 0; start < ids.Length; start += 4)
+            {
+                var row = CreationRow("天賦標籤列", 36);
+                var layout = row.gameObject.AddComponent<HorizontalLayoutGroup>();
+                layout.spacing = 8;
+                layout.padding = new RectOffset(0, 0, 2, 2);
+                layout.childControlWidth = layout.childControlHeight = true;
+                layout.childForceExpandWidth = false;
+                layout.childForceExpandHeight = true;
+                foreach (string id in ids.Skip(start).Take(4))
+                {
+                    var talent = TalentTips.Find(id);
+                    string caption = talent?.name ?? id;
+                    var chip = Panel("天賦_" + caption, row, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero, false);
+                    UiKit.Skin(chip.GetComponent<Image>(), "Wood");
+                    var element = chip.gameObject.AddComponent<LayoutElement>();
+                    element.preferredWidth = Mathf.Clamp(caption.Length * 22f + 26f, 96f, 210f);
+                    element.minHeight = 32;
+                    var label = Label(chip, caption, 18, TextAnchor.MiddleCenter);
+                    label.color = talent?.rarity switch
+                    {
+                        "legendary" => new Color(1f, .71f, .37f),
+                        "rare" => new Color(.64f, .88f, .79f),
+                        _ => new Color(.97f, .91f, .78f)
+                    };
+                    label.raycastTarget = false;
+                    Fill(label.rectTransform, 4);
+                    var shown = talent;
+                    string fallback = id;
+                    TalentChip(chip, () => shown != null ? TalentTips.Text(shown) : TalentTips.Text(new[] { fallback }));
+                }
+            }
+        }
+
         internal void ShowTalentTip(RectTransform target, string text) => ShowAttributeTip(target, text);
         internal void HideTalentTip() => HideAttributeTip();
 

@@ -69,7 +69,7 @@ namespace Wuxia
                 Debug.Log("[Capture] V1126E2_07 card hover tip: " + ui.RevealTalentTipForCapture("擰腕沉肩"))),
             ("V1126E2_07b_dossier_talent_tip.png", () =>
             {
-                ui.CloseCreation();
+                ui.CloseModal(force: true);
                 ui.CloseModal(force: true);
                 state.Protagonist.talents = new[] { "broad_qi", "pure_forge", "weighted_strike" };
                 ShowCharacterDirectory(1, HeroCharacterId);
@@ -77,11 +77,11 @@ namespace Wuxia
             }),
             ("V1126E2_08_courtyard_twelve_spread.png", () =>
             {
-                ui.CloseCreation();
+                ui.CloseModal(force: true);
                 ui.CloseModal(force: true);
                 V1126eCourtyard(null);
                 CaptureRecruitment();
-                ui.CloseCreation();
+                ui.CloseModal(force: true);
                 var method = Recruitment.methods?.FirstOrDefault() ?? new RecruitMethod { id = "public", name = "公開招徒" };
                 for (int guard = 0; state.Disciples.Count < 12 && guard < 20; guard++)
                 {

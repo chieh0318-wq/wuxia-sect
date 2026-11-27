@@ -97,7 +97,7 @@ namespace Wuxia
                 float gap = Gap(flat, other);
                 if (gap >= 1) continue;
                 var away = flat - other;
-                if (away.sqrMagnitude < .0001f) away = new Vector3(GetInstanceID() > walker.GetInstanceID() ? 1 : -1, 0, 0);
+                if (away.sqrMagnitude < .0001f) away = new Vector3(GetHashCode() > walker.GetHashCode() ? 1 : -1, 0, 0);
                 push += new Vector3(away.x / (SpaceX * SpaceX), 0, away.z / (SpaceZ * SpaceZ)).normalized * (1 - gap);
             }
             if (push.sqrMagnitude > .0001f)

@@ -221,6 +221,7 @@ namespace Wuxia
             }
             landmarks[data.id] = (building, labelHeight);
             entrances.Add(building.position + Vector3.back * (d / 2 + 1.25f));
+            RecordBuildingSpot(data.id, building.position, w, d);
             buildingLabels.Add(building);
             ui.AddWorldLabel(building, Vector3.up * labelHeight, data.name);
             StaticBatchingUtility.Combine(building.gameObject);
@@ -230,21 +231,13 @@ namespace Wuxia
         {
             var person = new GameObject(data.name).transform;
             person.SetParent(root, false);
-            int order = 0;
-            Vector3 spawn;
-            do
-            {
-                int column = order % 18;
-                float x = (column + 1) / 2 * (column % 2 == 0 ? -1.07f : 1.07f);
-                spawn = new Vector3(x, 0, -14f - order / 18 * .95f);
-                order++;
-            }
-            while (discipleTargets.Keys.Any(target =>
-                (target.transform.parent.position - spawn).sqrMagnitude < .9f));
+            Vector3 spawn = FindSpreadSpawn(data);
             person.position = spawn;
             var figure = CharacterFactory.BuildStandee(data, person, out var hit, standee: standee);
             discipleTargets.Add(hit, data);
-            person.gameObject.AddComponent<DiscipleWalker>().Initialize(entrances, buildingFootprints, Grounded, figure);
+            var walker = person.gameObject.AddComponent<DiscipleWalker>();
+            walker.Initialize(entrances, buildingFootprints, Grounded, figure);
+            walker.ConfigureSpread(PreferredSpotsFor(data), WanderSpots(), WalkBounds);
             ui.AddWorldLabel(person, CharacterFactory.StandeeLabelOffset, data.name, false);
         }
 

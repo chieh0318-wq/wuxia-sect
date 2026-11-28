@@ -168,6 +168,7 @@ namespace Wuxia
             {
                 new FocusStep { breakthrough = "seclusion_houshan" },
                 new FocusStep { breakthrough = "duel_milestone_3" },
+                new FocusStep { breakthrough = "conquest_milestone_10" },
                 new FocusStep { breakthrough = "manual_xiaoshan_full" },
                 new FocusStep { breakthrough = "duel_milestone_6" },
                 new FocusStep { breakthrough = "mentor_master_return" }
@@ -180,6 +181,7 @@ namespace Wuxia
                 {
                     "seclusion_houshan" => !monthEnd && hero.trainingMonths >= BalanceV1126c.Martial.seclusionTrainingMonths,
                     "duel_milestone_3" => MastersDefeated >= 3 && RankSystem.Index(strongest.cap) < RankSystem.Index("SS"),
+                    "conquest_milestone_10" => (Story.heldNodes?.Length ?? 0) >= 10 && RankSystem.Index(strongest.cap) < RankSystem.Index("SSS"),
                     "manual_xiaoshan_full" => !monthEnd && hero.breakthroughs.Contains("seclusion_houshan") &&
                         (RankSystem.Index(strongest.rank) >= RankSystem.Index("S") || hero.trainingMonths >= BalanceV1126c.Martial.manualTrainingMonths),
                     "duel_milestone_6" => MastersDefeated >= 6 && RankSystem.Index(strongest.cap) < RankSystem.Index("SSS"),
@@ -196,6 +198,7 @@ namespace Wuxia
                     continue;
                 RankSystem.Shift(target, entry?.capDelta ?? 1, true);
                 if (step.breakthrough == "duel_milestone_3") TrainLine(target, 15f);
+                else if (step.breakthrough == "conquest_milestone_10") TrainLine(target, 18f);
                 else if (step.breakthrough == "duel_milestone_6") TrainLine(target, 25f);
                 hero.breakthroughs = hero.breakthroughs.Append(step.breakthrough).ToArray();
                 return $"突破：{entry?.name ?? "武學精進"}　{target.rank}／{target.cap}" + RecordArt(entry?.art);

@@ -85,19 +85,19 @@ namespace Wuxia
                 "sword1" => $"全武學修習速度 +{V(n.value)}%，主角攻擊 +{V(n.value2)}",
                 "sword2" => $"主角劍法上限 +1 階，攻擊 +{V(n.value)}，先手 +{V(n.value2)}",
                 "sword3" => $"全門派攻討戰力 +{V(n.value)}%，主角閃避 +{V(n.value2)}%",
-                "sword4" => $"主角劍法上限 +1 階（至多 SSS），攻擊 +{V(n.value)}，解鎖鎮派絕學",
+                "sword4" => $"主角全武學上限 +1 階（至多 SSS），攻擊 +{V(n.value)}，解鎖鎮派絕學",
                 "outer1" => $"全武學修習速度 +{V(n.value)}%，主角氣血 +{V(n.value2)}",
                 "outer2" => $"主角刀法與槍棍上限 +1 階，攻擊 +{V(n.value)}",
                 "outer3" => $"主角暗器上限 +1 階，先手 +{V(n.value)}，奇遇感悟 +{V(n.value2)}%",
-                "outer4" => $"主角拳掌／刀／暗器／槍棍上限各 +1 階，全門派攻討戰力 +{V(n.value)}%",
+                "outer4" => $"主角全戰鬥武學上限 +1 階（至多 SSS），全門派攻討戰力 +{V(n.value)}%",
                 "inner1" => $"主角內力 +{V(n.value)}，月結時多療傷一次",
                 "inner2" => $"主角內功上限 +1 階，氣血 +{V(n.value)}，內力 +{V(n.value2)}",
                 "inner3" => $"主角輕功上限 +1 階，大地圖行軍行動力 −1（最低 1），閃避 +{V(n.value)}%",
-                "inner4" => $"主角內力與根骨屬性各 +{V(n.value)}，內力 +{V(n.value2)}，氣血 +{V(n.value3)}",
+                "inner4" => $"主角內功／輕功上限 +2 階、全武學 +1 階（至多 SSS），內力與根骨 +{V(n.value)}，內力 +{V(n.value2)}，氣血 +{V(n.value3)}",
                 "craft1" => $"有藥廬時每月銀 +{V(n.value)}，施藥義診另得聲望 +{V(n.value2)}，月結時多療傷一次",
                 "craft2" => $"每座兵器坊每月銀 +{V(n.value)}，鍛造精品／神兵機率 ×{V(n.value2)}",
                 "craft3" => $"興建與擴建屋舍耗銀 −{V(n.value)}%，每座弟子廂房床位 +{V(n.value2)}",
-                "craft4" => $"建築每月銀兩與糧食產出 +{V(n.value)}%，每月行動力上限 +{V(n.value2)}",
+                "craft4" => $"主角全生活技藝上限 +2 階（至多 SSS），建築銀糧 +{V(n.value)}%，每月行動力上限 +{V(n.value2)}",
                 _ => ""
             };
         }
@@ -185,23 +185,31 @@ namespace Wuxia
                 case "sword1": case "outer1": Story.trainBonusPct += Mathf.RoundToInt(node.value); break;
                 case "sword2": RankSystem.Raise(Line("sword"), 0, 1); break;
                 case "sword4":
-                    // v1126c: one more cap tier (at most SSS) instead of jumping straight to SSS.
-                    RankSystem.Raise(Line("sword"), 0, 1);
+                    // v1128: tier-4 mastery opens all combat lines toward SSS (no longer sword-only).
+                    foreach (var line in (Protagonist.lines ?? Array.Empty<SkillLine>()).Where(l => l != null && RankSystem.IsCombat(l.id)))
+                        RankSystem.Raise(line, 0, 1);
                     SetValue(ref Story.flags, "sect_ultimate", 1, false);
                     break;
                 case "outer2": RankSystem.Raise(Line("blade"), 0, 1); RankSystem.Raise(Line("polearm"), 0, 1); break;
                 case "outer3": RankSystem.Raise(Line("hidden"), 0, 1); Story.insightChance += node.value2 / 100f; break;
                 case "outer4":
-                    foreach (string id in new[] { "fist", "blade", "hidden", "polearm" }) RankSystem.Raise(Line(id), 0, 1);
+                    foreach (var line in (Protagonist.lines ?? Array.Empty<SkillLine>()).Where(l => l != null && RankSystem.IsCombat(l.id)))
+                        RankSystem.Raise(line, 0, 1);
                     break;
                 case "inner2": RankSystem.Raise(Line("neigong"), 0, 1); break;
                 case "inner3": RankSystem.Raise(Line("qinggong"), 0, 1); break;
                 case "inner4":
+                    foreach (var line in (Protagonist.lines ?? Array.Empty<SkillLine>()).Where(l => l != null && RankSystem.IsCombat(l.id)))
+                        RankSystem.Raise(line, 0, line.id is "neigong" or "qinggong" ? 2 : 1);
                     int points = Mathf.RoundToInt(node.value);
                     ApplyEffects(new[] { new GameEffect { key = "qi", value = points }, new GameEffect { key = "con", value = points } });
                     break;
                 case "craft3": Story.buildCostPct -= Mathf.RoundToInt(node.value); break;
-                case "craft4": Story.apBonus += Mathf.RoundToInt(node.value2); break;
+                case "craft4":
+                    foreach (var line in (Protagonist.lines ?? Array.Empty<SkillLine>()).Where(l => l != null && !RankSystem.IsCombat(l.id)))
+                        RankSystem.Raise(line, 0, 2);
+                    Story.apBonus += Mathf.RoundToInt(node.value2);
+                    break;
             }
             return $"研習「{node.name}」功成：{node.effect}";
         }
@@ -416,7 +424,7 @@ namespace Wuxia
             get
             {
                 var hero = HeroStats;
-                float power = hero.Offense + hero.MaxHp / 10f + hero.Speed; // v1126e #1: 外功 or 內功, whichever leads
+                float power = hero.Offense * 1.35f + hero.MaxHp / 8f + hero.Speed; // v1128: hero personal martial weight raised for conquest
                 foreach (var disciple in Disciples.Where(member => member.injury < 3))
                     power += 14 * RankSystem.Multiplier(RankSystem.Martial(disciple.lines ?? Array.Empty<SkillLine>()));
                 power *= 1 + (TechValue("sword3", n => n.value) + TechValue("outer4", n => n.value)) / 100f + DiplomacyPowerBonus;
@@ -449,8 +457,15 @@ namespace Wuxia
                 });
                 string loot = UnityEngine.Random.value < .35f
                     ? "　繳獲：" + StoreInventoryGear(MakeGear(GearSlots[UnityEngine.Random.Range(0, GearSlots.Length)], 1)) : "";
+                // v1128: conquering strongholds grants battlefield martial XP and can trigger 百戰成鋒 breakthrough.
+                float battleGain = Mathf.Clamp(3f + garrison / 35f, 3f, 8f);
+                var majorLine = RankSystem.Major(Protagonist.lines, Protagonist.major);
+                string battleGrowth = TrainMartial(HeroId, fixedGain: battleGain * StudyMultiplier(majorLine?.id ?? ""));
+                foreach (var disciple in Disciples.Where(m => m != null && m.injury < 3 && !IsDispatched(m.id)))
+                    PracticeMartial(disciple.id, 2.5f);
+                string growthNote = string.IsNullOrWhiteSpace(battleGrowth) ? "" : $"　實戰進境：{battleGrowth.Trim()}";
                 return $"大捷！{SectLabel}攻破{place}，插上本派旗號（每月上繳銀兩 4、糧食 2）。" +
-                    $"繳獲銀兩 {silver}、糧食 {food}，聲望 {Reputation - repBefore:+0;-0;0}。{loot}";
+                    $"繳獲銀兩 {silver}、糧食 {food}，聲望 {Reputation - repBefore:+0;-0;0}。{loot}{growthNote}";
             }
             Injure(1);
             ApplyEffects(new[] { new GameEffect { key = "reputation", value = -1 } });

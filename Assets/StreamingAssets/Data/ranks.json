@@ -34,6 +34,7 @@
     { "id": "seclusion_winter", "art": "yangxin_jue", "name": "冬至坐關", "type": "seclusion", "desc": "冬至一陽生。在寒夜裡坐到天明，丹田裡生出一縷暖意。", "target": "neigong", "capDelta": 1, "effectiveRankDelta": 0, "requirement": "十一月，內功線達 A 以上", "chance": 0.5, "oneTime": false },
     { "id": "seclusion_waterfall", "art": "kuangcao_dao", "name": "瀑下練刀", "type": "seclusion", "desc": "立在瀑布下劈水，一刀斷不了水，一萬刀之後，水聲和刀聲成了一個聲音。", "target": "blade", "capDelta": 1, "effectiveRankDelta": 0, "requirement": "山門附近有瀑布或溪澗，刀線達 A 以上", "chance": 0.4, "oneTime": true },
     { "id": "duel_milestone_3", "name": "以武會友・初試鋒芒", "type": "mentor", "desc": "連勝三位成名高手，方知各家招數皆有破綻，心頭忽明，境界隨之破開一重。", "target": "martial", "capDelta": 1, "effectiveRankDelta": 0, "requirement": "擊敗 3 位成名高手（固定實戰契機）", "chance": 1.0, "oneTime": true },
+    { "id": "conquest_milestone_10", "name": "百戰成鋒", "type": "mentor", "desc": "親率門人連下十座要隘，沙場百戰淬出殺伐劍意，武學境界自破一重。", "target": "martial", "capDelta": 1, "effectiveRankDelta": 0, "requirement": "累計攻克 10 處據點（固定沙場契機）", "chance": 1.0, "oneTime": true },
     { "id": "duel_milestone_6", "name": "群雄印證・宗師之境", "type": "mentor", "desc": "遍歷江湖六位名宿，千招過眼皆化己用，至此方窺宗師門徑。", "target": "martial", "capDelta": 1, "effectiveRankDelta": 0, "requirement": "擊敗 6 位成名高手（固定實戰契機）", "chance": 1.0, "oneTime": true },
 
     { "id": "weapon_longquan", "art": "longquan_qixing", "name": "龍泉七星", "type": "weapon", "desc": "龍泉古法所鑄，劍脊七點星紋。持之出劍，快一分、穩一分。", "target": "sword", "capDelta": 0, "effectiveRankDelta": 1, "requirement": "鍛造線達 S 自鑄，或以重金購得", "chance": 1.0, "oneTime": true },
@@ -48,9 +49,10 @@
     "martialFocusSteps": [
       { "breakthrough": "seclusion_houshan", "condition": "固定契機一：累計親自操練 12 個月後解鎖後山閉關（武學上限 +1 階）" },
       { "breakthrough": "duel_milestone_3", "condition": "固定契機二：擊敗 3 位成名高手觸發實戰頓悟（上限 +1 階，至多 SS）" },
-      { "breakthrough": "manual_xiaoshan_full", "condition": "固定契機三：完成後山閉關且主修達 S，或累計親自操練 36 個月（武學上限 +1 階）" },
-      { "breakthrough": "duel_milestone_6", "condition": "固定契機四：擊敗 6 位成名高手窺得宗師門徑（上限 +1 階，至多 SSS）" },
-      { "breakthrough": "mentor_master_return", "condition": "保底契機五：第五年元月，若仍以武學為重而上限未達 SSS，師父歸來補足一階" }
+      { "breakthrough": "conquest_milestone_10", "condition": "固定契機三：累計攻克 10 處據點觸發百戰成鋒（上限 +1 階，至多 SSS）" },
+      { "breakthrough": "manual_xiaoshan_full", "condition": "固定契機四：完成後山閉關且主修達 S，或累計親自操練 36 個月（武學上限 +1 階）" },
+      { "breakthrough": "duel_milestone_6", "condition": "固定契機五：擊敗 6 位成名高手窺得宗師門徑（上限 +1 階，至多 SSS）" },
+      { "breakthrough": "mentor_master_return", "condition": "保底契機六：第五年元月，若仍以武學為重而上限未達 SSS，師父歸來補足一階" }
     ]
   }
 }

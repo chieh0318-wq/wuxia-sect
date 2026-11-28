@@ -1,8 +1,9 @@
 {
   "_note": "v1126c PA3 shared balance numbers (only PA3 edits numbers). Loaded by Assets/Scripts/Core/BalanceV1126c.cs. martial.tierGainPct is indexed E,D,C,B,A,A+,S,SS,SSS. techTree value/value2/value3 meanings: see GameState.TechEffectText. minHeroRank (v1126d): protagonist major grade gate for tier 4. actions[]: -1 keeps the actions.json number.",
   "lifeSkill": { "xpPerTask": 12, "xpPerLevel": 100, "capGainPerTasks": 10, "capMaxAboveStart": 2 },
-  "martial":   { "progressMax": 100, "drillProgress": 6, "practiceProgress": 4, "teacherBonusPct": 25,
-                 "tierGainPct": [200, 170, 140, 100, 70, 50, 35, 25, 20],
+  "martial":   { "progressMax": 100, "drillProgress": 14, "practiceProgress": 10, "teacherBonusPct": 25,
+                 "tierGainPct": [100, 100, 100, 100, 95, 90, 85, 80, 75],
+                 "tierProgressMax": [60, 90, 140, 220, 340, 500, 750, 1100, 1100],
                  "seclusionTrainingMonths": 12, "manualTrainingMonths": 36, "masterReturnYear": 5 },
   "buildQuality": { "upkeepPctPer10Above100": -3, "outputPctPer10Above100": 4, "durabilityMonthsPer10": 2, "maxQualityPct": 140, "minQualityPct": 70 },
   "trade": { "tongshangSilverPerMonth": 6, "merchantSilverPerMonth": 12, "startDelayMonths": 1 },

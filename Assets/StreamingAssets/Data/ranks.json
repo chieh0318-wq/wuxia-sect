@@ -10,7 +10,7 @@
     { "id": "SS", "name": "威震一方", "color": "#d26a2a", "statMul": 2.8 },
     { "id": "SSS", "name": "登峰造極", "color": "#d9b45a", "statMul": 3.4 }
   ],
-  "martialFormula": "武學總階 = 最高的戰鬥技能線階位；若次高戰鬥線不低於 A，且與最高線相差不超過一階，則再升一階（至多 SSS）。武學上限以各戰鬥線的上限用同一規則計算。神兵的 effectiveRankDelta 只加在當下的有效階位上，可超過上限，不改變上限。",
+  "martialFormula": "武學總階 = 最高的戰鬥技能線階位（神兵 effectiveRankDelta 加在有效階位上，不改變上限）；次高戰鬥線達 A／A+／S／SS 時額外提供雙修融通攻擊與內功威力 +4%／+6%／+9%／+12%。",
   "breakthroughs": [
     { "id": "qiyu_cliff_cave", "art": "wuming_gujian", "name": "斷崖古洞", "type": "qiyu", "desc": "失足墜崖，掛在一株老松上，崖壁裂縫裡竟有前人刻下的劍痕與運氣圖。", "target": "martial", "capDelta": 1, "effectiveRankDelta": 0, "requirement": "外出遊歷途經山險之地（山、關隘）", "chance": 0.02, "oneTime": true },
     { "id": "qiyu_thunder_pine", "art": "leisong_jianyi", "name": "雷雨觀松", "type": "qiyu", "desc": "夏夜驟雨，雷劈古松。看松枝在狂風中起伏不折，忽然想通了劍招的收放。", "target": "sword", "capDelta": 1, "effectiveRankDelta": 0, "requirement": "劍線達 B 以上，夏季於山門練功", "chance": 0.03, "oneTime": true },
@@ -33,6 +33,8 @@
     { "id": "seclusion_houshan", "name": "後山閉關", "type": "seclusion", "desc": "封了洞口，只留一孔遞飯。四十九日後出關，同門說你眼神變了。", "target": "martial", "capDelta": 1, "effectiveRankDelta": 0, "requirement": "主角停止處理門務一個月；武學路線第一步", "chance": 1.0, "oneTime": true },
     { "id": "seclusion_winter", "art": "yangxin_jue", "name": "冬至坐關", "type": "seclusion", "desc": "冬至一陽生。在寒夜裡坐到天明，丹田裡生出一縷暖意。", "target": "neigong", "capDelta": 1, "effectiveRankDelta": 0, "requirement": "十一月，內功線達 A 以上", "chance": 0.5, "oneTime": false },
     { "id": "seclusion_waterfall", "art": "kuangcao_dao", "name": "瀑下練刀", "type": "seclusion", "desc": "立在瀑布下劈水，一刀斷不了水，一萬刀之後，水聲和刀聲成了一個聲音。", "target": "blade", "capDelta": 1, "effectiveRankDelta": 0, "requirement": "山門附近有瀑布或溪澗，刀線達 A 以上", "chance": 0.4, "oneTime": true },
+    { "id": "duel_milestone_3", "name": "以武會友・初試鋒芒", "type": "mentor", "desc": "連勝三位成名高手，方知各家招數皆有破綻，心頭忽明，境界隨之破開一重。", "target": "martial", "capDelta": 1, "effectiveRankDelta": 0, "requirement": "擊敗 3 位成名高手（固定實戰契機）", "chance": 1.0, "oneTime": true },
+    { "id": "duel_milestone_6", "name": "群雄印證・宗師之境", "type": "mentor", "desc": "遍歷江湖六位名宿，千招過眼皆化己用，至此方窺宗師門徑。", "target": "martial", "capDelta": 1, "effectiveRankDelta": 0, "requirement": "擊敗 6 位成名高手（固定實戰契機）", "chance": 1.0, "oneTime": true },
 
     { "id": "weapon_longquan", "art": "longquan_qixing", "name": "龍泉七星", "type": "weapon", "desc": "龍泉古法所鑄，劍脊七點星紋。持之出劍，快一分、穩一分。", "target": "sword", "capDelta": 0, "effectiveRankDelta": 1, "requirement": "鍛造線達 S 自鑄，或以重金購得", "chance": 1.0, "oneTime": true },
     { "id": "weapon_zhanma", "name": "斬馬陌刀", "type": "weapon", "desc": "刃長三尺、柄長四尺，屈突烈的佩刀。一刀下去，人馬俱裂。", "target": "blade", "capDelta": 0, "effectiveRankDelta": 1, "requirement": "擊敗屈突烈", "chance": 1.0, "oneTime": true },
@@ -44,9 +46,11 @@
     "defaultRank": "C",
     "defaultCap": "B",
     "martialFocusSteps": [
-      { "breakthrough": "seclusion_houshan", "condition": "主角創角時至少選一門戰鬥武學，且親自督促操練累計 12 個月後解鎖（武學上限 +1 階）" },
-      { "breakthrough": "manual_xiaoshan_full", "condition": "完成後山閉關，且主角最高戰鬥線達 S；或累計親自操練 36 個月（武學上限 +1 階）" },
-      { "breakthrough": "mentor_master_return", "condition": "保底：第五年元月，若主角仍以武學為重而上限未達 SSS，師父歸來補足一階" }
+      { "breakthrough": "seclusion_houshan", "condition": "固定契機一：累計親自操練 12 個月後解鎖後山閉關（武學上限 +1 階）" },
+      { "breakthrough": "duel_milestone_3", "condition": "固定契機二：擊敗 3 位成名高手觸發實戰頓悟（上限 +1 階，至多 SS）" },
+      { "breakthrough": "manual_xiaoshan_full", "condition": "固定契機三：完成後山閉關且主修達 S，或累計親自操練 36 個月（武學上限 +1 階）" },
+      { "breakthrough": "duel_milestone_6", "condition": "固定契機四：擊敗 6 位成名高手窺得宗師門徑（上限 +1 階，至多 SSS）" },
+      { "breakthrough": "mentor_master_return", "condition": "保底契機五：第五年元月，若仍以武學為重而上限未達 SSS，師父歸來補足一階" }
     ]
   }
 }

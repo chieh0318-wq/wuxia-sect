@@ -25,6 +25,7 @@ namespace Wuxia
     public sealed partial class GameState
     {
         internal static int MartialProgressMax => Mathf.Max(1, BalanceV1126c.Martial.progressMax);
+        internal static int MartialProgressMaxFor(SkillLine line) => BalanceV1126c.ProgressMaxFor(RankSystem.Index(line?.rank));
         internal static int LifeProgressMax => Mathf.Max(1, BalanceV1126c.LifeSkill.xpPerLevel);
         internal SkillLine[] MemberLines(string id) => (id == HeroId ? Protagonist.lines :
             Disciples.Find(member => member.id == id)?.lines) ?? Array.Empty<SkillLine>();
@@ -135,12 +136,12 @@ namespace Wuxia
             if (line == null) return prefix + "已達上限";
             string title = art?.name ?? $"基礎{EffectText.LineName(line.id)}";
             string mode = assigned ? "掌門指定" : "自選";
-            return $"{prefix}{title}　{line.progress:0.#}／{MartialProgressMax}{(compact ? "\n" : "　")}{mode}";
+            return $"{prefix}{title}　{line.progress:0.#}／{MartialProgressMaxFor(line)}{(compact ? "\n" : "　")}{mode}";
         }
 
         internal static string MartialLineProgress(SkillLine line) => line == null ? "已達上限" :
             $"{EffectText.LineName(line.id)} {line.rank}／{line.cap}　" +
-            (CanAdvance(line) ? $"{line.progress:0.#}／{MartialProgressMax}" : "已達上限");
+            (CanAdvance(line) ? $"{line.progress:0.#}／{MartialProgressMaxFor(line)}" : "已達上限");
 
         internal string PracticeMartial(string id, float amount) => PracticeMartialLine(id, CurrentStudyLine(id), amount);
 

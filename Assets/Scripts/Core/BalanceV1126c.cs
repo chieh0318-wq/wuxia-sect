@@ -22,8 +22,9 @@ namespace Wuxia
         /// </summary>
         [Serializable] public sealed class MartialData
         {
-            public int progressMax = 100; public int drillProgress = 6; public int practiceProgress = 4; public int teacherBonusPct = 25;
-            public int[] tierGainPct = { 200, 170, 140, 100, 70, 50, 35, 25, 20 };
+            public int progressMax = 100; public int drillProgress = 14; public int practiceProgress = 10; public int teacherBonusPct = 25;
+            public int[] tierGainPct = { 100, 100, 100, 100, 95, 90, 85, 80, 75 };
+            public int[] tierProgressMax = { 60, 90, 140, 220, 340, 500, 750, 1100, 1100 };
             public int seclusionTrainingMonths = 12; public int manualTrainingMonths = 36; public int masterReturnYear = 5;
         }
 
@@ -90,6 +91,14 @@ namespace Wuxia
             int[] table = Martial.tierGainPct;
             if (table == null || table.Length == 0) return 100;
             return table[Math.Clamp(tier, 0, table.Length - 1)];
+        }
+
+        /// <summary>v1128: XP needed to advance from <paramref name="tier"/> to the next tier (E=60 … SS=1600).</summary>
+        public static int ProgressMaxFor(int tier)
+        {
+            int[] table = Martial.tierProgressMax;
+            if (table == null || table.Length == 0) return Math.Max(1, Martial.progressMax);
+            return Math.Max(1, table[Math.Clamp(tier, 0, table.Length - 1)]);
         }
 
         /// <summary>The override row for an action id (null when none).</summary>

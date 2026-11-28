@@ -78,8 +78,12 @@ namespace Wuxia
 
         internal static SkillLine[] ProtagonistSeed()
         {
+            // v1128: protagonist's advantage — minimum rank C / cap B on every line (others start at D / C),
+            // while keeping higher starting life skills (醫術、經商、教導 A / A+).
             var path = Catalog.protagonistPath;
-            var lines = Seed(null, path?.defaultRank ?? PrimaryRank, path?.defaultCap ?? PrimaryCap, BaseCap, BaseRank);
+            string startRank = path?.defaultRank ?? PrimaryRank;
+            string startCap = path?.defaultCap ?? PrimaryCap;
+            var lines = Seed(null, startRank, startCap, startCap, startRank);
             foreach (var line in lines.Where(line => line.id is "medicine" or "commerce" or "teaching"))
             {
                 line.rank = "A";
@@ -115,14 +119,36 @@ namespace Wuxia
 
         internal static bool IsCombat(string id) => Categories.Any(category => category.id == id && category.family == "combat");
 
+        internal const string CreationMaxRank = "A", CreationMaxCap = "A+";
+
+        internal static bool IsHighTierSkill(CreationOption art) =>
+            art != null && !string.IsNullOrEmpty(art.category) && art.cost >= 3;
+
+        /// <summary>
+        /// v1128: Martial rank is the true highest combat tier (plus weaponDelta); dual-line mastery now grants a
+        /// combat stat bonus (<see cref="DualMasteryBonus"/>) instead of inflating the displayed tier for free.
+        /// </summary>
         internal static string Martial(SkillLine[] lines, bool cap = false, int weaponDelta = 0)
         {
             var best = lines.Where(line => IsCombat(line.id)).Select(line => Index(cap ? line.cap : line.rank))
                 .OrderByDescending(tier => tier).Take(2).ToArray();
             int tier = best.Length == 0 ? 0 : best[0];
-            if (best.Length == 2 && best[1] >= Index("A") && tier - best[1] <= 1)
-                tier++;
             return At(tier + (cap ? 0 : weaponDelta));
+        }
+
+        /// <summary>v1128: dual-line combat synergy (+4%/+6%/+9%/+12% attack & qiPower when 2nd combat line >= A/A+/S/SS).</summary>
+        internal static float DualMasteryBonus(SkillLine[] lines)
+        {
+            if (lines == null) return 0f;
+            var best = lines.Where(line => line != null && IsCombat(line.id))
+                .Select(line => Index(line.rank)).OrderByDescending(tier => tier).Take(2).ToArray();
+            if (best.Length < 2) return 0f;
+            int second = best[1];
+            if (second >= Index("SS")) return 0.12f;
+            if (second >= Index("S")) return 0.09f;
+            if (second >= Index("A+")) return 0.06f;
+            if (second >= Index("A")) return 0.04f;
+            return 0f;
         }
 
         internal static void Shift(SkillLine line, int delta, bool cap)
@@ -148,16 +174,57 @@ namespace Wuxia
             line.rank = At(rank);
         }
 
-        /// <summary>Training tiers earned by the creation pick, bounded by the resulting potential.</summary>
+        /// <summary>v1128: starting XP earned by a creation skill pick (replaces 1-point-per-tier instant jumps).</summary>
+        internal static int LearnProgress(CreationOption art) => (art?.cost ?? 0) switch
+        {
+            >= 3 => 220,
+            2 => 125,
+            _ => 55
+        };
+
+        /// <summary>Legacy step count kept for compatibility; creation uses <see cref="LearnProgress"/>.</summary>
         internal static int LearnSteps(CreationOption art) => Mathf.Clamp(art?.cost ?? 0, 1, 3);
 
         internal static int LearnCap(CreationOption art) => Mathf.Clamp(art.capBonus, 0, art.cost >= 3 ? 2 : 1);
 
-        internal static void Learn(SkillLine[] lines, CreationOption art)
+        internal static void Learn(SkillLine[] lines, CreationOption art, bool creation = false)
         {
             var line = Array.Find(lines, entry => entry.id == art.category);
-            Shift(line, LearnCap(art), true);
-            Shift(line, LearnSteps(art), false);
+            if (line == null) return;
+            int maxCap = creation ? Index(CreationMaxCap) : Tiers.Length - 1;
+            int maxRank = creation ? Index(CreationMaxRank) : Tiers.Length - 1;
+            int nextCap = Mathf.Clamp(Index(line.cap) + LearnCap(art), 0, maxCap);
+            line.cap = At(Math.Max(Index(line.cap), nextCap));
+
+            // Add starting XP and advance tiers smoothly against the tiered XP table.
+            float left = LearnProgress(art);
+            while (left > 0f && Index(line.rank) < Math.Min(Index(line.cap), maxRank))
+            {
+                int needMax = BalanceV1126c.ProgressMaxFor(Index(line.rank));
+                float need = needMax - line.progress;
+                if (left < need) { line.progress += left; left = 0f; break; }
+                left -= need;
+                line.progress = 0f;
+                line.rank = At(Index(line.rank) + 1);
+            }
+            if (Index(line.rank) >= Math.Min(Index(line.cap), maxRank))
+                line.progress = 0f;
+        }
+
+        /// <summary>v1128: enforces the creation ceiling (cap <= A+, rank <= A) across all protagonist lines.</summary>
+        internal static void ClampCreation(SkillLine[] lines)
+        {
+            if (lines == null) return;
+            int maxCap = Index(CreationMaxCap), maxRank = Index(CreationMaxRank);
+            foreach (var line in lines)
+            {
+                if (line == null) continue;
+                int cap = Mathf.Min(Index(line.cap), maxCap);
+                int rank = Mathf.Min(Index(line.rank), Math.Min(cap, maxRank));
+                line.cap = At(cap);
+                line.rank = At(rank);
+                if (rank >= cap) line.progress = 0f;
+            }
         }
     }
 }

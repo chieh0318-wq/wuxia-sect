@@ -101,7 +101,7 @@ namespace Wuxia
                     {
                         bool martial = RankSystem.IsCombat(line.id);
                         float progress = martial ? line.progress : progressState.WorkPractice(memberId, line.id)?.xp ?? 0;
-                        int max = martial ? GameState.MartialProgressMax : GameState.LifeProgressMax;
+                        int max = martial ? GameState.MartialProgressMaxFor(line) : GameState.LifeProgressMax;
                         var number = Label(panel, $"{progress:0.#}／{max}", 18, TextAnchor.MiddleRight);
                         Anchor(number.rectTransform, Vector2.up, Vector2.one, new(0, y - 31), new(-8, y));
                         CardBar(panel, 0, y - 43, -8, 5, progress / max, CardGold);

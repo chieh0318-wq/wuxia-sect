@@ -221,23 +221,24 @@ namespace Wuxia
             return (attack, speed, hp, qi, dodge);
         }
 
-        /// <summary>Hero figures with worn gear and researched tech folded in.</summary>
+        /// <summary>Hero figures with skill mastery, worn gear, and researched tech folded in.</summary>
         private DerivedStats WithBonuses(DerivedStats raw)
         {
+            var mastered = AttributeSystem.LegacyV1126d
+                ? raw
+                : SkillMastery.Apply(raw, Protagonist.lines, Protagonist.skills, Protagonist.arts);
             var tech = TechStats();
             var gear = Protagonist.gear ?? Array.Empty<GearItem>();
-            int attack = raw.Attack + tech.attack + gear.Sum(item => item?.attack ?? 0);
-            // v1126e #1: 外防／內防 come from 根骨・武力／內力・根骨 (AttributeSystem.Defense); the v1126d single 防禦 read
-            // the final 攻擊 (gear and tech included) and is only rebuilt for the before/after simulation.
+            int attack = mastered.Attack + tech.attack + gear.Sum(item => item?.attack ?? 0);
             int legacyDefense = Math.Max(AttributeSystem.MinDefense, attack / 3);
             return new DerivedStats(attack,
-                raw.Speed + tech.speed + gear.Sum(item => item?.speed ?? 0),
-                raw.MaxHp + tech.hp + gear.Sum(item => item?.hp ?? 0),
-                raw.MaxQi + tech.qi + gear.Sum(item => item?.qi ?? 0), raw.QiPower,
-                Mathf.Clamp(raw.Dodge + tech.dodge + gear.Sum(item => item?.dodge ?? 0), 0, .75f), raw.Fortune, raw.Study,
-                raw.Hit, raw.Crit, raw.QiRegen,
-                AttributeSystem.LegacyV1126d ? legacyDefense : raw.OuterDefense,
-                AttributeSystem.LegacyV1126d ? legacyDefense : raw.InnerDefense);
+                mastered.Speed + tech.speed + gear.Sum(item => item?.speed ?? 0),
+                mastered.MaxHp + tech.hp + gear.Sum(item => item?.hp ?? 0),
+                mastered.MaxQi + tech.qi + gear.Sum(item => item?.qi ?? 0), mastered.QiPower,
+                Mathf.Clamp(mastered.Dodge + tech.dodge + gear.Sum(item => item?.dodge ?? 0), 0, .75f), mastered.Fortune, mastered.Study,
+                mastered.Hit, mastered.Crit, mastered.QiRegen,
+                AttributeSystem.LegacyV1126d ? legacyDefense : mastered.OuterDefense,
+                AttributeSystem.LegacyV1126d ? legacyDefense : mastered.InnerDefense);
         }
 
         /// <summary>Beds across all 弟子廂房 (sect.bedsPerQuarters each, plus 山門營造法式's bonus).</summary>

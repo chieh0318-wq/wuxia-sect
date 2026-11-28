@@ -352,6 +352,7 @@ namespace Wuxia
                 if (effect.key == "cap") RankSystem.Raise(line, 0, value);
                 else RankSystem.Raise(line, value, 0);
             }
+            RankSystem.ClampCreation(preview);
             return preview;
         }
 
@@ -367,7 +368,8 @@ namespace Wuxia
 
         private int Spent => selected.Sum(option => option.cost);
         private bool CanPick(CreationOption option, int budget, int limit) =>
-            selected.Count < limit && Spent + option.cost <= budget && TalentRules.Compatible(option, selected);
+            selected.Count < limit && Spent + option.cost <= budget && TalentRules.Compatible(option, selected)
+            && (!RankSystem.IsHighTierSkill(option) || !selected.Any(RankSystem.IsHighTierSkill));
 
         private void ShowPick(CreationOption option, string group, int budget, int limit, Action redraw)
         {
@@ -395,8 +397,10 @@ namespace Wuxia
                     : EffectText.Describe(effect)).Where(line => line.Length > 0).ToList();
             if (!string.IsNullOrEmpty(option.category) && RankSystem.Categories.Any(entry => entry.id == option.category))
             {
-                int steps = RankSystem.LearnSteps(option);
-                details.Insert(0, $"習得階位 +{steps}・潛力上限 +{RankSystem.LearnCap(option)}");
+                string mastery = SkillMastery.DescribeOption(option);
+                if (!string.IsNullOrEmpty(mastery)) details.Insert(0, mastery);
+                string tierNote = RankSystem.IsHighTierSkill(option) ? "【高階・限選一門】" : "";
+                details.Insert(0, $"{tierNote}起始進度 +{RankSystem.LearnProgress(option)}・潛力上限 +{RankSystem.LearnCap(option)}（創角至多 A+）");
             }
             return string.Join("・", details);
         }
@@ -433,7 +437,8 @@ namespace Wuxia
             var attrs = AttributeSystem.Normalize(hero.attrs).Select((value, slot) => value + bonuses[slot]).ToArray();
             var lines = PreviewLines(talentList);
             foreach (var art in skillList)
-                RankSystem.Learn(lines, art);
+                RankSystem.Learn(lines, art, creation: true);
+            RankSystem.ClampCreation(lines);
             var sheet = new CreationSheet
             {
                 name = hero.name, title = UiKit.HeroTitle(hero) == hero.name ? "" : UiKit.HeroTitle(hero), portrait = hero.portrait ?? hero.lookId, gender = hero.gender,
@@ -475,7 +480,7 @@ namespace Wuxia
 
         private void ShowSkills(Vector2 scrollPosition)
         {
-            ui.ShowCreation("武學與技藝", Array.Empty<string>(), Back(() =>
+            ui.ShowCreation("武學與技藝", new[] { "主角基礎不低於 C；創角潛力上限至多 A+（當前至多 A），高階技藝（3 點）限選一門，其餘須於江湖中尋得秘笈。" }, Back(() =>
                 {
                     state.Protagonist.skills = SelectedIds;
                     StartTalents();
@@ -607,7 +612,8 @@ namespace Wuxia
             state.ApplyEffects(talentEffects);
             foreach (var art in (skills.skills ?? Array.Empty<CreationOption>())
                          .Where(option => option != null && state.Protagonist.skills.Contains(option.id)))
-                RankSystem.Learn(state.Protagonist.lines, art);
+                RankSystem.Learn(state.Protagonist.lines, art, creation: true);
+            RankSystem.ClampCreation(state.Protagonist.lines);
             state.ApplyEffects(skillEffects);
             LegacySystem.ApplyCarried(state, legacyPicks);
             AudioManager.Music("title");
